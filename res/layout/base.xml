@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <LinearLayout android:id="@+id/linearLayout1" android:layout_width="match_parent" android:layout_height="match_parent" android:weightSum="1" android:baselineAligned="false">
+        <LinearLayout android:id="@+id/linearLayout2" android:orientation="vertical" android:layout_height="match_parent" android:layout_width="171dp">
+            <Button android:layout_width="match_parent" android:layout_height="match_parent" android:layout_weight="1.5" android:id="@+id/navButton" android:text="&lt;="></Button>
+            <fragment android:id="@+id/fragment1" android:layout_width="match_parent" android:name="au.edu.melbuni.boldapp.UserFragment" android:layout_height="match_parent" android:layout_weight="1.5">
+                <!-- Preview: layout=@layout/user -->
+            </fragment>
+            <fragment android:id="@+id/fragment2" android:layout_width="match_parent" android:name="au.edu.melbuni.boldapp.HelpFragment" android:layout_height="match_parent" android:layout_weight="1"></fragment>
+        </LinearLayout>
+        <FrameLayout android:layout_height="match_parent" android:layout_width="match_parent" android:id="@+id/content"></FrameLayout>
+    </LinearLayout>
+</LinearLayout>
