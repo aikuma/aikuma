@@ -5,10 +5,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
-public class BOLDAppActivity extends Activity {
+public class OriginalChoiceActivity extends Activity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -18,22 +16,11 @@ public class BOLDAppActivity extends Activity {
         //
         setContentView(R.layout.base);
         
-        // Set button actions.
-        //
-        final Button button = (Button) findViewById(R.id.navButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-//            	finish();
-            }
-        });
-        
-        // Start with the MainFragment.
-        //
-        Fragment mainFragment = new MainFragment();
+        Fragment originalChoiceFragment = new OriginalChoiceFragment();
         
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.content, mainFragment);
+        fragmentTransaction.add(R.id.content, originalChoiceFragment);
         fragmentTransaction.commit();
         
     }

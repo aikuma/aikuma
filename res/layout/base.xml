@@ -6,7 +6,9 @@
     >
     <LinearLayout android:id="@+id/linearLayout1" android:layout_width="match_parent" android:layout_height="match_parent" android:weightSum="1" android:baselineAligned="false">
         <LinearLayout android:id="@+id/linearLayout2" android:orientation="vertical" android:layout_height="match_parent" android:layout_width="171dp">
-            <Button android:layout_width="match_parent" android:layout_height="match_parent" android:layout_weight="1.5" android:id="@+id/navButton" android:text="&lt;="></Button>
+            <fragment android:layout_width="match_parent" android:id="@+id/fragment3" android:name="au.edu.melbuni.boldapp.NavigationFragment" android:layout_height="match_parent" android:layout_weight="1.5">
+                <!-- Preview: layout=@layout/navigation -->
+            </fragment>
             <fragment android:id="@+id/fragment1" android:layout_width="match_parent" android:name="au.edu.melbuni.boldapp.UserFragment" android:layout_height="match_parent" android:layout_weight="1.5">
                 <!-- Preview: layout=@layout/user -->
             </fragment>

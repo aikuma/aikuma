@@ -32,7 +32,6 @@ public class RecordFragment extends Fragment {
         	public boolean onTouch(View v, MotionEvent motionEvent) {
         		// Start playing.
             	recorder.startPlaying();
-            	System.out.println("START PLAY");
             	return false;
             }
         });
@@ -40,14 +39,12 @@ public class RecordFragment extends Fragment {
 			public void onClick(View v) {
 				// Stop playing.
 				recorder.stopPlaying();
-				System.out.println("STOP PLAY");
 			}
 		});
         recordButton.setOnTouchListener(new View.OnTouchListener() {
         	public boolean onTouch(View v, MotionEvent motionEvent) {
         		// Start recording.
             	recorder.startRecording();
-            	System.out.println("START RECORD");
             	return false;
             }
         });
@@ -55,7 +52,6 @@ public class RecordFragment extends Fragment {
 			public void onClick(View v) {
 				// Stop recording.
 				recorder.stopRecording();
-				System.out.println("STOP RECORD");
 			}
 		});
 	    

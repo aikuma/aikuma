@@ -63,6 +63,7 @@ public class Recorder
             mPlayer.setDataSource(mFileName);
             mPlayer.prepare();
             mPlayer.start();
+            System.out.println("Playing");
         } catch (IOException e) {
             Log.e(LOG_TAG, "prepare() failed");
         }
@@ -72,6 +73,7 @@ public class Recorder
         mPlayer.release();
         mPlayer = null;
         playing = false;
+        System.out.println("Stopped Playing");
     }
 
     public void startRecording() {
@@ -92,6 +94,7 @@ public class Recorder
         }
 
         mRecorder.start();
+        System.out.println("Recording");
     }
 
     public void stopRecording() {
@@ -99,6 +102,7 @@ public class Recorder
         mRecorder.release();
         mRecorder = null;
         recording = false;
+        System.out.println("Stopped Recording");
     }
     
     public void pause() {
