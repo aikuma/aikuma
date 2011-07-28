@@ -30,9 +30,6 @@ public class Recorder
     private boolean recording = false;
     
     public Recorder(String fileName) {
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-    	
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
         mFileName += "/";
         mFileName += fileName;
@@ -81,7 +78,9 @@ public class Recorder
     	}
     	recording = true;
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mRecorder.setOutputFile(mFileName);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); // TODO Uncompressed?
 
         try {
             mRecorder.prepare();
