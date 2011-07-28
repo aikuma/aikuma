@@ -1,0 +1,7 @@
+package au.edu.melbuni.boldapp;
+
+import android.content.Intent;
+
+public class RecordIntent extends Intent {
+
+}

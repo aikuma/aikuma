@@ -1,0 +1,61 @@
+package au.edu.melbuni;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageButton;
+import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.Recorder;
+
+public class MiniBOLDAppActivity extends Activity {
+	
+	private Recorder recorder = null;
+	
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        setContentView(R.layout.main);
+        
+	    // Set buttons etc.
+	    //
+	    final ImageButton helpButton = (ImageButton) findViewById(R.id.helpButton);
+	    helpButton.setImageResource(R.drawable.help_record);
+	    
+	    recorder = new Recorder("audiorecordtest.3gp");
+	    
+	    final ImageButton playButton = (ImageButton) v.findViewById(R.id.playButton);
+	    final ImageButton recordButton = (ImageButton) v.findViewById(R.id.recordButton);
+	    
+        // Set button actions.
+        //
+        playButton.setOnTouchListener(new View.OnTouchListener() {
+        	public boolean onTouch(View v, MotionEvent motionEvent) {
+        		// Start playing.
+            	recorder.startPlaying();
+            	return false;
+            }
+        });
+        playButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				// Stop playing.
+				recorder.stopPlaying();
+			}
+		});
+        recordButton.setOnTouchListener(new View.OnTouchListener() {
+        	public boolean onTouch(View v, MotionEvent motionEvent) {
+        		// Start recording.
+            	recorder.startRecording();
+            	return false;
+            }
+        });
+        recordButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				// Stop recording.
+				recorder.stopRecording();
+			}
+		});
+    }
+}
