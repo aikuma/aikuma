@@ -17,7 +17,6 @@
             </intent-filter>
         </activity>
         <activity android:name="OriginalChoiceActivity" android:label="@string/app_name" android:screenOrientation="landscape"></activity>
-        <activity android:name="RecordActivity" android:label="@string/app_name" android:screenOrientation="landscape"></activity>
 
     </application>
 </manifest>

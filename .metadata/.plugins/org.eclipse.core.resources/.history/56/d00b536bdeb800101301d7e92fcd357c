@@ -10,7 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-public class MainActivity extends Activity {
+public class OriginalChoiceActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,14 +31,14 @@ public class MainActivity extends Activity {
      	// Content.
      	//
      	FrameLayout content = (FrameLayout) findViewById(R.id.content);
-     	content.addView(layoutInflater.inflate(R.layout.main, content, false));
+     	content.addView(layoutInflater.inflate(R.layout.original_choice, content, false));
      	
      	// Behavior.
      	//
-        final ImageButton recordButton = (ImageButton) findViewById(R.id.recordButton);
+        final ImageButton recordButton = (ImageButton) findViewById(R.id.fakeOriginalChoiceButton);
         recordButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-            	startActivityForResult(new Intent(view.getContext(), OriginalChoiceActivity.class), 0);
+            	startActivityForResult(new Intent(view.getContext(), RecordActivity.class), 0);
             }
         });
     }
