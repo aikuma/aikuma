@@ -41,13 +41,11 @@ public class ListenActivity extends Activity {
     };
 	
     public void installBehavior() {
-    	recorder = new Recorder("audiorecordtest.3gp");
-	    
 	    final ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
     	
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	public boolean onTouch(View v, MotionEvent motionEvent) {
-            	recorder.startPlaying();
+            	recorder.startPlaying("audiorecordtest.3gp");
             	return false;
             }
         });

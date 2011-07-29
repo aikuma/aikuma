@@ -1,0 +1,84 @@
+package au.edu.melbuni.boldapp;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.Activity;
+import android.content.Context;
+import android.widget.LinearLayout;
+
+/*
+ * Controller for the current time line.
+ * 
+ * Note: Could also be called Segments.
+ * 
+ */
+public class TimeLine {
+	
+	String identifier = null;
+	LinearLayout view = null;
+	
+	List<Segment> segments = new ArrayList<Segment>();
+	Segment selected = null;
+	
+	public TimeLine(Activity activity, String identifier) {
+		this.identifier = identifier;
+		this.view = (LinearLayout) activity.findViewById(R.id.timeline);
+	}
+	
+	// Delegator methods.
+	//
+	public Context getContext() {
+		return view.getContext();
+	}
+	public void setSelected(Segment segment) {
+		this.selected.unselect();
+		this.selected = segment;
+		this.selected.select();
+	}
+	public void add(Segment segment) {
+		selected = segment;
+		segment.select();
+		segment.addTo(view);
+		segments.add(segment);
+	}
+	public void remove(Segment segment) {
+		segment.removeFrom(view);
+		segments.remove(segment);
+		selected.unselect();
+		selected = null;
+	}
+	public void startPlaying(Recorder recorder) {
+		System.out.println("SaP");
+		getCurrent().startPlaying(recorder);
+	}
+	public void stopPlaying(Recorder recorder) {
+		System.out.println("SoP");
+		recorder.stopPlaying();
+	}
+	public void startRecording(Recorder recorder) {
+		System.out.println("SaR");
+		getCurrent().startRecording(recorder);
+	}
+	public void stopRecording(Recorder recorder) {
+		System.out.println("SoR");
+		recorder.stopRecording();
+		this.selected.unselect();
+		this.selected = null;
+	}
+	
+	// Returns the selected segment
+	// and if there is none, creates a new one.
+	//
+	protected Segment getCurrent() {
+		if (selected != null) {
+			return selected;
+		}
+		
+		Segment segment = new Segment(this, 1);
+		add(segment);
+		
+		return segment;
+	}
+	
+}

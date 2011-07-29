@@ -1,0 +1,33 @@
+package au.edu.melbuni.boldapp;
+
+import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+
+public class BoldActivity extends Activity {
+	
+	public void addToMenu() {
+		
+	}
+	
+	public void configureView() {
+    	setContentView(R.layout.base);
+    	
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout menu = (LinearLayout) findViewById(R.id.menu);
+        
+        // Menu.
+        //
+        // menu.addView(layoutInflater.inflate(R.layout.navigation, menu, false));
+     	menu.addView(layoutInflater.inflate(R.layout.user, menu, false));
+     	menu.addView(layoutInflater.inflate(R.layout.help, menu, false));
+     	
+     	// Content.
+     	//
+     	FrameLayout content = (FrameLayout) findViewById(R.id.content);
+     	content.addView(layoutInflater.inflate(R.layout.main, content, false));
+	}
+	
+}

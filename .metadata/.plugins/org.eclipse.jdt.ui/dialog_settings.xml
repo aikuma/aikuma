@@ -68,4 +68,6 @@
 		<item value="false" key="updateTextualMatches"/>
 		<item value="false" key="updateSimilarElements"/>
 	</section>
+	<section name="RenameInformationPopup">
+	</section>
 </section>

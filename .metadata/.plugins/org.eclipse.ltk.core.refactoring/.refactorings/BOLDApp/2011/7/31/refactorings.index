@@ -4,3 +4,7 @@
 1311904244290	Copy file
 1311904289525	Change Widget Type
 1311905386506	Extracts string 'null' into R.string.empty
+1311910176236	Rename type 'Timeline'
+1311924530491	Rename field 'mRecorder'
+1311924536367	Rename field 'mPlayer'
+1311926947143	Rename method 'setSelected'
