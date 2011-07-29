@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Hello World, BOLDAppActivity!</string>
     <string name="app_name">BOLDApp</string>
+    <string name="empty"></string>
 </resources>

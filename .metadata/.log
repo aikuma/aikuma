@@ -4110,3 +4110,13 @@ java.lang.IllegalArgumentException: Argument not valid Content is not allowed in
 	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:622)
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:577)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1410)
+!SESSION 2011-07-29 11:34:21.601 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_26
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -keyring /Users/admin/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -keyring /Users/admin/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.ui 4 4 2011-07-29 11:48:02.255
+!MESSAGE Invalid preference page path: XML Syntax

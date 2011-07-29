@@ -49,27 +49,23 @@ public class RecordActivity extends Activity {
         //
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	public boolean onTouch(View v, MotionEvent motionEvent) {
-        		// Start playing.
             	recorder.startPlaying();
             	return false;
             }
         });
         playButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				// Stop playing.
 				recorder.stopPlaying();
 			}
 		});
         recordButton.setOnTouchListener(new View.OnTouchListener() {
         	public boolean onTouch(View v, MotionEvent motionEvent) {
-        		// Start recording.
             	recorder.startRecording();
             	return false;
             }
         });
         recordButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				// Stop recording.
 				recorder.stopRecording();
 			}
 		});

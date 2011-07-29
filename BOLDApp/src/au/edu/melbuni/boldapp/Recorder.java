@@ -78,7 +78,7 @@ public class Recorder
     	}
     	recording = true;
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP); // TODO Format?
         mRecorder.setOutputFile(mFileName);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); // TODO Uncompressed?
 

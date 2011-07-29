@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <typeInfoHistroy>
-<typeInfo handle="=BOLDApp/src&lt;au.edu.melbuni.boldapp{UserFragment.java[UserFragment" modifiers="1" timestamp="1310620812000"/>
-<typeInfo handle="=BOLDApp/src&lt;au.edu.melbuni.boldapp{HelpFragment.java[HelpFragment" modifiers="1" timestamp="1310620812000"/>
-<typeInfo handle="=BOLDApp/src&lt;au.edu.melbuni.boldapp{NavigationFragment.java[NavigationFragment" modifiers="1" timestamp="1311727831000"/>
 <typeInfo handle="=MiniBOLDApp/src&lt;au.edu.melbuni.miniboldapp{MiniBOLDAppActivity.java[MiniBOLDAppActivity" modifiers="1" timestamp="1311749764000"/>
+<typeInfo handle="=BOLDApp/src&lt;au.edu.melbuni.boldapp{OriginalChoiceActivity.java[OriginalChoiceActivity" modifiers="1" timestamp="1311832707000"/>
+<typeInfo handle="=BOLDApp/src&lt;au.edu.melbuni.boldapp{RecordActivity.java[RecordActivity" modifiers="1" timestamp="1311832847000"/>
 </typeInfoHistroy>

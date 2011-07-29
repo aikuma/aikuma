@@ -15,10 +15,13 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        setContentView(R.layout.base);
-        
-        // Configure view.
-        //
+        configureView();
+     	installBehavior();
+    }
+    
+    public void configureView() {
+    	setContentView(R.layout.base);
+    	
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LinearLayout menu = (LinearLayout) findViewById(R.id.menu);
         
@@ -32,14 +35,20 @@ public class MainActivity extends Activity {
      	//
      	FrameLayout content = (FrameLayout) findViewById(R.id.content);
      	content.addView(layoutInflater.inflate(R.layout.main, content, false));
-     	
-     	// Behavior.
-     	//
+    };
+    
+    public void installBehavior() {
         final ImageButton recordButton = (ImageButton) findViewById(R.id.recordButton);
         recordButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+            	startActivityForResult(new Intent(view.getContext(), RecordActivity.class), 0);
+            }
+        });
+        final ImageButton listenButton = (ImageButton) findViewById(R.id.listenButton);
+        listenButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
             	startActivityForResult(new Intent(view.getContext(), OriginalChoiceActivity.class), 0);
             }
         });
-    }
+    };
 }

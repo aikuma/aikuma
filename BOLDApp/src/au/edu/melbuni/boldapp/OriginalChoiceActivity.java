@@ -35,10 +35,10 @@ public class OriginalChoiceActivity extends Activity {
      	
      	// Behavior.
      	//
-        final Button recordButton = (Button) findViewById(R.id.fakeOriginalChoiceButton);
-        recordButton.setOnClickListener(new View.OnClickListener() {
+        final Button originalChoiceButton = (Button) findViewById(R.id.fakeOriginalChoiceButton);
+        originalChoiceButton .setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-            	startActivityForResult(new Intent(view.getContext(), RecordActivity.class), 0);
+            	startActivityForResult(new Intent(view.getContext(), ListenActivity.class), 0);
             }
         });
     }
