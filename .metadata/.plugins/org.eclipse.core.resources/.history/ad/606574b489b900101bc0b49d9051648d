@@ -39,7 +39,6 @@ public class OriginalChoiceActivity extends Activity {
     
     public void installBehavior() {
         final Button originalChoiceButton = (Button) findViewById(R.id.fakeOriginalChoiceButton);
-        
         originalChoiceButton .setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
             	startActivityForResult(new Intent(view.getContext(), ListenActivity.class), 0);

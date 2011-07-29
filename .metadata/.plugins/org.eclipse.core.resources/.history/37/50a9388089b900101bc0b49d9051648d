@@ -10,7 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-public class ListenActivity extends Activity {
+public class RecordActivity extends Activity {
 
 	private Recorder recorder = null;
 	
@@ -18,13 +18,12 @@ public class ListenActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-     	configureView();
-	    installBehavior();
-    }
-    
-    public void configureView() {
+        // Set view.
+        //
         setContentView(R.layout.base);
         
+        // Configure view.
+        //
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LinearLayout menu = (LinearLayout) findViewById(R.id.menu);
         
@@ -37,14 +36,25 @@ public class ListenActivity extends Activity {
      	// Content.
      	//
      	FrameLayout content = (FrameLayout) findViewById(R.id.content);
-     	content.addView(layoutInflater.inflate(R.layout.listen, content, false));
+     	content.addView(layoutInflater.inflate(R.layout.record, content, false));
+     	
+     	// Behavior.
+     	//
+
+    }
+    
+    public void configureView() {
+    	
     };
-	
+    
     public void installBehavior() {
-    	recorder = new Recorder("audiorecordtest.3gp");
+	    recorder = new Recorder("audiorecordtest.3gp");
 	    
 	    final ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
-    	
+	    final ImageButton recordButton = (ImageButton) findViewById(R.id.recordButton);
+	    
+        // Set button actions.
+        //
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	public boolean onTouch(View v, MotionEvent motionEvent) {
             	recorder.startPlaying();
@@ -56,6 +66,16 @@ public class ListenActivity extends Activity {
 				recorder.stopPlaying();
 			}
 		});
+        recordButton.setOnTouchListener(new View.OnTouchListener() {
+        	public boolean onTouch(View v, MotionEvent motionEvent) {
+            	recorder.startRecording();
+            	return false;
+            }
+        });
+        recordButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				recorder.stopRecording();
+			}
+		});
     };
-    
 }

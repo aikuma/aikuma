@@ -18,13 +18,12 @@ public class ListenActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-     	configureView();
-	    installBehavior();
-    }
-    
-    public void configureView() {
+        // Set view.
+        //
         setContentView(R.layout.base);
         
+        // Configure view.
+        //
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LinearLayout menu = (LinearLayout) findViewById(R.id.menu);
         
@@ -38,6 +37,17 @@ public class ListenActivity extends Activity {
      	//
      	FrameLayout content = (FrameLayout) findViewById(R.id.content);
      	content.addView(layoutInflater.inflate(R.layout.listen, content, false));
+     	
+     	// Behavior.
+     	//
+	    
+	    
+	    installBehavior();
+    }
+    
+    public void configureView() {
+    	
+    	
     };
 	
     public void installBehavior() {

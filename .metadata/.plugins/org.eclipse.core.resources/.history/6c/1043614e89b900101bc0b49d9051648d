@@ -18,13 +18,12 @@ public class ListenActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-     	configureView();
-	    installBehavior();
-    }
-    
-    public void configureView() {
+        // Set view.
+        //
         setContentView(R.layout.base);
         
+        // Configure view.
+        //
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LinearLayout menu = (LinearLayout) findViewById(R.id.menu);
         
@@ -38,13 +37,15 @@ public class ListenActivity extends Activity {
      	//
      	FrameLayout content = (FrameLayout) findViewById(R.id.content);
      	content.addView(layoutInflater.inflate(R.layout.listen, content, false));
-    };
-	
-    public void installBehavior() {
-    	recorder = new Recorder("audiorecordtest.3gp");
+     	
+     	// Behavior.
+     	//
+	    recorder = new Recorder("audiorecordtest.3gp");
 	    
 	    final ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
-    	
+	    
+        // Set button actions.
+        //
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	public boolean onTouch(View v, MotionEvent motionEvent) {
             	recorder.startPlaying();
@@ -56,6 +57,6 @@ public class ListenActivity extends Activity {
 				recorder.stopPlaying();
 			}
 		});
-    };
-    
+    }
+	
 }

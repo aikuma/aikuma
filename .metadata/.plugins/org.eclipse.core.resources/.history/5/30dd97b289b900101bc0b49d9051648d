@@ -16,7 +16,14 @@ public class OriginalChoiceActivity extends Activity {
         super.onCreate(savedInstanceState);
         
      	configureView();
-     	installBehavior();
+     	// Behavior.
+     	//
+        final Button originalChoiceButton = (Button) findViewById(R.id.fakeOriginalChoiceButton);
+        originalChoiceButton .setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+            	startActivityForResult(new Intent(view.getContext(), ListenActivity.class), 0);
+            }
+        });
     }
     
     public void configureView() {
@@ -35,15 +42,5 @@ public class OriginalChoiceActivity extends Activity {
      	//
      	FrameLayout content = (FrameLayout) findViewById(R.id.content);
      	content.addView(layoutInflater.inflate(R.layout.original_choice, content, false));
-    };
-    
-    public void installBehavior() {
-        final Button originalChoiceButton = (Button) findViewById(R.id.fakeOriginalChoiceButton);
-        
-        originalChoiceButton .setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-            	startActivityForResult(new Intent(view.getContext(), ListenActivity.class), 0);
-            }
-        });
     };
 }
