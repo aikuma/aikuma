@@ -1,0 +1,39 @@
+package au.edu.melbuni.boldapp;
+
+import android.os.Bundle;
+
+public class UserSelectionActivity extends BoldActivity {
+
+	@Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+     	
+		Bundle extras = getIntent().getExtras();
+		
+
+		getWindow().setFormat(PixelFormat.TRANSLUCENT);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		setContentView(R.layout.surface_camera);
+		mSurfaceView = (SurfaceView) findViewById(R.id.surface_camera);
+		mSurfaceView.setOnClickListener(this);
+		mSurfaceHolder = mSurfaceView.getHolder();
+		mSurfaceHolder.addCallback(this);
+		mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        
+        configureView();
+     	installBehavior();
+    }
+    
+    public void configureView() {
+        super.configureView();
+        
+     	setContent(R.layout.user_selection);
+    };
+    
+    public void installBehavior() {
+    	
+    }
+	
+}

@@ -9,8 +9,6 @@ import android.widget.ImageButton;
 
 public class MainActivity extends BoldActivity {
 	
-	boolean exitWithoutAsking = false;
-	
 	@Override
 	public void finish() {
 		new AlertDialog.Builder(this)
@@ -24,9 +22,6 @@ public class MainActivity extends BoldActivity {
         })
         .setNegativeButton("No", null)
         .show();
-	}
-	public void setExitWithoutAsking() {
-		exitWithoutAsking = true;
 	}
 	
     @Override

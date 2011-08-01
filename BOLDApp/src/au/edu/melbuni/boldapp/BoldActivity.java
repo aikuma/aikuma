@@ -2,9 +2,11 @@ package au.edu.melbuni.boldapp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.Layout;
+import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 public class BoldActivity extends Activity {
@@ -22,8 +24,19 @@ public class BoldActivity extends Activity {
 	
 	public void configureView() {
     	setContentView(R.layout.base);
+    	
     	addToMenu(R.layout.user);
     	addToMenu(R.layout.help);
+    	
+    	// Menu behavior.
+    	//
+    	ImageButton userImageButton = (ImageButton) findViewById(R.id.userImageButton);
+    	userImageButton.setOnClickListener(new View.OnClickListener() {
+    		@Override
+    		public void onClick(View view) {
+    			startActivityForResult(new Intent(view.getContext(), UserSelectionActivity.class), 0);
+    		}
+    	});
 	}
 	
 }

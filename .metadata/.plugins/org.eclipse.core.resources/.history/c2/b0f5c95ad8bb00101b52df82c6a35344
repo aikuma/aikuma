@@ -1,0 +1,23 @@
+package au.edu.melbuni.boldapp;
+
+import android.os.Bundle;
+
+public class UserSelectionActivity extends BoldActivity {
+
+	@Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+     	
+        configureView();
+     	installBehavior();
+    }
+    
+    public void configureView() {
+        super.configureView();
+        
+     	setContent(R.layout.record);
+    };
+    
+    public void installBehavior() {
+	
+}

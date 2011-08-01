@@ -1,0 +1,5 @@
+package au.edu.melbuni.boldapp;
+
+public class UserSelectionActivity extends BoldActivity {
+
+}
