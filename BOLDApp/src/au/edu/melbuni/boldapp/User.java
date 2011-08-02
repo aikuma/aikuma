@@ -2,6 +2,9 @@ package au.edu.melbuni.boldapp;
 
 import java.util.UUID;
 
+import android.graphics.drawable.Drawable;
+import android.os.Environment;
+
 /*
  * A User has
  * - name
@@ -19,6 +22,10 @@ public class User {
 		this("");
 	}
 	
+	public User(UUID uuid) {
+		this("", uuid);
+	}
+	
 	public User(String name) {
 		this(name, UUID.randomUUID());
 	}
@@ -29,12 +36,23 @@ public class User {
 	}
 	
 	
+	public String getIdentifierString() {
+		return this.uuid.toString();
+	}
+	
 	public String getNameKey() {
 		return "users/" + this.uuid.toString() + "/name";
 	}
 	
-	public String getImagePath() {
+	public String getProfileImagePath() {
 		return "users/profile_" + this.uuid.toString() + ".png";
+	}
+	public Drawable getProfileImage() {
+		String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+    	fileName += "/";
+    	fileName += getProfileImagePath();
+    	
+    	return Drawable.createFromPath(fileName);
 	}
 
 }

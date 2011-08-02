@@ -20,8 +20,12 @@ public class UserTest extends TestCase {
 		assertEquals("users/f47ac10b-58cc-4372-a567-0e02b2c3d479/name", this.user.getNameKey());
 	}
 	
-	public void testGetImagePath() {
-		assertEquals("users/profile_f47ac10b-58cc-4372-a567-0e02b2c3d479.png", this.user.getImagePath());
+	public void testGetProfileImagePath() {
+		assertEquals("users/profile_f47ac10b-58cc-4372-a567-0e02b2c3d479.png", this.user.getProfileImagePath());
+	}
+	
+	public void testGetUUIDString() {
+		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", this.user.getIdentifierString());
 	}
 
 }

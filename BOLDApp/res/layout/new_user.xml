@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:orientation="horizontal" android:baselineAligned="false">
     <ImageButton android:src="@drawable/icon" android:layout_weight="1" android:layout_width="match_parent" android:layout_height="match_parent" android:id="@+id/userPictureImageButton" android:scaleType="centerInside"></ImageButton>
-    <EditText android:id="@+id/editText1" android:layout_height="wrap_content" android:layout_width="match_parent" android:layout_weight="1">
+    <EditText android:layout_height="wrap_content" android:layout_width="match_parent" android:layout_weight="1" android:id="@+id/newUserNameEditText">
         <requestFocus></requestFocus>
     </EditText>
 </LinearLayout>

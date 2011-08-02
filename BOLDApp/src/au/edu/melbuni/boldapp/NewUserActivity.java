@@ -1,10 +1,11 @@
 package au.edu.melbuni.boldapp;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 
 public class NewUserActivity extends BoldActivity {
@@ -30,12 +31,20 @@ public class NewUserActivity extends BoldActivity {
     
     public void installBehavior(Bundle savedInstanceState) {
 	    final ImageButton userPictureButton = (ImageButton) findViewById(R.id.userPictureImageButton);
-	    
         userPictureButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				startActivityForResult(new Intent(view.getContext(), CameraActivity.class), TAKE_USER_PICTURE);
 			}
+        });
+        
+        final EditText newUserNameEditText = (EditText) findViewById(R.id.newUserNameEditText);
+        newUserNameEditText.addTextChangedListener(new TextWatcher(){
+            public void afterTextChanged(Editable s) {
+            	newUser.name = newUserNameEditText.getText().toString();
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+            public void onTextChanged(CharSequence s, int start, int before, int count){}
         });
     }
 	
@@ -45,13 +54,15 @@ public class NewUserActivity extends BoldActivity {
     		// Try to show the picture on the button.
     		//
     		final ImageButton userPictureButton = (ImageButton) findViewById(R.id.userPictureImageButton);
-        	
-    		String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        	fileName += "/";
-        	fileName += newUser.getImagePath();
-        	
-        	userPictureButton.setImageDrawable(Drawable.createFromPath(fileName));
+        	userPictureButton.setImageDrawable(newUser.getProfileImage());
     	}
+    }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    	Bundler.saveNewUser(outState, newUser);
+    	
+    	super.onSaveInstanceState(outState);
     }
     
 }
