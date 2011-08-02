@@ -9,6 +9,14 @@ import android.widget.ImageButton;
 
 public class MainActivity extends BoldActivity {
 	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        configureView(savedInstanceState);
+     	installBehavior(savedInstanceState);
+    }
+	
 	@Override
 	public void finish() {
 		new AlertDialog.Builder(this)
@@ -23,22 +31,14 @@ public class MainActivity extends BoldActivity {
         .setNegativeButton("No", null)
         .show();
 	}
-	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        configureView();
-     	installBehavior();
-    }
     
-    public void configureView() {
-    	super.configureView();
+    public void configureView(Bundle savedInstanceState) {
+    	super.configureView(savedInstanceState);
     	
     	setContent(R.layout.main);
     };
     
-    public void installBehavior() {
+    public void installBehavior(Bundle savedInstanceState) {
         final ImageButton recordButton = (ImageButton) findViewById(R.id.recordButton);
         recordButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {

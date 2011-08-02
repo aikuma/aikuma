@@ -2,8 +2,8 @@ package au.edu.melbuni.boldapp;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -19,16 +19,13 @@ import android.view.Window;
 import android.view.WindowManager;
 
 public class CameraActivity extends Activity implements SurfaceHolder.Callback, OnClickListener {
-	static final int FOTO_MODE = 0;
-	private static final String TAG = "CameraTest";
+
 	Camera camera;
 	boolean previewRunning = false;
 	
 
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-
-		Log.e(TAG, "onCreate");
 		
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -59,6 +56,22 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 		        	String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
 		        	fileName += "/current_user.png";
 		        	
+		        	FileWriter writer = new FileWriter(fileName);
+		        	writer.close();
+		        	
+//		       	    in = new FileInputStream(fileName);
+//		            buf = new BufferedInputStream(in);
+//		            byte[] bMapArray= new byte[buf.available()];
+//		            buf.read(bMapArray);
+//		            Bitmap bMap = BitmapFactory.decodeByteArray(bMapArray, 0, bMapArray.length);
+//		            image.setImageBitmap(bMap);
+//		            if (in != null) {
+//		         	in.close();
+//		            }
+//		            if (buf != null) {
+//		         	buf.close();
+//		            }
+		        	
 		            FileOutputStream out = new FileOutputStream(fileName);
 		            BufferedOutputStream bufOut = new BufferedOutputStream(out);
 		            bufOut.write(imageData);
@@ -67,22 +80,17 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 		            Log.e("Error reading file", e.toString());
 		        }
 				
-				camera.startPreview();
-				
-				setResult(FOTO_MODE, intent);
+				setResult(RESULT_OK, intent);
 				finish();
 			}
 		}
 	};
 
 	public void surfaceCreated(SurfaceHolder holder) {
-		Log.e(TAG, "surfaceCreated");
 		camera = Camera.open();
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-		Log.e(TAG, "surfaceChanged");
-
 		// Note: stopPreview() will crash if preview is not running.
 		//
 		if (previewRunning) {
@@ -102,7 +110,6 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		Log.e(TAG, "surfaceDestroyed");
 		camera.stopPreview();
 		previewRunning = false;
 		camera.release();

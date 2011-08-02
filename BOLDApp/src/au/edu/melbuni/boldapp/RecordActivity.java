@@ -13,17 +13,17 @@ public class RecordActivity extends BoldActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
      	
-        configureView();
-     	installBehavior();
+        configureView(savedInstanceState);
+     	installBehavior(savedInstanceState);
     }
     
-    public void configureView() {
-        super.configureView();
+    public void configureView(Bundle savedInstanceState) {
+        super.configureView(savedInstanceState);
         
      	setContent(R.layout.record);
     };
     
-    public void installBehavior() {
+    public void installBehavior(Bundle savedInstanceState) {
      	final TimeLine timeLine = new TimeLine(this, "audiorecordtest");
 	    
 	    final ImageButton playButton = (ImageButton) findViewById(R.id.playButton);

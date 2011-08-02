@@ -1,0 +1,15 @@
+Saved State, Bundle Keys:
+
+Users
+	Array: users
+
+User
+	Image: user_<uuid>.png
+	Name: users/<uuid>/name => "Some Name"
+
+Current User
+	id: current_user => <user uuid>
+
+Original:
+    Recording: original_<hash>
+    User reference: original_<hash>_creator => "<user uuid>"

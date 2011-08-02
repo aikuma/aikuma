@@ -60,7 +60,7 @@ public class TimeLine {
 	public void remove(Segment segment) {
 		segment.removeFrom(view);
 		segments.remove(segment);
-		selectedForRecording.unselect();
+		if (selectedForRecording != null) { selectedForRecording.unselect(); }
 		selectedForRecording = null;
 	}
 	public void startPlaying(Recorder recorder) {
