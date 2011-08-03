@@ -1,7 +1,0 @@
-package au.edu.melbuni.boldapp;
-
-import android.app.Fragment;
-
-public class OriginalChoiceFragment extends Fragment {
-
-}

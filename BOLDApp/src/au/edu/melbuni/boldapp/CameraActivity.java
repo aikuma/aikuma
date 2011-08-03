@@ -1,16 +1,12 @@
 package au.edu.melbuni.boldapp;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -22,10 +18,14 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 
 	Camera camera;
 	boolean previewRunning = false;
-	
+	User currentUser;
 
-	public void onCreate(Bundle icicle) {
-		super.onCreate(icicle);
+	public void onCreate(Bundle bundle) {
+		super.onCreate(bundle);
+		
+		// Explicit since it isn't a BoldActivity.
+		//
+		currentUser = Bundler.getCurrentUser(this);
 		
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -41,46 +41,11 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 	}
 
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-	}
-
 	Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
 		public void onPictureTaken(byte[] imageData, Camera c) {
 			if (imageData != null) {
-				Intent intent = new Intent();
-				
-				try {
-					
-		        	String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-		        	fileName += "/current_user.png";
-		        	
-		        	FileWriter writer = new FileWriter(fileName);
-		        	writer.close();
-		        	
-//		       	    in = new FileInputStream(fileName);
-//		            buf = new BufferedInputStream(in);
-//		            byte[] bMapArray= new byte[buf.available()];
-//		            buf.read(bMapArray);
-//		            Bitmap bMap = BitmapFactory.decodeByteArray(bMapArray, 0, bMapArray.length);
-//		            image.setImageBitmap(bMap);
-//		            if (in != null) {
-//		         	in.close();
-//		            }
-//		            if (buf != null) {
-//		         	buf.close();
-//		            }
-		        	
-		            FileOutputStream out = new FileOutputStream(fileName);
-		            BufferedOutputStream bufOut = new BufferedOutputStream(out);
-		            bufOut.write(imageData);
-		            
-		        } catch (Exception e) {
-		            Log.e("Error reading file", e.toString());
-		        }
-				
-				setResult(RESULT_OK, intent);
+				currentUser.putProfileImage(imageData);
+				setResult(RESULT_OK, new Intent());
 				finish();
 			}
 		}

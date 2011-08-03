@@ -1,9 +1,0 @@
-package au.edu.melbuni.boldapp;
-
-public class User {
-	
-	public User(String identifier) {
-		this.identifier = identfier;
-	}
-	
-}

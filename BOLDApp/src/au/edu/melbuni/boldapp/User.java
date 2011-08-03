@@ -1,9 +1,13 @@
 package au.edu.melbuni.boldapp;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.UUID;
 
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.util.Log;
 
 /*
  * A User has
@@ -45,14 +49,37 @@ public class User {
 	}
 	
 	public String getProfileImagePath() {
-		return "users/profile_" + this.uuid.toString() + ".png";
-	}
-	public Drawable getProfileImage() {
 		String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
     	fileName += "/";
-    	fileName += getProfileImagePath();
-    	
-    	return Drawable.createFromPath(fileName);
+		return fileName + "users/profile_" + this.uuid.toString() + ".png";
+	}
+	public Drawable getProfileImage() {
+    	return Drawable.createFromPath(getProfileImagePath());
+	}
+	public boolean hasProfileImage() {
+		File image = new File(getProfileImagePath());
+		return image.exists();
+	}
+	public void putProfileImage(byte[] imageData) {
+		String fileName = "";
+		
+		try {
+			
+        	fileName = getProfileImagePath();
+
+        	File file = new File(fileName);
+        	file.getParentFile().mkdirs();
+        	file.createNewFile();
+        	
+            FileOutputStream out = new FileOutputStream(fileName);
+            BufferedOutputStream bufOut = new BufferedOutputStream(out);
+            bufOut.write(imageData);
+            bufOut.close();
+            
+        } catch (Exception e) {
+        	System.out.println("ERROR:" + fileName);
+            Log.e("Error reading file", e.toString());
+        }
 	}
 
 }

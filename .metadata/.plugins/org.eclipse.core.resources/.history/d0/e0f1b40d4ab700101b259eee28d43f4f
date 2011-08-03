@@ -1,9 +1,0 @@
-package au.edu.melbuni.boldapp;
-
-import android.content.Intent;
-
-// This is the intent that designates recording.
-//
-public class RecordIntent extends Intent {
-
-}

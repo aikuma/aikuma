@@ -7,7 +7,7 @@
 <booleanAttribute key="com.android.ide.eclipse.adt.nobootanim" value="true"/>
 <intAttribute key="com.android.ide.eclipse.adt.speed" value="0"/>
 <booleanAttribute key="com.android.ide.eclipse.adt.target" value="true"/>
-<booleanAttribute key="com.android.ide.eclipse.adt.wipedata" value="false"/>
+<booleanAttribute key="com.android.ide.eclipse.adt.wipedata" value="true"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/BOLDApp"/>
 <listEntry value="/BOLDApp/AndroidManifest.xml"/>
