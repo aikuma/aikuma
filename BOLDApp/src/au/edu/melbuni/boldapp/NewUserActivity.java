@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -21,12 +22,6 @@ public class NewUserActivity extends BoldActivity {
         configureView(savedInstanceState);
      	installBehavior(savedInstanceState);
     }
-	@Override
-	protected void onDestroy() {
-		Bundler.saveNewUser(this, currentUser);
-		
-		super.onDestroy();
-	}
     
     public void configureView(Bundle savedInstanceState) {
         super.configureView(savedInstanceState);
@@ -50,6 +45,24 @@ public class NewUserActivity extends BoldActivity {
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after){}
             public void onTextChanged(CharSequence s, int start, int before, int count){}
+        });
+        
+	    final Button okButton = (Button) findViewById(R.id.okButton);
+        okButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Bundler.saveNewUser(NewUserActivity.this, currentUser);
+				finish();
+			}
+        });
+        
+	    final Button cancelButton = (Button) findViewById(R.id.cancelButton);
+	    cancelButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Bundler.setCurrentUser(NewUserActivity.this, null);
+				finish();
+			}
         });
     }
 	

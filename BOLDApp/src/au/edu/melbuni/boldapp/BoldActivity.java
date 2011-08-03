@@ -1,11 +1,8 @@
 package au.edu.melbuni.boldapp;
 
-import java.util.ResourceBundle;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

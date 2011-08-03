@@ -3,8 +3,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="horizontal" android:baselineAligned="false">
-    <ImageButton android:src="@drawable/icon" android:layout_width="match_parent" android:layout_height="match_parent" android:id="@+id/userPictureImageButton" android:layout_weight="1" android:scaleType="centerInside"></ImageButton>
-    <EditText android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/newUserNameEditText" android:layout_weight="1">
-        <requestFocus></requestFocus>
-    </EditText>
+    <ImageButton android:src="@drawable/icon" android:layout_width="match_parent" android:id="@+id/userPictureImageButton" android:scaleType="centerInside" android:layout_weight="1" android:layout_height="match_parent"></ImageButton>
+    <LinearLayout android:id="@+id/linearLayout1" android:layout_height="match_parent" android:orientation="vertical" android:layout_weight="1" android:layout_width="match_parent">
+        <EditText android:id="@+id/newUserNameEditText" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_weight="0"></EditText>
+        <LinearLayout android:id="@+id/linearLayout2" android:layout_width="match_parent" android:layout_weight="1" android:layout_gravity="center" android:layout_height="wrap_content">
+            <Button android:text="Ok" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="0dp" android:id="@+id/okButton"></Button>
+            <Button android:text="Cancel" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="0dp" android:id="@+id/cancelButton"></Button>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

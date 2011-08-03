@@ -24,6 +24,8 @@ public class UserSelectionActivity extends BoldActivity {
 	}
 	@Override
 	protected void onResume() {
+		System.out.println("Loading users for listing");
+		
 		LinearLayout userLayout = (LinearLayout) findViewById(R.id.users);
 
 		ArrayList<User> users = Bundler.getUsers(this);
