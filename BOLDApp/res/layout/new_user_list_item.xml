@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="horizontal" android:baselineAligned="false" android:id="@+id/addNewUser">
-    <ImageView android:src="@drawable/unknown_user" android:layout_gravity="center" android:id="@+id/imageView1" android:padding="5dip" android:layout_margin="10dip" android:scaleType="centerInside" android:layout_width="60dip" android:layout_height="60dip"></ImageView>
-    <TextView android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:text="Add New User" android:id="@+id/textView2" android:layout_width="0dp" android:layout_weight="1" android:layout_gravity="center_vertical"></TextView>
-</LinearLayout>
