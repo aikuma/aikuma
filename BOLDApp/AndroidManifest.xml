@@ -18,7 +18,7 @@
         <activity android:name="ListenActivity" android:label="@string/app_name" android:screenOrientation="landscape"></activity>
         <activity android:screenOrientation="landscape" android:name="UserSelectionActivity" android:label="@string/app_name"></activity>
         <activity android:name="CameraActivity"></activity>
-        <activity android:name="NewUserActivity" android:screenOrientation="landscape"></activity>
+        <activity android:name=".EditUserActivity" android:screenOrientation="landscape"></activity>
 
     </application>
 </manifest>

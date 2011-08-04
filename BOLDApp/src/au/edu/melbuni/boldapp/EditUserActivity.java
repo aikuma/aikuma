@@ -9,18 +9,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-public class NewUserActivity extends BoldActivity {
+public class EditUserActivity extends BoldActivity {
 	
 	static final int TAKE_USER_PICTURE = 0;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
-		Bundler.setCurrentUser(this, new User());
-		
         super.onCreate(savedInstanceState);
      	
         configureView(savedInstanceState);
      	installBehavior(savedInstanceState);
+     	
+        // Copy data from current user into view.
+        //
+        setUserPictureFromCurrentUser();
+        setUserTextFromCurrentUser();
     }
     
     public void configureView(Bundle savedInstanceState) {
@@ -41,7 +44,7 @@ public class NewUserActivity extends BoldActivity {
         final EditText newUserNameEditText = (EditText) findViewById(R.id.newUserNameEditText);
         newUserNameEditText.addTextChangedListener(new TextWatcher(){
             public void afterTextChanged(Editable s) {
-            	currentUser.name = newUserNameEditText.getText().toString();
+            	Bundler.getCurrentUser(EditUserActivity.this).name = newUserNameEditText.getText().toString();
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after){}
             public void onTextChanged(CharSequence s, int start, int before, int count){}
@@ -51,7 +54,7 @@ public class NewUserActivity extends BoldActivity {
         okButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Bundler.saveNewUser(NewUserActivity.this, currentUser);
+				Bundler.saveNewUser(EditUserActivity.this, currentUser);
 				finish();
 			}
         });
@@ -60,7 +63,7 @@ public class NewUserActivity extends BoldActivity {
 	    cancelButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Bundler.setCurrentUser(NewUserActivity.this, null);
+				Bundler.setCurrentUser(EditUserActivity.this, null);
 				finish();
 			}
         });
@@ -69,13 +72,17 @@ public class NewUserActivity extends BoldActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
     	if (requestCode == TAKE_USER_PICTURE && resultCode == RESULT_OK) {
-    		currentUser = Bundler.getCurrentUser(this);
-    		
-    		// Try to show the picture on the button.
-    		//
-    		final ImageButton userPictureButton = (ImageButton) findViewById(R.id.userPictureImageButton);
-        	userPictureButton.setImageDrawable(currentUser.getProfileImage());
+    		setUserPictureFromCurrentUser();
     	}
+    }
+    
+    protected void setUserPictureFromCurrentUser() {
+    	final ImageButton userPictureButton = (ImageButton) findViewById(R.id.userPictureImageButton);
+    	userPictureButton.setImageDrawable(Bundler.getCurrentUser(this).getProfileImage());
+    }
+    protected void setUserTextFromCurrentUser() {
+    	final EditText userNameEditText = (EditText) findViewById(R.id.newUserNameEditText);
+    	userNameEditText.setText(Bundler.getCurrentUser(this).name);
     }
     
 }

@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class BoldActivity extends Activity {
 
@@ -30,17 +31,29 @@ public class BoldActivity extends Activity {
 		
 		currentUser = Bundler.getCurrentUser(this);
 		
+		// Set current user.
+		//
 		ImageButton userImageButton = (ImageButton) findViewById(R.id.userImageButton);
 		if (currentUser != null && currentUser.hasProfileImage()) {
 			userImageButton.setImageDrawable(currentUser.getProfileImage());
 		} else {
 			userImageButton.setImageResource(R.drawable.unknown_user);
 		}
+		TextView userTextView = (TextView) findViewById(R.id.userText);
+		if (currentUser != null && currentUser.name != null) {
+			userTextView.setText(currentUser.name);
+		} else {
+			userTextView.setText("?");
+		}
 	}
 
 	public void addToMenu(int layout) {
 		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		LinearLayout menu = (LinearLayout) findViewById(R.id.menu);
+		LinearLayout.LayoutParams menuParams = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.WRAP_CONTENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT);
+		menu.setLayoutParams(menuParams);
 		menu.addView(layoutInflater.inflate(layout, menu, false));
 	}
 

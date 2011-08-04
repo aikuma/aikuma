@@ -14,3 +14,5 @@
 1312262202536	Copy compilation unit
 1312264444545	Copy file
 1312270144097	Rename method 'getUUIDString'
+1312414773110	Rename type 'NewUserActivity'
+1312416269933	Rename local variable 'usersLayout'
