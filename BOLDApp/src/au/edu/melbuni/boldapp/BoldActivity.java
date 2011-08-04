@@ -89,10 +89,5 @@ public class BoldActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-
-//		SharedPreferences settings = getSharedPreferences(PREFERENCES, 0);
-//		SharedPreferences.Editor editor = settings.edit();
-//		editor.putString(PREFERENCES_USER_ID, currentUser.getIdentifierString());
-//		editor.commit();
 	}
 }
