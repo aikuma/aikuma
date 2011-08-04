@@ -39,9 +39,7 @@ public class UserItemAdapter extends BaseAdapter {
 
 	@Override
 	public long getItemId(int position) {
-		// TODO Ugh?
-		//
-		return new Long(users.get(position).hashCode()).longValue();
+		return position;
 	}
 
 	@Override
@@ -61,27 +59,6 @@ public class UserItemAdapter extends BaseAdapter {
 			references.name = (TextView) convertView
 					.findViewById(R.id.userName);
 
-			// convertView.setOnClickListener(new OnClickListener() {
-			// private int pos = position;
-			//
-			// @Override
-			// public void onClick(View v) {
-			// Toast.makeText(context, "Click-" + String.valueOf(pos),
-			// Toast.LENGTH_SHORT).show();
-			// }
-			// });
-			//
-			// holder.buttonLine.setOnClickListener(new OnClickListener() {
-			// private int pos = position;
-			//
-			// @Override
-			// public void onClick(View v) {
-			// Toast.makeText(context, "Delete-" + String.valueOf(pos),
-			// Toast.LENGTH_SHORT).show();
-			//
-			// }
-			// });
-
 			convertView.setTag(references);
 		} else {
 			// Get the ViewReferences back to get fast access to the TextView
@@ -89,8 +66,10 @@ public class UserItemAdapter extends BaseAdapter {
 			//
 			references = (ViewReferences) convertView.getTag();
 		}
-		 
-		// Bind the data efficiently with the holder.
+		
+		
+		
+		// Bind the data efficiently with the references.
 		User user = Bundler.getUsers(activity).get(position);
 		references.picture.setImageDrawable(user.getProfileImage());
 		references.name.setText(user.name);

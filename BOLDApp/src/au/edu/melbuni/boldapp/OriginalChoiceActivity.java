@@ -41,7 +41,8 @@ public class OriginalChoiceActivity extends Activity {
         final Button originalChoiceButton = (Button) findViewById(R.id.fakeOriginalChoiceButton);
         
         originalChoiceButton .setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+            @Override
+			public void onClick(View view) {
             	startActivityForResult(new Intent(view.getContext(), ListenActivity.class), 0);
             }
         });

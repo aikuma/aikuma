@@ -3,11 +3,16 @@ package au.edu.melbuni.boldapp;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.os.Environment;
 
 /*
  * This class helps with saving state.
  */
 public class Bundler {
+	
+	public static String getBasePath() {
+		return Environment.getExternalStorageDirectory().getAbsolutePath() + "/bold/";
+	}
 	
 	public static void saveNewUser(Activity activity, User user) {
 		setCurrentUser(activity, user);

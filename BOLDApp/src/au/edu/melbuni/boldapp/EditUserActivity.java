@@ -26,7 +26,8 @@ public class EditUserActivity extends BoldActivity {
         setUserTextFromCurrentUser();
     }
     
-    public void configureView(Bundle savedInstanceState) {
+    @Override
+	public void configureView(Bundle savedInstanceState) {
         super.configureView(savedInstanceState);
         
      	setContent(R.layout.new_user);
@@ -43,18 +44,21 @@ public class EditUserActivity extends BoldActivity {
         
         final EditText newUserNameEditText = (EditText) findViewById(R.id.newUserNameEditText);
         newUserNameEditText.addTextChangedListener(new TextWatcher(){
-            public void afterTextChanged(Editable s) {
+            @Override
+			public void afterTextChanged(Editable s) {
             	Bundler.getCurrentUser(EditUserActivity.this).name = newUserNameEditText.getText().toString();
             }
-            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
-            public void onTextChanged(CharSequence s, int start, int before, int count){}
+            @Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+            @Override
+			public void onTextChanged(CharSequence s, int start, int before, int count){}
         });
         
 	    final Button okButton = (Button) findViewById(R.id.okButton);
         okButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Bundler.saveNewUser(EditUserActivity.this, currentUser);
+				Bundler.saveNewUser(EditUserActivity.this, Bundler.getCurrentUser(EditUserActivity.this));
 				finish();
 			}
         });

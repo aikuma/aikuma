@@ -8,8 +8,15 @@ public class BoldApplication extends Application {
 
 	private User currentUser;
 	private ArrayList<User> users;
+	
+	public BoldApplication() {
+		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler());
+	}
 
 	public User getCurrentUser() {
+		if (currentUser == null) {
+			currentUser = new User();
+		}
 		return currentUser;
 	}
 

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -16,7 +17,6 @@ public class BoldActivity extends Activity {
 
 	public static final String PREFERENCES = "BOLDPreferences";
 	public static final String PREFERENCES_USER_ID = "currentUserId";
-	protected User currentUser;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +29,7 @@ public class BoldActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		
-		currentUser = Bundler.getCurrentUser(this);
+		User currentUser = Bundler.getCurrentUser(this);
 		
 		// Set current user.
 		//
@@ -51,8 +51,8 @@ public class BoldActivity extends Activity {
 		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		LinearLayout menu = (LinearLayout) findViewById(R.id.menu);
 		LinearLayout.LayoutParams menuParams = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.WRAP_CONTENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT);
+				LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT);
 		menu.setLayoutParams(menuParams);
 		menu.addView(layoutInflater.inflate(layout, menu, false));
 	}
@@ -79,15 +79,5 @@ public class BoldActivity extends Activity {
 						UserSelectionActivity.class), 0);
 			}
 		});
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle bundle) {
-		super.onSaveInstanceState(bundle);
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
 	}
 }

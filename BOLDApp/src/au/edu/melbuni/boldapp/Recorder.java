@@ -10,11 +10,11 @@
  */
 package au.edu.melbuni.boldapp;
 
+import java.io.File;
 import java.io.IOException;
 
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Environment;
 import android.util.Log;
 
 
@@ -28,9 +28,17 @@ public class Recorder
     private boolean playing = false;
     private boolean recording = false;
     
+    public Recorder() {
+    	File directory = new File(getBasePath());
+    	directory.mkdirs();
+	}
+    
+    protected String getBasePath() {
+    	return Bundler.getBasePath() + "recordings/";
+    }
+    
     protected String generateFullFilename(String relativeFilename) {
-    	String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-    	fileName += "/";
+    	String fileName = getBasePath();
     	fileName += relativeFilename;
     	fileName += ".3gp";
     	return fileName;

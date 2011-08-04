@@ -44,12 +44,14 @@ public class ListenActivity extends Activity {
 	    final ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
     	
         playButton.setOnTouchListener(new View.OnTouchListener() {
-        	public boolean onTouch(View v, MotionEvent motionEvent) {
+        	@Override
+			public boolean onTouch(View v, MotionEvent motionEvent) {
             	recorder.startPlaying("audiorecordtest.3gp");
             	return false;
             }
         });
         playButton.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				recorder.stopPlaying();
 			}

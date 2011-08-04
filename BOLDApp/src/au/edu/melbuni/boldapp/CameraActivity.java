@@ -1,11 +1,13 @@
 package au.edu.melbuni.boldapp;
 
 import java.io.IOException;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -20,6 +22,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 	boolean previewRunning = false;
 	User currentUser;
 
+	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		
@@ -42,6 +45,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 	}
 
 	Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
+		@Override
 		public void onPictureTaken(byte[] imageData, Camera c) {
 			if (imageData != null) {
 				currentUser.putProfileImage(imageData);
@@ -51,10 +55,12 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 		}
 	};
 
+	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		camera = Camera.open();
 	}
 
+	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
 		// Note: stopPreview() will crash if preview is not running.
 		//
@@ -62,9 +68,12 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 			camera.stopPreview();
 		}
 
-		Camera.Parameters p = camera.getParameters();
-		p.setPreviewSize(w, h);
-		camera.setParameters(p);
+		Camera.Parameters parameters = camera.getParameters();
+		parameters.setPreviewSize(w, h);
+		List<Size> sizes = parameters.getSupportedPictureSizes();
+		Size size = sizes.get(4); // TODO Make dynamic!
+		parameters.setPictureSize(size.width, size.height);
+		camera.setParameters(parameters);
 		try {
 			camera.setPreviewDisplay(holder);
 		} catch (IOException e) {
@@ -74,6 +83,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 		previewRunning = true;
 	}
 
+	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		camera.stopPreview();
 		previewRunning = false;
@@ -83,6 +93,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 	private SurfaceView surfaceView;
 	private SurfaceHolder surfaceHolder;
 
+	@Override
 	public void onClick(View view) {
 		camera.takePicture(null, pictureCallback, pictureCallback);
 	}

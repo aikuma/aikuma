@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.UUID;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
-import android.os.Environment;
 import android.util.Log;
 
 /*
@@ -49,9 +51,7 @@ public class User {
 	}
 	
 	public String getProfileImagePath() {
-		String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-    	fileName += "/";
-		return fileName + "users/profile_" + this.uuid.toString() + ".png";
+		return Bundler.getBasePath() + "users/profile_" + this.uuid.toString() + ".png";
 	}
 	public Drawable getProfileImage() {
     	return Drawable.createFromPath(getProfileImagePath());
@@ -73,7 +73,22 @@ public class User {
         	
             FileOutputStream out = new FileOutputStream(fileName);
             BufferedOutputStream bufOut = new BufferedOutputStream(out);
-            bufOut.write(imageData);
+            
+			BitmapFactory.Options options = new BitmapFactory.Options();               
+			options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+			Bitmap picture = BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options);
+			// Scale.
+			int width  = 426 * 254 / 160;
+			int height = 256 * 254 / 160;
+			Bitmap scaled = Bitmap.createScaledBitmap(picture, width, height, false);
+			// Crop.
+			scaled = Bitmap.createBitmap(scaled, 135, 0, height, height);
+			// Rotate.
+			Matrix matrix = new Matrix();
+			matrix.setRotate(90, scaled.getWidth()/2, scaled.getHeight()/2);
+			scaled = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(), scaled.getHeight(), matrix, true);
+			scaled.compress(Bitmap.CompressFormat.PNG, 90, bufOut);
+			
             bufOut.close();
             
         } catch (Exception e) {

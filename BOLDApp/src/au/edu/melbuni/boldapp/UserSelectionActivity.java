@@ -9,8 +9,6 @@ import android.widget.ListView;
 
 public class UserSelectionActivity extends BoldActivity {
 
-	static final int TAKE_USER_PICTURE = 0;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -21,6 +19,32 @@ public class UserSelectionActivity extends BoldActivity {
 
 	@Override
 	protected void onResume() {
+		ListView usersListView = (ListView) findViewById(R.id.users);
+		((UserItemAdapter) usersListView.getAdapter()).notifyDataSetChanged();
+
+		super.onResume();
+	}
+
+	@Override
+	public void configureView(Bundle savedInstanceState) {
+		super.configureView(savedInstanceState);
+
+		setContent(R.layout.user_selection);
+	};
+
+	public void installBehavior(Bundle savedInstanceState) {
+		// New User
+		//
+		LinearLayout addNewUserLayout = (LinearLayout) findViewById(R.id.addNewUser);
+		addNewUserLayout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Bundler.setCurrentUser(UserSelectionActivity.this, new User());
+				startActivityForResult(new Intent(view.getContext(),
+						EditUserActivity.class), 0);
+			}
+		});
+		
 		ListView usersListView = (ListView) findViewById(R.id.users);
 		usersListView.setAdapter(new UserItemAdapter(this, Bundler.getUsers(this)));
 
@@ -50,28 +74,6 @@ public class UserSelectionActivity extends BoldActivity {
 						return false;
 					}
 				});
-
-		super.onResume();
-	}
-
-	public void configureView(Bundle savedInstanceState) {
-		super.configureView(savedInstanceState);
-
-		setContent(R.layout.user_selection);
-	};
-
-	public void installBehavior(Bundle savedInstanceState) {
-		// New User
-		//
-		LinearLayout addNewUserLayout = (LinearLayout) findViewById(R.id.addNewUser);
-		addNewUserLayout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Bundler.setCurrentUser(UserSelectionActivity.this, new User());
-				startActivityForResult(new Intent(view.getContext(),
-						EditUserActivity.class), 0);
-			}
-		});
 	}
 
 }
