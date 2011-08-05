@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 
 /*
@@ -17,16 +21,60 @@ public class Timeline {
 	
 	int segmentCounter = 0;
 	
-	String identifier = null;
-	LinearLayout view = null;
+	String identifier;
+	HorizontalListView view;
+	SegmentItemAdapter adapter;
 	
-	List<Segment> segments = new ArrayList<Segment>();
+	ArrayList<Segment> segments = new ArrayList<Segment>();
 	Segment selectedForPlaying = null;
 	Segment selectedForRecording = null;
+
+	User user;
 	
 	public Timeline(Activity activity, String identifier) {
 		this.identifier = identifier;
-		this.view = (LinearLayout) activity.findViewById(R.id.timeline);
+		this.view = (HorizontalListView) activity.findViewById(R.id.timeline);
+		this.adapter = new SegmentItemAdapter(activity, segments);
+		this.view.setAdapter(adapter);
+		
+		this.view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Segment segment = segments.get(position);
+				segment.select();
+				setSelectedForPlaying(segment);
+				setSelectedForRecording(segment);
+				adapter.notifyDataSetChanged();
+			}
+		});
+		this.view.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent,
+							View view, final int position, long id) {
+				new AlertDialog.Builder(getContext())
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setMessage("Delete?")
+				.setPositiveButton("Yes",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								segments.get(position).remove();
+							}
+						}).setNegativeButton("No", null).show();
+
+		return false;
+			}
+		});
+	}
+	
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+	public User getUser() {
+		return user;
 	}
 	
 	// Delegator methods.
@@ -42,7 +90,7 @@ public class Timeline {
 	}
 	public void setSelectedForRecording(Segment segment) {
 		if (selectedForRecording != null) {
-			this.selectedForRecording.unselect();
+			this.selectedForRecording.deselect();
 		}
 		if (selectedForRecording == segment) {
 			this.selectedForRecording = null;
@@ -54,14 +102,14 @@ public class Timeline {
 	public void add(Segment segment) {
 		selectedForRecording = segment;
 		segment.select();
-		segment.addTo(view);
 		segments.add(segment);
+		adapter.notifyDataSetChanged();
 	}
 	public void remove(Segment segment) {
-		segment.removeFrom(view);
 		segments.remove(segment);
-		if (selectedForRecording != null) { selectedForRecording.unselect(); }
+		if (selectedForRecording != null) { selectedForRecording.deselect(); }
 		selectedForRecording = null;
+		adapter.notifyDataSetChanged();
 	}
 	public void startPlaying(Player player) {
 		System.out.println("SaP");
@@ -99,7 +147,7 @@ public class Timeline {
 		//
 		this.selectedForPlaying = this.selectedForRecording;
 		
-		this.selectedForRecording.unselect();
+		this.selectedForRecording.deselect();
 		this.selectedForRecording = null;
 	}
 	

@@ -55,6 +55,7 @@ public class RecordActivity extends BoldActivity {
 			@Override
 			public void onClick(View v) {
 				timeline.stopRecording(recorder);
+				timeline.setUser(Bundler.getCurrentUser(RecordActivity.this));
 				Bundler.addTimeline(RecordActivity.this, timeline);
 			}
 		});

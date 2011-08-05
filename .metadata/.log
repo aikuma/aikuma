@@ -5945,3 +5945,147 @@ Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -keyring /Users/admin
 
 !ENTRY com.android.ide.eclipse.adt 1 0 2011-08-05 18:22:26.805
 !MESSAGE getProjectResources failed for path /BoldAppNewTest/res/values/strings.xml in project BoldAppNewTest
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:30:45.139
+!MESSAGE segment_list_item.xml: Unable to resolve dimension value "50dpi" in attribute "layout_width"
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:45:43.005
+!MESSAGE AndroidManifest: Ignoring unknown 'com.devsmart.android.ui.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:45:45.506
+!MESSAGE AndroidManifest: Ignoring unknown 'com.devsmart.android.ui.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:45:47.865
+!MESSAGE AndroidManifest: Ignoring unknown 'com.devsmart.android.ui.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:45:48.850
+!MESSAGE AndroidManifest: Ignoring unknown 'com.devsmart.android.ui.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:45:50.049
+!MESSAGE AndroidManifest: Ignoring unknown 'com.devsmart.android.ui.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:45:52.313
+!MESSAGE AndroidManifest: Ignoring unknown 'com.devsmart.android.ui.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:45:58.541
+!MESSAGE AndroidManifest: Ignoring unknown 'com.devsmart.android.ui.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:01.707
+!MESSAGE AndroidManifest: Ignoring unknown 'a.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:01.867
+!MESSAGE AndroidManifest: Ignoring unknown 'au.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:02.186
+!MESSAGE AndroidManifest: Ignoring unknown 'au..HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:02.346
+!MESSAGE AndroidManifest: Ignoring unknown 'au.e.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:02.482
+!MESSAGE AndroidManifest: Ignoring unknown 'au.ed.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:02.555
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:02.803
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu..HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:03.498
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.m.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:03.578
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.me.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:03.882
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.mel.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:04.041
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melb.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:04.235
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbu.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:04.434
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbun.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:04.633
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:04.993
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni..HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:05.914
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.b.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:06.025
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.bo.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:06.202
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.bol.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:06.283
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.bold.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:06.506
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.bolda.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:06.609
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldap.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:06.754
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontialListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:09.874
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:10.553
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:29.363
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:29.435
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:30.503
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:31.142
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:32.014
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:35.611
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:38.728
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:38.892
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:42.332
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:42.763
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:46:43.301
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:47:32.316
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:47:32.467
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:47:32.659
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:47:32.932
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListView' XML element
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2011-08-05 20:47:33.314
+!MESSAGE AndroidManifest: Ignoring unknown 'au.edu.melbuni.boldapp.HorizontalListViewandroid:id' XML element

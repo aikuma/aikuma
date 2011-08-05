@@ -1,109 +1,68 @@
 package au.edu.melbuni.boldapp;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.graphics.Color;
-import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
 public class Segment {
 
-	Timeline timeLine = null;
+	Timeline timeline = null;
 	String identifier = null;
 
-	Button view = null;
-	private boolean selected;
+	protected boolean selected = false;
+	protected boolean playing = false;
+	protected boolean recording = false;
 
 	public Segment(final Timeline timeLine, int id) {
-		this.timeLine = timeLine;
+		this.timeline = timeLine;
 		this.identifier = timeLine.identifier + new Integer(id).toString();
-		this.view = new Button(timeLine.getContext());
-
-		this.view.setWidth(100);
-
-		this.view.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				timeLine.setSelectedForRecording(Segment.this);
-				timeLine.setSelectedForPlaying(Segment.this);
-			}
-		});
-		this.view.setOnLongClickListener(new View.OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View v) {
-				new AlertDialog.Builder(Segment.this.view.getContext())
-						.setIcon(android.R.drawable.ic_dialog_alert)
-						.setMessage("Delete?")
-						.setPositiveButton("Yes",
-								new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										Segment.this.timeLine.remove(Segment.this);
-									}
-								}).setNegativeButton("No", null).show();
-
-				return false;
-			}
-		});
-	}
-
-	public void addTo(LinearLayout layout) {
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-				layout.getLayoutParams());
-		params.setMargins(0, 0, 5, 0);
-		layout.addView(view, params);
-	}
-
-	public void removeFrom(LinearLayout layout) {
-		layout.removeView(view);
 	}
 
 	public void startPlaying(Player player) {
+		playing = true;
 		player.startPlaying(identifier);
-
-		view.setBackgroundColor(Color.GREEN);
 	}
 
 	public void stopPlaying(Player player) {
+		playing = false;
 		player.stopPlaying();
-		resetColor();
 	}
 
 	public void startRecording(Recorder recorder) {
-		// Animation scale = new ScaleAnimation(1.0f, 1.1f, 1.0f, 1.0f);
-		// scale.setDuration(500);
-		// scale.setRepeatCount(Animation.INFINITE);
-		// view.startAnimation(scale);
-
+		recording = true;
 		recorder.startRecording(identifier);
-
-		view.setBackgroundColor(Color.RED);
 	}
 
 	public void stopRecording(Recorder recorder) {
-		// view.clearAnimation();
-
+		recording = false;
 		recorder.stopRecording();
-		resetColor();
 	}
 
 	public void select() {
 		this.selected = true;
-		resetColor();
 	}
 
-	public void unselect() {
+	public void deselect() {
 		this.selected = false;
-		resetColor();
 	}
-
-	public void resetColor() {
+	
+	public void remove() {
+		timeline.remove(this);
+	}
+	
+	public void colorize(Button button) {
+		if (recording) {
+			button.setBackgroundColor(Color.RED);
+			return;
+		}
+		if (playing) {
+			button.setBackgroundColor(Color.GREEN);
+			return;
+		}
 		if (selected) {
-			view.setBackgroundColor(Color.LTGRAY);
+			button.setBackgroundColor(Color.LTGRAY);
 		} else {
-			view.setBackgroundColor(Color.GRAY);
+			button.setBackgroundColor(Color.GRAY);
 		}
 	}
 
