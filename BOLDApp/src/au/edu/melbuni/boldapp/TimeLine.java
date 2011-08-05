@@ -107,7 +107,9 @@ public class Timeline {
 	//
 	protected Segment getSelectedForPlaying() {
 		if (selectedForPlaying == null) {
-			return segments.get(segments.size()-1);
+			if (segments.size() != 0) {
+				return segments.get(segments.size()-1);
+			}
 		}
 		
 		return selectedForPlaying;
