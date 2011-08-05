@@ -63,7 +63,7 @@ public class TimeLine {
 		if (selectedForRecording != null) { selectedForRecording.unselect(); }
 		selectedForRecording = null;
 	}
-	public void startPlaying(Recorder recorder) {
+	public void startPlaying(Player player) {
 		System.out.println("SaP");
 		
 		Segment segment = getSelectedForPlaying();
@@ -72,9 +72,9 @@ public class TimeLine {
 			return;
 		}
 		
-		segment.startPlaying(recorder);
+		segment.startPlaying(player);
 	}
-	public void stopPlaying(Recorder recorder) {
+	public void stopPlaying(Player player) {
 		System.out.println("SoP");
 		
 		Segment segment = getSelectedForPlaying();
@@ -83,7 +83,7 @@ public class TimeLine {
 			return;
 		}
 		
-		segment.stopPlaying(recorder);
+		segment.stopPlaying(player);
 	}
 	public void startRecording(Recorder recorder) {
 		System.out.println("SaR");

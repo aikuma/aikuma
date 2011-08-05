@@ -1,46 +1,28 @@
 package au.edu.melbuni.boldapp;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
-public class OriginalChoiceActivity extends Activity {
+public class OriginalChoiceActivity extends BoldActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-     	configureView();
-     	installBehavior();
+     	configureView(savedInstanceState);
+     	installBehavior(savedInstanceState);
     }
     
-    public void configureView() {
-        setContentView(R.layout.base);
-        
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        LinearLayout menu = (LinearLayout) findViewById(R.id.menu);
-        
-        // Menu.
-        //
-     	menu.addView(layoutInflater.inflate(R.layout.navigation, menu, false));
-     	menu.addView(layoutInflater.inflate(R.layout.user, menu, false));
-     	menu.addView(layoutInflater.inflate(R.layout.help, menu, false));
-     	
-     	// Content.
-     	//
-     	FrameLayout content = (FrameLayout) findViewById(R.id.content);
-     	content.addView(layoutInflater.inflate(R.layout.original_choice, content, false));
+    public void configureView(Bundle savedInstanceState) {
+        super.configureView(savedInstanceState);
+
+		setContent(R.layout.original_choice);
     };
     
-    public void installBehavior() {
+    public void installBehavior(Bundle savedInstanceState) {
         final Button originalChoiceButton = (Button) findViewById(R.id.fakeOriginalChoiceButton);
-        
-        originalChoiceButton .setOnClickListener(new View.OnClickListener() {
+        originalChoiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
 			public void onClick(View view) {
             	startActivityForResult(new Intent(view.getContext(), ListenActivity.class), 0);

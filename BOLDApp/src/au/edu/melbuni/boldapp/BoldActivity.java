@@ -34,16 +34,18 @@ public class BoldActivity extends Activity {
 		// Set current user.
 		//
 		ImageButton userImageButton = (ImageButton) findViewById(R.id.userImageButton);
-		if (currentUser != null && currentUser.hasProfileImage()) {
-			userImageButton.setImageDrawable(currentUser.getProfileImage());
-		} else {
-			userImageButton.setImageResource(R.drawable.unknown_user);
-		}
-		TextView userTextView = (TextView) findViewById(R.id.userText);
-		if (currentUser != null && currentUser.name != null) {
-			userTextView.setText(currentUser.name);
-		} else {
-			userTextView.setText("?");
+		if (userImageButton != null) {
+			if (currentUser != null && currentUser.hasProfileImage()) {
+				userImageButton.setImageDrawable(currentUser.getProfileImage());
+			} else {
+				userImageButton.setImageResource(R.drawable.unknown_user);
+			}
+			TextView userTextView = (TextView) findViewById(R.id.userText);
+			if (currentUser != null && currentUser.name != null) {
+				userTextView.setText(currentUser.name);
+			} else {
+				userTextView.setText("?");
+			}
 		}
 	}
 

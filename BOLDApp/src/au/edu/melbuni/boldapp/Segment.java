@@ -60,14 +60,14 @@ public class Segment {
 		layout.removeView(view);
 	}
 
-	public void startPlaying(Recorder recorder) {
-		recorder.startPlaying(identifier);
+	public void startPlaying(Player player) {
+		player.startPlaying(identifier);
 
 		view.setBackgroundColor(Color.GREEN);
 	}
 
-	public void stopPlaying(Recorder recorder) {
-		recorder.stopPlaying();
+	public void stopPlaying(Player player) {
+		player.stopPlaying();
 		resetColor();
 	}
 

@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 public class RecordActivity extends BoldActivity {
 	
 	Recorder recorder = new Recorder();
+	Player   player   = new Player();
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,14 +34,14 @@ public class RecordActivity extends BoldActivity {
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
-            	timeLine.startPlaying(recorder);
+            	timeLine.startPlaying(player);
             	return false;
             }
         });
         playButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				timeLine.stopPlaying(recorder);
+				timeLine.stopPlaying(player);
 			}
 		});
         recordButton.setOnTouchListener(new View.OnTouchListener() {
