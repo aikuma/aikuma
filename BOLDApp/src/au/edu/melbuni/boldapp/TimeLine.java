@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
  * Note: Could also be called Segments.
  * 
  */
-public class TimeLine {
+public class Timeline {
 	
 	int segmentCounter = 0;
 	
@@ -24,7 +24,7 @@ public class TimeLine {
 	Segment selectedForPlaying = null;
 	Segment selectedForRecording = null;
 	
-	public TimeLine(Activity activity, String identifier) {
+	public Timeline(Activity activity, String identifier) {
 		this.identifier = identifier;
 		this.view = (LinearLayout) activity.findViewById(R.id.timeline);
 	}

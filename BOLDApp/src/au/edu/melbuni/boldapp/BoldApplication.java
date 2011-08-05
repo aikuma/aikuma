@@ -7,7 +7,9 @@ import android.app.Application;
 public class BoldApplication extends Application {
 
 	private User currentUser;
+	private Timeline currentTimeline;
 	private ArrayList<User> users;
+	private ArrayList<Timeline> timelines;
 	
 	public BoldApplication() {
 		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler());
@@ -35,6 +37,32 @@ public class BoldApplication extends Application {
 		boolean contains = getUsers().contains(user);
 		if (!contains) {
 			getUsers().add(user);
+		}
+		return contains;
+	}
+	
+	public Timeline getCurrentTimeline() {
+//		if (currentTimeline == null) {
+//			currentTimeline = new Timeline();
+//		}
+		return currentTimeline;
+	}
+
+	public void setCurrentTimeline(Timeline currentTimeline) {
+		this.currentTimeline = currentTimeline;
+	}
+	
+	public ArrayList<Timeline> getTimelines() {
+		if (timelines == null) {
+			timelines = new ArrayList<Timeline>();
+		}
+		return timelines;
+	}
+
+	public boolean addTimeline(Timeline timeline) {
+		boolean contains = getTimelines().contains(timeline);
+		if (!contains) {
+			getTimelines().add(timeline);
 		}
 		return contains;
 	}

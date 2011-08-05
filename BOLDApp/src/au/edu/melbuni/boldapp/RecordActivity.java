@@ -26,7 +26,7 @@ public class RecordActivity extends BoldActivity {
     };
     
     public void installBehavior(Bundle savedInstanceState) {
-     	final TimeLine timeLine = new TimeLine(this, "recording_");
+     	final Timeline timeline = new Timeline(this, "recording_");
 	    
 	    final ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
 	    final ImageButton recordButton = (ImageButton) findViewById(R.id.recordButton);
@@ -34,27 +34,28 @@ public class RecordActivity extends BoldActivity {
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
-            	timeLine.startPlaying(player);
+            	timeline.startPlaying(player);
             	return false;
             }
         });
         playButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				timeLine.stopPlaying(player);
+				timeline.stopPlaying(player);
 			}
 		});
         recordButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
-        		timeLine.startRecording(recorder);
+        		timeline.startRecording(recorder);
             	return false;
             }
         });
         recordButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				timeLine.stopRecording(recorder);
+				timeline.stopRecording(recorder);
+				Bundler.addTimeline(RecordActivity.this, timeline);
 			}
 		});
     };

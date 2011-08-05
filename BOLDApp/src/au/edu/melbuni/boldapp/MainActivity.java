@@ -53,7 +53,7 @@ public class MainActivity extends BoldActivity {
 			@Override
 			public void onClick(View view) {
 				startActivityForResult(new Intent(view.getContext(),
-						OriginalChoiceActivity.class), 0);
+						OriginalSelectionActivity.class), 0);
 			}
 		});
 	};

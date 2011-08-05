@@ -9,13 +9,13 @@ import android.widget.LinearLayout;
 
 public class Segment {
 
-	TimeLine timeLine = null;
+	Timeline timeLine = null;
 	String identifier = null;
 
 	Button view = null;
 	private boolean selected;
 
-	public Segment(final TimeLine timeLine, int id) {
+	public Segment(final Timeline timeLine, int id) {
 		this.timeLine = timeLine;
 		this.identifier = timeLine.identifier + new Integer(id).toString();
 		this.view = new Button(timeLine.getContext());

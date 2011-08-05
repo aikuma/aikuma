@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 public class ListenActivity extends BoldActivity {
 
 	private Player player = new Player();
+	private Timeline timeline;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -15,6 +16,8 @@ public class ListenActivity extends BoldActivity {
         
      	configureView(savedInstanceState);
 	    installBehavior(savedInstanceState);
+	    
+	    timeline = Bundler.getCurrentTimeline(this);
     }
     
     public void configureView(Bundle savedInstanceState) {
@@ -28,14 +31,14 @@ public class ListenActivity extends BoldActivity {
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
-            	player.startPlaying("audiorecordtest.3gp");
+            	timeline.startPlaying(player);
             	return false;
             }
         });
         playButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				player.stopPlaying();
+				timeline.stopPlaying(player);
 			}
 		});
     };
