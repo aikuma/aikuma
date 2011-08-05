@@ -11,7 +11,9 @@ import android.os.Environment;
 public class Bundler {
 
 	public static String getBasePath() {
-		return Environment.getExternalStorageDirectory().getAbsolutePath()
+		return Environment.
+				getExternalStorageDirectory().
+				getAbsolutePath()
 				+ "/bold/";
 	}
 

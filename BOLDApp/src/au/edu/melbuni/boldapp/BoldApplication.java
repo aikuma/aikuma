@@ -12,6 +12,9 @@ public class BoldApplication extends Application {
 	private ArrayList<Timeline> timelines;
 	
 	public BoldApplication() {
+		this.users     = new ArrayList<User>();
+		this.timelines = new ArrayList<Timeline>();
+		
 		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler());
 	}
 
@@ -27,24 +30,23 @@ public class BoldApplication extends Application {
 	}
 
 	public ArrayList<User> getUsers() {
-		if (users == null) {
-			users = new ArrayList<User>();
-		}
 		return users;
 	}
 
 	public boolean addUser(User user) {
-		boolean contains = getUsers().contains(user);
-		if (!contains) {
+		boolean notContained = !getUsers().contains(user);
+		if (notContained) {
 			getUsers().add(user);
 		}
-		return contains;
+		return notContained;
+	}
+	
+	public void clearUsers() {
+		System.out.println(users);
+		users.clear();
 	}
 	
 	public Timeline getCurrentTimeline() {
-//		if (currentTimeline == null) {
-//			currentTimeline = new Timeline();
-//		}
 		return currentTimeline;
 	}
 
@@ -53,18 +55,15 @@ public class BoldApplication extends Application {
 	}
 	
 	public ArrayList<Timeline> getTimelines() {
-		if (timelines == null) {
-			timelines = new ArrayList<Timeline>();
-		}
 		return timelines;
 	}
 
 	public boolean addTimeline(Timeline timeline) {
-		boolean contains = getTimelines().contains(timeline);
-		if (!contains) {
+		boolean notContained = !getTimelines().contains(timeline);
+		if (notContained) {
 			getTimelines().add(timeline);
 		}
-		return contains;
+		return notContained;
 	}
 
 }
