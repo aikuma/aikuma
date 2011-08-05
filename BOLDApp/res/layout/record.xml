@@ -14,7 +14,7 @@
         </HorizontalScrollView>
     </LinearLayout>
     <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/linearLayout3" android:layout_weight="1">
+        <ImageButton android:id="@+id/recordButton" android:src="@drawable/button_record" android:layout_width="match_parent" android:scaleType="center" android:layout_height="match_parent" android:layout_weight="1"></ImageButton>
         <ImageButton android:layout_weight="1" android:layout_height="match_parent" android:layout_width="match_parent" android:layout_gravity="right" android:id="@+id/playButton" android:src="@drawable/button_play"></ImageButton>
-        <ImageButton android:layout_width="match_parent" android:layout_height="match_parent" android:layout_weight="1" android:id="@+id/recordButton" android:src="@drawable/button_record" android:scaleType="center"></ImageButton>
     </LinearLayout>
 </LinearLayout>
