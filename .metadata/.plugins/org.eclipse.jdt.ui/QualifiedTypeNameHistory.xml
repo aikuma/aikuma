@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="android.graphics.Color"/>
 <fullyQualifiedTypeName name="android.util.AttributeSet"/>
 <fullyQualifiedTypeName name="android.view.animation.AlphaAnimation"/>
 <fullyQualifiedTypeName name="android.view.animation.AnimationSet"/>
@@ -26,7 +25,6 @@
 <fullyQualifiedTypeName name="java.util.Iterator"/>
 <fullyQualifiedTypeName name="android.os.Bundle"/>
 <fullyQualifiedTypeName name="au.edu.melbuni.boldapp.NewUserActivity"/>
-<fullyQualifiedTypeName name="android.widget.Button"/>
 <fullyQualifiedTypeName name="android.view.ViewGroup.LayoutParams"/>
 <fullyQualifiedTypeName name="android.view.ViewGroup.MarginLayoutParams"/>
 <fullyQualifiedTypeName name="au.edu.melbuni.boldapp.R.attr"/>
@@ -41,7 +39,6 @@
 <fullyQualifiedTypeName name="au.edu.melbuni.boldapp.R.layout"/>
 <fullyQualifiedTypeName name="android.widget.ArrayAdapter"/>
 <fullyQualifiedTypeName name="android.widget.LinearLayout"/>
-<fullyQualifiedTypeName name="au.edu.melbuni.boldapp.R.id"/>
 <fullyQualifiedTypeName name="android.view.View.OnClickListener"/>
 <fullyQualifiedTypeName name="android.widget.AdapterView.OnItemClickListener"/>
 <fullyQualifiedTypeName name="android.widget.AdapterView"/>
@@ -49,7 +46,6 @@
 <fullyQualifiedTypeName name="au.edu.melbuni.boldapp.UserSelectionActivity"/>
 <fullyQualifiedTypeName name="android.widget.AdapterView.OnItemLongClickListener"/>
 <fullyQualifiedTypeName name="android.widget.ImageView"/>
-<fullyQualifiedTypeName name="android.widget.TextView"/>
 <fullyQualifiedTypeName name="android.view.LayoutInflater"/>
 <fullyQualifiedTypeName name="android.content.Context"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
@@ -60,4 +56,8 @@
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="android.hardware.Camera.Size"/>
 <fullyQualifiedTypeName name="com.xtremelabs.robolectric.RobolectricTestRunner"/>
+<fullyQualifiedTypeName name="android.location.GpsStatus"/>
+<fullyQualifiedTypeName name="au.edu.melbuni.boldapp.R.id"/>
+<fullyQualifiedTypeName name="android.widget.Button"/>
+<fullyQualifiedTypeName name="android.widget.TextView"/>
 </qualifiedTypeNameHistroy>

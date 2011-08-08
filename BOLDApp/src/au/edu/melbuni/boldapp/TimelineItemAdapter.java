@@ -14,7 +14,7 @@ public class TimelineItemAdapter extends BaseAdapter {
 
 	static class ViewReferences {
 		ImageView userPicture;
-		TextView location;
+		TextView text;
 	}
 
 	protected LayoutInflater inflater;
@@ -55,7 +55,7 @@ public class TimelineItemAdapter extends BaseAdapter {
 			//
 			references = new ViewReferences();
 			references.userPicture = (ImageView) convertView.findViewById(R.id.userPicture);
-			references.location = (TextView) convertView.findViewById(R.id.location);
+			references.text = (TextView) convertView.findViewById(R.id.text);
 
 			convertView.setTag(references);
 		} else {
@@ -72,7 +72,7 @@ public class TimelineItemAdapter extends BaseAdapter {
 		if (user != null) {
 			references.userPicture.setImageDrawable(user.getProfileImage());
 		}
-		references.location.setText(timeline.identifier);
+		references.text.setText(timeline.getItemText());
 		 
 		return convertView;
 	}

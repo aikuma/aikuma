@@ -1,31 +1,25 @@
 package au.edu.melbuni.boldapp;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
 public class SegmentItemAdapter extends BaseAdapter {
 
 	static class ViewReferences {
-		Button button;
+		TextView segment;
 	}
 
 	protected LayoutInflater inflater;
-	protected Activity activity;
-	protected ArrayList<Segment> segments;
+	protected Segments segments;
 
-	public SegmentItemAdapter(Activity activity, ArrayList<Segment> segments) {
+	public SegmentItemAdapter(Activity activity, Segments segments) {
 		this.inflater = LayoutInflater.from(activity.getApplicationContext());
-		this.activity = activity;
 		this.segments = segments;
+		notifyDataSetChanged();
 	}
 
 	@Override
@@ -51,23 +45,24 @@ public class SegmentItemAdapter extends BaseAdapter {
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.segment_list_item, null);
 
-			// Creates a ViewReferences and store references to the two children
-			// views we want to bind data to.
+			// Creates a ViewReferences and store references to the child
+			// view we want to bind data to.
 			//
 			references = new ViewReferences();
-			references.button = (Button) convertView.findViewById(R.id.button);
+			references.segment = (TextView) convertView
+					.findViewById(R.id.segment);
 
-			convertView.setTag(references);
+			Segment segment = segments.get(position);
+			
+			System.out.println("Adding Observer");
+			
+			segment.addObserver(new Segment.ViewHandler(references.segment));
 		} else {
 			// Get the ViewReferences back to get fast access to the TextView
 			// and the ImageView.
 			//
 			references = (ViewReferences) convertView.getTag();
 		}
-
-		// Bind the data efficiently with the references.
-		Segment segment = segments.get(position);
-		segment.colorize(references.button);
 
 		return convertView;
 	}

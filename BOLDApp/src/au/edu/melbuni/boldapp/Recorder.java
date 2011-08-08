@@ -25,23 +25,21 @@ public class Recorder extends Sounder {
 	public Recorder() {
 		File directory = new File(getBasePath());
 		directory.mkdirs();
+		
+		prepareNextRecording();
+	}
+	
+	protected void prepareNextRecording() {
+		recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+		recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+		recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 	}
 
 	public void startRecording(String fileName) {
-		if (recording) {
-			return;
-		}
+		if (recording) { return; }
 		recording = true;
 
-		recorder.reset();
-
-		recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-		recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP); // TODO
-																		// Format?
-		recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); // TODO
-																		// Uncompressed?
 		recorder.setOutputFile(generateFullFilename(fileName));
-
 		System.out.println(generateFullFilename(fileName));
 
 		try {
@@ -49,22 +47,24 @@ public class Recorder extends Sounder {
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "#prepare() failed");
 		}
-
+		
+		// TODO Reset on problem?
+		//
 		recorder.start();
 	}
 
 	public void stopRecording() {
-		if (!recording) {
-			return;
-		}
+		if (!recording) { return; }
 		recorder.stop();
 		recording = false;
+		
+		prepareNextRecording();
 	}
 
-	public void pause() {
-		if (recorder != null) {
-			recorder.release();
-			recorder = null;
-		}
-	}
+//	public void pause() {
+//		if (recorder != null) {
+//			recorder.release();
+//			recorder = null;
+//		}
+//	}
 }

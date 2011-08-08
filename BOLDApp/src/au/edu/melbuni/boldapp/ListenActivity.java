@@ -18,6 +18,7 @@ public class ListenActivity extends BoldActivity {
 	    installBehavior(savedInstanceState);
 	    
 	    timeline = Bundler.getCurrentTimeline(this);
+	    timeline.installOn(this);
     }
     
     public void configureView(Bundle savedInstanceState) {

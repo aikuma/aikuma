@@ -34,11 +34,10 @@ public class Player extends Sounder {
 		playing = false;
 	}
 
-	public void pause() {
-		if (player != null) {
-			player.release();
-			player = null;
-		}
-	}
-
+//	public void pause() {
+//		if (player != null) {
+//			player.release();
+//			player = null;
+//		}
+//	}
 }

@@ -66,9 +66,7 @@ public class UserItemAdapter extends BaseAdapter {
 			//
 			references = (ViewReferences) convertView.getTag();
 		}
-		
-		
-		
+
 		// Bind the data efficiently with the references.
 		User user = Bundler.getUsers(activity).get(position);
 		references.picture.setImageDrawable(user.getProfileImage());

@@ -1,10 +1,12 @@
 package au.edu.melbuni.boldapp;
 
-import android.graphics.Color;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import java.util.Observable;
+import java.util.Observer;
 
-public class Segment {
+import android.graphics.Color;
+import android.view.View;
+
+public class Segment extends Observable {
 
 	Timeline timeline = null;
 	String identifier = null;
@@ -13,56 +15,85 @@ public class Segment {
 	protected boolean playing = false;
 	protected boolean recording = false;
 
-	public Segment(final Timeline timeLine, int id) {
-		this.timeline = timeLine;
-		this.identifier = timeLine.identifier + new Integer(id).toString();
+	public Segment(Segments segments, int id) {
+		this.identifier = segments.timeline.identifier + new Integer(id).toString();
+	}
+	
+	public void setPlaying(boolean playing) {
+		this.playing = playing;
+		setChanged();
+		notifyObservers();
+	}
+	public void setRecording(boolean recording) {
+		this.recording = recording;
+		setChanged();
+		notifyObservers();
+	}
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+		setChanged();
+		notifyObservers();
 	}
 
 	public void startPlaying(Player player) {
-		playing = true;
 		player.startPlaying(identifier);
+		setPlaying(true);
 	}
 
 	public void stopPlaying(Player player) {
-		playing = false;
 		player.stopPlaying();
+		setPlaying(false);
 	}
 
 	public void startRecording(Recorder recorder) {
-		recording = true;
 		recorder.startRecording(identifier);
+		setRecording(true);
 	}
 
 	public void stopRecording(Recorder recorder) {
-		recording = false;
 		recorder.stopRecording();
+		setRecording(false);
 	}
 
 	public void select() {
-		this.selected = true;
+		setSelected(true);
 	}
-
+	
 	public void deselect() {
-		this.selected = false;
+		setSelected(false);
 	}
 	
-	public void remove() {
-		timeline.remove(this);
-	}
-	
-	public void colorize(Button button) {
-		if (recording) {
-			button.setBackgroundColor(Color.RED);
-			return;
+	public static class ViewHandler implements Observer {
+		
+		private View view;
+
+		public ViewHandler(View view) {
+			this.view = view;
 		}
-		if (playing) {
-			button.setBackgroundColor(Color.GREEN);
-			return;
-		}
-		if (selected) {
-			button.setBackgroundColor(Color.LTGRAY);
-		} else {
-			button.setBackgroundColor(Color.GRAY);
+
+		@Override
+		public void update(Observable observable, Object data) {
+			if (view == null) {
+				return;
+			}
+			
+			Segment segment = (Segment) observable;
+			
+			System.out.println(">>>" + segment.recording + segment.playing + segment.selected);
+			
+			if (segment.recording) {
+				view.setBackgroundColor(Color.RED);
+				return;
+			}
+			if (segment.playing) {
+				view.setBackgroundColor(Color.GREEN);
+				return;
+			}
+			if (segment.selected) {
+				view.setBackgroundColor(Color.LTGRAY);
+			} else {
+				view.setBackgroundColor(Color.GRAY);
+			}
 		}
 	}
 

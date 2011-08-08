@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<workbench progressCount="20" version="2.0">
+<workbench progressCount="25" version="2.0">
 <workbenchAdvisor/>
 <window height="1024" maximized="true" width="1681" x="15" y="22">
 <fastViewData fastViewLocation="1024"/>
@@ -15,7 +15,7 @@
 <coolItem id="org.eclipse.debug.ui.launchActionSet" itemType="typeToolBarContribution" x="100" y="22"/>
 <coolItem id="org.eclipse.jdt.ui.JavaElementCreationActionSet" itemType="typeToolBarContribution" x="62" y="22"/>
 <coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="62" y="22"/>
-<coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="98" y="22"/>
+<coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="54" y="22"/>
 <coolItem id="org.eclipse.wst.xml.ui.perspective.NewFileToolBar" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.wst.xml.ui.design.DesignToolBar" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
@@ -23,7 +23,7 @@
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.browser.editor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typePlaceholder" x="-1" y="-1"/>
-<coolItem id="com.android.ide.eclipse.editors.layout.LayoutEditor" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="com.android.ide.eclipse.editors.layout.LayoutEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.jdt.ui.PropertiesFileEditor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="org.eclipse.jdt.ui.CompilationUnitEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
@@ -38,6 +38,15 @@
 <part id="0"/>
 <part id="1"/>
 <part id="2"/>
+<part id="3"/>
+<part id="4"/>
+<part id="5"/>
+<part id="6"/>
+<part id="7"/>
+<part id="8"/>
+<part id="9"/>
+<part id="10"/>
+<part id="11"/>
 </presentation>
 </folder>
 </info>
@@ -46,38 +55,69 @@
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/src/au/edu/melbuni/boldapp/CameraActivity.java"/>
 <editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2129" selectionTopPixel="462"/>
 </editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="User.java" partName="User.java" path="/Users/admin/temp/eclipse_workspace/BOLDApp/src/au/edu/melbuni/boldapp/User.java" title="User.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/User.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/src/au/edu/melbuni/boldapp/User.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1871" selectionTopPixel="687"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Segment.java" partName="Segment.java" path="/Users/admin/temp/eclipse_workspace/BOLDApp/src/au/edu/melbuni/boldapp/Segment.java" title="Segment.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Segment.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/src/au/edu/melbuni/boldapp/Segment.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1726" selectionTopPixel="903"/>
 </editor>
-<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BoldApplicationTest.java" partName="BoldApplicationTest.java" path="/Users/admin/temp/eclipse_workspace/BOLDAppTest/src/au/edu/melbuni/boldapp/test/BoldApplicationTest.java" title="BoldApplicationTest.java" tooltip="BOLDAppTest/src/au/edu/melbuni/boldapp/test/BoldApplicationTest.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDAppTest/src/au/edu/melbuni/boldapp/test/BoldApplicationTest.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="386" selectionTopPixel="0"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="SegmentItemAdapter.java" partName="SegmentItemAdapter.java" path="/Users/admin/temp/eclipse_workspace/BOLDApp/src/au/edu/melbuni/boldapp/SegmentItemAdapter.java" title="SegmentItemAdapter.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/SegmentItemAdapter.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/src/au/edu/melbuni/boldapp/SegmentItemAdapter.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="593" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="RecordActivity.java" partName="RecordActivity.java" path="/Users/admin/temp/eclipse_workspace/BOLDApp/src/au/edu/melbuni/boldapp/RecordActivity.java" title="RecordActivity.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/RecordActivity.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/src/au/edu/melbuni/boldapp/RecordActivity.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="15" selectionOffset="810" selectionTopPixel="318"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Recorder.java" partName="Recorder.java" path="/Users/admin/temp/eclipse_workspace/BOLDApp/src/au/edu/melbuni/boldapp/Recorder.java" title="Recorder.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Recorder.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/src/au/edu/melbuni/boldapp/Recorder.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1771" selectionTopPixel="288"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Player.java" partName="Player.java" path="/Users/admin/temp/eclipse_workspace/BOLDApp/src/au/edu/melbuni/boldapp/Player.java" title="Player.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Player.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/src/au/edu/melbuni/boldapp/Player.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="778" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Timeline.java" partName="Timeline.java" path="/Users/admin/temp/eclipse_workspace/BOLDApp/src/au/edu/melbuni/boldapp/Timeline.java" title="Timeline.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Timeline.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/src/au/edu/melbuni/boldapp/Timeline.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="512" selectionTopPixel="221"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Segments.java" partName="Segments.java" path="/Users/admin/temp/eclipse_workspace/BOLDApp/src/au/edu/melbuni/boldapp/Segments.java" title="Segments.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Segments.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/src/au/edu/melbuni/boldapp/Segments.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2132" selectionTopPixel="733"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ListenActivity.java" partName="ListenActivity.java" path="/Users/admin/temp/eclipse_workspace/BOLDApp/src/au/edu/melbuni/boldapp/ListenActivity.java" title="ListenActivity.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/ListenActivity.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/src/au/edu/melbuni/boldapp/ListenActivity.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="15" selectionOffset="549" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BoldActivity.java" partName="BoldActivity.java" path="/Users/admin/temp/eclipse_workspace/BOLDApp/src/au/edu/melbuni/boldapp/BoldActivity.java" title="BoldActivity.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/BoldActivity.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/src/au/edu/melbuni/boldapp/BoldActivity.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
+</editor>
+<editor activePart="true" focus="true" id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="listen.xml" partName="listen.xml" path="/Users/admin/temp/eclipse_workspace/BOLDApp/res/layout/listen.xml" title="listen.xml" tooltip="BOLDApp/res/layout/listen.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/res/layout/listen.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="record.xml" partName="record.xml" path="/Users/admin/temp/eclipse_workspace/BOLDApp/res/layout/record.xml" title="record.xml" tooltip="BOLDApp/res/layout/record.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BOLDApp/res/layout/record.xml"/>
 </editor>
 </editors>
 <views>
-<view id="org.eclipse.jdt.junit.ResultView" partName="JUnit">
-<viewState failuresOnly="false" layout="1" orientation="2" ratio="500" scroll="false" time="true"/>
-</view>
 <view id="com.android.ide.eclipse.ddms.views.LogCatView" partName="LogCat">
 <viewState/>
 </view>
-<view id="org.eclipse.ui.views.ProgressView" partName="Progress">
-<viewState/>
+<view id="org.eclipse.jdt.junit.ResultView" partName="JUnit">
+<viewState failuresOnly="false" layout="1" orientation="2" ratio="500" scroll="false" time="true"/>
 </view>
 <view id="org.eclipse.ui.views.PropertySheet" partName="Properties">
 <viewState/>
 </view>
 <view id="org.eclipse.search.ui.views.SearchView" partName="Search">
 <viewState isPinned="false">
-<view IMemento.internal.id="" org.eclipse.search.lastActivation="0"/>
 <view IMemento.internal.id="org.eclipse.jdt.ui.JavaSearchResultPage" org.eclipse.jdt.search.resultpage.grouping="3" org.eclipse.jdt.search.resultpage.limit="1000" org.eclipse.jdt.search.resultpage.limit_enabled="TRUE" org.eclipse.jdt.search.resultpage.sorting="1" org.eclipse.search.lastActivation="1" org.eclipse.search.resultpage.layout="2"/>
+<view IMemento.internal.id="" org.eclipse.search.lastActivation="0"/>
 </viewState>
 </view>
 <view id="org.eclipse.ui.views.ProblemView" partName="Problems">
 <viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.severityAndDescriptionField" categoryGroup="org.eclipse.ui.ide.severity" markerContentGenerator="org.eclipse.ui.ide.problemsGenerator" partName="Problems">
 <expanded>
-<category IMemento.internal.id="Warnings (2 items)"/>
+<category IMemento.internal.id="Errors (1 item)"/>
 </expanded>
 <columnWidths org.eclipse.ui.ide.locationField="90" org.eclipse.ui.ide.markerType="90" org.eclipse.ui.ide.pathField="120" org.eclipse.ui.ide.resourceField="90" org.eclipse.ui.ide.severityAndDescriptionField="300"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.severityAndDescriptionField"/>
@@ -127,7 +167,7 @@
 </view>
 <view id="org.eclipse.jdt.ui.JavadocView" partName="Javadoc"/>
 </views>
-<perspectives activePart="org.eclipse.jdt.junit.ResultView" activePerspective="org.eclipse.jdt.ui.JavaPerspective">
+<perspectives activePart="org.eclipse.ui.console.ConsoleView" activePerspective="org.eclipse.jdt.ui.JavaPerspective">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="org.eclipse.jdt.internal.ui.JavaPerspectiveFactory" id="org.eclipse.jdt.ui.JavaPerspective" label="Java"/>
 <alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
@@ -187,7 +227,6 @@
 <view id="org.eclipse.ui.views.PropertySheet"/>
 <view id="org.eclipse.search.ui.views.SearchView"/>
 <view id="com.android.ide.eclipse.ddms.views.LogCatView"/>
-<view id="org.eclipse.ui.views.ProgressView"/>
 <view id="org.eclipse.jdt.ui.PackageExplorer"/>
 <view id="org.eclipse.ui.views.ContentOutline"/>
 <view id="org.eclipse.jdt.junit.ResultView"/>
@@ -215,7 +254,7 @@
 </info>
 <info part="org.eclipse.ui.editorss" ratio="0.16716596" ratioLeft="279" ratioRight="1390" relationship="2" relative="left"/>
 <info folder="true" part="bottom" ratio="0.7008547" ratioLeft="656" ratioRight="280" relationship="4" relative="org.eclipse.ui.editorss">
-<folder activePageID="org.eclipse.ui.views.ProgressView" appearance="2" expanded="2">
+<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.ProblemView" label="Problems"/>
 <page content="org.eclipse.jdt.ui.JavadocView" label="Javadoc"/>
 <page content="org.eclipse.jdt.ui.SourceView" label="Declaration"/>
@@ -223,7 +262,7 @@
 <page content="org.eclipse.ui.views.PropertySheet" label="Properties"/>
 <page content="org.eclipse.search.ui.views.SearchView" label="Search"/>
 <page content="com.android.ide.eclipse.ddms.views.LogCatView" label="LogCat"/>
-<page content="org.eclipse.ui.views.ProgressView" label="Progress"/>
+<page content="org.eclipse.ui.views.ProgressView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
 <part id="0"/>
@@ -233,12 +272,11 @@
 <part id="4"/>
 <part id="5"/>
 <part id="6"/>
-<part id="7"/>
 </presentation>
 </folder>
 </info>
-<info folder="true" part="right" ratio="0.55515504" ratioLeft="770" ratioRight="617" relationship="2" relative="org.eclipse.ui.editorss">
-<folder activePageID="org.eclipse.jdt.junit.ResultView" appearance="2" expanded="2">
+<info folder="true" part="right" ratio="0.72386444" ratioLeft="1004" ratioRight="383" relationship="2" relative="org.eclipse.ui.editorss">
+<folder activePageID="org.eclipse.ui.views.ContentOutline" appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.ContentOutline" label="Outline"/>
 <page content="org.eclipse.jdt.junit.ResultView" label="JUnit"/>
 <page content="org.eclipse.ui.texteditor.TemplatesView" label="LabelNotFound"/>
@@ -256,155 +294,74 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/UserSelectionActivity.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" path="/BOLDApp/res/layout/new_user_list_item.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" path="/BOLDApp/res/layout/user_selection.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/UserItemAdapter.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/CameraActivity.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/User.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/EditUserActivity.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/Bundler.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/BoldApplication.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/Timeline.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/Segments.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/ListenActivity.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/BoldActivity.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDApp/src/au/edu/melbuni/boldapp/UserItemAdapter.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BOLDAppTest/src/au/edu/melbuni/boldapp/test/BoldApplicationTest.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" path="/BOLDApp/res/layout/listen.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" path="/BOLDApp/res/layout/main.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" path="/BOLDApp/res/layout/record.xml"/>
 </editors>
-<item historyLabel="user_selection.xml" index="2"/>
-<item historyLabel="new_user_list_item.xml" index="1"/>
-<item historyLabel="user_selection.xml" index="2"/>
-<item historyLabel="new_user_list_item.xml" index="1"/>
-<item historyLabel="UserItemAdapter.java" index="3">
-<position info="not_deleted" x="91" y="0"/>
+<item historyLabel="Timeline.java" index="0">
+<position info="not_deleted" x="512" y="0"/>
 </item>
-<item historyLabel="user_selection.xml" index="2"/>
-<item historyLabel="UserSelectionActivity.java" index="0">
-<position info="not_deleted" x="1542" y="0"/>
+<item historyLabel="Segments.java" index="1">
+<position info="not_deleted" x="2132" y="0"/>
 </item>
-<item historyLabel="UserSelectionActivity.java" index="0">
-<position info="not_deleted" x="1783" y="5"/>
+<item historyLabel="ListenActivity.java" index="2">
+<position info="not_deleted" x="549" y="15"/>
 </item>
-<item historyLabel="UserSelectionActivity.java" index="0">
-<position info="not_deleted" x="90" y="0"/>
-</item>
-<item historyLabel="UserItemAdapter.java" index="3">
-<position info="not_deleted" x="91" y="0"/>
-</item>
-<item historyLabel="user_selection.xml" index="2"/>
-<item historyLabel="CameraActivity.java" index="4">
+<item historyLabel="BoldActivity.java" index="3">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="CameraActivity.java" index="4">
-<position info="not_deleted" x="2442" y="0"/>
+<item historyLabel="ListenActivity.java" index="2">
+<position info="not_deleted" x="549" y="15"/>
 </item>
-<item historyLabel="user_selection.xml" index="2"/>
-<item historyLabel="User.java" index="5">
-<position info="not_deleted" x="0" y="0"/>
-</item>
-<item historyLabel="User.java" index="5">
-<position info="not_deleted" x="2115" y="0"/>
-</item>
-<item historyLabel="EditUserActivity.java" index="6">
-<position info="not_deleted" x="2931" y="0"/>
-</item>
-<item historyLabel="Bundler.java" index="7">
-<position info="not_deleted" x="0" y="0"/>
-</item>
-<item historyLabel="BoldApplication.java" index="8">
-<position info="not_deleted" x="0" y="0"/>
-</item>
-<item historyLabel="BoldApplication.java" index="8">
-<position info="not_deleted" x="372" y="0"/>
-</item>
-<item historyLabel="BoldApplication.java" index="8">
-<position info="not_deleted" x="404" y="0"/>
-</item>
-<item historyLabel="User.java" index="5">
-<position info="not_deleted" x="1950" y="0"/>
-</item>
-<item historyLabel="BoldApplication.java" index="8">
-<position info="not_deleted" x="404" y="0"/>
-</item>
-<item historyLabel="Bundler.java" index="7">
-<position info="not_deleted" x="0" y="0"/>
-</item>
-<item historyLabel="EditUserActivity.java" index="6">
-<position info="not_deleted" x="2931" y="0"/>
-</item>
-<item historyLabel="BoldActivity.java" index="9">
-<position info="not_deleted" x="1853" y="0"/>
-</item>
-<item historyLabel="UserItemAdapter.java" index="10">
-<position info="not_deleted" x="91" y="0"/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position/>
-</item>
-<item historyLabel="User.java" index="5">
-<position info="not_deleted" x="1901" y="3"/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position/>
-</item>
-<item historyLabel="User.java" index="5">
-<position info="not_deleted" x="1901" y="15"/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position/>
-</item>
-<item historyLabel="User.java" index="5">
-<position info="not_deleted" x="1901" y="15"/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position info="not_deleted" x="1997" y="0"/>
-</item>
-<item historyLabel="User.java" index="5">
-<position info="not_deleted" x="1871" y="0"/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position info="not_deleted" x="1997" y="0"/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position info="not_deleted" x="2142" y="0"/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position info="not_deleted" x="2022" y="4"/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position info="not_deleted" x="2106" y="0"/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position info="not_deleted" x="2087" y="4"/>
-</item>
-<item historyLabel="CameraActivity.java" index="4">
-<position info="not_deleted" x="2027" y="4"/>
-</item>
-<item historyLabel="BoldApplicationTest.java" index="11">
-<position info="not_deleted" x="0" y="0"/>
-</item>
-<item historyLabel="BoldApplicationTest.java" index="11">
-<position info="not_deleted" x="389" y="0"/>
-</item>
-<item historyLabel="BoldApplicationTest.java" index="11">
-<position info="not_deleted" x="362" y="27"/>
-</item>
-<item active="true" historyLabel="BoldApplicationTest.java" index="11">
-<position info="not_deleted" x="354" y="7"/>
-</item>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="main.xml" index="5"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="main.xml" index="5"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item historyLabel="listen.xml" index="4"/>
+<item historyLabel="record.xml" index="6"/>
+<item active="true" historyLabel="listen.xml" index="4"/>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
 </page>
@@ -422,50 +379,50 @@
 </trimLayout>
 </window>
 <mruList>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BoldApplicationTest.java" tooltip="BOLDAppTest/src/au/edu/melbuni/boldapp/test/BoldApplicationTest.java">
-<persistable path="/BOLDAppTest/src/au/edu/melbuni/boldapp/test/BoldApplicationTest.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="record.xml" tooltip="BOLDApp/res/layout/record.xml">
+<persistable path="/BOLDApp/res/layout/record.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="User.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/User.java">
-<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/User.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="main.xml" tooltip="BOLDApp/res/layout/main.xml">
+<persistable path="/BOLDApp/res/layout/main.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="CameraActivity.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/CameraActivity.java">
-<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/CameraActivity.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BoldApplication.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/BoldApplication.java">
-<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/BoldApplication.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Bundler.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Bundler.java">
-<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/Bundler.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EditUserActivity.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/EditUserActivity.java">
-<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/EditUserActivity.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="user_selection.xml" tooltip="BOLDApp/res/layout/user_selection.xml">
-<persistable path="/BOLDApp/res/layout/user_selection.xml"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="new_user_list_item.xml" tooltip="BOLDApp/res/layout/new_user_list_item.xml">
-<persistable path="/BOLDApp/res/layout/new_user_list_item.xml"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="UserItemAdapter.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/UserItemAdapter.java">
-<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/UserItemAdapter.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="user_list_item.xml" tooltip="BOLDApp/res/layout/user_list_item.xml">
-<persistable path="/BOLDApp/res/layout/user_list_item.xml"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.manifest.ManifestEditor" name="AndroidManifest.xml" tooltip="BOLDApp/AndroidManifest.xml">
-<persistable path="/BOLDApp/AndroidManifest.xml"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="user.xml" tooltip="BOLDApp/res/layout/user.xml">
-<persistable path="/BOLDApp/res/layout/user.xml"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="UserSelectionActivity.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/UserSelectionActivity.java">
-<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/UserSelectionActivity.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="listen.xml" tooltip="BOLDApp/res/layout/listen.xml">
+<persistable path="/BOLDApp/res/layout/listen.xml"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BoldActivity.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/BoldActivity.java">
 <persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/BoldActivity.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="navigation.xml" tooltip="BOLDApp/res/layout/navigation.xml">
-<persistable path="/BOLDApp/res/layout/navigation.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ListenActivity.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/ListenActivity.java">
+<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/ListenActivity.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="segment_list_item.xml" tooltip="BOLDApp/res/layout/segment_list_item.xml">
+<persistable path="/BOLDApp/res/layout/segment_list_item.xml"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Bundler.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Bundler.java">
+<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/Bundler.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Sounder.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Sounder.java">
+<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/Sounder.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Segments.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Segments.java">
+<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/Segments.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Timeline.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Timeline.java">
+<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/Timeline.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Player.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Player.java">
+<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/Player.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Recorder.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/Recorder.java">
+<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/Recorder.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="RecordActivity.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/RecordActivity.java">
+<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/RecordActivity.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="UserItemAdapter.java" tooltip="BOLDApp/src/au/edu/melbuni/boldapp/UserItemAdapter.java">
+<persistable path="/BOLDApp/src/au/edu/melbuni/boldapp/UserItemAdapter.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.layout.LayoutEditor" name="time_line_list_item.xml" tooltip="BOLDApp/res/layout/time_line_list_item.xml">
+<persistable path="/BOLDApp/res/layout/time_line_list_item.xml"/>
 </file>
 </mruList>
 </workbench>

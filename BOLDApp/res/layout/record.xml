@@ -9,7 +9,7 @@
     </LinearLayout>
     <au.edu.melbuni.boldapp.HorizontalListView android:id="@+id/timeline"
   											   android:layout_width="fill_parent"
-  											   android:layout_weight="0" android:layout_height="40dip">
+  											   android:layout_weight="0" android:layout_height="35dip" android:layout_margin="4dip">
   	</au.edu.melbuni.boldapp.HorizontalListView>
 <!--     <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout2" android:layout_height="wrap_content" android:layout_weight="0.25">
         <HorizontalScrollView android:id="@+id/horizontalScrollView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="5dip">
@@ -17,7 +17,7 @@
             </LinearLayout>
         </HorizontalScrollView>
     </LinearLayout> -->
-    <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/linearLayout3" android:layout_weight="1">
+    <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout3" android:layout_weight="1" android:layout_height="match_parent">
         <ImageButton android:id="@+id/recordButton" android:src="@drawable/button_record" android:layout_width="match_parent" android:scaleType="center" android:layout_height="match_parent" android:layout_weight="1"></ImageButton>
         <ImageButton android:layout_weight="1" android:layout_height="match_parent" android:layout_width="match_parent" android:layout_gravity="right" android:id="@+id/playButton" android:src="@drawable/button_play"></ImageButton>
     </LinearLayout>

@@ -4,5 +4,5 @@
     android:layout_height="fill_parent"
     android:orientation="horizontal" android:baselineAligned="false" android:id="@+id/addNewUser">
     <ImageView android:src="@drawable/button_play" android:layout_gravity="center" android:layout_width="60dip" android:layout_height="60dip" android:layout_weight="0" android:id="@+id/userPicture" android:layout_margin="10dip"></ImageView>
-    <TextView android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:text="" android:layout_width="0dp" android:layout_weight="1" android:layout_gravity="center_vertical" android:id="@+id/location"></TextView>
+    <TextView android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:text="" android:layout_width="0dp" android:layout_weight="1" android:layout_gravity="center_vertical" android:id="@+id/text"></TextView>
 </LinearLayout>
