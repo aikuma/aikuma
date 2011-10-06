@@ -1,19 +1,19 @@
 package au.edu.melbuni.boldapp;
 
-import java.util.ArrayList;
-
 import android.app.Application;
 
 public class BoldApplication extends Application {
 
 	private User currentUser;
 	private Timeline currentTimeline;
-	private ArrayList<User> users;
-	private ArrayList<Timeline> timelines;
+	private Users users;
+	private Timelines timelines;
 	
 	public BoldApplication() {
-		this.users     = new ArrayList<User>();
-		this.timelines = new ArrayList<Timeline>();
+		// TODO Perhaps load lazily.
+		//
+		this.users     = Users.load();
+		this.timelines = Timelines.load();
 		
 		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler());
 	}
@@ -29,7 +29,7 @@ public class BoldApplication extends Application {
 		this.currentUser = currentUser;
 	}
 
-	public ArrayList<User> getUsers() {
+	public Users getUsers() {
 		return users;
 	}
 
@@ -54,7 +54,7 @@ public class BoldApplication extends Application {
 		this.currentTimeline = currentTimeline;
 	}
 	
-	public ArrayList<Timeline> getTimelines() {
+	public Timelines getTimelines() {
 		return timelines;
 	}
 

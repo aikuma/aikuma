@@ -1,7 +1,11 @@
 package au.edu.melbuni.boldapp;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+
+import org.json.simple.JSONValue;
 
 import android.graphics.Color;
 import android.view.View;
@@ -9,14 +13,27 @@ import android.view.View;
 public class Segment extends Observable {
 
 	Timeline timeline = null;
-	String identifier = null;
+	public String identifier = null;
 
 	protected boolean selected = false;
 	protected boolean playing = false;
 	protected boolean recording = false;
 
-	public Segment(Segments segments, int id) {
-		this.identifier = segments.timeline.identifier + new Integer(id).toString();
+	public Segment(String identifier) {
+		this.identifier = identifier;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static Segment fromJSON(String data) {
+		Map segment = (Map) JSONValue.parse(data);
+		String identifier = segment.get("identifier") == null ? "" : (String) segment.get("identifier");
+		return new Segment(identifier);
+	}
+	@SuppressWarnings("rawtypes")
+	public String toJSON() {
+		Map<String, Comparable> segment = new LinkedHashMap<String, Comparable>();
+		segment.put("identifier", this.identifier);
+		return JSONValue.toJSONString(segment);
 	}
 	
 	public void setPlaying(boolean playing) {
@@ -24,15 +41,24 @@ public class Segment extends Observable {
 		setChanged();
 		notifyObservers();
 	}
+	public boolean isPlaying() {
+		return this.playing;
+	}
 	public void setRecording(boolean recording) {
 		this.recording = recording;
 		setChanged();
 		notifyObservers();
 	}
+	public boolean isRecording() {
+		return this.recording;
+	}
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 		setChanged();
 		notifyObservers();
+	}
+	public boolean isSelected() {
+		return this.selected;
 	}
 
 	public void startPlaying(Player player) {

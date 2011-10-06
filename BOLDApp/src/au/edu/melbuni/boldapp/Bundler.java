@@ -1,7 +1,5 @@
 package au.edu.melbuni.boldapp;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.os.Environment;
 
@@ -35,7 +33,7 @@ public class Bundler {
 		application.addUser(user);
 	}
 
-	public static ArrayList<User> getUsers(Activity activity) {
+	public static Users getUsers(Activity activity) {
 		BoldApplication application = getApplication(activity);
 		return application.getUsers();
 	}
@@ -53,7 +51,7 @@ public class Bundler {
 		application.addTimeline(timeline);
 	}
 	
-	public static ArrayList<Timeline> getTimelines(Activity activity) {
+	public static Timelines getTimelines(Activity activity) {
 		BoldApplication application = getApplication(activity);
 		return application.getTimelines();
 	}

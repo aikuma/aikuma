@@ -3,7 +3,11 @@ package au.edu.melbuni.boldapp;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
+
+import org.json.simple.JSONValue;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -41,6 +45,21 @@ public class User {
 		this.uuid = uuid;
 	}
 	
+	@SuppressWarnings("rawtypes")
+	public static User fromJSON(String data) {
+		Map user = (Map) JSONValue.parse(data);
+		String name = user.get("name") == null ? "" : (String) user.get("name");
+		UUID uuid = user.get("uuid") == null ? UUID.randomUUID() : UUID.fromString((String) user.get("uuid"));
+		return new User(name, uuid);
+	}
+	@SuppressWarnings("rawtypes")
+	public String toJSON() {
+		Map<String, Comparable> user = new LinkedHashMap<String, Comparable>();
+		user.put("name", this.name);
+		user.put("uuid", this.uuid.toString());
+		return JSONValue.toJSONString(user);
+	}
+	
 	
 	public String getIdentifierString() {
 		return this.uuid.toString();
@@ -50,8 +69,11 @@ public class User {
 		return "users/" + this.uuid.toString() + "/name";
 	}
 	
+	public String getRelativeProfilePathStub() {
+		return "users/profile_";
+	}
 	public String getProfileImagePath() {
-		return Bundler.getBasePath() + "users/profile_" + this.uuid.toString() + ".png";
+		return Bundler.getBasePath() + getRelativeProfilePathStub() + this.uuid.toString() + ".png";
 	}
 	public Drawable getProfileImage() {
     	return Drawable.createFromPath(getProfileImagePath());

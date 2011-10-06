@@ -1,7 +1,5 @@
 package au.edu.melbuni.boldapp;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +17,9 @@ public class UserItemAdapter extends BaseAdapter {
 
 	protected LayoutInflater inflater;
 	protected Activity activity;
-	protected ArrayList<User> users;
+	protected Users users;
 
-	public UserItemAdapter(Activity activity, ArrayList<User> users) {
+	public UserItemAdapter(Activity activity, Users users) {
 		this.inflater = LayoutInflater.from(activity.getApplicationContext());
 		this.activity = activity;
 		this.users = users;

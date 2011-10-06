@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.junit.Before;
@@ -14,7 +13,9 @@ import org.junit.runner.RunWith;
 import au.edu.melbuni.boldapp.BoldActivity;
 import au.edu.melbuni.boldapp.BoldApplication;
 import au.edu.melbuni.boldapp.Timeline;
+import au.edu.melbuni.boldapp.Timelines;
 import au.edu.melbuni.boldapp.User;
+import au.edu.melbuni.boldapp.Users;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
@@ -67,14 +68,14 @@ public class BoldApplicationTest {
 	@RunWith(RobolectricTestRunner.class)
 	public static class WithUsers extends BoldApplicationTest {
 		
-		ArrayList<User> users;
+		Users users;
 		User specificUser;
 		
 		@Before
 		public void setUp() throws Exception {
 			super.setUp();
 			
-			users = new ArrayList<User>();
+			users = new Users();
 			
 			specificUser = new User();
 			
@@ -89,7 +90,7 @@ public class BoldApplicationTest {
 		
 		@Test
 		public void getUsers() {
-			assertEquals(users, application.getUsers());
+			assertEquals(users.users, application.getUsers().users);
 		}
 		
 		@Test
@@ -104,7 +105,7 @@ public class BoldApplicationTest {
 		
 		@Test
 		public void getUsers() {
-			assertEquals(new ArrayList<User>(), application.getUsers());
+			assertEquals(new Users().users, application.getUsers().users);
 		}
 		
 		@Test
@@ -124,7 +125,7 @@ public class BoldApplicationTest {
 		
 		@Test
 		public void getTimelines() {
-			assertEquals(new ArrayList<Timeline>(), application.getTimelines());
+			assertEquals(0, application.getTimelines().size());
 		}
 		
 		@Test
@@ -138,7 +139,7 @@ public class BoldApplicationTest {
 	public static class WithCurrentTimelineAndTimelines extends BoldApplicationTest {
 		
 		Timeline current;
-		ArrayList<Timeline> timelines;
+		Timelines timelines;
 		
 		@Before
 		public void setUp() throws Exception {
@@ -147,7 +148,7 @@ public class BoldApplicationTest {
 			current = new Timeline(new BoldActivity(), "current");
 			application.setCurrentTimeline(timeline);
 			
-			timelines = new ArrayList<Timeline>();
+			timelines = new Timelines();
 			timelines.add(current);
 			timelines.add(timeline);
 			
@@ -164,7 +165,7 @@ public class BoldApplicationTest {
 		
 		@Test
 		public void getTimelines() {
-			assertEquals(timelines, application.getTimelines());
+			assertEquals(timelines.size(), application.getTimelines().size());
 		}
 		
 		@Test

@@ -1,6 +1,6 @@
 package au.edu.melbuni.boldapp.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.UUID;
 
@@ -18,6 +18,24 @@ public class UserTest {
 	@Before
 	public void setUp() throws Exception {
 		this.user = new User("Some Name", UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479"));
+	}
+	
+	@Test
+	public void fromJSON() {
+		User loaded = User.fromJSON("{\"name\":\"Some Name\",\"uuid\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}");
+		assertEquals("Some Name", loaded.name);
+		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", loaded.getIdentifierString());
+	}
+	@Test
+	public void fromJSONWithoutData() {
+		User loaded = User.fromJSON("{}");
+		assertEquals("", loaded.name);
+		assertNotNull(loaded.uuid);
+	}
+	
+	@Test
+	public void toJSON() {
+		assertEquals("{\"name\":\"Some Name\",\"uuid\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}", user.toJSON());
 	}
 	
 	@Test

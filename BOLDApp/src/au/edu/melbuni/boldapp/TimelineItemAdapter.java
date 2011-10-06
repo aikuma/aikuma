@@ -1,7 +1,5 @@
 package au.edu.melbuni.boldapp;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +17,9 @@ public class TimelineItemAdapter extends BaseAdapter {
 
 	protected LayoutInflater inflater;
 	protected Activity activity;
-	protected ArrayList<Timeline> timelines;
+	protected Timelines timelines;
 
-	public TimelineItemAdapter(Activity activity, ArrayList<Timeline> timelines) {
+	public TimelineItemAdapter(Activity activity, Timelines timelines) {
 		this.inflater = LayoutInflater.from(activity.getApplicationContext());
 		this.activity = activity;
 		this.timelines = timelines;

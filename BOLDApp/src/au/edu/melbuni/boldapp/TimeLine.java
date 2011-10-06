@@ -20,11 +20,11 @@ public class Timeline {
 	Segments segments;
 
 	public Timeline(Activity activity, String identifier) {
-		this.segments = new Segments(this);
 		this.date     = new Date();
 		this.location = "Some Location";
-		
 		this.identifier = identifier;
+		
+		this.segments = Persister.loadSegments(this);
 	}
 	
 	public void installOn(Activity activity) {

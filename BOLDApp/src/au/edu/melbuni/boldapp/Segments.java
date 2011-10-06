@@ -173,7 +173,7 @@ public class Segments {
 	//
 	protected Segment getSelectedForRecording() {
 		if (selectedForRecording == null) {
-			add(new Segment(this, segmentCounter++));
+			add(new Segment(timeline.identifier + new Integer(segmentCounter++).toString()));
 		}
 		
 		selectedForRecording.select();

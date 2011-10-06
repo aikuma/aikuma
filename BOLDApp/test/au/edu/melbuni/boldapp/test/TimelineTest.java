@@ -26,6 +26,7 @@ public class TimelineTest {
 		assertNull(timeline.getUser());
 	}
 	
+	@Test
 	public void getUser() {
 		User user = new User();
 		
