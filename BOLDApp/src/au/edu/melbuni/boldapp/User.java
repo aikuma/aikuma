@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import au.edu.melbuni.boldapp.persisters.BasePersister;
 
 /*
  * A User has
@@ -60,6 +61,17 @@ public class User {
 		return JSONValue.toJSONString(user);
 	}
 	
+	// Load a user based on his UUID.
+	//
+	public static void load(String uuid) {
+		BasePersister.loadUser(uuid);
+	}
+	
+	// Save the user's metadata.
+	//
+	public void save(BasePersister persister) {
+		persister.save(this);
+	}
 	
 	public String getIdentifierString() {
 		return this.uuid.toString();

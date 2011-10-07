@@ -3,6 +3,8 @@ package au.edu.melbuni.boldapp;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import au.edu.melbuni.boldapp.persisters.BasePersister;
+
 /*
  * Class to hold the users.
  * 
@@ -23,7 +25,16 @@ public class Users {
 	// For each file, create a User.
 	//
 	public static Users load() {
-		return Persister.loadUsers();
+		return BasePersister.loadUsers();
+	}
+	
+	// Save the users metadata and each user.
+	//
+	public void save(BasePersister persister) {
+		// Save each user.
+		for (User user : users) {
+			user.save(persister);
+		}
 	}
 
 	// Delegation.

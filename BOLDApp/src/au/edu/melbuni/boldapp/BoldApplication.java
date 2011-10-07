@@ -1,6 +1,7 @@
 package au.edu.melbuni.boldapp;
 
 import android.app.Application;
+import au.edu.melbuni.boldapp.persisters.BasePersister;
 
 public class BoldApplication extends Application {
 
@@ -10,12 +11,29 @@ public class BoldApplication extends Application {
 	private Timelines timelines;
 	
 	public BoldApplication() {
+		load();
+		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler());
+	}
+	
+	// Loads all the metadata of the application.
+	// 
+	public void load() {
 		// TODO Perhaps load lazily.
 		//
 		this.users     = Users.load();
 		this.timelines = Timelines.load();
+	}
+	
+	// Saves all the metadata of the
+	// whole application.
+	//
+	public void save() {
+		BasePersister persister = new BasePersister();
 		
-		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler());
+		// TODO Define the save / load order somewhere else.
+		//
+		this.users.save(persister);
+		this.timelines.save(persister);
 	}
 
 	public User getCurrentUser() {
