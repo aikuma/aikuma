@@ -6,18 +6,19 @@ import au.edu.melbuni.boldapp.persisters.JSONPersister;
 
 public class BoldApplication extends Application {
 
-	private User currentUser;
-	private Timeline currentTimeline;
 	private Users users;
 	private Timelines timelines;
-	
+
+	private User currentUser;
+	private Timeline currentTimeline;
+
 	public BoldApplication() {
 		load();
 		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler());
 	}
-	
+
 	// Loads all the metadata of the application.
-	// 
+	//
 	public void load() {
 		Persister persister = new JSONPersister();
 		
@@ -25,18 +26,22 @@ public class BoldApplication extends Application {
 		//
 		this.users     = persister.loadUsers();
 		this.timelines = persister.loadTimelines();
+		this.currentUser = persister.loadCurrentUser(users);
+		// this.currentTimeline = persister.loadCurrentTimeline();
 	}
-	
+
 	// Saves all the metadata of the
 	// whole application.
 	//
 	public void save() {
 		Persister persister = new JSONPersister();
-		
+
 		// TODO Define the save / load order somewhere else.
-		// 
+		//
 		persister.save(users);
 		persister.save(timelines);
+		persister.saveCurrentUser(currentUser);
+//		persister.saveCurrentTimeline(currentTimeline);
 	}
 
 	public User getCurrentUser() {
@@ -61,12 +66,12 @@ public class BoldApplication extends Application {
 		}
 		return notContained;
 	}
-	
+
 	public void clearUsers() {
 		System.out.println(users);
 		users.clear();
 	}
-	
+
 	public Timeline getCurrentTimeline() {
 		return currentTimeline;
 	}
@@ -74,7 +79,7 @@ public class BoldApplication extends Application {
 	public void setCurrentTimeline(Timeline currentTimeline) {
 		this.currentTimeline = currentTimeline;
 	}
-	
+
 	public Timelines getTimelines() {
 		return timelines;
 	}

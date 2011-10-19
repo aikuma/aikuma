@@ -39,6 +39,49 @@ public abstract class Persister {
 	public abstract Timeline loadTimeline(String identifier);
 
 	public abstract String fileExtension();
+	
+	// Current
+	//
+	
+	// Returns null if no current user has been saved.
+	//
+	public User loadCurrentUser(Users users) {
+		String identifier = read(pathForCurrentUser());
+		for (User user : users) {
+			if (user.getIdentifierString() == identifier) {
+				return user;
+			}
+		}
+		return null;
+	}
+	
+	public void saveCurrentUser(User user) {
+		write(pathForCurrentUser(), user.getIdentifierString());
+	}
+	
+	public String pathForCurrentUser() {
+		return "current/user.txt";
+	}
+	
+//	// Returns null if no current timeline has been saved.
+//	//
+//	public Timeline loadCurrentTimeline(Timelines timelines) {
+//		String identifier = read(pathForCurrentUser());
+//		for (Timeline timeline : timelines) {
+//			if (timeline.getIdentifierString() == identifier) {
+//				return timeline;
+//			}
+//		}
+//		return null;
+//	}
+//	
+//	public void saveCurrentTimeline(Timeline timeline) {
+//		write(pathForCurrentUser(), timeline.getIdentifierString());
+//	}
+//	
+//	public String pathForCurrentTimeline() {
+//		return "current/timeline.txt";
+//	}
 
 	// User(s).
 	//
