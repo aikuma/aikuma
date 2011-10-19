@@ -112,4 +112,8 @@ public class Timeline {
 	public CharSequence getItemText() {
 		return date.toLocaleString() + " " + location;
 	}
+
+	public String getIdentifierString() {
+		return identifier;
+	}
 }

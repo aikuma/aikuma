@@ -19,10 +19,12 @@ public class BoldApplication extends Application {
 	// Loads all the metadata of the application.
 	// 
 	public void load() {
-		// TODO Perhaps load lazily.
+		Persister persister = new JSONPersister();
+		
+		// TODO Define the save / load order somewhere else.
 		//
-		this.users     = Users.load();
-		this.timelines = Timelines.load();
+		this.users     = persister.loadUsers();
+		this.timelines = persister.loadTimelines();
 	}
 	
 	// Saves all the metadata of the
@@ -33,8 +35,8 @@ public class BoldApplication extends Application {
 		
 		// TODO Define the save / load order somewhere else.
 		// 
-		this.users.save(persister);
-		this.timelines.save(persister);
+		persister.save(users);
+		persister.save(timelines);
 	}
 
 	public User getCurrentUser() {

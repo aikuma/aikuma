@@ -2,6 +2,10 @@ package au.edu.melbuni.boldapp;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.json.simple.JSONValue;
 
 import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
@@ -12,7 +16,7 @@ import au.edu.melbuni.boldapp.persisters.Persister;
  * Also manages saving and loading.
  * 
  */
-public class Users {
+public class Users { // TODO implements Collection<User>?
 
 	public ArrayList<User> users;
 
@@ -23,19 +27,25 @@ public class Users {
 	// Persistence.
 	//
 	
-	// For each file, create a User.
+	// Save each user.
 	//
-	public static Users load() {
-		return JSONPersister.loadUsers();
-	}
-	
-	// Save the users metadata and each user.
-	//
-	public void save(Persister persister) {
-		// Save each user.
+	public void saveEach(Persister persister) {
 		for (User user : users) {
 			user.save(persister);
 		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static Users fromJSON(String data) {
+//		Map user = (Map) JSONValue.parse(data);
+//		String name = user.get("name") == null ? "" : (String) user.get("name");
+//		UUID uuid = user.get("uuid") == null ? UUID.randomUUID() : UUID.fromString((String) user.get("uuid"));
+		return new Users();
+	}
+	@SuppressWarnings("rawtypes")
+	public String toJSON() {
+		Map<String, Comparable> users = new LinkedHashMap<String, Comparable>();
+		return JSONValue.toJSONString(users);
 	}
 
 	// Delegation.

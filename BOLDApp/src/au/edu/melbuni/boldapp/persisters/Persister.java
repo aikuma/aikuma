@@ -21,18 +21,34 @@ public abstract class Persister {
 
 	// Public API.
 	//
+	
+	public abstract void save(Users users);
+	
+	public abstract Users loadUsers();
 
 	public abstract void save(User user);
 
 	public abstract User loadUser(String identifier);
+	
+	public abstract void save(Timelines timelines);
+	
+	public abstract Timelines loadTimelines();
+	
+	public abstract void save(Timeline timeline);
+	
+	public abstract Timeline loadTimeline(String identifier);
 
 	public abstract String fileExtension();
 
 	// User(s).
 	//
-
-	public static Users loadUsers() {
-		return new Users(); // TODO Actually load.
+	
+	public void write(Users users, String data) {
+		write(pathFor(users), data);
+	}
+	
+	public String readUsers() {
+		return read(pathForUsers());
 	}
 
 	public void write(User user, String data) {
@@ -52,31 +68,56 @@ public abstract class Persister {
 
 	// Timeline(s).
 	//
-
-	public static Timelines loadTimelines() {
-		return new Timelines(); // TODO Load
+	
+	public void write(Timelines timelines, String data) {
+		write(pathFor(timelines), data);
 	}
 
-	// Save method for the metadata.
-	//
-	public void save(Timeline timeline) {
-		String data = timeline.toJSON();
-		// TODO Should the timeline know where to save itself?
-		// No.
-		write("timelines/" + timeline.identifier + fileExtension(), data);
+	public String readTimelines() {
+		return read(pathForTimelines());
+	}
+
+	public void write(Timeline timeline, String data) {
+		write(pathFor(timeline), data);
+	}
+
+	public String readTimeline(String identifier) {
+		return read(pathForUser(identifier));
 	}
 
 	// Helper methods.
 	//
+	
+	public String pathFor(Users users) {
+		return pathForUsers();
+	}
+	
+	public String pathForUsers() {
+		return "users/list" + fileExtension();
+	}
 
-	//
-	//
 	public String pathFor(User user) {
 		return pathForUser(user.getIdentifierString());
 	}
 
 	public String pathForUser(String identifier) {
 		return "users/" + identifier + fileExtension();
+	}
+	
+	public String pathFor(Timelines timelines) {
+		return pathForTimelines();
+	}
+	
+	public String pathForTimelines() {
+		return "timelines/list" + fileExtension();
+	}
+	
+	public String pathFor(Timeline timeline) {
+		return pathForTimeline(timeline.getIdentifierString());
+	}
+
+	public String pathForTimeline(String identifier) {
+		return "timelines/" + identifier + fileExtension();
 	}
 
 	// Write the data to the file.
