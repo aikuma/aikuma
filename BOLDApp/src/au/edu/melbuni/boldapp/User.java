@@ -14,7 +14,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import au.edu.melbuni.boldapp.persisters.BasePersister;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
+import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
  * A User has
@@ -64,12 +65,12 @@ public class User {
 	// Load a user based on his UUID.
 	//
 	public static void load(String uuid) {
-		BasePersister.loadUser(uuid);
+		new JSONPersister().loadUser(uuid);
 	}
 	
 	// Save the user's metadata.
 	//
-	public void save(BasePersister persister) {
+	public void save(Persister persister) {
 		persister.save(this);
 	}
 	

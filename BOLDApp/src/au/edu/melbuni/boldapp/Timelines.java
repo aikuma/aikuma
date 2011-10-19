@@ -3,7 +3,8 @@ package au.edu.melbuni.boldapp;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import au.edu.melbuni.boldapp.persisters.BasePersister;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
+import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class Timelines {
 
@@ -19,10 +20,10 @@ public class Timelines {
 	// For each file, create a Timeline.
 	//
 	public static Timelines load() {
-		return BasePersister.loadTimelines();
+		return JSONPersister.loadTimelines();
 	}
 
-	public void save(BasePersister persister) {
+	public void save(Persister persister) {
 		// Save each user.
 		for (Timeline timeline : timelines) {
 			timeline.save(persister);

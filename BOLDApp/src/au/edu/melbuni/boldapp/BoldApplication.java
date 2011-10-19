@@ -1,7 +1,8 @@
 package au.edu.melbuni.boldapp;
 
 import android.app.Application;
-import au.edu.melbuni.boldapp.persisters.BasePersister;
+import au.edu.melbuni.boldapp.persisters.Persister;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
 
 public class BoldApplication extends Application {
 
@@ -28,10 +29,10 @@ public class BoldApplication extends Application {
 	// whole application.
 	//
 	public void save() {
-		BasePersister persister = new BasePersister();
+		Persister persister = new JSONPersister();
 		
 		// TODO Define the save / load order somewhere else.
-		//
+		// 
 		this.users.save(persister);
 		this.timelines.save(persister);
 	}

@@ -3,7 +3,8 @@ package au.edu.melbuni.boldapp;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import au.edu.melbuni.boldapp.persisters.BasePersister;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
+import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
  * Class to hold the users.
@@ -25,12 +26,12 @@ public class Users {
 	// For each file, create a User.
 	//
 	public static Users load() {
-		return BasePersister.loadUsers();
+		return JSONPersister.loadUsers();
 	}
 	
 	// Save the users metadata and each user.
 	//
-	public void save(BasePersister persister) {
+	public void save(Persister persister) {
 		// Save each user.
 		for (User user : users) {
 			user.save(persister);

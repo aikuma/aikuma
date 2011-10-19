@@ -1,8 +1,6 @@
 package au.edu.melbuni.boldapp.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 import java.util.UUID;
@@ -49,6 +47,9 @@ public class TimelineTest {
 	
 	@Test
 	public void toJSON() {
-		assertEquals("{\"identifier\":\"some_identifier\",\"date\":\"Thu Jan 01 01:00:00 CET 1970\",\"user_reference\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}", timeline.toJSON());
+		assertEquals(
+		  "{\"identifier\":\"some_identifier\",\"date\":\"Thu Jan 01 01:00:00 CET 1970\",\"user_reference\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}",
+		  timeline.toJSON()
+		);
 	}
 }

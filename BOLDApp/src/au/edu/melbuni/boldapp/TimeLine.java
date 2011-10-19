@@ -6,12 +6,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.json.simple.JSONValue;
 
 import android.app.Activity;
-import au.edu.melbuni.boldapp.persisters.BasePersister;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
+import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
  * Controller for the current time line.
@@ -33,7 +33,9 @@ public class Timeline {
 		this.location = "Some Location";
 		this.identifier = identifier;
 		
-		this.segments = BasePersister.loadSegments(this);
+		// TODO One should not have to know what kind of persister it is.
+		//
+		this.segments = JSONPersister.loadSegments(this);
 	}
 	
 	// TODO Test!
@@ -65,7 +67,7 @@ public class Timeline {
 		return JSONValue.toJSONString(timeline);
 	}
 
-	public void save(BasePersister persister) {
+	public void save(Persister persister) {
 		persister.save(this);
 	}
 	
