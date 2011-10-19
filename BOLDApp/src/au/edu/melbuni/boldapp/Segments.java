@@ -1,12 +1,17 @@
 package au.edu.melbuni.boldapp;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.json.simple.JSONValue;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.View;
 import android.widget.AdapterView;
+import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class Segments {
 
@@ -27,6 +32,33 @@ public class Segments {
 
 		this.timeline = timeline;
 		this.identifier = timeline.identifier;
+	}
+	
+	// Persistence.
+	//
+
+	public void saveEach(Persister persister) {
+		for (Segment segment : segments) {
+			persister.save(segment);
+		}
+	}
+
+	public static Segments fromJSON(String data) {
+		// Map user = (Map) JSONValue.parse(data);
+		// String name = user.get("name") == null ? "" : (String)
+		// user.get("name");
+		// UUID uuid = user.get("uuid") == null ? UUID.randomUUID() :
+		// UUID.fromString((String) user.get("uuid"));
+		
+		// TODO Find the right timeline.
+		//
+		return new Segments(null);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public String toJSON() {
+		Map<String, Comparable> segments = new LinkedHashMap<String, Comparable>();
+		return JSONValue.toJSONString(segments);
 	}
 	
 	public void installOn(Activity activity, int viewId) {

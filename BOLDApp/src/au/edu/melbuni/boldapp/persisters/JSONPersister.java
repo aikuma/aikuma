@@ -1,5 +1,7 @@
 package au.edu.melbuni.boldapp.persisters;
 
+import au.edu.melbuni.boldapp.Segment;
+import au.edu.melbuni.boldapp.Segments;
 import au.edu.melbuni.boldapp.Timeline;
 import au.edu.melbuni.boldapp.Timelines;
 import au.edu.melbuni.boldapp.User;
@@ -45,6 +47,23 @@ public class JSONPersister extends Persister {
 	
 	public Timeline loadTimeline(String identifier) {
 		return Timeline.fromJSON(readTimeline(identifier));
+	}
+	
+	public void save(Segments segments) {
+		write(segments, segments.toJSON());
+		segments.saveEach(this);
+	}
+	
+	public Segments loadSegments() {
+		return Segments.fromJSON(readSegments());
+	}
+
+	public void save(Segment segment) {
+		write(segment, segment.toJSON());
+	}
+	
+	public Segment loadSegment(String identifier) {
+		return Segment.fromJSON(readSegment(identifier));
 	}
 	
 }

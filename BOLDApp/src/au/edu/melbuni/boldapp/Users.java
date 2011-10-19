@@ -27,11 +27,9 @@ public class Users implements Collection<User> { // TODO implements Collection<U
 	// Persistence.
 	//
 
-	// Save each user.
-	//
 	public void saveEach(Persister persister) {
 		for (User user : users) {
-			user.save(persister);
+			persister.save(user);
 		}
 	}
 

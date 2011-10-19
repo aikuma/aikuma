@@ -35,7 +35,8 @@ public class Timeline {
 		
 		// TODO One should not have to know what kind of persister it is.
 		//
-		this.segments = JSONPersister.loadSegments(this);
+		Persister persister = new JSONPersister();
+		this.segments = persister.loadSegments();
 	}
 	
 	// TODO Test!
@@ -50,11 +51,10 @@ public class Timeline {
 		try {
 			date = dateFormat.parse(dateString);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Timeline loaded = new Timeline(null, identifier);
-//		loaded.setUser(user);
+//		loaded.setUser(user); // TODO
 		loaded.setDate(date);
 		return loaded;
 	}

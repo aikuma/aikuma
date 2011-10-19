@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.CharBuffer;
 
+import au.edu.melbuni.boldapp.Segment;
 import au.edu.melbuni.boldapp.Segments;
 import au.edu.melbuni.boldapp.Timeline;
 import au.edu.melbuni.boldapp.Timelines;
@@ -38,6 +39,14 @@ public abstract class Persister {
 	
 	public abstract Timeline loadTimeline(String identifier);
 
+	public abstract void save(Segments segments);
+	
+	public abstract Segments loadSegments();
+	
+	public abstract void save(Segment segment);
+	
+	public abstract Segment loadSegment(String identifier);
+	
 	public abstract String fileExtension();
 	
 	// Current
@@ -104,9 +113,21 @@ public abstract class Persister {
 
 	// Segment(s).
 	//
+	
+	public void write(Segments segments, String data) {
+		write(pathFor(segments), data);
+	}
 
-	public static Segments loadSegments(Timeline timeline) {
-		return new Segments(timeline);
+	public String readSegments() {
+		return read(pathForSegments());
+	}
+
+	public void write(Segment segment, String data) {
+		write(pathFor(segment), data);
+	}
+
+	public String readSegment(String identifier) {
+		return read(pathForSegment(identifier));
 	}
 
 	// Timeline(s).
@@ -161,6 +182,22 @@ public abstract class Persister {
 
 	public String pathForTimeline(String identifier) {
 		return "timelines/" + identifier + fileExtension();
+	}
+	
+	public String pathFor(Segments segments) {
+		return pathForSegments();
+	}
+	
+	public String pathForSegments() {
+		return "segments/list" + fileExtension(); // TODO Really?
+	}
+	
+	public String pathFor(Segment segment) {
+		return pathForTimeline(segment.getIdentifierString());
+	}
+
+	public String pathForSegment(String identifier) {
+		return "segments/" + identifier + fileExtension();
 	}
 
 	// Write the data to the file.

@@ -2,14 +2,12 @@ package au.edu.melbuni.boldapp.test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Date;
 import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import au.edu.melbuni.boldapp.BoldActivity;
 import au.edu.melbuni.boldapp.Timeline;
 import au.edu.melbuni.boldapp.Timelines;
 import au.edu.melbuni.boldapp.User;

@@ -23,7 +23,7 @@ public class Timelines implements Collection<Timeline> {
 
 	public void saveEach(Persister persister) {
 		for (Timeline timeline : timelines) {
-			timeline.save(persister);
+			persister.save(timeline);
 		}
 	}
 

@@ -123,4 +123,8 @@ public class Segment extends Observable {
 		}
 	}
 
+	public String getIdentifierString() {
+		return identifier;
+	}
+
 }
