@@ -1,5 +1,7 @@
 package au.edu.melbuni.boldapp.persisters;
 
+import java.io.IOException;
+
 import au.edu.melbuni.boldapp.Segment;
 import au.edu.melbuni.boldapp.Segments;
 import au.edu.melbuni.boldapp.Timeline;
@@ -21,7 +23,13 @@ public class JSONPersister extends Persister {
 	}
 	
 	public Users loadUsers() {
-		return Users.fromJSON(readUsers());
+		Users users = null;
+		try {
+			users = Users.fromJSON(readUsers());
+		} catch (IOException e) {
+			users = new Users();
+		}
+		return users;
 	}
 	
 	public void save(User user) {
@@ -29,7 +37,13 @@ public class JSONPersister extends Persister {
 	}
 	
 	public User loadUser(String identifier) {
-		return User.fromJSON(readUser(identifier));
+		User user = null;
+		try {
+			user = User.fromJSON(readUser(identifier));
+		} catch (IOException e) {
+			user = new User();
+		}
+		return user;
 	}
 	
 	public void save(Timelines timelines) {
@@ -38,7 +52,13 @@ public class JSONPersister extends Persister {
 	}
 	
 	public Timelines loadTimelines() {
-		return Timelines.fromJSON(readTimelines());
+		Timelines timelines = null;
+		try {
+			timelines = Timelines.fromJSON(readTimelines());
+		} catch (IOException e) {
+			timelines = new Timelines();
+		}
+		return timelines;
 	}
 
 	public void save(Timeline timeline) {
@@ -46,7 +66,13 @@ public class JSONPersister extends Persister {
 	}
 	
 	public Timeline loadTimeline(String identifier) {
-		return Timeline.fromJSON(readTimeline(identifier));
+		Timeline timeline = null;
+		try {
+			timeline = Timeline.fromJSON(readTimeline(identifier));
+		} catch (IOException e) {
+			timeline = new Timeline(null, identifier);
+		}
+		return timeline;
 	}
 	
 	public void save(Segments segments) {
@@ -55,7 +81,13 @@ public class JSONPersister extends Persister {
 	}
 	
 	public Segments loadSegments() {
-		return Segments.fromJSON(readSegments());
+		Segments segments = null;
+		try {
+			segments = Segments.fromJSON(readSegments());
+		} catch (IOException e) {
+//			segments = new Segments(); // TODO
+		}
+		return segments;
 	}
 
 	public void save(Segment segment) {
@@ -63,7 +95,13 @@ public class JSONPersister extends Persister {
 	}
 	
 	public Segment loadSegment(String identifier) {
-		return Segment.fromJSON(readSegment(identifier));
+		Segment segment = null;
+		try {
+			segment = Segment.fromJSON(readSegment(identifier));
+		} catch (IOException e) {
+			segment = new Segment(identifier);
+		}
+		return segment;
 	}
 	
 }

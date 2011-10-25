@@ -1,5 +1,6 @@
 package au.edu.melbuni.boldapp.persisters;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -55,7 +56,13 @@ public abstract class Persister {
 	// Returns null if no current user has been saved.
 	//
 	public User loadCurrentUser(Users users) {
-		String identifier = read(pathForCurrentUser());
+		String identifier = null;
+		try {
+			identifier = read(pathForCurrentUser());
+		} catch (IOException e) {
+			identifier = null;
+		}
+		
 		for (User user : users) {
 			if (user.getIdentifierString() == identifier) {
 				return user;
@@ -99,7 +106,7 @@ public abstract class Persister {
 		write(pathFor(users), data);
 	}
 	
-	public String readUsers() {
+	public String readUsers() throws IOException {
 		return read(pathForUsers());
 	}
 
@@ -107,7 +114,7 @@ public abstract class Persister {
 		write(pathFor(user), data);
 	}
 
-	public String readUser(String identifier) {
+	public String readUser(String identifier) throws IOException {
 		return read(pathForUser(identifier));
 	}
 
@@ -118,7 +125,7 @@ public abstract class Persister {
 		write(pathFor(segments), data);
 	}
 
-	public String readSegments() {
+	public String readSegments() throws IOException {
 		return read(pathForSegments());
 	}
 
@@ -126,7 +133,7 @@ public abstract class Persister {
 		write(pathFor(segment), data);
 	}
 
-	public String readSegment(String identifier) {
+	public String readSegment(String identifier) throws IOException {
 		return read(pathForSegment(identifier));
 	}
 
@@ -137,7 +144,7 @@ public abstract class Persister {
 		write(pathFor(timelines), data);
 	}
 
-	public String readTimelines() {
+	public String readTimelines() throws IOException {
 		return read(pathForTimelines());
 	}
 
@@ -145,7 +152,7 @@ public abstract class Persister {
 		write(pathFor(timeline), data);
 	}
 
-	public String readTimeline(String identifier) {
+	public String readTimeline(String identifier) throws IOException {
 		return read(pathForUser(identifier));
 	}
 
@@ -217,17 +224,11 @@ public abstract class Persister {
 
 	// Read the content of the file.
 	//
-	public String read(String fileName) {
-		FileReader fileReader = null;
-		try {
-			fileReader = new FileReader(fileName);
-			CharBuffer target = CharBuffer.allocate(1024); // TODO 1024?
-			fileReader.read(target);
-			return target.toString();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return "";
+	public String read(String fileName) throws IOException {
+		FileReader fileReader = new FileReader(fileName);
+		CharBuffer target = CharBuffer.allocate(1024); // TODO 1024?
+		fileReader.read(target);
+		return target.toString();
 	}
 
 }
