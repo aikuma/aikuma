@@ -36,7 +36,7 @@ public class Timeline {
 		// TODO One should not have to know what kind of persister it is.
 		//
 		Persister persister = new JSONPersister();
-		this.segments = persister.loadSegments();
+		this.segments = persister.loadSegments(this);
 	}
 	
 	// TODO Test!

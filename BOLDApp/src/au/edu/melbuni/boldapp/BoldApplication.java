@@ -1,8 +1,8 @@
 package au.edu.melbuni.boldapp;
 
 import android.app.Application;
-import au.edu.melbuni.boldapp.persisters.Persister;
 import au.edu.melbuni.boldapp.persisters.JSONPersister;
+import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class BoldApplication extends Application {
 

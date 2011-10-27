@@ -12,7 +12,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import au.edu.melbuni.boldapp.R;
 
 public class BoldActivity extends Activity {
 

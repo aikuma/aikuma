@@ -80,14 +80,14 @@ public class JSONPersister extends Persister {
 		segments.saveEach(this);
 	}
 	
-	public Segments loadSegments() {
+	public Segments loadSegments(Timeline timeline) {
 		Segments segments = null;
 		try {
 			segments = Segments.fromJSON(readSegments());
 		} catch (IOException e) {
-//			segments = new Segments(); // TODO
+			segments = new Segments(timeline);
 		}
-		return segments;
+		return new Segments(timeline); // TODO
 	}
 
 	public void save(Segment segment) {

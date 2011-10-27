@@ -27,6 +27,7 @@ public class MainActivity extends BoldActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
+								((BoldApplication) getApplication()).save();
 								MainActivity.super.finish();
 							}
 						}).setNegativeButton("No", null).show();

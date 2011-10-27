@@ -1,6 +1,5 @@
 package au.edu.melbuni.boldapp.persisters;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -42,7 +41,7 @@ public abstract class Persister {
 
 	public abstract void save(Segments segments);
 	
-	public abstract Segments loadSegments();
+	public abstract Segments loadSegments(Timeline timeline);
 	
 	public abstract void save(Segment segment);
 	
