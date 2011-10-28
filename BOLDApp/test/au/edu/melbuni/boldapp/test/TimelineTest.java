@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import au.edu.melbuni.boldapp.BoldActivity;
-import au.edu.melbuni.boldapp.Timeline;
-import au.edu.melbuni.boldapp.User;
+import au.edu.melbuni.boldapp.models.Timeline;
+import au.edu.melbuni.boldapp.models.User;
 
 @RunWith(CustomTestRunner.class)
 public class TimelineTest {

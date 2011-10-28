@@ -7,8 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import au.edu.melbuni.boldapp.Timeline;
-import au.edu.melbuni.boldapp.Timelines;
+import au.edu.melbuni.boldapp.models.Timeline;
+import au.edu.melbuni.boldapp.models.Timelines;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 

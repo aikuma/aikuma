@@ -7,6 +7,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
 
+import au.edu.melbuni.boldapp.persisters.Persister;
+
 public class CustomExceptionHandler implements UncaughtExceptionHandler {
 
 	private UncaughtExceptionHandler defaultUEH;
@@ -34,7 +36,7 @@ public class CustomExceptionHandler implements UncaughtExceptionHandler {
 
 	private void writeToFile(String stacktrace, String filename) {
 		try {
-			BufferedWriter bos = new BufferedWriter(new FileWriter(Bundler.getBasePath() + filename));
+			BufferedWriter bos = new BufferedWriter(new FileWriter(Persister.getBasePath() + filename));
 			bos.write(stacktrace);
 			bos.flush();
 			bos.close();

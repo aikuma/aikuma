@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.models;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -10,6 +10,9 @@ import java.util.Map;
 import org.json.simple.JSONValue;
 
 import android.app.Activity;
+import au.edu.melbuni.boldapp.Player;
+import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.Recorder;
 import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
 

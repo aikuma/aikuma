@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.models;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,6 +11,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.View;
 import android.widget.AdapterView;
+import au.edu.melbuni.boldapp.HorizontalListView;
+import au.edu.melbuni.boldapp.Player;
+import au.edu.melbuni.boldapp.Recorder;
+import au.edu.melbuni.boldapp.SegmentItemAdapter;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class Segments {
@@ -187,6 +191,10 @@ public class Segments {
 			this.selectedForRecording.select();
 		}
 	}
+	
+	public Segment get(int position) {
+		return segments.get(position);
+	}
 
 	// Returns the selected segment.
 	//
@@ -211,10 +219,6 @@ public class Segments {
 		selectedForRecording.select();
 
 		return selectedForRecording;
-	}
-
-	protected Segment get(int position) {
-		return segments.get(position);
 	}
 
 }

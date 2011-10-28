@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import au.edu.melbuni.boldapp.Segment;
+import au.edu.melbuni.boldapp.models.Segment;
 
 @RunWith(CustomTestRunner.class)
 public class SegmentTest {

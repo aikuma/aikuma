@@ -1,8 +1,12 @@
 package au.edu.melbuni.boldapp;
 
+import java.util.ArrayList;
+
 import android.app.Application;
 import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
+import au.edu.melbuni.boldapp.models.*;
+
 
 public class BoldApplication extends Application {
 
@@ -13,7 +17,6 @@ public class BoldApplication extends Application {
 	private Timeline currentTimeline;
 
 	public BoldApplication() {
-		load();
 		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler());
 	}
 
@@ -24,9 +27,9 @@ public class BoldApplication extends Application {
 		
 		// TODO Define the save / load order somewhere else.
 		//
-		this.users     = persister.loadUsers();
-		this.timelines = persister.loadTimelines();
+		this.users       = persister.loadUsers();
 		this.currentUser = persister.loadCurrentUser(users);
+//		this.timelines   = persister.loadTimelines();
 		// this.currentTimeline = persister.loadCurrentTimeline();
 	}
 
@@ -38,9 +41,9 @@ public class BoldApplication extends Application {
 
 		// TODO Define the save / load order somewhere else.
 		//
-		persister.save(users);
-		persister.save(timelines);
-		persister.saveCurrentUser(currentUser);
+		persister.save(getUsers());
+		persister.saveCurrentUser(getCurrentUser());
+//		persister.save(getTimelines());
 //		persister.saveCurrentTimeline(currentTimeline);
 	}
 
@@ -56,6 +59,9 @@ public class BoldApplication extends Application {
 	}
 
 	public Users getUsers() {
+		if (users == null) {
+			users = new Users(new ArrayList<User>());
+		}
 		return users;
 	}
 
@@ -81,6 +87,9 @@ public class BoldApplication extends Application {
 	}
 
 	public Timelines getTimelines() {
+		if (timelines == null) {
+			timelines = new Timelines();
+		}
 		return timelines;
 	}
 

@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.models;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
@@ -64,8 +65,8 @@ public class User {
 	
 	// Load a user based on his UUID.
 	//
-	public static void load(String uuid) {
-		new JSONPersister().loadUser(uuid);
+	public static User load(Persister persister, String uuid) {
+		return persister.loadUser(uuid);
 	}
 	
 	// Save the user's metadata.
@@ -86,7 +87,9 @@ public class User {
 		return "users/profile_";
 	}
 	public String getProfileImagePath() {
-		return Bundler.getBasePath() + getRelativeProfilePathStub() + this.uuid.toString() + ".png";
+		// TODO
+		//
+		return Persister.getBasePath() + getRelativeProfilePathStub() + this.uuid.toString() + ".png";
 	}
 	public Drawable getProfileImage() {
     	return Drawable.createFromPath(getProfileImagePath());

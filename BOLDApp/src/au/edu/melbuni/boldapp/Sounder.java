@@ -1,10 +1,13 @@
 package au.edu.melbuni.boldapp;
 
+import au.edu.melbuni.boldapp.persisters.Persister;
+
 
 public class Sounder {
 
 	protected String getBasePath() {
-		return Bundler.getBasePath() + "recordings/";
+		// TODO 
+		return Persister.getBasePath() + "recordings/";
 	}
 
 	protected String generateFullFilename(String relativeFilename) {

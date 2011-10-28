@@ -1,4 +1,6 @@
 package au.edu.melbuni.boldapp;
+import au.edu.melbuni.boldapp.models.*;
+
 
 import java.io.IOException;
 import java.util.List;

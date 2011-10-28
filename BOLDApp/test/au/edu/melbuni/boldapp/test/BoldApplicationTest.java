@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.junit.Before;
@@ -12,10 +13,10 @@ import org.junit.runner.RunWith;
 
 import au.edu.melbuni.boldapp.BoldActivity;
 import au.edu.melbuni.boldapp.BoldApplication;
-import au.edu.melbuni.boldapp.Timeline;
-import au.edu.melbuni.boldapp.Timelines;
-import au.edu.melbuni.boldapp.User;
-import au.edu.melbuni.boldapp.Users;
+import au.edu.melbuni.boldapp.models.Timeline;
+import au.edu.melbuni.boldapp.models.Timelines;
+import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.models.Users;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
@@ -75,12 +76,14 @@ public class BoldApplicationTest {
 		public void setUp() throws Exception {
 			super.setUp();
 			
-			users = new Users();
+			users = new Users(new ArrayList<User>());
 			
 			specificUser = new User();
 			
 			users.add(specificUser);
 			users.add(new User());
+			
+			application.setCurrentUser(specificUser);
 			
 			Iterator<User> usersIterator = users.iterator();
 			while (usersIterator.hasNext()) {
@@ -98,6 +101,18 @@ public class BoldApplicationTest {
 			assertEquals(false, application.addUser(specificUser));
 		}
 		
+		@Test
+		public void saveAndLoad() {
+			application.save();
+			application.load();
+			
+			assertNotNull(application.getCurrentUser());
+			assertEquals(specificUser.getIdentifierString(), application.getCurrentUser().getIdentifierString());
+			
+			assertNotNull(application.getUsers());
+			assertEquals(2, application.getUsers().size());
+		}
+		
 	}
 	
 	@RunWith(RobolectricTestRunner.class)
@@ -105,7 +120,7 @@ public class BoldApplicationTest {
 		
 		@Test
 		public void getUsers() {
-			assertEquals(new Users().users, application.getUsers().users);
+			assertEquals(new Users(new ArrayList<User>()).users, application.getUsers().users);
 		}
 		
 		@Test

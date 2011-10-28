@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.models;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.json.simple.JSONValue;
 
+import android.content.PeriodicSync;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
@@ -20,8 +21,8 @@ public class Users implements Collection<User> { // TODO implements Collection<U
 
 	public ArrayList<User> users;
 
-	public Users() {
-		this.users = new ArrayList<User>();
+	public Users(ArrayList<User> users) {
+		this.users = users;
 	}
 
 	// Persistence.
@@ -33,19 +34,24 @@ public class Users implements Collection<User> { // TODO implements Collection<U
 		}
 	}
 
-	public static Users fromJSON(String data) {
-		// Map user = (Map) JSONValue.parse(data);
-		// String name = user.get("name") == null ? "" : (String)
-		// user.get("name");
-		// UUID uuid = user.get("uuid") == null ? UUID.randomUUID() :
-		// UUID.fromString((String) user.get("uuid"));
-		return new Users();
+	public static Users fromJSON(Persister persister, String data) {
+		ArrayList<String> usersIds = (ArrayList<String>) JSONValue.parse(data);
+		ArrayList<User> users = new ArrayList<User>();
+		if (usersIds != null) {
+			for (String userId : usersIds) {
+				User user = User.load(persister, userId);
+				users.add(user);
+			}
+		}
+		return new Users(users);
 	}
 
-	@SuppressWarnings("rawtypes")
 	public String toJSON() {
-		Map<String, Comparable> users = new LinkedHashMap<String, Comparable>();
-		return JSONValue.toJSONString(users);
+		ArrayList<String> usersIds = new ArrayList<String>();
+		for (User user : users) {
+			usersIds.add(user.getIdentifierString());
+		}
+		return JSONValue.toJSONString(usersIds);
 	}
 
 	// Delegation.

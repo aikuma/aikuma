@@ -6,15 +6,34 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import au.edu.melbuni.boldapp.models.Users;
 
 public class MainActivity extends BoldActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Bundler.load(this);
+		Users users = Bundler.getUsers(this);
+		if (users.isEmpty()) {
+			throw new RuntimeException(users.toString());
+		}
 
 		configureView(savedInstanceState);
 		installBehavior(savedInstanceState);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		Bundler.save(this);
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		Bundler.save(this);
 	}
 
 	@Override
@@ -27,7 +46,7 @@ public class MainActivity extends BoldActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								((BoldApplication) getApplication()).save();
+								Bundler.save(MainActivity.this);
 								MainActivity.super.finish();
 							}
 						}).setNegativeButton("No", null).show();

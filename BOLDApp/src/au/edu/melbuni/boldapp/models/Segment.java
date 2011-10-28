@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.models;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,6 +9,8 @@ import org.json.simple.JSONValue;
 
 import android.graphics.Color;
 import android.view.View;
+import au.edu.melbuni.boldapp.Player;
+import au.edu.melbuni.boldapp.Recorder;
 
 public class Segment extends Observable {
 

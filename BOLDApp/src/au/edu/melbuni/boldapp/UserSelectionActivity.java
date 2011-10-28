@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import au.edu.melbuni.boldapp.models.*;
 
 public class UserSelectionActivity extends BoldActivity {
 

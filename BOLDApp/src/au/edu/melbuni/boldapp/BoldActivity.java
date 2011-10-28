@@ -13,6 +13,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import au.edu.melbuni.boldapp.models.*;
+
 public class BoldActivity extends Activity {
 
 	public static final String PREFERENCES = "BOLDPreferences";

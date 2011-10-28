@@ -3,12 +3,14 @@ package au.edu.melbuni.boldapp.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import au.edu.melbuni.boldapp.User;
-import au.edu.melbuni.boldapp.Users;
+import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.models.Users;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
@@ -19,7 +21,7 @@ public class UsersTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		users = new Users();
+		users = new Users(new ArrayList<User>());
 	}
 	
 	@Test

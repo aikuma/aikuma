@@ -2,16 +2,17 @@ package au.edu.melbuni.boldapp.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import au.edu.melbuni.boldapp.Timeline;
-import au.edu.melbuni.boldapp.Timelines;
-import au.edu.melbuni.boldapp.User;
-import au.edu.melbuni.boldapp.Users;
+import au.edu.melbuni.boldapp.models.Timeline;
+import au.edu.melbuni.boldapp.models.Timelines;
+import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.models.Users;
 import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
@@ -27,13 +28,13 @@ public class PersisterTest {
 	
 	@Test
 	public void pathForWithUsers() {
-		assertEquals("users/list.json", persister.pathFor(new Users()));
+		assertEquals("/mnt/sdcard/bold/users/list.json", persister.pathFor(new Users(new ArrayList<User>())));
 	}
 	
 	@Test
 	public void pathForWithUser() {
 		assertEquals(
-		  "users/00000000-0000-0001-0000-000000000002.json",
+		  "/mnt/sdcard/bold/users/00000000-0000-0001-0000-000000000002.json",
 		  persister.pathFor(new User(new UUID(1, 2)))
 		);
 	}
@@ -41,7 +42,7 @@ public class PersisterTest {
 	@Test
 	public void pathForWithTimelines() {
 		assertEquals(
-		  "timelines/list.json",
+		  "/mnt/sdcard/bold/timelines/list.json",
 		  persister.pathFor(new Timelines())
 		);
 	}
@@ -49,28 +50,28 @@ public class PersisterTest {
 	@Test
 	public void pathForWithTimeline() {
 		assertEquals(
-		  "timelines/identifier.json",
+		  "/mnt/sdcard/bold/timelines/identifier.json",
 		  persister.pathFor(new Timeline(null, "identifier"))
 		);
 	}
 	
 	@Test
 	public void pathForUsers() {
-		assertEquals("users/list.json", persister.pathForUsers());
+		assertEquals("/mnt/sdcard/bold/users/list.json", persister.pathForUsers());
 	}
 	
 	@Test
 	public void pathForUser() {
-		assertEquals("users/identifier.json", persister.pathForUser("identifier"));
+		assertEquals("/mnt/sdcard/bold/users/identifier.json", persister.pathForUser("identifier"));
 	}
 
 	@Test
 	public void pathForTimelines() {
-		assertEquals("timelines/list.json", persister.pathForTimelines());
+		assertEquals("/mnt/sdcard/bold/timelines/list.json", persister.pathForTimelines());
 	}
 	
 	@Test
 	public void pathForTimeline() {
-		assertEquals("timelines/identifier.json", persister.pathForTimeline("identifier"));
+		assertEquals("/mnt/sdcard/bold/timelines/identifier.json", persister.pathForTimeline("identifier"));
 	}
 }

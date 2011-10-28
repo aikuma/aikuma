@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import au.edu.melbuni.boldapp.models.*;
 
 public class OriginalSelectionActivity extends BoldActivity {
 	@Override

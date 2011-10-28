@@ -1,18 +1,23 @@
 package au.edu.melbuni.boldapp;
 
 import android.app.Activity;
-import android.os.Environment;
+import au.edu.melbuni.boldapp.models.Timeline;
+import au.edu.melbuni.boldapp.models.Timelines;
+import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.models.Users;
+
 
 /*
  * This class helps with saving state.
  */
 public class Bundler {
-
-	public static String getBasePath() {
-		return Environment.
-				getExternalStorageDirectory().
-				getAbsolutePath()
-				+ "/bold/";
+	
+	public static void load(Activity activity) {
+		((BoldApplication) activity.getApplication()).load();
+	}
+	
+	public static void save(Activity activity) {
+		((BoldApplication) activity.getApplication()).save();
 	}
 
 	public static void saveNewUser(Activity activity, User user) {

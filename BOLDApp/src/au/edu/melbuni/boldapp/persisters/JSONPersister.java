@@ -1,13 +1,14 @@
 package au.edu.melbuni.boldapp.persisters;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-import au.edu.melbuni.boldapp.Segment;
-import au.edu.melbuni.boldapp.Segments;
-import au.edu.melbuni.boldapp.Timeline;
-import au.edu.melbuni.boldapp.Timelines;
-import au.edu.melbuni.boldapp.User;
-import au.edu.melbuni.boldapp.Users;
+import au.edu.melbuni.boldapp.models.Segment;
+import au.edu.melbuni.boldapp.models.Segments;
+import au.edu.melbuni.boldapp.models.Timeline;
+import au.edu.melbuni.boldapp.models.Timelines;
+import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.models.Users;
 
 // This class specializes in JSON saving.
 //
@@ -25,9 +26,9 @@ public class JSONPersister extends Persister {
 	public Users loadUsers() {
 		Users users = null;
 		try {
-			users = Users.fromJSON(readUsers());
+			users = Users.fromJSON(this, readUsers());
 		} catch (IOException e) {
-			users = new Users();
+			users = new Users(new ArrayList<User>());
 		}
 		return users;
 	}

@@ -1,16 +1,14 @@
 package au.edu.melbuni.boldapp.persisters;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.CharBuffer;
 
-import au.edu.melbuni.boldapp.Segment;
-import au.edu.melbuni.boldapp.Segments;
-import au.edu.melbuni.boldapp.Timeline;
-import au.edu.melbuni.boldapp.Timelines;
-import au.edu.melbuni.boldapp.User;
-import au.edu.melbuni.boldapp.Users;
+import android.os.Environment;
+import au.edu.melbuni.boldapp.models.*;
 
 // A persister defines in what format
 // the data is saved, and where.
@@ -49,6 +47,16 @@ public abstract class Persister {
 	
 	public abstract String fileExtension();
 	
+	public static String getBasePath() {
+		File external = Environment.getExternalStorageDirectory();
+		if (external != null) {
+			// On the phone.
+			//
+			return external.getAbsolutePath() + "/bold/";
+		}
+		return "./mnt/sdcard/bold/"; // During e.g. tests.
+	}
+	
 	// Current
 	//
 	
@@ -58,12 +66,13 @@ public abstract class Persister {
 		String identifier = null;
 		try {
 			identifier = read(pathForCurrentUser());
+			System.out.println(identifier);
 		} catch (IOException e) {
 			identifier = null;
 		}
 		
 		for (User user : users) {
-			if (user.getIdentifierString() == identifier) {
+			if (user.getIdentifierString().equals(identifier)) {
 				return user;
 			}
 		}
@@ -72,10 +81,6 @@ public abstract class Persister {
 	
 	public void saveCurrentUser(User user) {
 		write(pathForCurrentUser(), user.getIdentifierString());
-	}
-	
-	public String pathForCurrentUser() {
-		return "current/user.txt";
 	}
 	
 //	// Returns null if no current timeline has been saved.
@@ -161,49 +166,57 @@ public abstract class Persister {
 	public String pathFor(Users users) {
 		return pathForUsers();
 	}
-	
-	public String pathForUsers() {
-		return "users/list" + fileExtension();
-	}
 
 	public String pathFor(User user) {
 		return pathForUser(user.getIdentifierString());
-	}
-
-	public String pathForUser(String identifier) {
-		return "users/" + identifier + fileExtension();
 	}
 	
 	public String pathFor(Timelines timelines) {
 		return pathForTimelines();
 	}
 	
-	public String pathForTimelines() {
-		return "timelines/list" + fileExtension();
-	}
-	
 	public String pathFor(Timeline timeline) {
 		return pathForTimeline(timeline.getIdentifierString());
-	}
-
-	public String pathForTimeline(String identifier) {
-		return "timelines/" + identifier + fileExtension();
 	}
 	
 	public String pathFor(Segments segments) {
 		return pathForSegments();
 	}
 	
-	public String pathForSegments() {
-		return "segments/list" + fileExtension(); // TODO Really?
-	}
-	
 	public String pathFor(Segment segment) {
 		return pathForTimeline(segment.getIdentifierString());
 	}
+	
+	
+	// Paths
+	//
+	
+	public String pathForCurrentUser() {
+		return getBasePath() + "users/current.txt";
+	}
+	
+	public String pathForUsers() {
+		return getBasePath() + "users/list" + fileExtension();
+	}
+	
+	public String pathForUser(String identifier) {
+		return getBasePath() + "users/" + identifier + fileExtension();
+	}
+	
+	public String pathForTimelines() {
+		return getBasePath() + "timelines/list" + fileExtension();
+	}
+	
+	public String pathForTimeline(String identifier) {
+		return getBasePath() + "timelines/" + identifier + fileExtension();
+	}
+	
+	public String pathForSegments() {
+		return getBasePath() + "segments/list" + fileExtension(); // TODO Really?
+	}
 
 	public String pathForSegment(String identifier) {
-		return "segments/" + identifier + fileExtension();
+		return getBasePath() + "segments/" + identifier + fileExtension();
 	}
 
 	// Write the data to the file.
@@ -224,10 +237,18 @@ public abstract class Persister {
 	// Read the content of the file.
 	//
 	public String read(String fileName) throws IOException {
-		FileReader fileReader = new FileReader(fileName);
-		CharBuffer target = CharBuffer.allocate(1024); // TODO 1024?
-		fileReader.read(target);
-		return target.toString();
+		StringBuffer buffer = new StringBuffer(1000);
+        BufferedReader reader = new BufferedReader(
+                new FileReader(fileName));
+        char[] buf = new char[1024];
+        int numRead=0;
+        while((numRead=reader.read(buf)) != -1){
+            String readData = String.valueOf(buf, 0, numRead);
+            buffer.append(readData);
+            buf = new char[1024];
+        }
+        reader.close();
+        return buffer.toString();
 	}
 
 }
