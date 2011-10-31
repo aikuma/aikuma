@@ -7,15 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.json.simple.JSONValue;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import au.edu.melbuni.boldapp.Bundler;
-import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
@@ -26,7 +22,7 @@ import au.edu.melbuni.boldapp.persisters.Persister;
  * - a number of files attached to it
  * 
  */
-public class User {
+public class User extends Model {
 	
 	public String name;
 	public UUID uuid;
@@ -48,19 +44,16 @@ public class User {
 		this.uuid = uuid;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public static User fromJSON(String data) {
-		Map user = (Map) JSONValue.parse(data);
-		String name = user.get("name") == null ? "" : (String) user.get("name");
-		UUID uuid = user.get("uuid") == null ? UUID.randomUUID() : UUID.fromString((String) user.get("uuid"));
+	public static User fromHash(Map<String, Object> hash) {
+		String name = hash.get("name") == null ? "" : (String) hash.get("name");
+		UUID uuid = hash.get("uuid") == null ? UUID.randomUUID() : UUID.fromString((String) hash.get("uuid"));
 		return new User(name, uuid);
 	}
-	@SuppressWarnings("rawtypes")
-	public String toJSON() {
-		Map<String, Comparable> user = new LinkedHashMap<String, Comparable>();
-		user.put("name", this.name);
-		user.put("uuid", this.uuid.toString());
-		return JSONValue.toJSONString(user);
+	public Map<String, Object> toHash() {
+		Map<String, Object> hash = new LinkedHashMap<String, Object>();
+		hash.put("name", this.name);
+		hash.put("uuid", this.uuid.toString());
+		return hash;
 	}
 	
 	// Load a user based on his UUID.

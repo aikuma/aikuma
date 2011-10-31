@@ -6,16 +6,24 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.json.simple.JSONValue;
-
 import au.edu.melbuni.boldapp.persisters.Persister;
 
-public class Timelines implements Collection<Timeline> {
-
-	public ArrayList<Timeline> timelines;
+/*
+ * Class to hold ALL the timelines.
+ * 
+ * Also manages saving and loading.
+ * 
+ */
+public class Timelines extends Model implements Collection<Timeline> {
+	
+	ArrayList<Timeline> timelines;
 
 	public Timelines() {
-		this.timelines = new ArrayList<Timeline>();
+		this(new ArrayList<Timeline>());
+	}
+	
+	public Timelines(ArrayList<Timeline> timelines) {
+		this.timelines = timelines;
 	}
 
 	// Persistence.
@@ -26,21 +34,48 @@ public class Timelines implements Collection<Timeline> {
 			persister.save(timeline);
 		}
 	}
-
-	public static Timelines fromJSON(String data) {
-		// Map user = (Map) JSONValue.parse(data);
-		// String name = user.get("name") == null ? "" : (String)
-		// user.get("name");
-		// UUID uuid = user.get("uuid") == null ? UUID.randomUUID() :
-		// UUID.fromString((String) user.get("uuid"));
-		return new Timelines();
+	
+	public static String getDefaultPrefix() {
+		return "timeline_";
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Timelines fromHash(Persister persister, Map<String, Object> hash) {
+		ArrayList<String> timelineIds = (ArrayList<String>) hash.get("timelines");
+		ArrayList<Timeline> timelines = new ArrayList<Timeline>();
+		if (timelineIds != null) {
+			for (String timelineId : timelineIds) {
+				Timeline timeline = Timeline.load(persister, timelineId);
+				timelines.add(timeline);
+			}
+		}
+		return new Timelines(timelines);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public String toJSON() {
-		Map<String, Comparable> timelines = new LinkedHashMap<String, Comparable>();
-		return JSONValue.toJSONString(timelines);
+	public Map<String, Object> toHash() {
+		Map<String, Object> hash = new LinkedHashMap<String, Object>();
+		ArrayList<String> timelinesIds = new ArrayList<String>();
+		for (Timeline timeline : timelines) {
+			timelinesIds.add(timeline.getIdentifier());
+		}
+		hash.put("timelines", timelinesIds);
+		return hash;
 	}
+	
+//	public static Timelines fromJSON(String data) {
+//		// Map user = (Map) JSONValue.parse(data);
+//		// String name = user.get("name") == null ? "" : (String)
+//		// user.get("name");
+//		// UUID uuid = user.get("uuid") == null ? UUID.randomUUID() :
+//		// UUID.fromString((String) user.get("uuid"));
+//		return new Timelines();
+//	}
+//
+//	@SuppressWarnings("rawtypes")
+//	public String toJSON() {
+//		Map<String, Comparable> timelines = new LinkedHashMap<String, Comparable>();
+//		return JSONValue.toJSONString(timelines);
+//	}
 
 	// Delegation.
 	//

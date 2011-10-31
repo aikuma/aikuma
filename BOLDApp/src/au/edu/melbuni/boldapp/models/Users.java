@@ -6,9 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.json.simple.JSONValue;
-
-import android.content.PeriodicSync;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
@@ -17,10 +14,14 @@ import au.edu.melbuni.boldapp.persisters.Persister;
  * Also manages saving and loading.
  * 
  */
-public class Users implements Collection<User> { // TODO implements Collection<User>?
+public class Users extends Model implements Collection<User> { // TODO implements Collection<User>?
 
 	public ArrayList<User> users;
 
+	public Users() {
+		this(new ArrayList<User>());
+	}
+	
 	public Users(ArrayList<User> users) {
 		this.users = users;
 	}
@@ -33,9 +34,10 @@ public class Users implements Collection<User> { // TODO implements Collection<U
 			persister.save(user);
 		}
 	}
-
-	public static Users fromJSON(Persister persister, String data) {
-		ArrayList<String> usersIds = (ArrayList<String>) JSONValue.parse(data);
+	
+	@SuppressWarnings("unchecked")
+	public static Users fromHash(Persister persister, Map<String, Object> hash) {
+		ArrayList<String> usersIds = (ArrayList<String>) hash.get("users");
 		ArrayList<User> users = new ArrayList<User>();
 		if (usersIds != null) {
 			for (String userId : usersIds) {
@@ -46,12 +48,23 @@ public class Users implements Collection<User> { // TODO implements Collection<U
 		return new Users(users);
 	}
 
-	public String toJSON() {
+	public Map<String, Object> toHash() {
+		Map<String, Object> hash = new LinkedHashMap<String, Object>();
 		ArrayList<String> usersIds = new ArrayList<String>();
 		for (User user : users) {
 			usersIds.add(user.getIdentifierString());
 		}
-		return JSONValue.toJSONString(usersIds);
+		hash.put("users", usersIds);
+		return hash;
+	}
+	
+	public User find(String identifier) {
+		for (User user : users) {
+			if (user.getIdentifierString().equals(identifier)) {
+				return user;
+			}
+		}
+		return null;
 	}
 
 	// Delegation.

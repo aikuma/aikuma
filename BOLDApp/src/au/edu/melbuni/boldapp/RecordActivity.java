@@ -27,7 +27,7 @@ public class RecordActivity extends BoldActivity {
     };
     
     public void installBehavior(Bundle savedInstanceState) {
-     	final Timeline timeline = new Timeline(this, "recording_");
+     	final Timeline timeline = new Timeline("recording_");
      	timeline.installOn(this);
 	    
 	    final ImageButton playButton = (ImageButton) findViewById(R.id.playButton);

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.json.simple.JSONValue;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -18,24 +16,29 @@ import au.edu.melbuni.boldapp.SegmentItemAdapter;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class Segments {
-
-	int segmentCounter = 0;
-
+	
+	// Stored.
+	// 
+	String prefix;
+	ArrayList<Segment> segments;
+	
+	// Volatile.
+	//
+	int segmentCounter = 0; // Move up?
 	private Segment selectedForPlaying;
 	private Segment selectedForRecording;
-
-	ArrayList<Segment> segments;
-
-	Timeline timeline;
+	
+	// TODO Remove.
+	//
 	SegmentItemAdapter adapter;
 
-	String identifier;
-
-	public Segments(Timeline timeline) {
-		segments = new ArrayList<Segment>();
-
-		this.timeline = timeline;
-		this.identifier = timeline.identifier;
+	public Segments(String prefix) {
+		this(prefix, new ArrayList<Segment>());
+	}
+	
+	public Segments(String prefix, ArrayList<Segment> segments) {
+		this.prefix = prefix;
+		this.segments = segments;
 	}
 	
 	// Persistence.
@@ -47,23 +50,31 @@ public class Segments {
 		}
 	}
 
-	public static Segments fromJSON(String data) {
-		// Map user = (Map) JSONValue.parse(data);
-		// String name = user.get("name") == null ? "" : (String)
-		// user.get("name");
-		// UUID uuid = user.get("uuid") == null ? UUID.randomUUID() :
-		// UUID.fromString((String) user.get("uuid"));
+	@SuppressWarnings("unchecked")
+	public static Segments fromHash(Persister persister, Map<String, Object> hash) {
+		String prefix = hash.get("prefix") == null ? "" : (String) hash.get("prefix"); // TODO throw?
+
+		ArrayList<String> segmentIds = (ArrayList<String>) hash.get("segments");
+		ArrayList<Segment> segments = new ArrayList<Segment>();
+		if (segmentIds != null) {
+			for (String segmentId : segmentIds) {
+				Segment segment = Segment.load(persister, segmentId);
+				segments.add(segment);
+			}
+		}
 		
-		// TODO Find the right timeline.
-		//
-		return new Segments(null);
+		return new Segments(prefix);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public String toJSON() {
-		Map<String, Comparable> segments = new LinkedHashMap<String, Comparable>();
-		return JSONValue.toJSONString(segments);
+	public Map<String, Object> toHash() {
+		Map<String, Object> hash = new LinkedHashMap<String, Object>();
+		hash.put("prefix", this.prefix);
+		
+		
+		
+		return hash;
 	}
+	
 	
 	public void installOn(Activity activity, int viewId) {
 		adapter = new SegmentItemAdapter(activity, this);
@@ -213,7 +224,7 @@ public class Segments {
 	//
 	protected Segment getSelectedForRecording() {
 		if (selectedForRecording == null) {
-			add(new Segment(timeline.identifier + new Integer(segmentCounter++).toString()));
+			add(new Segment(prefix + new Integer(segmentCounter++).toString()));
 		}
 		
 		selectedForRecording.select();

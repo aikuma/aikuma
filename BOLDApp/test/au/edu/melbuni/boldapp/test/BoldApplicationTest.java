@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import au.edu.melbuni.boldapp.BoldActivity;
 import au.edu.melbuni.boldapp.BoldApplication;
 import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.Timelines;
@@ -28,7 +27,7 @@ public class BoldApplicationTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		BoldApplicationTest.timeline    = new Timeline(new BoldActivity(), "identifier");
+		BoldApplicationTest.timeline    = new Timeline();
 		BoldApplicationTest.application = new BoldApplication();
 	}
 	
@@ -72,22 +71,34 @@ public class BoldApplicationTest {
 		Users users;
 		User specificUser;
 		
+		Timelines timelines;
+		Timeline specificTimeline;
+		
 		@Before
 		public void setUp() throws Exception {
 			super.setUp();
 			
-			users = new Users(new ArrayList<User>());
-			
+			// Users.
+			//
 			specificUser = new User();
-			
+			users = new Users();
 			users.add(specificUser);
 			users.add(new User());
-			
 			application.setCurrentUser(specificUser);
-			
 			Iterator<User> usersIterator = users.iterator();
 			while (usersIterator.hasNext()) {
 				application.addUser(usersIterator.next());
+			}
+			
+			// Timelines.
+			//
+			timelines = new Timelines();
+			specificTimeline = new Timeline("test_");
+			timelines.add(specificTimeline);
+			timelines.add(new Timeline("test_"));
+			Iterator<Timeline> timelinesIterator = timelines.iterator();
+			while (timelinesIterator.hasNext()) {
+				application.addTimeline(timelinesIterator.next());
 			}
 		}
 		
@@ -108,9 +119,11 @@ public class BoldApplicationTest {
 			
 			assertNotNull(application.getCurrentUser());
 			assertEquals(specificUser.getIdentifierString(), application.getCurrentUser().getIdentifierString());
-			
 			assertNotNull(application.getUsers());
 			assertEquals(2, application.getUsers().size());
+			
+			assertNotNull(application.getTimelines());
+			assertEquals(2, application.getTimelines().size());
 		}
 		
 	}
@@ -160,10 +173,10 @@ public class BoldApplicationTest {
 		public void setUp() throws Exception {
 			super.setUp();
 			
-			current = new Timeline(new BoldActivity(), "current");
+			current = new Timeline();
 			application.setCurrentTimeline(timeline);
 			
-			timelines = new Timelines();
+			timelines = new Timelines("current");
 			timelines.add(current);
 			timelines.add(timeline);
 			

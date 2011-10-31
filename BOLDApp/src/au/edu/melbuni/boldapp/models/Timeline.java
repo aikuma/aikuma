@@ -6,10 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.json.simple.JSONValue;
+import java.util.UUID;
 
 import android.app.Activity;
+import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Recorder;
@@ -24,50 +24,74 @@ import au.edu.melbuni.boldapp.persisters.Persister;
  */
 public class Timeline {
 	
-	public String identifier;
-	User user;
+	String prefix;
+	UUID uuid;
 	Date date;
 	String location;
 	
+	User user;
+	Timelines timelines;
 	Segments segments;
-
-	public Timeline(Activity activity, String identifier) {
-		this.date = new Date();
-		this.location = "Some Location";
-		this.identifier = identifier;
-		
-		// TODO One should not have to know what kind of persister it is.
-		//
-		Persister persister = new JSONPersister();
-		this.segments = persister.loadSegments(this);
+	
+	public Timeline(String prefix) {
+		this(prefix, UUID.randomUUID());
 	}
 	
-	// TODO Test!
-	//
-	@SuppressWarnings("rawtypes")
-	public static Timeline fromJSON(String data) {
-		Map timeline = (Map) JSONValue.parse(data);
-		String identifier = timeline.get("identifier") == null ? "" : (String) timeline.get("identifier");
-		DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
-		String dateString = timeline.get("date") == null ? "" : (String) timeline.get("date");
+	public Timeline(String prefix, String identifier) {
+		this(prefix, UUID.fromString(identifier));
+	}
+	
+	public Timeline(String prefix, UUID uuid) {
+		this.prefix = prefix;
+		this.uuid = uuid;
+		this.date = new Date();
+		this.location = "Some Location";
+		
+		// TODO Move this. One should not have to know what kind of persister it is.
+		//
+		Persister persister = new JSONPersister();
+		this.segments = persister.loadSegments(prefix + getIdentifier());
+	}
+	
+	public String getIdentifier() {
+		return uuid.toString();
+	}
+	
+	public static Timeline fromHash(Map<String, Object> hash) {
+		String prefix = hash.get("prefix") == null ? "" : (String) hash.get("prefix");
+		UUID uuid = hash.get("uuid") == null ? UUID.randomUUID() : UUID.fromString((String) hash.get("uuid"));
+		
+		String dateString = hash.get("date") == null ? "" : (String) hash.get("date");
 		Date date = null;
 		try {
+			DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 			date = dateFormat.parse(dateString);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		Timeline loaded = new Timeline(null, identifier);
-//		loaded.setUser(user); // TODO
-		loaded.setDate(date);
-		return loaded;
+		
+		String userReference = hash.get("user_reference") == null ? null : (String) hash.get("user_reference");
+		User user = Bundler.getUsers(null).find(userReference);
+
+		Timeline timeline = new Timeline(prefix, uuid);
+		timeline.setDate(date);
+		timeline.setUser(user);
+		
+		return timeline;
 	}
-	@SuppressWarnings("rawtypes")
-	public String toJSON() {
-		Map<String, Comparable> timeline = new LinkedHashMap<String, Comparable>();
-		timeline.put("identifier", this.identifier);
-		timeline.put("date", this.date.toString()); // EEE MMM dd HH:mm:ss zzz yyyy
-		timeline.put("user_reference", this.user.uuid.toString()); // TODO Beautify. toJSONReference?
-		return JSONValue.toJSONString(timeline);
+	public Map<String, Object> toHash() {
+		Map<String, Object> hash = new LinkedHashMap<String, Object>();
+		hash.put("prefix", this.prefix);
+		hash.put("date", this.date.toString()); // EEE MMM dd HH:mm:ss zzz yyyy
+		
+		hash.put("user_reference", this.user.uuid.toString()); // TODO Beautify. toJSONReference?
+		return hash;
+	}
+	
+	// Load a timeline based on its uuid.
+	//
+	public static Timeline load(Persister persister, String uuid) {
+		return persister.loadTimeline(uuid);
 	}
 
 	public void save(Persister persister) {
@@ -78,7 +102,7 @@ public class Timeline {
 		segments.installOn(activity, R.id.timeline);
 	}
 
-	public void setUser(User user) {
+	public void setUser(User user) { // TODO throw NullPointerException?
 		this.user = user;
 	}
 
@@ -86,7 +110,7 @@ public class Timeline {
 		return user;
 	}
 	
-	public void setDate(Date date) {
+	public void setDate(Date date) { // TODO throw NullPointerException?
 		this.date = date;
 	}
 
@@ -114,9 +138,5 @@ public class Timeline {
 
 	public CharSequence getItemText() {
 		return date.toLocaleString() + " " + location;
-	}
-
-	public String getIdentifierString() {
-		return identifier;
 	}
 }

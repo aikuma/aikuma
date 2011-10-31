@@ -1,11 +1,12 @@
 package au.edu.melbuni.boldapp;
 
-import java.util.ArrayList;
-
 import android.app.Application;
+import au.edu.melbuni.boldapp.models.Timeline;
+import au.edu.melbuni.boldapp.models.Timelines;
+import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.models.Users;
 import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
-import au.edu.melbuni.boldapp.models.*;
 
 
 public class BoldApplication extends Application {
@@ -60,7 +61,7 @@ public class BoldApplication extends Application {
 
 	public Users getUsers() {
 		if (users == null) {
-			users = new Users(new ArrayList<User>());
+			users = new Users();
 		}
 		return users;
 	}
@@ -74,7 +75,6 @@ public class BoldApplication extends Application {
 	}
 
 	public void clearUsers() {
-		System.out.println(users);
 		users.clear();
 	}
 

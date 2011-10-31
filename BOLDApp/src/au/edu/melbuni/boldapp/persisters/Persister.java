@@ -5,10 +5,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.CharBuffer;
 
 import android.os.Environment;
-import au.edu.melbuni.boldapp.models.*;
+import au.edu.melbuni.boldapp.models.Segment;
+import au.edu.melbuni.boldapp.models.Segments;
+import au.edu.melbuni.boldapp.models.Timeline;
+import au.edu.melbuni.boldapp.models.Timelines;
+import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.models.Users;
 
 // A persister defines in what format
 // the data is saved, and where.
@@ -39,7 +43,7 @@ public abstract class Persister {
 
 	public abstract void save(Segments segments);
 	
-	public abstract Segments loadSegments(Timeline timeline);
+	public abstract Segments loadSegments(String prefix);
 	
 	public abstract void save(Segment segment);
 	
@@ -66,16 +70,15 @@ public abstract class Persister {
 		String identifier = null;
 		try {
 			identifier = read(pathForCurrentUser());
-			System.out.println(identifier);
 		} catch (IOException e) {
 			identifier = null;
 		}
 		
-		for (User user : users) {
-			if (user.getIdentifierString().equals(identifier)) {
-				return user;
-			}
+		User user = users.find(identifier);
+		if (user != null) {
+			return user;
 		}
+		
 		return null;
 	}
 	
@@ -176,7 +179,7 @@ public abstract class Persister {
 	}
 	
 	public String pathFor(Timeline timeline) {
-		return pathForTimeline(timeline.getIdentifierString());
+		return pathForTimeline(timeline.getIdentifier());
 	}
 	
 	public String pathFor(Segments segments) {

@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.view.View;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.Recorder;
+import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class Segment extends Observable {
 
@@ -36,6 +37,18 @@ public class Segment extends Observable {
 		Map<String, Comparable> segment = new LinkedHashMap<String, Comparable>();
 		segment.put("identifier", this.identifier);
 		return JSONValue.toJSONString(segment);
+	}
+	
+	// Load a segment based on its identifier.
+	//
+	public static Segment load(Persister persister, String identifier) {
+		return persister.loadSegment(identifier);
+	}
+	
+	// Save the segment's metadata.
+	//
+	public void save(Persister persister) {
+		persister.save(this);
 	}
 	
 	public void setPlaying(boolean playing) {

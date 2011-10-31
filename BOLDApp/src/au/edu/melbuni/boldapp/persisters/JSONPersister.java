@@ -1,7 +1,9 @@
 package au.edu.melbuni.boldapp.persisters;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Map;
+
+import org.json.simple.JSONValue;
 
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
@@ -18,29 +20,37 @@ public class JSONPersister extends Persister {
 		return ".json";
 	}
 	
+	public String toJSON(Object object) {
+		return JSONValue.toJSONString(object);
+	}
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> fromJSON(String jsonData) {
+		return (Map<String, Object>) JSONValue.parse(jsonData);
+	}
+	
 	public void save(Users users) {
-		write(users, users.toJSON());
+		write(users, toJSON(users.toHash()));
 		users.saveEach(this);
 	}
 	
 	public Users loadUsers() {
 		Users users = null;
 		try {
-			users = Users.fromJSON(this, readUsers());
+			users = Users.fromHash(this, fromJSON(readUsers()));
 		} catch (IOException e) {
-			users = new Users(new ArrayList<User>());
+			users = new Users();
 		}
 		return users;
 	}
 	
 	public void save(User user) {
-		write(user, user.toJSON());
+		write(user, toJSON(user.toHash()));
 	}
 	
 	public User loadUser(String identifier) {
 		User user = null;
 		try {
-			user = User.fromJSON(readUser(identifier));
+			user = User.fromHash(fromJSON(readUser(identifier)));
 		} catch (IOException e) {
 			user = new User();
 		}
@@ -48,14 +58,14 @@ public class JSONPersister extends Persister {
 	}
 	
 	public void save(Timelines timelines) {
-		write(timelines, timelines.toJSON());
+		write(timelines, toJSON(timelines.toHash()));
 		timelines.saveEach(this);
 	}
 	
 	public Timelines loadTimelines() {
 		Timelines timelines = null;
 		try {
-			timelines = Timelines.fromJSON(readTimelines());
+			timelines = Timelines.fromHash(this, fromJSON(readTimelines()));
 		} catch (IOException e) {
 			timelines = new Timelines();
 		}
@@ -63,32 +73,32 @@ public class JSONPersister extends Persister {
 	}
 
 	public void save(Timeline timeline) {
-		write(timeline, timeline.toJSON());
+		write(timeline, toJSON(timeline.toHash()));
 	}
 	
 	public Timeline loadTimeline(String identifier) {
 		Timeline timeline = null;
 		try {
-			timeline = Timeline.fromJSON(readTimeline(identifier));
+			timeline = Timeline.fromHash(fromJSON(readTimeline(identifier)));
 		} catch (IOException e) {
-			timeline = new Timeline(null, identifier);
+//			timeline = new Timeline();
 		}
 		return timeline;
 	}
 	
 	public void save(Segments segments) {
-		write(segments, segments.toJSON());
+		write(segments, toJSON(segments.toHash()));
 		segments.saveEach(this);
 	}
 	
-	public Segments loadSegments(Timeline timeline) {
+	public Segments loadSegments(String prefix) {
 		Segments segments = null;
 		try {
-			segments = Segments.fromJSON(readSegments());
+			segments = Segments.fromHash(this, fromJSON(readSegments()));
 		} catch (IOException e) {
-			segments = new Segments(timeline);
+			segments = new Segments(prefix);
 		}
-		return new Segments(timeline); // TODO
+		return segments;
 	}
 
 	public void save(Segment segment) {
