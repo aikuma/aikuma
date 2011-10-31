@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 
 import android.os.Environment;
 import au.edu.melbuni.boldapp.models.Segment;
@@ -25,6 +26,10 @@ public abstract class Persister {
 	// Public API.
 	//
 	
+	public abstract String toJSON(Object object);
+	
+	public abstract Map<String, Object> fromJSON(String jsonData);
+	
 	public abstract void save(Users users);
 	
 	public abstract Users loadUsers();
@@ -35,11 +40,11 @@ public abstract class Persister {
 	
 	public abstract void save(Timelines timelines);
 	
-	public abstract Timelines loadTimelines();
+	public abstract Timelines loadTimelines(Users users);
 	
 	public abstract void save(Timeline timeline);
 	
-	public abstract Timeline loadTimeline(String identifier);
+	public abstract Timeline loadTimeline(Users users, String identifier);
 
 	public abstract void save(Segments segments);
 	

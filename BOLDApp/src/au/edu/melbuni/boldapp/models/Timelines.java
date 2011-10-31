@@ -40,12 +40,12 @@ public class Timelines extends Model implements Collection<Timeline> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static Timelines fromHash(Persister persister, Map<String, Object> hash) {
+	public static Timelines fromHash(Persister persister, Users users, Map<String, Object> hash) {
 		ArrayList<String> timelineIds = (ArrayList<String>) hash.get("timelines");
 		ArrayList<Timeline> timelines = new ArrayList<Timeline>();
 		if (timelineIds != null) {
 			for (String timelineId : timelineIds) {
-				Timeline timeline = Timeline.load(persister, timelineId);
+				Timeline timeline = Timeline.load(users, persister, timelineId);
 				timelines.add(timeline);
 			}
 		}

@@ -3,15 +3,18 @@ package au.edu.melbuni.boldapp.test;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import au.edu.melbuni.boldapp.BoldActivity;
 import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.models.Users;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
+import au.edu.melbuni.boldapp.persisters.Persister;
 
 @RunWith(CustomTestRunner.class)
 public class TimelineTest {
@@ -22,7 +25,7 @@ public class TimelineTest {
 	@Before
 	public void setUp() throws Exception {
 		user = new User("Some Name", UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479"));
-		timeline = new Timeline(new BoldActivity(), "some_identifier");
+		timeline = new Timeline("some_prefix_");
 		timeline.setUser(user);
 		timeline.setDate(new Date(0));
 	}
@@ -33,10 +36,13 @@ public class TimelineTest {
 	}
 	
 	@Test
+	@SuppressWarnings("deprecation")
 	public void fromJSON() {
-		Timeline loaded = Timeline.fromJSON("{\"identifier\":\"some_identifier\",\"date\":\"Thu Jan 01 01:00:00 CET 1970\",\"user_reference\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}");
-		assertEquals("some_identifier", loaded.identifier);
-		assertEquals(new Date(0), loaded.getDate());
+		Persister persister = new JSONPersister();
+		Map<String, Object> hash = persister.fromJSON("{\"prefix\":\"some_prefix_\",\"uuid\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"\"date\":\"1 Jan 1970 01:00:00 GMT\",\"user_reference\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}");
+		Timeline loaded = Timeline.fromHash(new Users(), hash);
+		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", loaded.getIdentifier());
+		assertEquals("1 Jan 1970 01:00:00 GMT", loaded.getDate().toGMTString());
 	}
 //	@Test
 //	public void fromJSONWithoutData() {
@@ -48,8 +54,8 @@ public class TimelineTest {
 	@Test
 	public void toJSON() {
 		assertEquals(
-		  "{\"identifier\":\"some_identifier\",\"date\":\"Thu Jan 01 01:00:00 CET 1970\",\"user_reference\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}",
-		  timeline.toJSON()
+		  "{\"prefix\":\"some_prefix_\",\"date\":\"1 Jan 1970 00:00:00 GMT\",\"user_reference\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}",
+		  new JSONPersister().toJSON(timeline.toHash())
 		);
 	}
 }

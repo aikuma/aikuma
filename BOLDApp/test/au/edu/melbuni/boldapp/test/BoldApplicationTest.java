@@ -27,7 +27,7 @@ public class BoldApplicationTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		BoldApplicationTest.timeline    = new Timeline();
+		BoldApplicationTest.timeline    = new Timeline("test_");
 		BoldApplicationTest.application = new BoldApplication();
 	}
 	
@@ -81,9 +81,10 @@ public class BoldApplicationTest {
 			// Users.
 			//
 			specificUser = new User();
+			User unspecifiedUser = new User();
 			users = new Users();
 			users.add(specificUser);
-			users.add(new User());
+			users.add(unspecifiedUser);
 			application.setCurrentUser(specificUser);
 			Iterator<User> usersIterator = users.iterator();
 			while (usersIterator.hasNext()) {
@@ -94,8 +95,11 @@ public class BoldApplicationTest {
 			//
 			timelines = new Timelines();
 			specificTimeline = new Timeline("test_");
+			Timeline unspecifiedTimeline = new Timeline("test_");
+			specificTimeline.setUser(specificUser);
+			unspecifiedTimeline.setUser(unspecifiedUser);
 			timelines.add(specificTimeline);
-			timelines.add(new Timeline("test_"));
+			timelines.add(unspecifiedTimeline);
 			Iterator<Timeline> timelinesIterator = timelines.iterator();
 			while (timelinesIterator.hasNext()) {
 				application.addTimeline(timelinesIterator.next());
@@ -117,6 +121,8 @@ public class BoldApplicationTest {
 			application.save();
 			application.load();
 			
+			// Basics.
+			//
 			assertNotNull(application.getCurrentUser());
 			assertEquals(specificUser.getIdentifierString(), application.getCurrentUser().getIdentifierString());
 			assertNotNull(application.getUsers());
@@ -124,6 +130,10 @@ public class BoldApplicationTest {
 			
 			assertNotNull(application.getTimelines());
 			assertEquals(2, application.getTimelines().size());
+			
+			// Relations.
+			//
+			assertEquals(specificTimeline.getUser(), specificUser);
 		}
 		
 	}
@@ -173,10 +183,10 @@ public class BoldApplicationTest {
 		public void setUp() throws Exception {
 			super.setUp();
 			
-			current = new Timeline();
+			current = new Timeline("current_");
 			application.setCurrentTimeline(timeline);
 			
-			timelines = new Timelines("current");
+			timelines = new Timelines();
 			timelines.add(current);
 			timelines.add(timeline);
 			

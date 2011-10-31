@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
 
 @RunWith(CustomTestRunner.class)
 public class UserTest {
@@ -23,13 +24,13 @@ public class UserTest {
 	
 	@Test
 	public void fromJSON() {
-		User loaded = User.fromJSON("{\"name\":\"Some Name\",\"uuid\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}");
+		User loaded = User.fromHash(new JSONPersister().fromJSON("{\"name\":\"Some Name\",\"uuid\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}"));
 		assertEquals("Some Name", loaded.name);
 		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", loaded.getIdentifierString());
 	}
 	@Test
 	public void fromJSONWithoutData() {
-		User loaded = User.fromJSON("{}");
+		User loaded = User.fromHash(new JSONPersister().fromJSON("{}"));
 		assertEquals("", loaded.name);
 		assertNotNull(loaded.uuid);
 	}

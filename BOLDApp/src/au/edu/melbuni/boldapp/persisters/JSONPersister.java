@@ -62,10 +62,10 @@ public class JSONPersister extends Persister {
 		timelines.saveEach(this);
 	}
 	
-	public Timelines loadTimelines() {
+	public Timelines loadTimelines(Users users) {
 		Timelines timelines = null;
 		try {
-			timelines = Timelines.fromHash(this, fromJSON(readTimelines()));
+			timelines = Timelines.fromHash(this, users, fromJSON(readTimelines()));
 		} catch (IOException e) {
 			timelines = new Timelines();
 		}
@@ -76,10 +76,10 @@ public class JSONPersister extends Persister {
 		write(timeline, toJSON(timeline.toHash()));
 	}
 	
-	public Timeline loadTimeline(String identifier) {
+	public Timeline loadTimeline(Users users, String identifier) {
 		Timeline timeline = null;
 		try {
-			timeline = Timeline.fromHash(fromJSON(readTimeline(identifier)));
+			timeline = Timeline.fromHash(users, fromJSON(readTimeline(identifier)));
 		} catch (IOException e) {
 //			timeline = new Timeline();
 		}

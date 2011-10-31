@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import android.app.Activity;
-import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Recorder;
@@ -57,21 +56,21 @@ public class Timeline {
 		return uuid.toString();
 	}
 	
-	public static Timeline fromHash(Map<String, Object> hash) {
+	public static Timeline fromHash(Users users, Map<String, Object> hash) {
 		String prefix = hash.get("prefix") == null ? "" : (String) hash.get("prefix");
 		UUID uuid = hash.get("uuid") == null ? UUID.randomUUID() : UUID.fromString((String) hash.get("uuid"));
 		
 		String dateString = hash.get("date") == null ? "" : (String) hash.get("date");
 		Date date = null;
 		try {
-			DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+			DateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss zzz");
 			date = dateFormat.parse(dateString);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		
 		String userReference = hash.get("user_reference") == null ? null : (String) hash.get("user_reference");
-		User user = Bundler.getUsers(null).find(userReference);
+		User user = users.find(userReference);
 
 		Timeline timeline = new Timeline(prefix, uuid);
 		timeline.setDate(date);
@@ -81,17 +80,19 @@ public class Timeline {
 	}
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
-		hash.put("prefix", this.prefix);
-		hash.put("date", this.date.toString()); // EEE MMM dd HH:mm:ss zzz yyyy
 		
-		hash.put("user_reference", this.user.uuid.toString()); // TODO Beautify. toJSONReference?
+		hash.put("prefix", this.prefix);
+		hash.put("date", this.date.toGMTString()); // dd MMM yyyy HH:mm:ss GMT
+		
+		hash.put("user_reference", this.user.getIdentifierString()); // TODO Beautify. toJSONReference?
+		
 		return hash;
 	}
 	
 	// Load a timeline based on its uuid.
 	//
-	public static Timeline load(Persister persister, String uuid) {
-		return persister.loadTimeline(uuid);
+	public static Timeline load(Users users, Persister persister, String uuid) {
+		return persister.loadTimeline(users, uuid);
 	}
 
 	public void save(Persister persister) {

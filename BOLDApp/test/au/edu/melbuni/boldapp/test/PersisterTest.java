@@ -49,9 +49,10 @@ public class PersisterTest {
 	
 	@Test
 	public void pathForWithTimeline() {
+		UUID validUUID = UUID.randomUUID();
 		assertEquals(
-		  "/mnt/sdcard/bold/timelines/identifier.json",
-		  persister.pathFor(new Timeline(null, "identifier"))
+		  "/mnt/sdcard/bold/timelines/" + validUUID.toString() + ".json",
+		  persister.pathFor(new Timeline("anything_", validUUID))
 		);
 	}
 	

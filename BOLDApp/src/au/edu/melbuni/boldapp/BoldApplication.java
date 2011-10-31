@@ -21,7 +21,7 @@ public class BoldApplication extends Application {
 		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler());
 	}
 
-	// Loads all the metadata of the application.
+	// Loads all the meta data of the application.
 	//
 	public void load() {
 		Persister persister = new JSONPersister();
@@ -30,11 +30,11 @@ public class BoldApplication extends Application {
 		//
 		this.users       = persister.loadUsers();
 		this.currentUser = persister.loadCurrentUser(users);
-//		this.timelines   = persister.loadTimelines();
+		this.timelines   = persister.loadTimelines(this.users);
 		// this.currentTimeline = persister.loadCurrentTimeline();
 	}
 
-	// Saves all the metadata of the
+	// Saves all the meta data of the
 	// whole application.
 	//
 	public void save() {
@@ -44,7 +44,7 @@ public class BoldApplication extends Application {
 		//
 		persister.save(getUsers());
 		persister.saveCurrentUser(getCurrentUser());
-//		persister.save(getTimelines());
+		persister.save(getTimelines());
 //		persister.saveCurrentTimeline(currentTimeline);
 	}
 
