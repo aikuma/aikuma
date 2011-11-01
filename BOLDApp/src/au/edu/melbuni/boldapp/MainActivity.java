@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
-import au.edu.melbuni.boldapp.models.Users;
 
 public class MainActivity extends BoldActivity {
 
@@ -15,10 +14,10 @@ public class MainActivity extends BoldActivity {
 		super.onCreate(savedInstanceState);
 		
 		Bundler.load(this);
-		Users users = Bundler.getUsers(this);
-		if (users.isEmpty()) {
-			throw new RuntimeException(users.toString());
-		}
+//		Users users = Bundler.getUsers(this);
+//		if (users.isEmpty()) {
+//			throw new RuntimeException(users.toString());
+//		}
 
 		configureView(savedInstanceState);
 		installBehavior(savedInstanceState);

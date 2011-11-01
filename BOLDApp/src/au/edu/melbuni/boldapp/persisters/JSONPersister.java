@@ -2,6 +2,7 @@ package au.edu.melbuni.boldapp.persisters;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.simple.JSONValue;
 
@@ -52,7 +53,7 @@ public class JSONPersister extends Persister {
 		try {
 			user = User.fromHash(fromJSON(readUser(identifier)));
 		} catch (IOException e) {
-			user = new User();
+			user = new User(UUID.fromString(identifier));
 		}
 		return user;
 	}
@@ -74,13 +75,15 @@ public class JSONPersister extends Persister {
 
 	public void save(Timeline timeline) {
 		write(timeline, toJSON(timeline.toHash()));
+		timeline.saveEach(this);
 	}
 	
 	public Timeline loadTimeline(Users users, String identifier) {
 		Timeline timeline = null;
 		try {
-			timeline = Timeline.fromHash(users, fromJSON(readTimeline(identifier)));
+			timeline = Timeline.fromHash(this, users, fromJSON(readTimeline(identifier)));
 		} catch (IOException e) {
+			System.out.println("OUCH " + e);
 //			timeline = new Timeline();
 		}
 		return timeline;
@@ -102,13 +105,13 @@ public class JSONPersister extends Persister {
 	}
 
 	public void save(Segment segment) {
-		write(segment, segment.toJSON());
+		write(segment, toJSON(segment.toHash()));
 	}
 	
 	public Segment loadSegment(String identifier) {
 		Segment segment = null;
 		try {
-			segment = Segment.fromJSON(readSegment(identifier));
+			segment = Segment.fromHash(fromJSON(readSegment(identifier)));
 		} catch (IOException e) {
 			segment = new Segment(identifier);
 		}

@@ -12,7 +12,6 @@ import android.app.Activity;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Recorder;
-import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
@@ -27,10 +26,10 @@ public class Timeline {
 	UUID uuid;
 	Date date;
 	String location;
+	Segments segments;
 	
 	User user;
 	Timelines timelines;
-	Segments segments;
 	
 	public Timeline(String prefix) {
 		this(prefix, UUID.randomUUID());
@@ -41,23 +40,30 @@ public class Timeline {
 	}
 	
 	public Timeline(String prefix, UUID uuid) {
+		this(prefix, uuid, generateSegmentsFrom(prefix, uuid)); // TODO
+	}
+	
+	public Timeline(String prefix, UUID uuid, Segments segments) {
 		this.prefix = prefix;
 		this.uuid = uuid;
 		this.date = new Date();
 		this.location = "Some Location";
-		
-		// TODO Move this. One should not have to know what kind of persister it is.
-		//
-		Persister persister = new JSONPersister();
-		this.segments = persister.loadSegments(prefix + getIdentifier());
+		this.segments = segments;
 	}
 	
 	public String getIdentifier() {
 		return uuid.toString();
 	}
 	
-	public static Timeline fromHash(Users users, Map<String, Object> hash) {
+	public void saveEach(Persister persister) {
+		for (Segment segment : segments) {
+			persister.save(segment);
+		}
+	}
+	
+	public static Timeline fromHash(Persister persister, Users users, Map<String, Object> hash) {
 		String prefix = hash.get("prefix") == null ? "" : (String) hash.get("prefix");
+		
 		UUID uuid = hash.get("uuid") == null ? UUID.randomUUID() : UUID.fromString((String) hash.get("uuid"));
 		
 		String dateString = hash.get("date") == null ? "" : (String) hash.get("date");
@@ -69,10 +75,16 @@ public class Timeline {
 			e.printStackTrace();
 		}
 		
-		String userReference = hash.get("user_reference") == null ? null : (String) hash.get("user_reference");
+		String userReference = hash.get("user") == null ? null : (String) hash.get("user");
 		User user = users.find(userReference);
-
-		Timeline timeline = new Timeline(prefix, uuid);
+		
+		if (user == null) {
+			throw new NullPointerException("No User " + userReference + " for Timeline " + uuid + " found.");
+		}
+		
+		Segments segments = Segments.load(persister, prefix, uuid);
+		
+		Timeline timeline = new Timeline(prefix, uuid, segments);
 		timeline.setDate(date);
 		timeline.setUser(user);
 		
@@ -82,11 +94,15 @@ public class Timeline {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
 		
 		hash.put("prefix", this.prefix);
-		hash.put("date", this.date.toGMTString()); // dd MMM yyyy HH:mm:ss GMT
-		
-		hash.put("user_reference", this.user.getIdentifierString()); // TODO Beautify. toJSONReference?
+		hash.put("uuid", this.getIdentifier());
+		hash.put("date", this.date.toGMTString());
+		hash.put("user", this.user.getIdentifier());
 		
 		return hash;
+	}
+	
+	public static Segments generateSegmentsFrom(String prefix, UUID uuid) {
+		return new Segments(prefix + uuid.toString());
 	}
 	
 	// Load a timeline based on its uuid.

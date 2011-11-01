@@ -27,7 +27,7 @@ public class ShadowEnvironment {
 	}
 	
 	public static File getExternalStorageDirectory() {
-		return new FileStub("."); // File("mnt/sdcard/");
+		return null;
 	}
 	
 }

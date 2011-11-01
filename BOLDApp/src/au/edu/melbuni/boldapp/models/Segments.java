@@ -1,8 +1,10 @@
 package au.edu.melbuni.boldapp.models;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,7 +17,7 @@ import au.edu.melbuni.boldapp.Recorder;
 import au.edu.melbuni.boldapp.SegmentItemAdapter;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
-public class Segments {
+public class Segments implements Iterable<Segment> {
 	
 	// Stored.
 	// 
@@ -43,6 +45,10 @@ public class Segments {
 	
 	// Persistence.
 	//
+	
+	public static Segments load(Persister persister, String prefix, UUID uuid) {
+		return persister.loadSegments(prefix + uuid.toString());
+	}
 
 	public void saveEach(Persister persister) {
 		for (Segment segment : segments) {
@@ -52,6 +58,8 @@ public class Segments {
 
 	@SuppressWarnings("unchecked")
 	public static Segments fromHash(Persister persister, Map<String, Object> hash) {
+		System.out.println("LOADING Segments: ");
+		
 		String prefix = hash.get("prefix") == null ? "" : (String) hash.get("prefix"); // TODO throw?
 
 		ArrayList<String> segmentIds = (ArrayList<String>) hash.get("segments");
@@ -63,14 +71,18 @@ public class Segments {
 			}
 		}
 		
-		return new Segments(prefix);
+		return new Segments(prefix, segments);
 	}
 
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
 		hash.put("prefix", this.prefix);
 		
-		
+		ArrayList<String> segmentIds = new ArrayList<String>();
+		for (Segment segment : segments) {
+			segmentIds.add(segment.getIdentifier());
+		}
+		hash.put("segments", segmentIds);
 		
 		return hash;
 	}
@@ -230,6 +242,11 @@ public class Segments {
 		selectedForRecording.select();
 
 		return selectedForRecording;
+	}
+
+	@Override
+	public Iterator<Segment> iterator() {
+		return segments.iterator();
 	}
 
 }

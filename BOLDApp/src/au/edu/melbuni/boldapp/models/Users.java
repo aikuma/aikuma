@@ -28,6 +28,10 @@ public class Users extends Model implements Collection<User> { // TODO implement
 
 	// Persistence.
 	//
+	
+	public void save(Persister persister) {
+		persister.save(this);
+	}
 
 	public void saveEach(Persister persister) {
 		for (User user : users) {
@@ -52,7 +56,7 @@ public class Users extends Model implements Collection<User> { // TODO implement
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
 		ArrayList<String> usersIds = new ArrayList<String>();
 		for (User user : users) {
-			usersIds.add(user.getIdentifierString());
+			usersIds.add(user.getIdentifier());
 		}
 		hash.put("users", usersIds);
 		return hash;
@@ -60,7 +64,7 @@ public class Users extends Model implements Collection<User> { // TODO implement
 	
 	public User find(String identifier) {
 		for (User user : users) {
-			if (user.getIdentifierString().equals(identifier)) {
+			if (user.getIdentifier().equals(identifier)) {
 				return user;
 			}
 		}

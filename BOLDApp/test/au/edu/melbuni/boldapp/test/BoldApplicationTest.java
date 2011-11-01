@@ -68,10 +68,7 @@ public class BoldApplicationTest {
 	@RunWith(RobolectricTestRunner.class)
 	public static class WithUsers extends BoldApplicationTest {
 		
-		Users users;
 		User specificUser;
-		
-		Timelines timelines;
 		Timeline specificTimeline;
 		
 		@Before
@@ -82,33 +79,22 @@ public class BoldApplicationTest {
 			//
 			specificUser = new User();
 			User unspecifiedUser = new User();
-			users = new Users();
-			users.add(specificUser);
-			users.add(unspecifiedUser);
+			
+			application.addUser(specificUser);
+			application.addUser(unspecifiedUser);
+			
 			application.setCurrentUser(specificUser);
-			Iterator<User> usersIterator = users.iterator();
-			while (usersIterator.hasNext()) {
-				application.addUser(usersIterator.next());
-			}
 			
 			// Timelines.
 			//
-			timelines = new Timelines();
 			specificTimeline = new Timeline("test_");
 			Timeline unspecifiedTimeline = new Timeline("test_");
+			
 			specificTimeline.setUser(specificUser);
 			unspecifiedTimeline.setUser(unspecifiedUser);
-			timelines.add(specificTimeline);
-			timelines.add(unspecifiedTimeline);
-			Iterator<Timeline> timelinesIterator = timelines.iterator();
-			while (timelinesIterator.hasNext()) {
-				application.addTimeline(timelinesIterator.next());
-			}
-		}
-		
-		@Test
-		public void getUsers() {
-			assertEquals(users.users, application.getUsers().users);
+			
+			application.addTimeline(specificTimeline);
+			application.addTimeline(unspecifiedTimeline);
 		}
 		
 		@Test
@@ -124,7 +110,7 @@ public class BoldApplicationTest {
 			// Basics.
 			//
 			assertNotNull(application.getCurrentUser());
-			assertEquals(specificUser.getIdentifierString(), application.getCurrentUser().getIdentifierString());
+			assertEquals(specificUser.getIdentifier(), application.getCurrentUser().getIdentifier());
 			assertNotNull(application.getUsers());
 			assertEquals(2, application.getUsers().size());
 			
@@ -133,7 +119,7 @@ public class BoldApplicationTest {
 			
 			// Relations.
 			//
-			assertEquals(specificTimeline.getUser(), specificUser);
+			assertEquals(specificUser, application.getTimelines().get(0).getUser());
 		}
 		
 	}

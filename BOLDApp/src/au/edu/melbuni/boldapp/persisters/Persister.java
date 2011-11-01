@@ -1,6 +1,7 @@
 package au.edu.melbuni.boldapp.persisters;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -22,6 +23,14 @@ import au.edu.melbuni.boldapp.models.Users;
 // Because that is something else entirely.
 //
 public abstract class Persister {
+	
+	public Persister() {
+		// Create the necessary directories.
+		//
+		new File(dirForUsers()).mkdir();
+		new File(dirForTimelines()).mkdir();
+		new File(dirForSegments()).mkdir();
+	}
 
 	// Public API.
 	//
@@ -63,6 +72,8 @@ public abstract class Persister {
 			//
 			return external.getAbsolutePath() + "/bold/";
 		}
+		// FIXME Make this dynamic.
+		//
 		return "./mnt/sdcard/bold/"; // During e.g. tests.
 	}
 	
@@ -88,7 +99,7 @@ public abstract class Persister {
 	}
 	
 	public void saveCurrentUser(User user) {
-		write(pathForCurrentUser(), user.getIdentifierString());
+		write(pathForCurrentUser(), user.getIdentifier());
 	}
 	
 //	// Returns null if no current timeline has been saved.
@@ -165,7 +176,7 @@ public abstract class Persister {
 	}
 
 	public String readTimeline(String identifier) throws IOException {
-		return read(pathForUser(identifier));
+		return read(pathForTimeline(identifier));
 	}
 
 	// Helper methods.
@@ -176,7 +187,7 @@ public abstract class Persister {
 	}
 
 	public String pathFor(User user) {
-		return pathForUser(user.getIdentifierString());
+		return pathForUser(user.getIdentifier());
 	}
 	
 	public String pathFor(Timelines timelines) {
@@ -192,7 +203,7 @@ public abstract class Persister {
 	}
 	
 	public String pathFor(Segment segment) {
-		return pathForTimeline(segment.getIdentifierString());
+		return pathForTimeline(segment.getIdentifier());
 	}
 	
 	
@@ -203,28 +214,40 @@ public abstract class Persister {
 		return getBasePath() + "users/current.txt";
 	}
 	
+	public String dirForUsers() {
+		return getBasePath() + "users/";
+	}
+	
 	public String pathForUsers() {
-		return getBasePath() + "users/list" + fileExtension();
+		return dirForUsers() + "list" + fileExtension();
 	}
 	
 	public String pathForUser(String identifier) {
-		return getBasePath() + "users/" + identifier + fileExtension();
+		return dirForUsers() + identifier + fileExtension();
+	}
+	
+	public String dirForTimelines() {
+		return getBasePath() + "timelines/";
 	}
 	
 	public String pathForTimelines() {
-		return getBasePath() + "timelines/list" + fileExtension();
+		return dirForTimelines() + "list" + fileExtension();
 	}
 	
 	public String pathForTimeline(String identifier) {
-		return getBasePath() + "timelines/" + identifier + fileExtension();
+		return dirForTimelines() + identifier + fileExtension();
+	}
+	
+	public String dirForSegments() {
+		return getBasePath() + "segments/";
 	}
 	
 	public String pathForSegments() {
-		return getBasePath() + "segments/list" + fileExtension(); // TODO Really?
+		return dirForSegments() + "list" + fileExtension(); // TODO Really?
 	}
 
 	public String pathForSegment(String identifier) {
-		return getBasePath() + "segments/" + identifier + fileExtension();
+		return dirForSegments() + identifier + fileExtension();
 	}
 
 	// Write the data to the file.
@@ -232,13 +255,18 @@ public abstract class Persister {
 	// TODO Buffer?
 	//
 	public void write(String fileName, String data) {
-		FileWriter fileWriter = null;
 		try {
-			fileWriter = new FileWriter(fileName);
-			fileWriter.write(data);
-			fileWriter.close();
+			File file = new File(fileName);
+			file.getParentFile().mkdirs();
+			file.createNewFile();
+			
+		    BufferedWriter bufferedWriter = new BufferedWriter(
+		    		new FileWriter(file, false));
+		    bufferedWriter.write(data);
+		    bufferedWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.out.println(fileName);
 		}
 	}
 

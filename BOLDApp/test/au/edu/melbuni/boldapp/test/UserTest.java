@@ -26,7 +26,7 @@ public class UserTest {
 	public void fromJSON() {
 		User loaded = User.fromHash(new JSONPersister().fromJSON("{\"name\":\"Some Name\",\"uuid\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}"));
 		assertEquals("Some Name", loaded.name);
-		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", loaded.getIdentifierString());
+		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", loaded.getIdentifier());
 	}
 	@Test
 	public void fromJSONWithoutData() {
@@ -42,7 +42,7 @@ public class UserTest {
 	
 	@Test
 	public void getIndentifierString() {
-		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", user.getIdentifierString());
+		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", user.getIdentifier());
 	}
 
 	@Test
@@ -52,12 +52,12 @@ public class UserTest {
 	
 	@Test
 	public void getProfileImagePath() {
-		assertEquals("/mnt/sdcard/bold/users/profile_f47ac10b-58cc-4372-a567-0e02b2c3d479.png", user.getProfileImagePath());
+		assertEquals("./mnt/sdcard/bold/users/profile_f47ac10b-58cc-4372-a567-0e02b2c3d479.png", user.getProfileImagePath());
 	}
 	
 	@Test
 	public void getUUIDString() {
-		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", user.getIdentifierString());
+		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", user.getIdentifier());
 	}
 	
 	@Test

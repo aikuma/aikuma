@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,10 +20,15 @@ public class TimelineTest {
 	
 	Timeline timeline;
 	User user;
+	Users users;
 	
 	@Before
 	public void setUp() throws Exception {
-		user = new User("Some Name", UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479"));
+		users = new Users();
+		user = new User("Some Name");
+		users.add(user);
+		users.save(new JSONPersister());
+		
 		timeline = new Timeline("some_prefix_");
 		timeline.setUser(user);
 		timeline.setDate(new Date(0));
@@ -39,9 +43,9 @@ public class TimelineTest {
 	@SuppressWarnings("deprecation")
 	public void fromJSON() {
 		Persister persister = new JSONPersister();
-		Map<String, Object> hash = persister.fromJSON("{\"prefix\":\"some_prefix_\",\"uuid\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"\"date\":\"1 Jan 1970 01:00:00 GMT\",\"user_reference\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}");
-		Timeline loaded = Timeline.fromHash(new Users(), hash);
-		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", loaded.getIdentifier());
+		Map<String, Object> hash = persister.fromJSON("{\"prefix\":\"some_prefix_\",\"uuid\":\"" + timeline.getIdentifier() + "\"\"date\":\"1 Jan 1970 01:00:00 GMT\",\"user\":\"" + user.getIdentifier() + "\"}");
+		Timeline loaded = Timeline.fromHash(persister, users, hash);
+		assertEquals(timeline.getIdentifier(), loaded.getIdentifier());
 		assertEquals("1 Jan 1970 01:00:00 GMT", loaded.getDate().toGMTString());
 	}
 //	@Test
@@ -54,7 +58,7 @@ public class TimelineTest {
 	@Test
 	public void toJSON() {
 		assertEquals(
-		  "{\"prefix\":\"some_prefix_\",\"date\":\"1 Jan 1970 00:00:00 GMT\",\"user_reference\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}",
+		  "{\"prefix\":\"some_prefix_\",\"uuid\":\"" + timeline.getIdentifier() + "\",\"date\":\"1 Jan 1970 00:00:00 GMT\",\"user\":\"" + user.getIdentifier() + "\"}",
 		  new JSONPersister().toJSON(timeline.toHash())
 		);
 	}

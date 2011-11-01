@@ -30,7 +30,7 @@ public class BoldApplication extends Application {
 		//
 		this.users       = persister.loadUsers();
 		this.currentUser = persister.loadCurrentUser(users);
-		this.timelines   = persister.loadTimelines(this.users);
+		this.timelines   = persister.loadTimelines(users);
 		// this.currentTimeline = persister.loadCurrentTimeline();
 	}
 

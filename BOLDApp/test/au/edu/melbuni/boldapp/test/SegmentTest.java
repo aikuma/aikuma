@@ -2,6 +2,9 @@ package au.edu.melbuni.boldapp.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Map;
+
+import org.json.simple.JSONValue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,20 +22,22 @@ public class SegmentTest {
 		segment = new Segment("some_identifier");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void fromJSON() {
-		Segment loaded = Segment.fromJSON("{\"identifier\":\"Some Identifier\"}");
-		assertEquals("Some Identifier", loaded.identifier);
+		Segment loaded = Segment.fromHash((Map<String, Object>) JSONValue.parse("{\"identifier\":\"Some Identifier\"}"));
+		assertEquals("Some Identifier", loaded.getIdentifier());
 	}
+	@SuppressWarnings("unchecked")
 	@Test
 	public void fromJSONWithoutData() {
-		Segment loaded = Segment.fromJSON("{}");
-		assertEquals("", loaded.identifier);
+		Segment loaded = Segment.fromHash((Map<String, Object>) JSONValue.parse("{}"));
+		assertEquals("", loaded.getIdentifier());
 	}
 	
 	@Test
 	public void toJSON() {
-		assertEquals("{\"identifier\":\"some_identifier\"}", segment.toJSON());
+		assertEquals("{\"identifier\":\"some_identifier\"}", JSONValue.toJSONString(segment.toHash()));
 	}
 	
 	@Test

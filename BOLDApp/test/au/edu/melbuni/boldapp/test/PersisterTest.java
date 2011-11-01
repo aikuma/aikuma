@@ -28,13 +28,13 @@ public class PersisterTest {
 	
 	@Test
 	public void pathForWithUsers() {
-		assertEquals("/mnt/sdcard/bold/users/list.json", persister.pathFor(new Users(new ArrayList<User>())));
+		assertEquals("./mnt/sdcard/bold/users/list.json", persister.pathFor(new Users(new ArrayList<User>())));
 	}
 	
 	@Test
 	public void pathForWithUser() {
 		assertEquals(
-		  "/mnt/sdcard/bold/users/00000000-0000-0001-0000-000000000002.json",
+		  "./mnt/sdcard/bold/users/00000000-0000-0001-0000-000000000002.json",
 		  persister.pathFor(new User(new UUID(1, 2)))
 		);
 	}
@@ -42,7 +42,7 @@ public class PersisterTest {
 	@Test
 	public void pathForWithTimelines() {
 		assertEquals(
-		  "/mnt/sdcard/bold/timelines/list.json",
+		  "./mnt/sdcard/bold/timelines/list.json",
 		  persister.pathFor(new Timelines())
 		);
 	}
@@ -51,28 +51,54 @@ public class PersisterTest {
 	public void pathForWithTimeline() {
 		UUID validUUID = UUID.randomUUID();
 		assertEquals(
-		  "/mnt/sdcard/bold/timelines/" + validUUID.toString() + ".json",
+		  "./mnt/sdcard/bold/timelines/" + validUUID.toString() + ".json",
 		  persister.pathFor(new Timeline("anything_", validUUID))
 		);
 	}
 	
 	@Test
+	public void dirForUsers() {
+		assertEquals("./mnt/sdcard/bold/users/", persister.dirForUsers());
+	}
+	
+	@Test
 	public void pathForUsers() {
-		assertEquals("/mnt/sdcard/bold/users/list.json", persister.pathForUsers());
+		assertEquals("./mnt/sdcard/bold/users/list.json", persister.pathForUsers());
 	}
 	
 	@Test
 	public void pathForUser() {
-		assertEquals("/mnt/sdcard/bold/users/identifier.json", persister.pathForUser("identifier"));
+		assertEquals("./mnt/sdcard/bold/users/identifier.json", persister.pathForUser("identifier"));
+	}
+	
+	@Test
+	public void dirForTimelines() {
+		assertEquals("./mnt/sdcard/bold/timelines/", persister.dirForTimelines());
 	}
 
 	@Test
 	public void pathForTimelines() {
-		assertEquals("/mnt/sdcard/bold/timelines/list.json", persister.pathForTimelines());
+		assertEquals("./mnt/sdcard/bold/timelines/list.json", persister.pathForTimelines());
 	}
 	
 	@Test
 	public void pathForTimeline() {
-		assertEquals("/mnt/sdcard/bold/timelines/identifier.json", persister.pathForTimeline("identifier"));
+		assertEquals("./mnt/sdcard/bold/timelines/identifier.json", persister.pathForTimeline("identifier"));
 	}
+	
+	@Test
+	public void dirForSegments() {
+		assertEquals("./mnt/sdcard/bold/segments/", persister.dirForSegments());
+	}
+	
+	@Test
+	public void pathForSegments() {
+		assertEquals("./mnt/sdcard/bold/segments/list.json", persister.pathForSegments());
+	}
+	
+	@Test
+	public void pathForSegment() {
+		assertEquals("./mnt/sdcard/bold/segments/identifier.json", persister.pathForSegment("identifier"));
+	}
+	
 }

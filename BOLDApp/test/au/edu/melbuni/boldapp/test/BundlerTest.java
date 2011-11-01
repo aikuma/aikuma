@@ -12,7 +12,7 @@ public class BundlerTest {
 
 	@Test
 	public void getBasePath() {
-		assertEquals("/mnt/sdcard/bold/", Persister.getBasePath());
+		assertEquals("./mnt/sdcard/bold/", Persister.getBasePath());
 	}
 
 }

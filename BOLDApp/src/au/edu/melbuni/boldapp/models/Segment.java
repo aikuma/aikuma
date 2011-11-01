@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.json.simple.JSONValue;
-
 import android.graphics.Color;
 import android.view.View;
 import au.edu.melbuni.boldapp.Player;
@@ -16,7 +14,7 @@ import au.edu.melbuni.boldapp.persisters.Persister;
 public class Segment extends Observable {
 
 	Timeline timeline = null;
-	public String identifier = null;
+	String identifier = null;
 
 	protected boolean selected = false;
 	protected boolean playing = false;
@@ -26,17 +24,18 @@ public class Segment extends Observable {
 		this.identifier = identifier;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public static Segment fromJSON(String data) {
-		Map segment = (Map) JSONValue.parse(data);
-		String identifier = segment.get("identifier") == null ? "" : (String) segment.get("identifier");
+	public String getIdentifier() {
+		return identifier;
+	}
+	
+	public static Segment fromHash(Map<String, Object> hash) {
+		String identifier = hash.get("identifier") == null ? "" : (String) hash.get("identifier");
 		return new Segment(identifier);
 	}
-	@SuppressWarnings("rawtypes")
-	public String toJSON() {
-		Map<String, Comparable> segment = new LinkedHashMap<String, Comparable>();
-		segment.put("identifier", this.identifier);
-		return JSONValue.toJSONString(segment);
+	public Map<String, Object> toHash() {
+		Map<String, Object> hash = new LinkedHashMap<String, Object>();
+		hash.put("identifier", this.identifier);
+		return hash;
 	}
 	
 	// Load a segment based on its identifier.
@@ -136,10 +135,6 @@ public class Segment extends Observable {
 				view.setBackgroundColor(Color.GRAY);
 			}
 		}
-	}
-
-	public String getIdentifierString() {
-		return identifier;
 	}
 
 }

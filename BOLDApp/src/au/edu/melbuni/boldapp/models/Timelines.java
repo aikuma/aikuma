@@ -54,11 +54,13 @@ public class Timelines extends Model implements Collection<Timeline> {
 
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
+		
 		ArrayList<String> timelinesIds = new ArrayList<String>();
 		for (Timeline timeline : timelines) {
 			timelinesIds.add(timeline.getIdentifier());
 		}
 		hash.put("timelines", timelinesIds);
+		
 		return hash;
 	}
 	

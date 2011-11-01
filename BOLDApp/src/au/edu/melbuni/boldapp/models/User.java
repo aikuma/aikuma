@@ -68,7 +68,7 @@ public class User extends Model {
 		persister.save(this);
 	}
 	
-	public String getIdentifierString() {
+	public String getIdentifier() {
 		return this.uuid.toString();
 	}
 	
@@ -126,6 +126,21 @@ public class User extends Model {
         	System.out.println("ERROR:" + fileName);
             Log.e("Error reading file", e.toString());
         }
+	}
+	
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof User) {
+			User other = (User) object;
+			return name.equals(other.name) &&
+				   uuid.equals(other.uuid);
+		}
+		return false; 
+	}
+	
+	@Override
+	public String toString() {
+		return "User: " + name + ", " + uuid.toString() + " (" + super.toString() + ")";
 	}
 
 }
