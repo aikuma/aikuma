@@ -1,10 +1,13 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import au.edu.melbuni.boldapp.Bundler;
+import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.adapters.TimelineItemAdapter;
 
 public class OriginalSelectionActivity extends BoldActivity {
 	@Override

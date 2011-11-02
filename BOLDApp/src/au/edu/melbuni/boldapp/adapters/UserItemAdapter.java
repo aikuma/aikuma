@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.adapters;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -7,35 +7,36 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import au.edu.melbuni.boldapp.models.Timeline;
-import au.edu.melbuni.boldapp.models.Timelines;
+import au.edu.melbuni.boldapp.Bundler;
+import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.models.Users;
 
-public class TimelineItemAdapter extends BaseAdapter {
+public class UserItemAdapter extends BaseAdapter {
 
 	static class ViewReferences {
-		ImageView userPicture;
-		TextView text;
+		ImageView picture;
+		TextView name;
 	}
 
 	protected LayoutInflater inflater;
 	protected Activity activity;
-	protected Timelines timelines;
+	protected Users users;
 
-	public TimelineItemAdapter(Activity activity, Timelines timelines) {
+	public UserItemAdapter(Activity activity, Users users) {
 		this.inflater = LayoutInflater.from(activity.getApplicationContext());
 		this.activity = activity;
-		this.timelines = timelines;
+		this.users = users;
 	}
 
 	@Override
 	public int getCount() {
-		return timelines.size();
+		return users.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return timelines.get(position);
+		return users.get(position);
 	}
 
 	@Override
@@ -49,14 +50,16 @@ public class TimelineItemAdapter extends BaseAdapter {
 		ViewReferences references;
 
 		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.time_line_list_item, null);
+			convertView = inflater.inflate(R.layout.user_list_item, null);
 
 			// Creates a ViewReferences and store references to the two children
 			// views we want to bind data to.
 			//
 			references = new ViewReferences();
-			references.userPicture = (ImageView) convertView.findViewById(R.id.userPicture);
-			references.text = (TextView) convertView.findViewById(R.id.text);
+			references.picture = (ImageView) convertView
+					.findViewById(R.id.userPicture);
+			references.name = (TextView) convertView
+					.findViewById(R.id.userName);
 
 			convertView.setTag(references);
 		} else {
@@ -65,15 +68,11 @@ public class TimelineItemAdapter extends BaseAdapter {
 			//
 			references = (ViewReferences) convertView.getTag();
 		}
-		
+
 		// Bind the data efficiently with the references.
-		// TODO
-		Timeline timeline = Bundler.getTimelines(activity).get(position);
-		User user = timeline.getUser();
-		if (user != null) {
-			references.userPicture.setImageDrawable(user.getProfileImage());
-		}
-		references.text.setText(timeline.getItemText());
+		User user = Bundler.getUsers(activity).get(position);
+		references.picture.setImageDrawable(user.getProfileImage());
+		references.name.setText(user.name);
 		 
 		return convertView;
 	}

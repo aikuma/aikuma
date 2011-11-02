@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import au.edu.melbuni.boldapp.Bundler;
+import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.behaviors.TapAndHoldListen;
 import au.edu.melbuni.boldapp.behaviors.TapAndHoldRecord;
 import au.edu.melbuni.boldapp.behaviors.TapAndReleaseListen;

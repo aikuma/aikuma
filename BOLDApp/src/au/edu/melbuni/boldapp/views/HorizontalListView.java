@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.views;
 
 /*
  * HorizontalListView.java v1.5

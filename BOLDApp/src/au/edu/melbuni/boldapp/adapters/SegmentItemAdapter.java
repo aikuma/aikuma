@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.adapters;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
 

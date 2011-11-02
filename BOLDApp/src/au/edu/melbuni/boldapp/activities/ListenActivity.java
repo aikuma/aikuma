@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.activities;
 
 import android.os.Bundle;
 import au.edu.melbuni.boldapp.behaviors.Behavior;

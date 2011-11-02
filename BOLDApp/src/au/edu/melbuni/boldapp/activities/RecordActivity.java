@@ -1,6 +1,8 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.activities;
 
 import android.os.Bundle;
+import au.edu.melbuni.boldapp.Player;
+import au.edu.melbuni.boldapp.Recorder;
 import au.edu.melbuni.boldapp.behaviors.Behavior;
 import au.edu.melbuni.boldapp.behaviors.TapAndReleaseRecord;
 

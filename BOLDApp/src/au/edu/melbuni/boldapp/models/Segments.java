@@ -12,11 +12,11 @@ import android.content.DialogInterface;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.view.View;
 import android.widget.AdapterView;
-import au.edu.melbuni.boldapp.HorizontalListView;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.Recorder;
-import au.edu.melbuni.boldapp.SegmentItemAdapter;
+import au.edu.melbuni.boldapp.adapters.SegmentItemAdapter;
 import au.edu.melbuni.boldapp.persisters.Persister;
+import au.edu.melbuni.boldapp.views.HorizontalListView;
 
 public class Segments implements Iterable<Segment> {
 	

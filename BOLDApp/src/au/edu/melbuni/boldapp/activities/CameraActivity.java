@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.activities;
 import java.io.IOException;
 import java.util.List;
 
@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import au.edu.melbuni.boldapp.Bundler;
+import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.models.User;
 
 public class CameraActivity extends Activity implements SurfaceHolder.Callback, OnClickListener {

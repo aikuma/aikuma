@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.R;
-import au.edu.melbuni.boldapp.RecordActivity;
+import au.edu.melbuni.boldapp.activities.RecordActivity;
 import au.edu.melbuni.boldapp.models.Timeline;
 
 public class TapAndReleaseRecord implements Behavior<RecordActivity> {

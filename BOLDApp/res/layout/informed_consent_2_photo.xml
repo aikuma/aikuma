@@ -17,12 +17,23 @@
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/step1"
+                android:id="@+id/textView1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_margin="10dp"
-                android:text="Medium Text"
+                android:layout_weight="1"
+                android:text="@string/hello"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <ImageButton
+                android:id="@+id/playInformedConsentPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="0.1"
+                android:scaleType="centerInside"
+                android:src="@drawable/button_play" />
 
         </LinearLayout>
 
@@ -34,23 +45,24 @@
             android:layout_weight="1"
             android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/step2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <SurfaceView
+                android:id="@+id/userPictureSurfaceView"
+                android:layout_width="120dp"
+                android:layout_height="143dp"
+                android:layout_gravity="center"
                 android:layout_margin="10dp"
-                android:text="Medium Text"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:layout_weight="1.0" />
+
+            <Button
+                android:id="@+id/takePictureButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1.0"
+                android:text="@string/empty" />
 
         </LinearLayout>
-    </LinearLayout>
 
-    <Button
-        android:id="@+id/nextButton"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:layout_weight="2"
-        android:text="Button" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -4,9 +4,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import au.edu.melbuni.boldapp.Bundler;
-import au.edu.melbuni.boldapp.ListenActivity;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.activities.ListenActivity;
 import au.edu.melbuni.boldapp.models.Timeline;
 
 public class TapAndHoldListen implements Behavior<ListenActivity> {
