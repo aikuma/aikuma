@@ -1,6 +1,9 @@
 *.class
 *.json
 .metadata/*
-.DS_Store
 BOLDApp/bin/*
 BOLDApp/gen/*
+
+.DS_Store
+**/.DS_Store
+BOLDApp/bin/classes.dex
