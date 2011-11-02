@@ -1,3 +1,5 @@
+*.class
+*.json
 .metadata/*
 .DS_Store
 BOLDApp/bin/*
