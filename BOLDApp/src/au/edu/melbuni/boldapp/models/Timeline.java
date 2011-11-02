@@ -58,9 +58,7 @@ public class Timeline {
 	}
 	
 	public void saveEach(Persister persister) {
-		for (Segment segment : segments) {
-			persister.save(segment);
-		}
+		persister.save(segments);
 	}
 	
 	public static Timeline fromHash(Persister persister, Users users, Map<String, Object> hash) {
