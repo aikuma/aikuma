@@ -6,6 +6,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import android.graphics.Color;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.view.View;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.Recorder;
@@ -75,8 +76,8 @@ public class Segment extends Observable {
 		return this.selected;
 	}
 
-	public void startPlaying(Player player) {
-		player.startPlaying(identifier);
+	public void startPlaying(Player player, OnCompletionListener listener) {
+		player.startPlaying(identifier, listener);
 		setPlaying(true);
 	}
 

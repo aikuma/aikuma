@@ -9,6 +9,7 @@ import java.util.UUID;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.view.View;
 import android.widget.AdapterView;
 import au.edu.melbuni.boldapp.HorizontalListView;
@@ -43,6 +44,10 @@ public class Segments implements Iterable<Segment> {
 		this.segments = segments;
 	}
 	
+	public String getPrefix() {
+		return prefix;
+	}
+	
 	// Persistence.
 	//
 	
@@ -58,8 +63,6 @@ public class Segments implements Iterable<Segment> {
 
 	@SuppressWarnings("unchecked")
 	public static Segments fromHash(Persister persister, Map<String, Object> hash) {
-		System.out.println("LOADING Segments: ");
-		
 		String prefix = hash.get("prefix") == null ? "" : (String) hash.get("prefix"); // TODO throw?
 
 		ArrayList<String> segmentIds = (ArrayList<String>) hash.get("segments");
@@ -130,7 +133,7 @@ public class Segments implements Iterable<Segment> {
 
 	public void add(Segment segment) {
 		segments.add(segment);
-		adapter.notifyDataSetChanged();
+		if (adapter != null) { adapter.notifyDataSetChanged(); }
 		selectedForRecording = segment;
 	}
 
@@ -140,35 +143,62 @@ public class Segments implements Iterable<Segment> {
 	
 	public void remove(Segment segment) {
 		segments.remove(segment);
-		adapter.notifyDataSetChanged();
-		if (selectedForRecording != null) {
-			selectedForRecording.deselect();
+		if (adapter != null) { adapter.notifyDataSetChanged(); }
+		if (selectedForPlaying == segment) {
+			deselectPlaying();
 		}
-		selectedForRecording = null;
+		if (selectedForRecording != null) {
+			deselectRecording();
+		}
+	}
+	
+	public boolean removeLast() {
+		int size = segments.size();
+		if (size > 0) {
+			remove(size - 1);
+			return true;
+		}
+		return false;
 	}
 
-	public void startPlaying(Player player) {
+	public void startPlaying(Player player, OnCompletionListener listener, boolean lastByDefault) {
 		System.out.println("SaP");
 
-		Segment segment = getSelectedForPlaying();
+		Segment segment = getSelectedForPlaying(lastByDefault);
 
 		if (segment == null) {
 			return;
 		}
 
-		segment.startPlaying(player);
+		segment.startPlaying(player, listener);
+	}
+	
+	public void startPlaying(Player player, OnCompletionListener listener) {
+		startPlaying(player, listener, false);
+	}
+	
+	public void startPlaying(Player player, boolean lastByDefault) {
+		startPlaying(player, null, lastByDefault);
+	}
+	
+	public void startPlaying(Player player) {
+		startPlaying(player, null, false);
 	}
 
-	public void stopPlaying(Player player) {
+	public void stopPlaying(Player player, boolean lastByDefault) {
 		System.out.println("SoP");
 
-		Segment segment = getSelectedForPlaying();
+		Segment segment = getSelectedForPlaying(lastByDefault);
 
 		if (segment == null) {
 			return;
 		}
 
 		segment.stopPlaying(player);
+	}
+	
+	public void stopPlaying(Player player) {
+		stopPlaying(player, false);
 	}
 
 	public void startRecording(Recorder recorder) {
@@ -195,12 +225,41 @@ public class Segments implements Iterable<Segment> {
 		setSelectedForPlaying(segment);
 		setSelectedForRecording(segment);
 	}
+	
+	public void deselectPlaying() {
+		if (selectedForPlaying != null) {
+			selectedForPlaying.deselect();
+			selectedForPlaying = null;
+		}
+	}
+	public void deselectRecording() {
+		if (selectedForRecording != null) {
+			selectedForRecording.deselect();
+			selectedForRecording = null;
+		}
+	}
+	
+	public boolean selectLastForPlaying() {
+		int size = segments.size();
+		if (size > 0) {
+			select(size - 1);
+			return true;
+		} else {
+			deselectPlaying();
+		}
+		return false;
+	}
 
 	public void setSelectedForPlaying(Segment segment) {
+		if (selectedForPlaying!= null) {
+			this.selectedForPlaying.deselect();
+		}
 		if (selectedForPlaying == segment) {
 			this.selectedForPlaying = null;
+		} else {
+			this.selectedForPlaying = segment;
+			this.selectedForPlaying.select();
 		}
-		this.selectedForPlaying = segment;
 	}
 
 	public void setSelectedForRecording(Segment segment) {
@@ -221,9 +280,11 @@ public class Segments implements Iterable<Segment> {
 
 	// Returns the selected segment.
 	//
-	protected Segment getSelectedForPlaying() {
-		if (selectedForPlaying == null) {
-			if (segments.size() != 0) {
+	// Note: Will not return the last anymore by default.
+	//
+	protected Segment getSelectedForPlaying(boolean lastByDefault) {
+		if (lastByDefault && selectedForPlaying == null) {
+			if (segments.size() > 0) {
 				return segments.get(segments.size() - 1);
 			}
 		}
@@ -243,10 +304,28 @@ public class Segments implements Iterable<Segment> {
 
 		return selectedForRecording;
 	}
+	
+	public boolean isEmpty() {
+		return segments.isEmpty();
+	}
+	
+	public boolean contains(Segment segment) {
+		return segments.contains(segment);
+	}
 
 	@Override
 	public Iterator<Segment> iterator() {
 		return segments.iterator();
+	}
+
+	public boolean selectNext() {
+		Segment selected = getSelectedForPlaying(false);
+		int selectedIndex = segments.indexOf(selected);
+		if (selectedIndex != -1 && selectedIndex < segments.size()-1) {
+			setSelectedForPlaying(segments.get(selectedIndex + 1));
+			return true;
+		}
+		return false;
 	}
 
 }

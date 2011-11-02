@@ -1,16 +1,20 @@
 package au.edu.melbuni.boldapp;
 
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.ImageButton;
-import au.edu.melbuni.boldapp.models.*;
+import au.edu.melbuni.boldapp.behaviors.Behavior;
+import au.edu.melbuni.boldapp.behaviors.TapAndReleaseRecord;
 
 public class RecordActivity extends BoldActivity {
 	
 	Recorder recorder = new Recorder();
 	Player   player   = new Player();
-
+	
+	static Behavior<RecordActivity> behavior = new TapAndReleaseRecord();
+	
+	public static void setBehavior(Behavior<RecordActivity> behavior) {
+		RecordActivity.behavior = behavior;
+	}
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,48 +22,21 @@ public class RecordActivity extends BoldActivity {
         configureView(savedInstanceState);
      	installBehavior(savedInstanceState);
     }
+	
+	public Player getPlayer() {
+		return player;
+	}
+	public Recorder getRecorder() {
+		return recorder;
+	}
     
     @Override
 	public void configureView(Bundle savedInstanceState) {
         super.configureView(savedInstanceState);
-        
-     	setContent(R.layout.record);
+        behavior.configureView(this);
     };
     
     public void installBehavior(Bundle savedInstanceState) {
-     	final Timeline timeline = new Timeline("recording_");
-     	timeline.installOn(this);
-	    
-	    final ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
-	    final ImageButton recordButton = (ImageButton) findViewById(R.id.recordButton);
-	    
-        playButton.setOnTouchListener(new View.OnTouchListener() {
-        	@Override
-			public boolean onTouch(View v, MotionEvent motionEvent) {
-            	timeline.startPlaying(player);
-            	return false;
-            }
-        });
-        playButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				timeline.stopPlaying(player);
-			}
-		});
-        recordButton.setOnTouchListener(new View.OnTouchListener() {
-        	@Override
-			public boolean onTouch(View v, MotionEvent motionEvent) {
-        		timeline.startRecording(recorder);
-            	return false;
-            }
-        });
-        recordButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				timeline.stopRecording(recorder);
-				timeline.setUser(Bundler.getCurrentUser(RecordActivity.this));
-				Bundler.addTimeline(RecordActivity.this, timeline);
-			}
-		});
+    	behavior.installBehavior(this);
     };
 }

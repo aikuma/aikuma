@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import au.edu.melbuni.boldapp.behaviors.TapAndHoldListen;
+import au.edu.melbuni.boldapp.behaviors.TapAndHoldRecord;
+import au.edu.melbuni.boldapp.behaviors.TapAndReleaseListen;
+import au.edu.melbuni.boldapp.behaviors.TapAndReleaseRecord;
 
 public class MainActivity extends BoldActivity {
 
@@ -73,6 +77,53 @@ public class MainActivity extends BoldActivity {
 			public void onClick(View view) {
 				startActivityForResult(new Intent(view.getContext(),
 						OriginalSelectionActivity.class), 0);
+			}
+		});
+		
+		// TODO Remove.
+		//
+		final ImageButton configurationButton = (ImageButton) findViewById(R.id.configurationButton);
+		configurationButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new AlertDialog.Builder(v.getContext())
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setMessage("Switch Recording style")
+				.setPositiveButton("Press/Hold",
+						new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog,
+							int which) {
+						RecordActivity.setBehavior(new TapAndHoldRecord());
+					}
+				}).setNegativeButton("Tap/Release", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						RecordActivity.setBehavior(new TapAndReleaseRecord());
+					}
+				}).show();
+			}
+		});
+		configurationButton.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				new AlertDialog.Builder(v.getContext())
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setMessage("Switch Listening style")
+				.setPositiveButton("Press/Hold",
+						new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog,
+							int which) {
+						ListenActivity.setBehavior(new TapAndHoldListen());
+					}
+				}).setNegativeButton("Tap/Release", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						ListenActivity.setBehavior(new TapAndReleaseListen());
+					}
+				}).show();
+				return false;
 			}
 		});
 	};

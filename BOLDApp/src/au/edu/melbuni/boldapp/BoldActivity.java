@@ -12,8 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import au.edu.melbuni.boldapp.models.*;
+import au.edu.melbuni.boldapp.models.User;
 
 public class BoldActivity extends Activity {
 
@@ -72,6 +71,7 @@ public class BoldActivity extends Activity {
 
 		addToMenu(R.layout.user);
 		addToMenu(R.layout.help);
+		addToMenu(R.layout.configuration);
 
 		// Menu behavior.
 		//

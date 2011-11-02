@@ -24,19 +24,19 @@ public class SegmentTest {
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	public void fromJSON() {
+	public void fromHash() {
 		Segment loaded = Segment.fromHash((Map<String, Object>) JSONValue.parse("{\"identifier\":\"Some Identifier\"}"));
 		assertEquals("Some Identifier", loaded.getIdentifier());
 	}
 	@SuppressWarnings("unchecked")
 	@Test
-	public void fromJSONWithoutData() {
+	public void fromHashWithoutData() {
 		Segment loaded = Segment.fromHash((Map<String, Object>) JSONValue.parse("{}"));
 		assertEquals("", loaded.getIdentifier());
 	}
 	
 	@Test
-	public void toJSON() {
+	public void toHash() {
 		assertEquals("{\"identifier\":\"some_identifier\"}", JSONValue.toJSONString(segment.toHash()));
 	}
 	

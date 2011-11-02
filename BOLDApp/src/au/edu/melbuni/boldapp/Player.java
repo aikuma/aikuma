@@ -3,6 +3,7 @@ package au.edu.melbuni.boldapp;
 import java.io.IOException;
 
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.util.Log;
 
 public class Player extends Sounder {
@@ -12,7 +13,7 @@ public class Player extends Sounder {
 	private MediaPlayer player = new MediaPlayer();
 	private boolean playing = false;
 
-	public void startPlaying(String fileName) {
+	public void startPlaying(String fileName, OnCompletionListener listener) {
 		if (playing) {
 			return;
 		}
@@ -20,6 +21,7 @@ public class Player extends Sounder {
 		try {
 			player.setDataSource(generateFullFilename(fileName));
 			player.prepare();
+			if (listener != null) { player.setOnCompletionListener(listener); }
 			player.start();
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "#prepare() failed");

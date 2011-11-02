@@ -12,21 +12,21 @@ public class TapAndHoldRecord implements Behavior<RecordActivity> {
 	
 	@Override
 	public void configureView(RecordActivity activity) {
-     	activity.setContent(R.layout.record);
+     	activity.setContent(R.layout.tap_and_hold_record);
     }
 
 	@Override
 	public void installBehavior(final RecordActivity activity) {
      	final Timeline timeline = new Timeline("recording_");
-     	timeline.installOn(activity);
-	    
 	    final ImageButton playButton = (ImageButton) activity.findViewById(R.id.playButton);
 	    final ImageButton recordButton = (ImageButton) activity.findViewById(R.id.recordButton);
+
+	    timeline.installOn(activity);
 	    
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
-            	timeline.startPlaying(activity.getPlayer());
+            	timeline.startPlayingLastByDefault(activity.getPlayer());
             	return false;
             }
         });

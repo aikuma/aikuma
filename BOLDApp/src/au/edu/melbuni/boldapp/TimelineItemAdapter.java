@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import au.edu.melbuni.boldapp.models.*;
+import au.edu.melbuni.boldapp.models.Timeline;
+import au.edu.melbuni.boldapp.models.Timelines;
+import au.edu.melbuni.boldapp.models.User;
 
 public class TimelineItemAdapter extends BaseAdapter {
 

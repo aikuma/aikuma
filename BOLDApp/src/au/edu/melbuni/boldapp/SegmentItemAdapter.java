@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
-import au.edu.melbuni.boldapp.models.*;
 
 public class SegmentItemAdapter extends BaseAdapter {
 

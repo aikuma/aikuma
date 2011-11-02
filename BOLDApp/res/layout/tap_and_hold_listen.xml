@@ -8,7 +8,6 @@
     </LinearLayout>
     <au.edu.melbuni.boldapp.HorizontalListView android:layout_weight="0" android:id="@+id/timeline" android:layout_width="match_parent" android:layout_margin="4dip" android:layout_height="35dip"></au.edu.melbuni.boldapp.HorizontalListView>
     <LinearLayout android:id="@+id/linearLayout3" android:layout_width="match_parent" android:baselineAligned="true" android:layout_height="match_parent">
-        <Button android:text="@string/empty" android:layout_width="match_parent" android:id="@+id/emptyButton" android:layout_weight="1" android:layout_height="match_parent"></Button>
         <ImageButton android:layout_weight="1" android:layout_height="match_parent" android:layout_width="match_parent" android:layout_gravity="right" android:id="@+id/playButton" android:src="@drawable/button_play"></ImageButton>
     </LinearLayout>
 </LinearLayout>

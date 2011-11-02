@@ -9,9 +9,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Recorder;
+import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
@@ -134,11 +136,41 @@ public class Timeline {
 	public Date getDate() {
 		return date;
 	}
+	
+	public CharSequence getItemText() {
+		return date.toLocaleString() + " " + location;
+	}
 
 	// Delegator methods.
 	//
-	public void startPlaying(Player player) {
+	
+	// This plays all segments, one after another.
+	//
+	// If one is finished, it selects the next etc.
+	//
+	// TODO Use our own Interface, not the onCompletionListener.
+	//
+	public void startPlaying(final Player player, final OnCompletionListener onCompletionListener) {
+		segments.startPlaying(player, new MediaPlayer.OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				segments.stopPlaying(player);
+				if (!segments.selectNext()) {
+					if (onCompletionListener != null) { onCompletionListener.onCompletion(null); }
+					return;
+				}
+				segments.startPlaying(player, this);
+			}
+		});
+	}
+	
+	public void startPlayingLast(Player player) {
+		segments.selectLastForPlaying();
 		segments.startPlaying(player);
+	}
+	
+	public void startPlayingLastByDefault(Player player) {
+		segments.startPlaying(player, true);
 	}
 
 	public void stopPlaying(Player player) {
@@ -152,8 +184,19 @@ public class Timeline {
 	public void stopRecording(Recorder recorder) {
 		segments.stopRecording(recorder);
 	}
-
-	public CharSequence getItemText() {
-		return date.toLocaleString() + " " + location;
+	
+	public boolean removeLast() {
+		return segments.removeLast();
 	}
+	
+	public boolean hasSegment() {
+		return !segments.isEmpty();
+	}
+	
+	public void selectFirstSegment() {
+		if (hasSegment()) {
+			segments.select(0);
+		}
+	}
+
 }

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:baselineAligned="false" android:orientation="vertical">
+<!--     <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout2" android:layout_height="wrap_content" android:layout_weight="0.25">
+        <HorizontalScrollView android:id="@+id/horizontalScrollView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="5dip">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:id="@+id/timeline">
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout> -->
+
+    <LinearLayout
+        android:id="@+id/LinearLayout01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="18/10/11"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dip"
+            android:text="Location"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout3" android:layout_weight="1" android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:orientation="vertical" >
+
+            <ImageButton
+                android:id="@+id/deleteButton"
+                android:layout_width="match_parent"
+                android:layout_height="76dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon" />
+
+            <ImageButton
+                android:id="@+id/playButton"
+                android:layout_width="match_parent"
+                android:layout_height="76dp"
+                android:layout_weight="5"
+                android:scaleType="fitCenter"
+                android:src="@drawable/button_play" />
+
+        </LinearLayout>
+
+        <ImageButton android:id="@+id/recordButton" android:src="@drawable/button_record" android:layout_width="match_parent" android:scaleType="center" android:layout_height="match_parent" android:layout_weight="1"></ImageButton>
+    </LinearLayout>
+</LinearLayout>
