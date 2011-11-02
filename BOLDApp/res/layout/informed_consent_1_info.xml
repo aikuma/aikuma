@@ -45,12 +45,12 @@
         </LinearLayout>
     </LinearLayout>
 
-    <Button
+    <ImageButton
         android:id="@+id/nextButton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:layout_weight="2"
-        android:text="Button" />
+        android:src="@drawable/icon" />
 
 </LinearLayout>

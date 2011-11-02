@@ -70,7 +70,7 @@
                     android:layout_weight="1.0"
                     android:padding="20dp"
                     android:scaleType="centerInside"
-                    android:src="@string/empty" />
+                    android:src="@drawable/icon" />
 
                 <ImageButton
                     android:id="@+id/nextButton"
@@ -80,7 +80,7 @@
                     android:layout_weight="1.0"
                     android:padding="20dp"
                     android:scaleType="centerInside"
-                    android:src="@string/empty" />
+                    android:src="@drawable/icon" />
 
             </LinearLayout>
 

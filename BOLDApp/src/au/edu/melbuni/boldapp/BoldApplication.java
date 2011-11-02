@@ -50,7 +50,7 @@ public class BoldApplication extends Application {
 
 	public User getCurrentUser() {
 		if (currentUser == null) {
-			currentUser = new User();
+			currentUser = User.newUnconsentedUser();
 		}
 		return currentUser;
 	}

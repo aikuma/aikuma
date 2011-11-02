@@ -43,9 +43,9 @@ public class UserSelectionActivity extends BoldActivity {
 		addNewUserLayout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Bundler.setCurrentUser(UserSelectionActivity.this, new User());
+				Bundler.setCurrentUser(UserSelectionActivity.this, User.newUnconsentedUser());
 				startActivityForResult(new Intent(view.getContext(),
-						EditUserActivity.class), 0);
+						InformedConsentConfirmActivity.class), 0);
 			}
 		});
 		

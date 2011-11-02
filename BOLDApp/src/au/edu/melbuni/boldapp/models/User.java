@@ -27,6 +27,8 @@ public class User extends Model {
 	public String name;
 	public UUID uuid;
 	
+	public boolean consented = true;
+	
 	public User() {
 		this("");
 	}
@@ -42,6 +44,20 @@ public class User extends Model {
 	public User(String name, UUID uuid) {
 		this.name = name;
 		this.uuid = uuid;
+	}
+	
+	public static User newUnconsentedUser() {
+		User newUser = new User();
+		newUser.setConsented(false);
+		return newUser;
+	}
+	
+	public void setConsented(boolean consented) {
+		this.consented = consented;
+	}
+	
+	public boolean hasGivenConsent() {
+		return consented;
 	}
 	
 	public static User fromHash(Map<String, Object> hash) {

@@ -46,15 +46,13 @@
             android:layout_weight="1"
             android:orientation="vertical" >
 
-            <ImageButton
-                android:id="@+id/recordButton"
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/userPicture"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_gravity="center"
                 android:layout_weight="1.0"
-                android:padding="20dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/button_record" />
+                android:src="@drawable/unknown_user" />
 
             <LinearLayout
                 android:id="@+id/linearLayout4"
@@ -70,7 +68,7 @@
                     android:layout_weight="1.0"
                     android:padding="20dp"
                     android:scaleType="centerInside"
-                    android:src="@string/empty" />
+                    android:src="@drawable/button_play" />
 
                 <ImageButton
                     android:id="@+id/nextButton"
@@ -80,7 +78,7 @@
                     android:layout_weight="1.0"
                     android:padding="20dp"
                     android:scaleType="centerInside"
-                    android:src="@string/empty" />
+                    android:src="@drawable/icon" />
 
             </LinearLayout>
 

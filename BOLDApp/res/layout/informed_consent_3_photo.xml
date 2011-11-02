@@ -53,13 +53,29 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1.0" />
 
-            <Button
-                android:id="@+id/takePictureButton"
+            <LinearLayout
+                android:id="@+id/linearLayout4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_weight="1.0"
-                android:text="@string/empty" />
+                android:layout_weight="1.0" >
+
+                <ImageButton
+                    android:id="@+id/ImageButton1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1.0"
+                    android:src="@drawable/icon" />
+
+                <ImageButton
+                    android:id="@+id/ImageButton1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1.0"
+                    android:src="@drawable/icon" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
