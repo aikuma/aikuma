@@ -9,9 +9,11 @@ import java.util.UUID;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import au.edu.melbuni.boldapp.Player;
+import au.edu.melbuni.boldapp.Recorder;
+import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
@@ -25,7 +27,8 @@ import au.edu.melbuni.boldapp.persisters.Persister;
 public class User extends Model {
 	
 	public String name;
-	public UUID uuid;
+	protected UUID uuid;
+	protected Segment audio;
 	
 	public boolean consented = true;
 	
@@ -42,8 +45,13 @@ public class User extends Model {
 	}
 
 	public User(String name, UUID uuid) {
-		this.name = name;
-		this.uuid = uuid;
+		this(name, uuid, new Segment(uuid.toString())); // TODO Really use the uuid?
+	}
+	
+	public User(String name, UUID uuid, Segment segment) {
+		this.name  = name;
+		this.uuid  = uuid;
+		this.audio = segment;
 	}
 	
 	public static User newUnconsentedUser() {
@@ -58,6 +66,22 @@ public class User extends Model {
 	
 	public boolean hasGivenConsent() {
 		return consented;
+	}
+	
+	public void startRecording(Recorder recorder) {
+		audio.startRecording(recorder);
+	}
+	
+	public void stopRecording(Recorder recorder) {
+		audio.stopRecording(recorder);
+	}
+	
+	public void startPlaying(Player player, OnCompletionListener listener) {
+		audio.startPlaying(player, listener);
+	}
+	
+	public void stopPlaying(Player player) {
+		audio.stopPlaying(player);
 	}
 	
 	public static User fromHash(Map<String, Object> hash) {
@@ -131,9 +155,10 @@ public class User extends Model {
 			// Crop.
 			scaled = Bitmap.createBitmap(scaled, 135, 0, height, height);
 			// Rotate.
-			Matrix matrix = new Matrix();
-			matrix.setRotate(90, scaled.getWidth()/2, scaled.getHeight()/2);
-			scaled = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(), scaled.getHeight(), matrix, true);
+//			Matrix matrix = new Matrix();
+//			matrix.setRotate(90, scaled.getWidth()/2, scaled.getHeight()/2);
+//			scaled = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(), scaled.getHeight(), matrix, true);
+			
 			scaled.compress(Bitmap.CompressFormat.PNG, 90, bufOut);
 			
             bufOut.close();

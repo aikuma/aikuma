@@ -19,6 +19,9 @@
         <activity android:screenOrientation="landscape" android:name=".activities.UserSelectionActivity" android:label="@string/app_name"></activity>
         <activity android:name=".activities.CameraActivity" android:screenOrientation="landscape"></activity>
         <activity android:name=".activities.EditUserActivity" android:screenOrientation="landscape"></activity>
-
+        <activity android:name=".activities.InformedConsentConfirmActivity" android:screenOrientation="landscape"></activity>
+        <activity android:name=".activities.InformedConsent1InfoActivity" android:screenOrientation="landscape"></activity>
+        <activity android:name=".activities.InformedConsent2AudioActivity" android:screenOrientation="landscape"></activity>
+        <activity android:name=".activities.InformedConsent3PhotoActivity" android:screenOrientation="landscape"></activity>
     </application>
 </manifest>

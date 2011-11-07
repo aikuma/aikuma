@@ -2,18 +2,22 @@ package au.edu.melbuni.boldapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import au.edu.melbuni.boldapp.Bundler;
+import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.models.User;
 
 public class InformedConsentConfirmActivity extends BoldActivity {
 	
 	static final int SHOW_USER_INFO    = 0;
 	static final int TAKE_USER_AUDIO   = 1;
 	static final int TAKE_USER_PICTURE = 2;
+	
+	Player player = new Player();
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +42,26 @@ public class InformedConsentConfirmActivity extends BoldActivity {
     
     public void installBehavior(Bundle savedInstanceState) {
     	
-        final ImageButton nextButton = (ImageButton) findViewById(R.id.nextButton);
+    	setUserPictureFromCurrentUser();
+    	
+        final View playButton = (View) findViewById(R.id.playButton);
+        playButton.setOnTouchListener(new View.OnTouchListener() {
+        	@Override
+			public boolean onTouch(View v, MotionEvent motionEvent) {
+        		User user = Bundler.getCurrentUser(InformedConsentConfirmActivity.this);
+        		user.startPlaying(player, null);
+            	return false;
+            }
+        });
+    	playButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				User user = Bundler.getCurrentUser(InformedConsentConfirmActivity.this);
+				user.stopPlaying(player);
+			}
+		});
+    	
+        final View nextButton = (View) findViewById(R.id.nextButton);
         nextButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -58,8 +81,7 @@ public class InformedConsentConfirmActivity extends BoldActivity {
     			// TODO Save.
     			startActivityForResult(new Intent(getApplicationContext(), InformedConsent3PhotoActivity.class), TAKE_USER_PICTURE);
     		} else if (requestCode == TAKE_USER_PICTURE) {
-    			// TODO Save.
-    			// Do nothing.
+    			setUserPictureFromCurrentUser();
     		}
     	} else {
     		finish();

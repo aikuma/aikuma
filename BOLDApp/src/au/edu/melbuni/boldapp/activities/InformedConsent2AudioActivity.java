@@ -1,13 +1,20 @@
 package au.edu.melbuni.boldapp.activities;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageButton;
+import au.edu.melbuni.boldapp.Bundler;
+import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.Recorder;
+import au.edu.melbuni.boldapp.models.User;
 
 public class InformedConsent2AudioActivity extends BoldActivity {
 
+	Recorder recorder = new Recorder();
+	Player player = new Player();
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,12 +31,46 @@ public class InformedConsent2AudioActivity extends BoldActivity {
     };
     
     public void installBehavior(Bundle savedInstanceState) {
+    	final View recordButton = (View) findViewById(R.id.recordButton);
+        recordButton.setOnTouchListener(new View.OnTouchListener() {
+        	@Override
+			public boolean onTouch(View v, MotionEvent motionEvent) {
+        		User user = Bundler.getCurrentUser(InformedConsent2AudioActivity.this);
+        		user.startRecording(recorder);
+            	return false;
+            }
+        });
+        recordButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+        		User user = Bundler.getCurrentUser(InformedConsent2AudioActivity.this);
+        		user.stopRecording(recorder);
+			}
+		});
     	
-        final ImageButton nextButton = (ImageButton) findViewById(R.id.nextButton);
+        final View playButton = (View) findViewById(R.id.playButton);
+        playButton.setOnTouchListener(new View.OnTouchListener() {
+        	@Override
+			public boolean onTouch(View v, MotionEvent motionEvent) {
+        		User user = Bundler.getCurrentUser(InformedConsent2AudioActivity.this);
+        		user.startPlaying(player, null);
+            	return false;
+            }
+        });
+    	playButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				User user = Bundler.getCurrentUser(InformedConsent2AudioActivity.this);
+				user.stopPlaying(player);
+			}
+		});
+    	
+        final View nextButton = (View) findViewById(R.id.nextButton);
         nextButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Save something.
+				setResult(RESULT_OK);
 				finish();
 			}
 		});

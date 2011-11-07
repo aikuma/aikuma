@@ -6,6 +6,7 @@ import android.widget.ImageButton;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.activities.ListenActivity;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.models.Timeline;
@@ -49,7 +50,7 @@ public class TapAndReleaseListen implements Behavior<ListenActivity> {
 				} else {
 					timeline.startPlaying(player, new OnCompletionListener() {
 						@Override
-						public void onCompletion(Timeline timeline) {
+						public void onCompletion(Sounder sounder) {
 							playButton.setBackgroundColor(Color.LTGRAY);
 						}
 					});

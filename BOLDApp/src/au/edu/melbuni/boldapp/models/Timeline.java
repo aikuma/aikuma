@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import android.app.Activity;
-import android.media.MediaPlayer;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Recorder;
+import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
@@ -146,15 +146,13 @@ public class Timeline {
 	//
 	// If one is finished, it selects the next etc.
 	//
-	// TODO Use our own Interface, not the onCompletionListener.
-	//
 	public void startPlaying(final Player player, final OnCompletionListener onCompletionListener) {
-		segments.startPlaying(player, new MediaPlayer.OnCompletionListener() {
+		segments.startPlaying(player, new OnCompletionListener() {
 			@Override
-			public void onCompletion(MediaPlayer mp) {
+			public void onCompletion(Sounder sounder) {
 				segments.stopPlaying(player);
 				if (!segments.selectNext()) {
-					if (onCompletionListener != null) { onCompletionListener.onCompletion(null); }
+					if (onCompletionListener != null) { onCompletionListener.onCompletion(sounder); }
 					return;
 				}
 				segments.startPlaying(player, this);

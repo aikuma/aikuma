@@ -3,7 +3,6 @@ package au.edu.melbuni.boldapp.activities;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageButton;
 import au.edu.melbuni.boldapp.R;
 
 public class InformedConsent1InfoActivity extends BoldActivity {
@@ -25,7 +24,7 @@ public class InformedConsent1InfoActivity extends BoldActivity {
     
     public void installBehavior(Bundle savedInstanceState) {
     	
-        final ImageButton nextButton = (ImageButton) findViewById(R.id.nextButton);
+        final View nextButton = (View) findViewById(R.id.nextButton);
         nextButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

@@ -1,9 +1,9 @@
 package au.edu.melbuni.boldapp.listeners;
 
-import au.edu.melbuni.boldapp.models.Timeline;
+import au.edu.melbuni.boldapp.Sounder;
 
 public interface OnCompletionListener {
 	
-	public void onCompletion(Timeline timeline);
+	public void onCompletion(Sounder sounder);
 	
 }

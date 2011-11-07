@@ -7,8 +7,11 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import au.edu.melbuni.boldapp.Bundler;
+import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.adapters.UserItemAdapter;
+import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.models.User;
 
 public class UserSelectionActivity extends BoldActivity {
@@ -51,7 +54,9 @@ public class UserSelectionActivity extends BoldActivity {
 		
 		ListView usersListView = (ListView) findViewById(R.id.users);
 		usersListView.setAdapter(new UserItemAdapter(this, Bundler.getUsers(this)));
-
+		
+		// Selects the user on a short click. 
+		//
 		usersListView
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 					@Override
@@ -63,18 +68,28 @@ public class UserSelectionActivity extends BoldActivity {
 						finish();
 					}
 				});
-
+		
+		// Plays the user's audio on long click.
+		//
 		usersListView
 				.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 					@Override
 					public boolean onItemLongClick(AdapterView<?> parent,
 							View view, int position, long id) {
-						Bundler.setCurrentUser(UserSelectionActivity.this,
-								Bundler.getUsers(UserSelectionActivity.this)
-										.get(position));
-						startActivityForResult(
-								new Intent(getApplicationContext(),
-										EditUserActivity.class), 0);
+//						Bundler.setCurrentUser(UserSelectionActivity.this,
+//								Bundler.getUsers(UserSelectionActivity.this)
+//										.get(position));
+//						startActivityForResult(
+//								new Intent(getApplicationContext(),
+//										EditUserActivity.class), 0);
+						User selectedUser = Bundler.getUsers(UserSelectionActivity.this)
+								.get(position);
+						selectedUser.startPlaying(new Player(), new OnCompletionListener() {
+							@Override
+							public void onCompletion(Sounder sounder) {
+								((Player) sounder).stopPlaying();
+							}
+						});
 						return false;
 					}
 				});

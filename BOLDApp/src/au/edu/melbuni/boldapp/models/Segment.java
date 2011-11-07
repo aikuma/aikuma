@@ -6,10 +6,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 import android.graphics.Color;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.view.View;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.Recorder;
+import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class Segment extends Observable {
@@ -51,11 +51,6 @@ public class Segment extends Observable {
 		persister.save(this);
 	}
 	
-	public void setPlaying(boolean playing) {
-		this.playing = playing;
-		setChanged();
-		notifyObservers();
-	}
 	public boolean isPlaying() {
 		return this.playing;
 	}
@@ -102,6 +97,12 @@ public class Segment extends Observable {
 	
 	public void deselect() {
 		setSelected(false);
+	}
+	
+	protected void setPlaying(boolean playing) {
+		this.playing = playing;
+		setChanged();
+		notifyObservers();
 	}
 	
 	public static class ViewHandler implements Observer {

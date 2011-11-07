@@ -9,12 +9,12 @@ import java.util.UUID;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.view.View;
 import android.widget.AdapterView;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.Recorder;
 import au.edu.melbuni.boldapp.adapters.SegmentItemAdapter;
+import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.persisters.Persister;
 import au.edu.melbuni.boldapp.views.HorizontalListView;
 
