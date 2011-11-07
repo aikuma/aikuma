@@ -64,8 +64,29 @@ public class BoldActivity extends Activity {
 
 	public void setContent(int layout) {
 		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View newView = layoutInflater.inflate(layout, null, false);
+		setContent(newView);
+	}
+	
+	public void setContent(View newView) {
 		FrameLayout content = (FrameLayout) findViewById(R.id.content);
-		content.addView(layoutInflater.inflate(layout, content, false));
+		content.addView(newView);
+	}
+	
+	public View replaceContent(int layout) {
+		FrameLayout content = (FrameLayout) findViewById(R.id.content);
+		View oldView = content.getChildAt(0);
+		content.removeAllViews();
+		setContent(layout);
+		return oldView;
+	}
+	
+	public View replaceContent(View newView) {
+		FrameLayout content = (FrameLayout) findViewById(R.id.content);
+		View oldView = content.getChildAt(0);
+		content.removeAllViews();
+		setContent(newView);
+		return oldView;
 	}
 
 	public void configureView(Bundle savedInstanceState) {

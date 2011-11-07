@@ -76,12 +76,6 @@ public class UserSelectionActivity extends BoldActivity {
 					@Override
 					public boolean onItemLongClick(AdapterView<?> parent,
 							View view, int position, long id) {
-//						Bundler.setCurrentUser(UserSelectionActivity.this,
-//								Bundler.getUsers(UserSelectionActivity.this)
-//										.get(position));
-//						startActivityForResult(
-//								new Intent(getApplicationContext(),
-//										EditUserActivity.class), 0);
 						User selectedUser = Bundler.getUsers(UserSelectionActivity.this)
 								.get(position);
 						selectedUser.startPlaying(new Player(), new OnCompletionListener() {
@@ -90,7 +84,7 @@ public class UserSelectionActivity extends BoldActivity {
 								((Player) sounder).stopPlaying();
 							}
 						});
-						return false;
+						return true;
 					}
 				});
 	}

@@ -11,7 +11,9 @@ import au.edu.melbuni.boldapp.Recorder;
 import au.edu.melbuni.boldapp.models.User;
 
 public class InformedConsent2AudioActivity extends BoldActivity {
-
+	
+	View nonHelpView;
+	
 	Recorder recorder = new Recorder();
 	Player player = new Player();
 	
@@ -31,6 +33,22 @@ public class InformedConsent2AudioActivity extends BoldActivity {
     };
     
     public void installBehavior(Bundle savedInstanceState) {
+        final View helpButton = (View) findViewById(R.id.helpButton);
+        
+        helpButton.setOnTouchListener(new View.OnTouchListener() {
+        	@Override
+			public boolean onTouch(View v, MotionEvent motionEvent) {
+        		replaceContent(R.layout.informed_consent_help);
+            	return false;
+            }
+        });
+        helpButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				replaceContent(R.layout.informed_consent_2_audio);
+			}
+		});
+    	
     	final View recordButton = (View) findViewById(R.id.recordButton);
         recordButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
