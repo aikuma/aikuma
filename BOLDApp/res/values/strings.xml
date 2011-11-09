@@ -18,4 +18,5 @@
     <string name="informed_consent_photo_chinese">请把你的照片</string>
     <string name="informed_consent_photo_hindi">अपनी तस्वीर ले कृपया</string>
     <string name="next">✔</string>
+    <string name="help">\?</string>
 </resources>

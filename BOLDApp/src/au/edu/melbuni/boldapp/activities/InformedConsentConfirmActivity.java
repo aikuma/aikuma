@@ -13,9 +13,8 @@ import au.edu.melbuni.boldapp.models.User;
 
 public class InformedConsentConfirmActivity extends BoldActivity {
 	
-	static final int SHOW_USER_INFO    = 0;
-	static final int TAKE_USER_AUDIO   = 1;
-	static final int TAKE_USER_PICTURE = 2;
+	static final int TAKE_USER_AUDIO   = 0;
+	static final int TAKE_USER_PICTURE = 1;
 	
 	Player player = new Player();
 
@@ -29,7 +28,7 @@ public class InformedConsentConfirmActivity extends BoldActivity {
      	if (Bundler.getCurrentUser(this).hasGivenConsent()) {
      		setUserPictureFromCurrentUser();
      	} else {
-     		startActivityForResult(new Intent(getApplicationContext(), InformedConsent1InfoActivity.class), SHOW_USER_INFO);
+     		startActivityForResult(new Intent(getApplicationContext(), InformedConsentAudioActivity.class), TAKE_USER_AUDIO);
      	}
     }
     
@@ -75,11 +74,9 @@ public class InformedConsentConfirmActivity extends BoldActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
     	if (resultCode == RESULT_OK) {
-    		if (requestCode == SHOW_USER_INFO) { 
-    			startActivityForResult(new Intent(getApplicationContext(), InformedConsent2AudioActivity.class), TAKE_USER_AUDIO);
-    		} else if (requestCode == TAKE_USER_AUDIO) { 
+    		if (requestCode == TAKE_USER_AUDIO) { 
     			// TODO Save.
-    			startActivityForResult(new Intent(getApplicationContext(), InformedConsent3PhotoActivity.class), TAKE_USER_PICTURE);
+    			startActivityForResult(new Intent(getApplicationContext(), InformedConsentPhotoActivity.class), TAKE_USER_PICTURE);
     		} else if (requestCode == TAKE_USER_PICTURE) {
     			setUserPictureFromCurrentUser();
     		}

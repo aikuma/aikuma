@@ -10,7 +10,7 @@ import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.models.Camera;
 import au.edu.melbuni.boldapp.models.User;
 
-public class InformedConsent3PhotoActivity extends BoldActivity {
+public class InformedConsentPhotoActivity extends BoldActivity {
 	
 	Camera camera;
 	
@@ -26,10 +26,12 @@ public class InformedConsent3PhotoActivity extends BoldActivity {
 	public void configureView(Bundle savedInstanceState) {
         super.configureView(savedInstanceState);
         
-     	setContent(R.layout.informed_consent_3_photo);
+     	setContent(R.layout.informed_consent_photo);
     };
     
     public void installBehavior(Bundle savedInstanceState) {
+    	installHelp(R.layout.informed_consent_photo_help);
+    	
     	final User currentUser = Bundler.getCurrentUser(this);
     	
     	final View nextButton = (View) findViewById(R.id.nextButton);

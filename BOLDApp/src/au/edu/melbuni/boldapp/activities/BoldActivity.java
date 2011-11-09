@@ -1,11 +1,16 @@
 package au.edu.melbuni.boldapp.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -20,6 +25,8 @@ public class BoldActivity extends Activity {
 
 	public static final String PREFERENCES = "BOLDPreferences";
 	public static final String PREFERENCES_USER_ID = "currentUserId";
+	
+    AlertDialog helpDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +58,51 @@ public class BoldActivity extends Activity {
 			}
 		}
 	}
+	
+	public void installHelp(final int helpLayout) {
+        final View helpButton = (View) findViewById(R.id.helpButton);
+        
+        helpButton.setOnTouchListener(new View.OnTouchListener() {
+        	@Override
+			public boolean onTouch(View v, MotionEvent motionEvent) {
+        		if (helpDialog == null) {
+        			LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        			View newView = layoutInflater.inflate(helpLayout, null, false);
+        			
+        			helpDialog = new AlertDialog.Builder(v.getContext()).
+        				setView(newView).
+        				create();
+        		}
+        		
+    			WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+    			params.copyFrom(helpDialog.getWindow().getAttributes());
+    			
+//    			params.layoutAnimationParameters = new LayoutAnimationController(new Animation());
+    			
+    			params.dimAmount = 0.8f;
+    			params.gravity = Gravity.RIGHT;
+    	        
+    			DisplayMetrics metrics = getResources().getDisplayMetrics();
+    	        int width = metrics.widthPixels;
+    	        int height = metrics.heightPixels;
+    	        
+    			params.width = 4 * width / 5;
+    			params.height = height;
+    			
+        		helpDialog.show();
+        		
+        		helpDialog.getWindow().setAttributes(params);
+            	
+        		return false;
+            }
+        });
+        helpButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				helpDialog.hide();
+			}
+		});
+	}
 
 	public void addToMenu(int layout) {
 		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -71,22 +123,6 @@ public class BoldActivity extends Activity {
 	public void setContent(View newView) {
 		FrameLayout content = (FrameLayout) findViewById(R.id.content);
 		content.addView(newView);
-	}
-	
-	public View replaceContent(int layout) {
-		FrameLayout content = (FrameLayout) findViewById(R.id.content);
-		View oldView = content.getChildAt(0);
-		content.removeAllViews();
-		setContent(layout);
-		return oldView;
-	}
-	
-	public View replaceContent(View newView) {
-		FrameLayout content = (FrameLayout) findViewById(R.id.content);
-		View oldView = content.getChildAt(0);
-		content.removeAllViews();
-		setContent(newView);
-		return oldView;
 	}
 
 	public void configureView(Bundle savedInstanceState) {

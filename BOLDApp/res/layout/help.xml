@@ -2,5 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:orientation="vertical" android:baselineAligned="false" android:layout_height="wrap_content">
-    <ImageButton android:src="@drawable/icon" android:layout_margin="4dip" android:layout_gravity="center" android:id="@+id/helpButton" android:tag="helpButton" android:layout_width="match_parent" android:scaleType="centerInside" android:layout_height="match_parent"></ImageButton>
+
+    <Button
+        android:id="@+id/helpButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="4dip"
+        android:tag="helpButton"
+        android:text="@string/help" >
+</Button>
 </LinearLayout>

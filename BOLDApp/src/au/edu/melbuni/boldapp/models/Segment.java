@@ -99,7 +99,7 @@ public class Segment extends Observable {
 		setSelected(false);
 	}
 	
-	protected void setPlaying(boolean playing) {
+	public void setPlaying(boolean playing) {
 		this.playing = playing;
 		setChanged();
 		notifyObservers();

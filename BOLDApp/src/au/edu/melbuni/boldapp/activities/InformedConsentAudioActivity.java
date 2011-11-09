@@ -10,9 +10,9 @@ import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Recorder;
 import au.edu.melbuni.boldapp.models.User;
 
-public class InformedConsent2AudioActivity extends BoldActivity {
+public class InformedConsentAudioActivity extends BoldActivity {
 	
-	View nonHelpView;
+//	AlertDialog helpDialog;
 	
 	Recorder recorder = new Recorder();
 	Player player = new Player();
@@ -29,31 +29,17 @@ public class InformedConsent2AudioActivity extends BoldActivity {
 	public void configureView(Bundle savedInstanceState) {
         super.configureView(savedInstanceState);
         
-     	setContent(R.layout.informed_consent_2_audio);
+     	setContent(R.layout.informed_consent_audio);
     };
     
     public void installBehavior(Bundle savedInstanceState) {
-        final View helpButton = (View) findViewById(R.id.helpButton);
-        
-        helpButton.setOnTouchListener(new View.OnTouchListener() {
-        	@Override
-			public boolean onTouch(View v, MotionEvent motionEvent) {
-        		replaceContent(R.layout.informed_consent_help);
-            	return false;
-            }
-        });
-        helpButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				replaceContent(R.layout.informed_consent_2_audio);
-			}
-		});
+        installHelp(R.layout.informed_consent_audio_help);
     	
     	final View recordButton = (View) findViewById(R.id.recordButton);
         recordButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
-        		User user = Bundler.getCurrentUser(InformedConsent2AudioActivity.this);
+        		User user = Bundler.getCurrentUser(InformedConsentAudioActivity.this);
         		user.startRecording(recorder);
             	return false;
             }
@@ -61,7 +47,7 @@ public class InformedConsent2AudioActivity extends BoldActivity {
         recordButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-        		User user = Bundler.getCurrentUser(InformedConsent2AudioActivity.this);
+        		User user = Bundler.getCurrentUser(InformedConsentAudioActivity.this);
         		user.stopRecording(recorder);
 			}
 		});
@@ -70,7 +56,7 @@ public class InformedConsent2AudioActivity extends BoldActivity {
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
-        		User user = Bundler.getCurrentUser(InformedConsent2AudioActivity.this);
+        		User user = Bundler.getCurrentUser(InformedConsentAudioActivity.this);
         		user.startPlaying(player, null);
             	return false;
             }
@@ -78,7 +64,7 @@ public class InformedConsent2AudioActivity extends BoldActivity {
     	playButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				User user = Bundler.getCurrentUser(InformedConsent2AudioActivity.this);
+				User user = Bundler.getCurrentUser(InformedConsentAudioActivity.this);
 				user.stopPlaying(player);
 			}
 		});

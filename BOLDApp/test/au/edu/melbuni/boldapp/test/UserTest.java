@@ -32,7 +32,7 @@ public class UserTest {
 	public void fromJSONWithoutData() {
 		User loaded = User.fromHash(new JSONPersister().fromJSON("{}"));
 		assertEquals("", loaded.name);
-		assertNotNull(loaded.uuid);
+		assertNotNull(loaded.getIdentifier());
 	}
 	
 	@Test
