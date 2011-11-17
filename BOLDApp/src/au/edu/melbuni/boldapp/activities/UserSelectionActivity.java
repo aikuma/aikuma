@@ -1,12 +1,18 @@
 package au.edu.melbuni.boldapp.activities;
 
+import org.apache.http.HttpResponse;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import au.edu.melbuni.boldapp.Bundler;
+import au.edu.melbuni.boldapp.HTTPClient;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Sounder;
@@ -40,6 +46,69 @@ public class UserSelectionActivity extends BoldActivity {
 	};
 
 	public void installBehavior(Bundle savedInstanceState) {
+		
+		// TODO Testing Wifi Multicast
+		//
+		final ImageButton configurationButton = (ImageButton) findViewById(R.id.configurationButton);
+		configurationButton.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+//				WifiManager wifi = (WifiManager) getSystemService( Context.WIFI_SERVICE );
+//				MulticastLock lock = wifi.createMulticastLock("bold_multicast_lock");
+//				lock.setReferenceCounted(true);
+//				lock.acquire();
+//				
+//				wifi.startScan(); // CHANGE_WIFI_STATE
+				
+				User user = Bundler.getCurrentUser(UserSelectionActivity.this);
+				
+				HttpResponse response = new HTTPClient("http://128.250.22.12:4567").post(user);
+				
+				if (response != null) {
+					new AlertDialog.Builder(v.getContext())
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.setMessage(response.toString())
+					.setPositiveButton("OK",
+							new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog,
+								int which) {
+
+						}
+					}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+
+						}
+					}).show();
+				}
+				
+//				List<ScanResult> scanResults = wifi.getScanResults();
+//				for (ScanResult scanResult : scanResults) {
+//					new AlertDialog.Builder(v.getContext())
+//					.setIcon(android.R.drawable.ic_dialog_alert)
+//					.setMessage(scanResult.toString())
+//					.setPositiveButton("OK",
+//							new DialogInterface.OnClickListener() {
+//						@Override
+//						public void onClick(DialogInterface dialog,
+//								int which) {
+//							
+//						}
+//					}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//						@Override
+//						public void onClick(DialogInterface dialog, int which) {
+//							
+//						}
+//					}).show();
+//				}
+//
+//				lock.release();
+				
+				return true;
+			}
+		});
+		
 		// New User
 		//
 		LinearLayout addNewUserLayout = (LinearLayout) findViewById(R.id.addNewUser);

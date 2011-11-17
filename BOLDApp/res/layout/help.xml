@@ -9,7 +9,9 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:layout_margin="4dip"
+        android:enabled="false"
         android:tag="helpButton"
         android:text="@string/help" >
+
 </Button>
 </LinearLayout>
