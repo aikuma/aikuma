@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import au.edu.melbuni.boldapp.persisters.Persister;
@@ -24,6 +25,14 @@ public class Users extends Model implements Collection<User> { // TODO implement
 	
 	public Users(ArrayList<User> users) {
 		this.users = users;
+	}
+	
+	public List<String> getIds() {
+		List<String> userIds = new ArrayList<String>();
+		for (User user : users) {
+			userIds.add(user.getIdentifier());
+		}
+		return userIds;
 	}
 
 	// Persistence.

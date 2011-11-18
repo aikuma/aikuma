@@ -13,6 +13,11 @@ get '/user/:id.json' do
   user.to_json
 end
 
+get '/users' do
+  p Users.all
+  Users.all.to_json
+end
+
 # Create a new user if it doesn't exist yet.
 #
 post '/users' do
