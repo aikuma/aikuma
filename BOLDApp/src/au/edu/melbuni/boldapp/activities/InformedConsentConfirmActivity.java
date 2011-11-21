@@ -14,7 +14,8 @@ import au.edu.melbuni.boldapp.models.User;
 public class InformedConsentConfirmActivity extends BoldActivity {
 	
 	static final int TAKE_USER_AUDIO   = 0;
-	static final int TAKE_USER_PICTURE = 1;
+	static final int TAKE_USER_NAME    = 1;
+	static final int TAKE_USER_PICTURE = 2;
 	
 	Player player = new Player();
 
@@ -76,6 +77,9 @@ public class InformedConsentConfirmActivity extends BoldActivity {
     	if (resultCode == RESULT_OK) {
     		if (requestCode == TAKE_USER_AUDIO) { 
     			// TODO Save.
+    			startActivityForResult(new Intent(getApplicationContext(), InformedConsentNameActivity.class), TAKE_USER_NAME);
+    		} else if (requestCode == TAKE_USER_NAME) {
+    			// TODO Save?
     			startActivityForResult(new Intent(getApplicationContext(), InformedConsentPhotoActivity.class), TAKE_USER_PICTURE);
     		} else if (requestCode == TAKE_USER_PICTURE) {
     			setUserPictureFromCurrentUser();

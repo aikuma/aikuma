@@ -24,7 +24,7 @@ public class UserTest {
 	
 	@Test
 	public void fromJSON() {
-		User loaded = User.fromHash(new JSONPersister().fromJSON("{\"name\":\"Some Name\",\"uuid\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}"));
+		User loaded = User.fromHash(new JSONPersister().fromJSON("{\"name\":\"Some Name\",\"id\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}"));
 		assertEquals("Some Name", loaded.name);
 		assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", loaded.getIdentifier());
 	}
@@ -37,7 +37,7 @@ public class UserTest {
 	
 	@Test
 	public void toJSON() {
-		assertEquals("{\"name\":\"Some Name\",\"uuid\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}", user.toJSON());
+		assertEquals("{\"name\":\"Some Name\",\"id\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\"}", user.toJSON());
 	}
 	
 	@Test

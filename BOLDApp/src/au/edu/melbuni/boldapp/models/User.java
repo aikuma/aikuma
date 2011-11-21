@@ -1,8 +1,11 @@
 package au.edu.melbuni.boldapp.models;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -86,13 +89,13 @@ public class User extends Model {
 	
 	public static User fromHash(Map<String, Object> hash) {
 		String name = hash.get("name") == null ? "" : (String) hash.get("name");
-		UUID uuid = hash.get("uuid") == null ? UUID.randomUUID() : UUID.fromString((String) hash.get("uuid"));
+		UUID uuid = hash.get("id") == null ? UUID.randomUUID() : UUID.fromString((String) hash.get("id"));
 		return new User(name, uuid);
 	}
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
 		hash.put("name", this.name);
-		hash.put("uuid", this.uuid.toString());
+		hash.put("id", this.uuid.toString());
 		return hash;
 	}
 	
@@ -131,15 +134,34 @@ public class User extends Model {
 		File image = new File(getProfileImagePath());
 		return image.exists();
 	}
+	public void setProfileImage(String data) {
+		String fileName = "";
+		
+		try {
+			// TODO DRY. See above.
+			//
+        	fileName = getProfileImagePath();
+        	File file = new File(fileName);
+        	file.getParentFile().mkdirs();
+			
+			BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
+			out.write(data);
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public void putProfileImage(byte[] imageData) {
 		String fileName = "";
 		
 		try {
-			
+			// TODO DRY. See above.
+			//
         	fileName = getProfileImagePath();
-
         	File file = new File(fileName);
         	file.getParentFile().mkdirs();
+        	
         	file.createNewFile();
         	
             FileOutputStream out = new FileOutputStream(fileName);

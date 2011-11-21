@@ -10,13 +10,23 @@ class Users
     @users.find { |user| user.id == id }
   end
 
+  def self.replace user
+    remove user
+    add user
+  end
+
+  def self.remove user
+    @users ||= []
+    @users.delete find(user)
+  end
+
   def self.add user
     @users ||= []
     @users << user
   end
 
-  def self.delete id
-    @users.delete id
+  def self.ids
+    all.map &:id
   end
 
 end

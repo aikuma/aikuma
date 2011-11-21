@@ -46,7 +46,7 @@ public class Synchronizer {
 		if (!localMoreIds.isEmpty()) {
 			// Send stuff to the server.
 			//
-			for (String userId : serverMoreIds) {
+			for (String userId : localMoreIds) {
 				client.post(users.find(userId));
 			}
 		}

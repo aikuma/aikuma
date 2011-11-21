@@ -4,6 +4,8 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="lib" path="json_simple-1.1.jar"/>
 	<classpathentry kind="lib" path="jmdns-3.4.1.jar"/>
+	<classpathentry kind="lib" path="apache-mime4j-0.6.jar"/>
+	<classpathentry kind="lib" path="httpmime-4.0.1.jar"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

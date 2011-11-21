@@ -1,10 +1,14 @@
 package au.edu.melbuni.boldapp;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -24,6 +28,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.json.simple.JSONValue;
@@ -77,22 +84,67 @@ public class HTTPClient {
 	//
 	@SuppressWarnings("unchecked")
 	public List<String> getUserIds() {
-		return (List<String>) getBody("/users");
-	}
-
-	// Sends the user to the server.
-	//
-	public HttpResponse post(User user) {
-		return post("/users", user.toHash());
+		return (List<String>) getBody("/users/ids");
 	}
 	
 	// Gets a user from the server.
 	//
+	// Note: Also gets the user picture.
+	//
 	@SuppressWarnings("unchecked")
 	public User getUser(String userId) {
-		Map<String, Object> hash = (Map<String, Object>) getBody(userId);
-		return User.fromHash(hash);
+		Map<String, Object> hash = (Map<String, Object>) getBody("/user/" + userId + ".json");
+		User user = User.fromHash(hash);
+		user.putProfileImage(getImage("/user/" + userId + "/picture.png"));
+		return user;
 	}
+
+	// Sends the user to the server.
+	//
+	// Note: Includes sending his user picture.
+	//
+	public HttpResponse post(User user) {
+		HttpResponse response = post("/users", user.toHash());
+		postPicture("/user/" + user.getIdentifier() + "/picture", user.getProfileImagePath());
+		return response;
+	}
+	
+	public HttpResponse postPicture(String path, String picturePath) {
+		HttpPost post = new HttpPost(getServerURI(path));
+		
+		ContentBody file = new FileBody(new File(picturePath));
+		MultipartEntity entity = new MultipartEntity();
+		entity.addPart("file", file);
+		post.setEntity(entity);
+
+		return execute(post);
+	}
+	
+//	private String readFile(String path) throws java.io.IOException {
+//		StringBuffer fileData = new StringBuffer(1000);
+//		BufferedReader reader = new BufferedReader(
+//				new FileReader(path));
+//		char[] buf = new char[1024];
+//		int numRead=0;
+//		while((numRead=reader.read(buf)) != -1){
+//			String readData = String.valueOf(buf, 0, numRead);
+//			fileData.append(readData);
+//			buf = new char[1024];
+//		}
+//		reader.close();
+//		return fileData.toString();
+//	}
+//	
+//	private void writeFile(String path, String data) {
+//		try {
+//			BufferedWriter out = new BufferedWriter(new FileWriter(path));
+//			out.write(data);
+//			out.close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	// Sends the timeline to the server.
 	//
@@ -120,20 +172,7 @@ public class HTTPClient {
 	}
 
 	public HttpResponse post(String path, List<NameValuePair> nameValuePairs) {
-		if (client == null) {
-			client = new DefaultHttpClient();
-		}
-
-		URI server = null;
-
-		try {
-			server = new URI(serverURI + path);
-		} catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		HttpPost post = new HttpPost(server);
+		HttpPost post = new HttpPost(getServerURI(path));
 
 		try {
 			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -142,6 +181,31 @@ public class HTTPClient {
 			e.printStackTrace();
 		}
 
+		return execute(post);
+	}
+	
+	public URI getServerURI(String path) {
+		URI server = null;
+
+		try {
+			server = new URI(serverURI + path);
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		return server;
+	}
+	
+	public void lazilyInitializeClient() {
+		if (client == null) {
+			client = new DefaultHttpClient();
+		}
+	}
+	
+	public HttpResponse execute(HttpPost post) {
+		lazilyInitializeClient();
+		
 		HttpResponse response = null;
 
 		try {
@@ -193,6 +257,54 @@ public class HTTPClient {
 		}
 
 		return response;
+	}
+	
+	// TODO Refactor.
+	//
+	public byte[] getImage(String path) {
+	    HttpURLConnection connection = null;
+		try {
+			connection = (HttpURLConnection) getServerURI(path).toURL().openConnection();
+		} catch (IOException e) {
+			throw new RuntimeException(e.toString());
+		}
+	    try {
+			connection.setRequestMethod("GET");
+		} catch (ProtocolException e) {
+			throw new RuntimeException(e.toString());
+		}
+	    connection.setDoInput(true);
+	    connection.setDoOutput(true);
+	    connection.setUseCaches(false);
+//	    connection.addRequestProperty("Accept","image/png, image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/x-shockwave-flash, */*");
+//	    connection.addRequestProperty("Accept-Language", "en-us,zh-cn;q=0.5");
+//	    connection.addRequestProperty("Accept-Encoding", "gzip, deflate");
+//	    connection.addRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; .NET CLR 2.0.50727; MS-RTC LM 8)");
+	    try {
+			connection.connect();
+		} catch (IOException e) {
+			throw new RuntimeException(e.toString());
+		}
+	    
+	    // Read into buffer. 
+	    //
+	    InputStream is = null;
+	    ByteArrayOutputStream os = new ByteArrayOutputStream();
+	    byte[] buffer = new byte[1024];
+		try {
+			is = connection.getInputStream();
+			int byteRead = 0;
+			byteRead = is.read(buffer);
+		    while(byteRead != -1)
+		    {
+		    	os.write(buffer, 0, byteRead);
+		        byteRead = is.read(buffer);
+		    }
+		} catch (IOException e) {
+			throw new RuntimeException(e.toString());
+		}
+	    
+	    return os.toByteArray();
 	}
 
 	public Object getBody(String path) {
