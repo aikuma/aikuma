@@ -14,6 +14,7 @@ import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Recorder;
 import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
@@ -30,7 +31,7 @@ public class Timeline {
 	String location;
 	Segments segments;
 	
-	User user;
+	User userId;
 	Timelines timelines;
 	
 	public Timeline(String prefix) {
@@ -57,14 +58,18 @@ public class Timeline {
 		return uuid.toString();
 	}
 	
+	public Segments getSegments() {
+		return segments;
+	}
+	
 	public void saveEach(Persister persister) {
 		persister.save(segments);
 	}
 	
-	public static Timeline fromHash(Persister persister, Users users, Map<String, Object> hash) {
+	public static Timeline fromHash(Users users, Map<String, Object> hash) {
 		String prefix = hash.get("prefix") == null ? "" : (String) hash.get("prefix");
 		
-		UUID uuid = hash.get("uuid") == null ? UUID.randomUUID() : UUID.fromString((String) hash.get("uuid"));
+		UUID uuid = hash.get("id") == null ? UUID.randomUUID() : UUID.fromString((String) hash.get("id"));
 		
 		String dateString = hash.get("date") == null ? "" : (String) hash.get("date");
 		Date date = null;
@@ -75,14 +80,14 @@ public class Timeline {
 			e.printStackTrace();
 		}
 		
-		String userReference = hash.get("user") == null ? null : (String) hash.get("user");
+		String userReference = hash.get("user_id") == null ? null : (String) hash.get("user_id");
 		User user = users.find(userReference);
 		
 		if (user == null) {
 			throw new NullPointerException("No User " + userReference + " for Timeline " + uuid + " found.");
 		}
 		
-		Segments segments = Segments.load(persister, prefix, uuid);
+		Segments segments = Segments.load(new JSONPersister(), prefix, uuid);
 		
 		Timeline timeline = new Timeline(prefix, uuid, segments);
 		timeline.setDate(date);
@@ -93,10 +98,10 @@ public class Timeline {
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
 		
+		hash.put("id", this.getIdentifier());
 		hash.put("prefix", this.prefix);
-		hash.put("uuid", this.getIdentifier());
 		hash.put("date", this.date.toGMTString());
-		hash.put("user", this.user.getIdentifier());
+		hash.put("user_id", this.userId.getIdentifier());
 		
 		return hash;
 	}
@@ -120,11 +125,12 @@ public class Timeline {
 	}
 
 	public void setUser(User user) { // TODO throw NullPointerException?
-		this.user = user;
+		this.userId = user;
+		this.userId.add(this); // TODO Ok?
 	}
 
 	public User getUser() {
-		return user;
+		return userId;
 	}
 	
 	public void setDate(Date date) { // TODO throw NullPointerException?

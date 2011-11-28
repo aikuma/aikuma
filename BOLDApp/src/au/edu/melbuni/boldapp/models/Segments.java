@@ -1,8 +1,10 @@
 package au.edu.melbuni.boldapp.models;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -18,7 +20,7 @@ import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.persisters.Persister;
 import au.edu.melbuni.boldapp.views.HorizontalListView;
 
-public class Segments implements Iterable<Segment> {
+public class Segments implements Iterable<Segment>, Collection<Segment> {
 	
 	// Stored.
 	// 
@@ -46,6 +48,14 @@ public class Segments implements Iterable<Segment> {
 	
 	public String getPrefix() {
 		return prefix;
+	}
+	
+	public List<String> getIds() {
+		List<String> segmentIds = new ArrayList<String>();
+		for (Segment segment : segments) {
+			segmentIds.add(segment.getIdentifier());
+		}
+		return segmentIds;
 	}
 	
 	// Persistence.
@@ -131,10 +141,12 @@ public class Segments implements Iterable<Segment> {
 		return segments.size();
 	}
 
-	public void add(Segment segment) {
-		segments.add(segment);
+	public boolean add(Segment segment) {
+		boolean result = segments.add(segment);
+		// TODO Use result?
 		if (adapter != null) { adapter.notifyDataSetChanged(); }
 		selectedForRecording = segment;
+		return result;
 	}
 
 	protected void remove(int position) {
@@ -305,6 +317,15 @@ public class Segments implements Iterable<Segment> {
 		return selectedForRecording;
 	}
 	
+	public Segment find(String identifier) {
+		for (Segment segment : segments) {
+			if (segment.getIdentifier().equals(identifier)) {
+				return segment;
+			}
+		}
+		return null;
+	}
+	
 	public boolean isEmpty() {
 		return segments.isEmpty();
 	}
@@ -326,6 +347,51 @@ public class Segments implements Iterable<Segment> {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean addAll(Collection<? extends Segment> collection) {
+		return segments.addAll(collection);
+	}
+
+	@Override
+	public void clear() {
+		segments.clear();
+	}
+
+	@Override
+	public boolean contains(Object object) {
+		return segments.contains(object);
+	}
+
+	@Override
+	public boolean containsAll(Collection<?> collection) {
+		return containsAll(collection);
+	}
+
+	@Override
+	public boolean remove(Object object) {
+		return segments.remove(object);
+	}
+
+	@Override
+	public boolean removeAll(Collection<?> collection) {
+		return removeAll(collection);
+	}
+
+	@Override
+	public boolean retainAll(Collection<?> collection) {
+		return segments.retainAll(collection);
+	}
+
+	@Override
+	public Object[] toArray() {
+		return segments.toArray();
+	}
+
+	@Override
+	public <T> T[] toArray(T[] array) {
+		return segments.toArray(array);
 	}
 
 }

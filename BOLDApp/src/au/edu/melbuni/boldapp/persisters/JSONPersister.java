@@ -81,10 +81,9 @@ public class JSONPersister extends Persister {
 	public Timeline loadTimeline(Users users, String identifier) {
 		Timeline timeline = null;
 		try {
-			timeline = Timeline.fromHash(this, users, fromJSON(readTimeline(identifier)));
+			timeline = Timeline.fromHash(users, fromJSON(readTimeline(identifier)));
 		} catch (IOException e) {
 			System.out.println("OUCH " + e);
-//			timeline = new Timeline();
 		}
 		return timeline;
 	}

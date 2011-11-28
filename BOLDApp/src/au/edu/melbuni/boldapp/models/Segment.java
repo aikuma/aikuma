@@ -1,14 +1,19 @@
 package au.edu.melbuni.boldapp.models;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.Recorder;
+import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
@@ -30,12 +35,12 @@ public class Segment extends Observable {
 	}
 	
 	public static Segment fromHash(Map<String, Object> hash) {
-		String identifier = hash.get("identifier") == null ? "" : (String) hash.get("identifier");
+		String identifier = hash.get("id") == null ? "" : (String) hash.get("identifier");
 		return new Segment(identifier);
 	}
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
-		hash.put("identifier", this.identifier);
+		hash.put("id", this.identifier);
 		return hash;
 	}
 	
@@ -43,6 +48,33 @@ public class Segment extends Observable {
 	//
 	public static Segment load(Persister persister, String identifier) {
 		return persister.loadSegment(identifier);
+	}
+	
+	public String getSoundfilePath() {
+		return Sounder.generateFullFilename("recording_" + getIdentifier());
+	}
+	
+	public void putSoundfile(byte[] bytes) {
+		String path = getSoundfilePath(); // TODO Refactor!
+		
+		BufferedOutputStream bufOut = null;
+		try {
+			// TODO DRY. See above.
+			//
+        	File file = new File(path);
+        	file.getParentFile().mkdirs();
+        	file.createNewFile();
+        	
+            FileOutputStream out = new FileOutputStream(path);
+            bufOut = new BufferedOutputStream(out);
+            
+            bufOut.write(bytes);
+            
+            bufOut.close();
+        } catch (Exception e) {
+        	System.out.println("ERROR:" + path);
+            Log.e("Error reading file", e.toString());
+        }
 	}
 	
 	// Save the segment's metadata.

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import au.edu.melbuni.boldapp.persisters.Persister;
@@ -24,6 +25,14 @@ public class Timelines extends Model implements Collection<Timeline> {
 	
 	public Timelines(ArrayList<Timeline> timelines) {
 		this.timelines = timelines;
+	}
+	
+	public List<String> getIds() {
+		List<String> timelineIds = new ArrayList<String>();
+		for (Timeline timeline : timelines) {
+			timelineIds.add(timeline.getIdentifier());
+		}
+		return timelineIds;
 	}
 
 	// Persistence.
@@ -78,6 +87,16 @@ public class Timelines extends Model implements Collection<Timeline> {
 //		Map<String, Comparable> timelines = new LinkedHashMap<String, Comparable>();
 //		return JSONValue.toJSONString(timelines);
 //	}
+	
+	public Timeline find(String identifier) {
+		for (Timeline timeline : timelines) {
+			if (timeline.getIdentifier().equals(identifier)) {
+				return timeline;
+			}
+		}
+		return null;
+	}
+
 
 	// Delegation.
 	//

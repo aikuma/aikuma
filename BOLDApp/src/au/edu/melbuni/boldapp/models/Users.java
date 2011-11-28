@@ -79,6 +79,14 @@ public class Users extends Model implements Collection<User> { // TODO implement
 		}
 		return null;
 	}
+	
+	public Timelines getTimelines() {
+		ArrayList<Timeline> timelines = new ArrayList<Timeline>();
+		for (User user : users) {
+			timelines.addAll(user.getTimelines());
+		}
+		return new Timelines(timelines);
+	}
 
 	// Delegation.
 	//

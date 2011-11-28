@@ -29,4 +29,8 @@ class Users
     all.map &:id
   end
 
+  def self.to_json
+    all.to_json
+  end
+
 end

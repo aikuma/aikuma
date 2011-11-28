@@ -44,7 +44,7 @@ public class TimelineTest {
 	public void fromJSON() {
 		Persister persister = new JSONPersister();
 		Map<String, Object> hash = persister.fromJSON("{\"prefix\":\"some_prefix_\",\"uuid\":\"" + timeline.getIdentifier() + "\"\"date\":\"1 Jan 1970 01:00:00 GMT\",\"user\":\"" + user.getIdentifier() + "\"}");
-		Timeline loaded = Timeline.fromHash(persister, users, hash);
+		Timeline loaded = Timeline.fromHash(users, hash);
 		assertEquals(timeline.getIdentifier(), loaded.getIdentifier());
 		assertEquals("1 Jan 1970 01:00:00 GMT", loaded.getDate().toGMTString());
 	}

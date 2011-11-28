@@ -33,6 +33,10 @@ public class User extends Model {
 	protected UUID uuid;
 	protected Segment audio;
 	
+	// Note: Just some references.
+	//
+	protected Timelines timelines;
+	
 	public boolean consented = true;
 	
 	public User() {
@@ -55,6 +59,23 @@ public class User extends Model {
 		this.name  = name;
 		this.uuid  = uuid;
 		this.audio = segment;
+		this.timelines = new Timelines();
+	}
+	
+	public void add(Timeline timeline) {
+		this.timelines.add(timeline);
+	}
+	
+	public void addAll(Timelines timelines) {
+		this.timelines.addAll(timelines);
+	}
+	
+	public void set(Timelines timelines) {
+		this.timelines = timelines;
+	}
+	
+	public Timelines getTimelines() {
+		return timelines;
 	}
 	
 	public static User newUnconsentedUser() {

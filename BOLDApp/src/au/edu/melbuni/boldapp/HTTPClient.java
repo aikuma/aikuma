@@ -35,8 +35,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.json.simple.JSONValue;
 
+import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.models.Users;
 
 public class HTTPClient {
 
@@ -95,8 +97,35 @@ public class HTTPClient {
 	public User getUser(String userId) {
 		Map<String, Object> hash = (Map<String, Object>) getBody("/user/" + userId + ".json");
 		User user = User.fromHash(hash);
-		user.putProfileImage(getImage("/user/" + userId + "/picture.png"));
+		user.putProfileImage(getByteArray("/user/" + userId + "/picture.png"));
 		return user;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> getTimelineIds() {
+		return (List<String>) getBody("/timelines/ids");
+	}
+
+	@SuppressWarnings("unchecked")
+	public Timeline getTimeline(String timelineId, String userId, Users users) {
+		// TODO No user id needed?
+		Map<String, Object> hash = (Map<String, Object>) getBody("/timeline/" + timelineId + ".json");
+		Timeline timeline = Timeline.fromHash(users, hash);
+//		timeline.putProfileImage(getImage("/timeline/" + timelineId + "/picture.png"));
+		return timeline;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<String> getSegmentIds(String timelineId) {
+		return (List<String>) getBody("/timeline/" + timelineId + "/segments/ids");
+	}
+
+	@SuppressWarnings("unchecked")
+	public Segment getSegment(String segmentId) {
+		Map<String, Object> hash = (Map<String, Object>) getBody("/segment/" + segmentId + ".json");
+		Segment segment = Segment.fromHash(hash);
+		segment.putSoundfile(getByteArray("/segment/" + segmentId + "/soundfile.gp3")); // TODO Refactor!
+		return segment;
 	}
 
 	// Sends the user to the server.
@@ -105,51 +134,20 @@ public class HTTPClient {
 	//
 	public HttpResponse post(User user) {
 		HttpResponse response = post("/users", user.toHash());
-		postPicture("/user/" + user.getIdentifier() + "/picture", user.getProfileImagePath());
+		postFile("/user/" + user.getIdentifier() + "/picture", user.getProfileImagePath());
 		return response;
 	}
-	
-	public HttpResponse postPicture(String path, String picturePath) {
-		HttpPost post = new HttpPost(getServerURI(path));
-		
-		ContentBody file = new FileBody(new File(picturePath));
-		MultipartEntity entity = new MultipartEntity();
-		entity.addPart("file", file);
-		post.setEntity(entity);
-
-		return execute(post);
-	}
-	
-//	private String readFile(String path) throws java.io.IOException {
-//		StringBuffer fileData = new StringBuffer(1000);
-//		BufferedReader reader = new BufferedReader(
-//				new FileReader(path));
-//		char[] buf = new char[1024];
-//		int numRead=0;
-//		while((numRead=reader.read(buf)) != -1){
-//			String readData = String.valueOf(buf, 0, numRead);
-//			fileData.append(readData);
-//			buf = new char[1024];
-//		}
-//		reader.close();
-//		return fileData.toString();
-//	}
-//	
-//	private void writeFile(String path, String data) {
-//		try {
-//			BufferedWriter out = new BufferedWriter(new FileWriter(path));
-//			out.write(data);
-//			out.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
 
 	// Sends the timeline to the server.
 	//
 	public HttpResponse post(Timeline timeline) {
 		return post("/timelines", timeline.toHash());
+	}
+
+	public HttpResponse post(Segment segment, String timelineId) {
+		HttpResponse response = post("/timeline/" + timelineId + "/segments", segment.toHash());
+		postFile("/segment/" + segment.getIdentifier() + "/soundfile", segment.getSoundfilePath());
+		return response;
 	}
 
 	public List<NameValuePair> remapped(Map<String, Object> hash) {
@@ -180,6 +178,17 @@ public class HTTPClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		return execute(post);
+	}
+	
+	public HttpResponse postFile(String path, String filePath) {
+		HttpPost post = new HttpPost(getServerURI(path));
+		
+		ContentBody file = new FileBody(new File(filePath));
+		MultipartEntity entity = new MultipartEntity();
+		entity.addPart("file", file);
+		post.setEntity(entity);
 
 		return execute(post);
 	}
@@ -261,7 +270,7 @@ public class HTTPClient {
 	
 	// TODO Refactor.
 	//
-	public byte[] getImage(String path) {
+	public byte[] getByteArray(String path) {
 	    HttpURLConnection connection = null;
 		try {
 			connection = (HttpURLConnection) getServerURI(path).toURL().openConnection();

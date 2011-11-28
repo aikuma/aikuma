@@ -5,12 +5,11 @@ import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class Sounder {
 
-	protected String getBasePath() {
-		// TODO 
+	public static String getBasePath() {
 		return Persister.getBasePath() + "recordings/";
 	}
 
-	protected String generateFullFilename(String relativeFilename) {
+	public static String generateFullFilename(String relativeFilename) {
 		String fileName = getBasePath();
 		fileName += relativeFilename;
 		fileName += ".3gp";

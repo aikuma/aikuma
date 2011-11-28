@@ -1,21 +1,22 @@
-class User
+class Segment
 
-  attr_reader :id, :name
+  attr_reader :id
 
-  def initialize id, name
-    @id, @name = id, name
+  def initialize id
+    @id = id
+    Segments.replace self
   end
 
   # Save the picture for this user.
   #
-  def save_picture file
+  def save_soundfile file
     prepare_directory
-    File.open picture_path, 'wb' do |target|
+    File.open soundfile_path, 'wb' do |target|
       target.write file.read
     end
   end
-  def picture_path
-    directory + "/picture.png"
+  def soundfile_path
+    directory + "/soundfile.gp3"
   end
 
   # Prepare this user's directory.
@@ -28,13 +29,13 @@ class User
   # belong to the user are saved.
   #
   def directory
-    File.expand_path "../../public/user/#{id}", __FILE__
+    File.expand_path "../../public/segment/#{id}", __FILE__
   end
 
   # Returns a JSON form of this user.
   #
   def to_json *a
-    { id: @id, name: @name }.to_json *a
+    { id: @id }.to_json *a
   end
 
   def <=> other
