@@ -122,10 +122,20 @@ public class HTTPClient {
 
 	@SuppressWarnings("unchecked")
 	public Segment getSegment(String segmentId) {
-		Map<String, Object> hash = (Map<String, Object>) getBody("/segment/" + segmentId + ".json");
-		Segment segment = Segment.fromHash(hash);
-		segment.putSoundfile(getByteArray("/segment/" + segmentId + "/soundfile.gp3")); // TODO Refactor!
-		return segment;
+		if (doesSegmentExist(segmentId)) {
+			Map<String, Object> hash = (Map<String, Object>) getBody("/segment/" + segmentId + ".json");
+			Segment segment = Segment.fromHash(hash);
+			// TODO Refactor!!!
+			byte[] bytes = getByteArray("/segment/" + segmentId + "/soundfile.gp3");
+			if (bytes != null) {
+				segment.putSoundfile(bytes);
+			} else {
+				return null;
+			}
+			return segment;
+		} else {
+			return null;
+		}
 	}
 
 	// Sends the user to the server.
@@ -148,6 +158,29 @@ public class HTTPClient {
 		HttpResponse response = post("/timeline/" + timelineId + "/segments", segment.toHash());
 		postFile("/segment/" + segment.getIdentifier() + "/soundfile", segment.getSoundfilePath());
 		return response;
+	}
+	
+	public boolean doesExist(User user) {
+		return parseResponseExists(get("/user/" + user.getIdentifier()));
+	}
+	
+	public boolean doesExist(Timeline timeline) {
+		return parseResponseExists(get("/timeline/" + timeline.getIdentifier()));
+	}
+	
+	public boolean doesExist(Segment segment) {
+		return doesSegmentExist(segment.getIdentifier());
+	}
+	public boolean doesSegmentExist(String segmentId) {
+		return parseResponseExists(get("/segment/" + segmentId));
+	}
+	
+	public boolean parseResponseExists(HttpResponse response) {
+		if (response.getStatusLine().getStatusCode() == 404) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	public List<NameValuePair> remapped(Map<String, Object> hash) {
@@ -310,7 +343,8 @@ public class HTTPClient {
 		        byteRead = is.read(buffer);
 		    }
 		} catch (IOException e) {
-			throw new RuntimeException(e.toString());
+			// throw new RuntimeException(e.toString());
+			return null;
 		}
 	    
 	    return os.toByteArray();

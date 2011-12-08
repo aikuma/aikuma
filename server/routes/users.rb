@@ -11,4 +11,5 @@ end
 post '/users' do
   user = User.new params[:id], params[:name]
   Users.replace user if user
+  status 200
 end

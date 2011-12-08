@@ -15,6 +15,8 @@ post '/segments' do
   Segments.replace segment if segment
 end
 
+#
+#
 post '/timeline/:timeline_id/segments' do
   segment  = Segment.new params[:id]
   timeline = Timelines.find params[:timeline_id]
@@ -23,7 +25,7 @@ post '/timeline/:timeline_id/segments' do
       timeline.segments << segment
     else
       i = timeline.segments.index segment
-      timeline.segments.insert i, segment
+      timeline.segments.insert (i || 0), segment
     end
   end
 end

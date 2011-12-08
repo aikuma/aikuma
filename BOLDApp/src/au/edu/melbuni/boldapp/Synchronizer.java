@@ -126,11 +126,15 @@ public class Synchronizer {
 		
 		final List<Segment> moreSegments = new ArrayList<Segment>();
 		
-		synchronizeWithIds(server.getSegmentIds(timeline.getIdentifier()), segments.getIds(), new SynchronizerCallbacks() {
+		List<String> serverSegmentIds = server.getSegmentIds(timeline.getIdentifier());
+		
+		synchronizeWithIds(serverSegmentIds, segments.getIds(), new SynchronizerCallbacks() {
 			@Override
 			public void serverMore(String id) {
 				Segment segment = server.getSegment(id);
-				moreSegments.add(segment);
+				if (segment != null) {
+					moreSegments.add(segment);
+				}
 			}
 			
 			@Override
@@ -140,6 +144,22 @@ public class Synchronizer {
 		});
 		
 		segments.addAll(moreSegments);
+		
+		synchronized (segments) {
+			for (Segment segment : segments) {
+				synchronize(segment, timeline);
+			}	
+		}
+		
+		return true;
+	}
+	
+	public boolean synchronize(Segment segment, Timeline timeline) {
+		lazilyInitializeClient();
+		
+		if (!server.doesExist(segment)) {
+			server.post(segment, timeline.getIdentifier());
+		}
 		
 		return true;
 	}

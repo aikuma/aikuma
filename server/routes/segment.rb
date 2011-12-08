@@ -6,6 +6,13 @@ get '/segment/:id.json' do
   (segment || {}).to_json
 end
 
+# Does the segment exist?
+#
+get '/segment/:id' do
+  segment = Segments.find params[:id]
+  status 404 unless segment
+end
+
 # Saves the given gp3.
 #
 post '/segment/:id/soundfile' do
