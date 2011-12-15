@@ -18,7 +18,7 @@ class Segments
   end
 
   def remove segment
-    segments.delete find(segment)
+    segments.delete find(segment.id)
   end
 
   def add segment

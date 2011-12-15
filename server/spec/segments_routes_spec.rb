@@ -91,6 +91,17 @@ describe 'Server' do
             segments.first.id.should == 'some_segment_id'
             segments[1].id.should == 'some_other_segment_id'
           end
+          it 'does not add a segment twice' do
+            post '/timeline/some_timeline_id/segments', id: 'some_other_segment_id'
+            post '/timeline/some_timeline_id/segments', id: 'some_other_segment_id'
+
+            last_response.should be_ok
+            segments = Timelines.find('some_timeline_id').segments
+            segments.size.should == 2
+            segments.first.id.should == 'some_segment_id'
+            segments[1].id.should == 'some_other_segment_id'
+          end
+          
         end
       end
     end

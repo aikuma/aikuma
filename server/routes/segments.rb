@@ -19,8 +19,7 @@ post '/timeline/:timeline_id/segments' do
       timeline.segments.add segment
     else
       segments = timeline.segments
-      index = segments.index segment
-      index ? segments.insert(index, segment) : segments.add(segment)
+      segments.replace segment
     end
     status 200
   end
