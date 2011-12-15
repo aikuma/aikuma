@@ -1,4 +1,22 @@
 class Segments
+  
+  # Convenience.
+  #
+  class << self
+    
+    def segments
+      @segments ||= []
+    end
+    
+    def << segment
+      segments << segment
+    end
+
+    def find id
+      segments.find { |segment| segment.id == id }
+    end
+    
+  end
 
   def segments
     @segments ||= []

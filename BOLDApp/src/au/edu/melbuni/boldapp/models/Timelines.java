@@ -108,8 +108,10 @@ public class Timelines extends Model implements Collection<Timeline> {
 		return timelines.size();
 	}
 
-	public boolean add(Timeline object) {
-		return timelines.add(object);
+	public boolean add(Timeline timeline) {
+		boolean result = timelines.add(timeline);
+		AllTimelines.add(timeline);
+		return result;
 	}
 
 	public boolean contains(Timeline object) {
@@ -118,6 +120,7 @@ public class Timelines extends Model implements Collection<Timeline> {
 
 	public void clear() {
 		timelines.clear();
+		AllTimelines.removeAll(timelines);
 	}
 
 	public Iterator<Timeline> iterator() {
@@ -126,7 +129,9 @@ public class Timelines extends Model implements Collection<Timeline> {
 
 	@Override
 	public boolean addAll(Collection<? extends Timeline> collection) {
-		return timelines.addAll(collection);
+		boolean result = timelines.addAll(collection);
+		AllTimelines.addAll(collection);
+		return result;
 	}
 
 	@Override
@@ -145,13 +150,17 @@ public class Timelines extends Model implements Collection<Timeline> {
 	}
 
 	@Override
-	public boolean remove(Object object) {
-		return timelines.remove(object);
+	public boolean remove(Object timeline) {
+		boolean result = timelines.remove(timeline);
+		AllTimelines.remove(timeline);
+		return result;
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> collection) {
-		return timelines.removeAll(collection);
+		boolean result = timelines.removeAll(collection);
+		AllTimelines.removeAll(collection);
+		return result;
 	}
 
 	@Override

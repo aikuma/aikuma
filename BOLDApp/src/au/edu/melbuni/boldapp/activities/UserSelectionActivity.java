@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
+import au.edu.melbuni.boldapp.BoldApplication;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
@@ -69,6 +70,10 @@ public class UserSelectionActivity extends BoldActivity {
 				Toast toast = Toast.makeText(UserSelectionActivity.this, users.getIds().toString(), 2000);
 				toast.setGravity(Gravity.TOP, -30, 50);
 				toast.show();
+				
+				// Save all the data now that we are synced.
+				//
+				((BoldApplication) getApplication()).save();
 
 				
 //				if (response != null) {

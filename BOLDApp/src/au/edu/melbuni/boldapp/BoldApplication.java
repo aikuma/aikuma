@@ -1,6 +1,7 @@
 package au.edu.melbuni.boldapp;
 
 import android.app.Application;
+import au.edu.melbuni.boldapp.models.AllTimelines;
 import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.Timelines;
 import au.edu.melbuni.boldapp.models.User;
@@ -11,8 +12,8 @@ import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class BoldApplication extends Application {
 
+	private Timelines timelines = null;
 	private Users users;
-	private Timelines timelines;
 
 	private User currentUser;
 	private Timeline currentTimeline;
@@ -30,7 +31,7 @@ public class BoldApplication extends Application {
 		//
 		this.users       = persister.loadUsers();
 		this.currentUser = persister.loadCurrentUser(users);
-		this.timelines   = persister.loadTimelines(users);
+		this.timelines   = AllTimelines.load(persister, users);
 		// this.currentTimeline = persister.loadCurrentTimeline();
 	}
 
@@ -88,7 +89,7 @@ public class BoldApplication extends Application {
 
 	public Timelines getTimelines() {
 		if (timelines == null) {
-			timelines = new Timelines();
+			timelines = AllTimelines.getTimelines(); // The central timelines collection.
 		}
 		return timelines;
 	}

@@ -34,13 +34,13 @@ public class Synchronizer {
 	public boolean synchronize(final Users users) {
 		lazilyInitializeClient();
 		
-		final List<User> moreUsers = new ArrayList<User>();
+		final List<User> serverMoreUsers = new ArrayList<User>();
 		
 		synchronizeWithIds(server.getUserIds(), users.getIds(), new SynchronizerCallbacks() {
 			@Override
 			public void serverMore(String id) {
 				User user = server.getUser(id);
-				moreUsers.add(user);
+				serverMoreUsers.add(user);
 			}
 			
 			@Override
@@ -49,7 +49,7 @@ public class Synchronizer {
 			}
 		});
 		
-		users.addAll(moreUsers);
+		users.addAll(serverMoreUsers);
 		
 		// Synchronize the user's timelines.
 		//
@@ -99,10 +99,9 @@ public class Synchronizer {
 		//
 		// Note: Synchronizes each at a time.
 		//
-		synchronized (timelines) {
-			for (Timeline timeline : timelines) {
-				synchronize(timeline, users);
-			}	
+		List<Timeline> copiedList = new ArrayList<Timeline>(timelines);
+		for (Timeline timeline : copiedList) {
+			synchronize(timeline, users);
 		}
 		
 		return true;

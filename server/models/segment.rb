@@ -4,6 +4,7 @@ class Segment
 
   def initialize id
     @id = id
+    Segments << self
   end
 
   # Save the picture for this user.
