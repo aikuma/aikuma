@@ -12,6 +12,10 @@ describe 'Server' do
     Sinatra::Application
   end
 
+  before(:each) do
+    Storage.clear
+  end
+
   context 'users' do
     context 'without users' do
       describe 'GET /users' do
@@ -41,12 +45,12 @@ describe 'Server' do
     end
     context 'with users' do
       before(:each) do
-        Users.clear
         Users.add User.new('first_id', 'First Name')
       end
       describe 'GET /users' do
         it 'returns an empty json array' do
           get '/users'
+
           last_response.should be_ok
           last_response.body.should == '[{"id":"first_id","name":"First Name"}]'
         end
@@ -54,6 +58,7 @@ describe 'Server' do
       describe 'GET /users/ids' do
         it 'returns an empty json array' do
           get '/users/ids'
+
           last_response.should be_ok
           last_response.body.should == '["first_id"]'
         end

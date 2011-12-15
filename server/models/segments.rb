@@ -1,40 +1,60 @@
 class Segments
 
-  class << self
+  def segments
+    @segments ||= []
+  end
 
-    def all
-      @segments ||= []
-      @segments
-    end
+  def all
+    segments
+  end
 
-    def find id
-      @segments ||= []
-      @segments.find { |segment| segment.id == id }
-    end
+  def find id
+    segments.find { |segment| segment.id == id }
+  end
 
-    def replace segment
-      remove segment
-      add segment
-    end
+  def replace segment
+    remove segment
+    add segment
+  end
 
-    def remove segment
-      @segments ||= []
-      @segments.delete find(segment)
-    end
+  def remove segment
+    segments.delete find(segment)
+  end
 
-    def add segment
-      @segments ||= []
-      @segments << segment
-    end
+  def add segment
+    segments << segment
+  end
 
-    def ids
-      all.map &:id
-    end
+  def ids
+    segments.map &:id
+  end
+  
+  def first
+    segments.first
+  end
+  
+  def [] index
+    segments[index]
+  end
+  
+  def index _
+    segments.index _
+  end
 
-    def to_json
-      all.to_json
-    end
+  def clear
+    segments.clear
+  end
+  
+  def empty?
+    segments.empty?
+  end
+  
+  def size
+    segments.size
+  end
 
+  def to_json
+    segments.to_json
   end
 
 end

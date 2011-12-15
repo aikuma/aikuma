@@ -1,18 +1,11 @@
-get '/timeline/:id/segments' do
-  timeline = Timelines.find params[:id]
-  (timeline && timeline.segments || {}).to_json
+get '/timeline/:timeline_id/segments' do
+  timeline = Timelines.find params[:timeline_id]
+  (timeline && timeline.segments || []).to_json
 end
 
-get '/timeline/:id/segments/ids' do
-  timeline = Timelines.find params[:id]
-  (timeline && timeline.segments && timeline.segments.map(&:id) || {}).to_json
-end
-
-# Create a new segment if it doesn't exist yet.
-#
-post '/segments' do
-  segment = Segment.new params[:id]
-  Segments.replace segment if segment
+get '/timeline/:timeline_id/segments/ids' do
+  timeline = Timelines.find params[:timeline_id]
+  (timeline && timeline.segments.ids || []).to_json
 end
 
 #
@@ -20,12 +13,15 @@ end
 post '/timeline/:timeline_id/segments' do
   segment  = Segment.new params[:id]
   timeline = Timelines.find params[:timeline_id]
+  
   if segment && timeline
     if timeline.segments.empty?
-      timeline.segments << segment
+      timeline.segments.add segment
     else
-      i = timeline.segments.index segment
-      timeline.segments.insert (i || 0), segment
+      segments = timeline.segments
+      index = segments.index segment
+      index ? segments.insert(index, segment) : segments.add(segment)
     end
+    status 200
   end
 end

@@ -2,14 +2,16 @@ class Timelines
 
   class << self
 
-    def all
+    def timelines
       @timelines ||= []
-      @timelines
+    end
+
+    def all
+      timelines
     end
 
     def find id
-      @timelines ||= []
-      @timelines.find { |timeline| timeline.id == id }
+      timelines.find { |timeline| timeline.id == id }
     end
 
     def replace timeline
@@ -18,17 +20,19 @@ class Timelines
     end
 
     def remove timeline
-      @timelines ||= []
-      @timelines.delete find(timeline)
+      timelines.delete find(timeline)
     end
 
     def add timeline
-      @timelines ||= []
-      @timelines << timeline
+      timelines << timeline
     end
 
     def ids
       all.map &:id
+    end
+
+    def clear
+      timelines.clear
     end
 
     def to_json

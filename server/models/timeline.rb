@@ -5,7 +5,7 @@ class Timeline
 
   def initialize id, prefix, date, location, user_id
     @id, @prefix, @date, @location, @user_id = id, prefix, date, location, user_id
-    @segments = []
+    @segments = Segments.new
   end
 
   # Prepare this user's directory.

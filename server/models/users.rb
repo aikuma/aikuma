@@ -1,40 +1,44 @@
 class Users
 
-  def self.all
-    @users ||= []
-    @users
-  end
+  class << self
 
-  def self.find id
-    @users ||= []
-    @users.find { |user| user.id == id }
-  end
+    def users
+      @users ||= []
+    end
 
-  def self.replace user
-    remove user
-    add user
-  end
+    def all
+      users
+    end
 
-  def self.remove user
-    @users ||= []
-    @users.delete find(user)
-  end
+    def find id
+      users.find { |user| user.id == id }
+    end
 
-  def self.add user
-    @users ||= []
-    @users << user
-  end
+    def replace user
+      remove user
+      add user
+    end
 
-  def self.ids
-    all.map &:id
-  end
+    def remove user
+      users.delete find(user)
+    end
 
-  def self.clear
-    @users.clear
-  end
+    def add user
+      users << user
+    end
 
-  def self.to_json
-    all.to_json
+    def ids
+      all.map &:id
+    end
+
+    def clear
+      users.clear
+    end
+
+    def to_json
+      all.to_json
+    end
+
   end
 
 end

@@ -23,11 +23,12 @@ end
 # Create a new timeline if it doesn't exist yet.
 #
 post '/timelines' do
-  timeline = Timeline.new params[:id],
-                          params[:prefix],
-                          params[:date],
-                          params[:location] || "",
-                          params[:user_id]
-  user = Users.find params[:user_id]
+  timeline = Timeline.new params['id'],
+                          params['prefix'],
+                          params['date'],
+                          params['location'] || '',
+                          params['user_id']
+  user = Users.find params['user_id']
   Timelines.replace timeline if timeline && user
+  status 200
 end

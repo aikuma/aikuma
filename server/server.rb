@@ -7,6 +7,8 @@ require File.expand_path '../models/timelines', __FILE__
 require File.expand_path '../models/segment', __FILE__
 require File.expand_path '../models/segments', __FILE__
 
+require File.expand_path '../models/storage', __FILE__
+
 require 'sinatra'
 
 require File.expand_path '../routes/users', __FILE__
