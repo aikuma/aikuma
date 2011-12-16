@@ -6,7 +6,7 @@
         <TextView android:layout_width="wrap_content" android:text="18/10/11" android:textAppearance="?android:attr/textAppearanceMedium" android:id="@+id/textView1" android:layout_height="wrap_content" android:layout_gravity="center"></TextView>
         <TextView android:layout_width="wrap_content" android:text="Location" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:id="@+id/textView2" android:layout_marginLeft="10dip" android:layout_gravity="center"></TextView>
     </LinearLayout>
-    <au.edu.melbuni.boldapp.HorizontalListView android:layout_weight="0" android:id="@+id/timeline" android:layout_width="match_parent" android:layout_margin="4dip" android:layout_height="35dip"></au.edu.melbuni.boldapp.HorizontalListView>
+    <au.edu.melbuni.boldapp.views.HorizontalListView android:layout_weight="0" android:id="@+id/timeline" android:layout_width="match_parent" android:layout_margin="4dip" android:layout_height="35dip"></au.edu.melbuni.boldapp.views.HorizontalListView>
     <LinearLayout android:id="@+id/linearLayout3" android:layout_width="match_parent" android:baselineAligned="true" android:layout_height="match_parent">
         <ImageButton android:layout_weight="1" android:layout_height="match_parent" android:layout_width="match_parent" android:layout_gravity="right" android:id="@+id/playButton" android:src="@drawable/button_play"></ImageButton>
     </LinearLayout>

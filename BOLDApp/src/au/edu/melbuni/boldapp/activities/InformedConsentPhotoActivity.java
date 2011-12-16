@@ -34,7 +34,7 @@ public class InformedConsentPhotoActivity extends BoldActivity {
     	
     	final User currentUser = Bundler.getCurrentUser(this);
     	
-    	final View nextButton = (View) findViewById(R.id.nextButton);
+    	final View nextButton = findViewById(R.id.nextButton);
     	
     	final SurfaceView surfaceView = (SurfaceView) findViewById(R.id.userPictureSurfaceView);
     	camera = new Camera(surfaceView, new PictureCallback() {
@@ -47,7 +47,7 @@ public class InformedConsentPhotoActivity extends BoldActivity {
 			}
 		});
     	
-    	final View takePictureButton = (View) findViewById(R.id.takePictureButton);
+    	final View takePictureButton = findViewById(R.id.takePictureButton);
     	takePictureButton.setOnClickListener(new OnClickListener() {
     		@Override
     		public void onClick(View v) {

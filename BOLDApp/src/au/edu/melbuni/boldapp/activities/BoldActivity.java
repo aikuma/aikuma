@@ -62,7 +62,7 @@ public class BoldActivity extends Activity {
 	// Installs the help and enables the help button.
 	//
 	public void installHelp(final int helpLayout) {
-        final View helpButton = (View) findViewById(R.id.helpButton);
+        final View helpButton = findViewById(R.id.helpButton);
         
         helpButton.setEnabled(true);
         

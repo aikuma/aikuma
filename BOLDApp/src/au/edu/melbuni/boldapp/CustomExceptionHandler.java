@@ -21,6 +21,7 @@ public class CustomExceptionHandler implements UncaughtExceptionHandler {
 		this.defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
 	}
 
+	@Override
 	public void uncaughtException(Thread t, Throwable e) {
 		final Writer result = new StringWriter();
 		final PrintWriter printWriter = new PrintWriter(result);

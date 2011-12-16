@@ -44,7 +44,7 @@ public class InformedConsentConfirmActivity extends BoldActivity {
     	
     	setUserPictureFromCurrentUser();
     	
-        final View playButton = (View) findViewById(R.id.playButton);
+        final View playButton = findViewById(R.id.playButton);
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
@@ -61,7 +61,7 @@ public class InformedConsentConfirmActivity extends BoldActivity {
 			}
 		});
     	
-        final View nextButton = (View) findViewById(R.id.nextButton);
+        final View nextButton = findViewById(R.id.nextButton);
         nextButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

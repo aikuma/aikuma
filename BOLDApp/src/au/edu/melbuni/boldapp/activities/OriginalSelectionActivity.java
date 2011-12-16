@@ -27,6 +27,7 @@ public class OriginalSelectionActivity extends BoldActivity {
 		super.onResume();
 	}
 
+	@Override
 	public void configureView(Bundle savedInstanceState) {
 		super.configureView(savedInstanceState);
 

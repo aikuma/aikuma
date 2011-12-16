@@ -27,6 +27,15 @@ public class Timelines extends Model implements Collection<Timeline> {
 		this.timelines = timelines;
 	}
 	
+	public boolean equals(Timelines other) {
+		boolean result = super.equals(other);
+		if (result == false) {
+			// test values
+			result = this.timelines.equals(other.timelines);
+		}
+		return result;
+	}
+	
 	public List<String> getIds() {
 		List<String> timelineIds = new ArrayList<String>();
 		for (Timeline timeline : timelines) {
@@ -61,6 +70,7 @@ public class Timelines extends Model implements Collection<Timeline> {
 		return new Timelines(timelines);
 	}
 
+	@Override
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
 		
@@ -104,34 +114,34 @@ public class Timelines extends Model implements Collection<Timeline> {
 		return timelines.get(index);
 	}
 
+	@Override
 	public int size() {
 		return timelines.size();
 	}
 
+	@Override
 	public boolean add(Timeline timeline) {
-		boolean result = timelines.add(timeline);
-		AllTimelines.add(timeline);
-		return result;
+		return timelines.add(timeline);
 	}
 
 	public boolean contains(Timeline object) {
 		return timelines.contains(object);
 	}
 
+	@Override
 	public void clear() {
 		timelines.clear();
 		AllTimelines.removeAll(timelines);
 	}
 
+	@Override
 	public Iterator<Timeline> iterator() {
 		return timelines.iterator();
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends Timeline> collection) {
-		boolean result = timelines.addAll(collection);
-		AllTimelines.addAll(collection);
-		return result;
+		return timelines.addAll(collection);
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class TimelineTest {
 	@SuppressWarnings("deprecation")
 	public void fromJSON() {
 		Persister persister = new JSONPersister();
-		Map<String, Object> hash = persister.fromJSON("{\"prefix\":\"some_prefix_\",\"uuid\":\"" + timeline.getIdentifier() + "\"\"date\":\"1 Jan 1970 01:00:00 GMT\",\"user\":\"" + user.getIdentifier() + "\"}");
+		Map<String, Object> hash = persister.fromJSON("{\"prefix\":\"some_prefix_\",\"id\":\"" + timeline.getIdentifier() + "\"\"date\":\"1 Jan 1970 01:00:00 GMT\",\"user_id\":\"" + user.getIdentifier() + "\"}");
 		Timeline loaded = Timeline.fromHash(users, hash);
 		assertEquals(timeline.getIdentifier(), loaded.getIdentifier());
 		assertEquals("1 Jan 1970 01:00:00 GMT", loaded.getDate().toGMTString());
@@ -58,7 +58,7 @@ public class TimelineTest {
 	@Test
 	public void toJSON() {
 		assertEquals(
-		  "{\"prefix\":\"some_prefix_\",\"uuid\":\"" + timeline.getIdentifier() + "\",\"date\":\"1 Jan 1970 00:00:00 GMT\",\"user\":\"" + user.getIdentifier() + "\"}",
+		  "{\"id\":\"" + timeline.getIdentifier() + "\",\"prefix\":\"some_prefix_\",\"date\":\"1 Jan 1970 00:00:00 GMT\",\"user_id\":\"" + user.getIdentifier() + "\"}",
 		  new JSONPersister().toJSON(timeline.toHash())
 		);
 	}

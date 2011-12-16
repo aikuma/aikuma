@@ -137,10 +137,12 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 		});
 	}
 
+	@Override
 	public int size() {
 		return segments.size();
 	}
 
+	@Override
 	public boolean add(Segment segment) {
 		boolean result = segments.add(segment);
 		// TODO Use result?
@@ -326,6 +328,7 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 		return null;
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return segments.isEmpty();
 	}

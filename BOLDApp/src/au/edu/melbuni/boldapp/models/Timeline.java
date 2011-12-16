@@ -31,7 +31,7 @@ public class Timeline {
 	String location;
 	Segments segments;
 	
-	User userId;
+	User user;
 	Timelines timelines;
 	
 	public Timeline(String prefix) {
@@ -52,6 +52,8 @@ public class Timeline {
 		this.date = new Date();
 		this.location = "Some Location";
 		this.segments = segments;
+		
+		AllTimelines.add(this);
 	}
 	
 	public String getIdentifier() {
@@ -101,7 +103,8 @@ public class Timeline {
 		hash.put("id", this.getIdentifier());
 		hash.put("prefix", this.prefix);
 		hash.put("date", this.date.toGMTString());
-		hash.put("user_id", this.userId.getIdentifier());
+		System.out.println(this.user);
+		hash.put("user_id", this.user.getIdentifier());
 		
 		return hash;
 	}
@@ -125,12 +128,12 @@ public class Timeline {
 	}
 
 	public void setUser(User user) { // TODO throw NullPointerException?
-		this.userId = user;
-		this.userId.add(this); // TODO Ok?
+		this.user = user;
+		this.user.add(this); // TODO Ok?
 	}
 
 	public User getUser() {
-		return userId;
+		return user;
 	}
 	
 	public void setDate(Date date) { // TODO throw NullPointerException?

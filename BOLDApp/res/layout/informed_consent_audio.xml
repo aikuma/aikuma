@@ -16,197 +16,15 @@
             android:layout_weight="1"
             android:orientation="vertical" >
 
-            <LinearLayout
-                android:id="@+id/linearLayout5"
+            <ImageView
+                android:id="@+id/expanation"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginBottom="3dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:gravity="center" >
+                android:layout_margin="0dp"
+                android:padding="0dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/informed_consent_audio_help" />
 
-                <ImageButton
-                    android:id="@+id/playLanguageImageButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="0dp"
-                    android:layout_weight="5"
-                    android:padding="10dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/button_play" />
-
-                <TextView
-                    android:id="@+id/languageTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="5dp"
-                    android:layout_weight="2"
-                    android:text="@string/informed_consent_name_default_text" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout6"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="3dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:baselineAligned="true"
-                android:gravity="center" >
-
-                <ImageButton
-                    android:id="@+id/playEnglishImageButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="0dp"
-                    android:layout_weight="5"
-                    android:padding="10dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/button_play" />
-
-                <TextView
-                    android:id="@+id/englishTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="5dp"
-                    android:layout_weight="2"
-                    android:text="@string/informed_consent_name_english_text" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/LinearLayout01"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="3dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:baselineAligned="true"
-                android:gravity="center" >
-
-                <ImageButton
-                    android:id="@+id/playFrenchImageButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="0dp"
-                    android:layout_weight="5"
-                    android:padding="10dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/button_play" />
-
-                <TextView
-                    android:id="@+id/frenchTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="5dp"
-                    android:layout_weight="2"
-                    android:text="@string/informed_consent_name_french_text" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/LinearLayout02"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="3dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:baselineAligned="true"
-                android:gravity="center" >
-
-                <ImageButton
-                    android:id="@+id/playGermanImageButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="0dp"
-                    android:layout_weight="5"
-                    android:padding="10dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/button_play" />
-
-                <TextView
-                    android:id="@+id/germanTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="5dp"
-                    android:layout_weight="2"
-                    android:text="@string/informed_consent_name_german_text" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/LinearLayout03"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="3dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:baselineAligned="true"
-                android:gravity="center" >
-
-                <ImageButton
-                    android:id="@+id/playArabicImageButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="0dp"
-                    android:layout_weight="5"
-                    android:padding="10dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/button_play" />
-
-                <TextView
-                    android:id="@+id/arabicTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="5dp"
-                    android:layout_weight="2"
-                    android:text="@string/informed_consent_name_arabic_text" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/LinearLayout04"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="3dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:baselineAligned="true"
-                android:gravity="center" >
-
-                <ImageButton
-                    android:id="@+id/playChineseImageButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="0dp"
-                    android:layout_weight="5"
-                    android:padding="10dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/button_play" />
-
-                <TextView
-                    android:id="@+id/chineseTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="5dp"
-                    android:layout_weight="2"
-                    android:text="@string/informed_consent_name_chinese_text" />
-            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -222,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:layout_weight="0.5"
+                android:layout_weight="4"
                 android:padding="20dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/button_record" />
@@ -230,8 +48,9 @@
             <LinearLayout
                 android:id="@+id/linearLayout4"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="4" >
+                android:layout_height="80dp"
+                android:layout_gravity="top"
+                android:layout_weight="1" >
 
                 <ImageButton
                     android:id="@+id/playButton"

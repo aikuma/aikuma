@@ -20,7 +20,8 @@ public class ListenActivity extends BoldActivity {
 	    installBehavior(savedInstanceState);
     }
     
-    public void configureView(Bundle savedInstanceState) {
+    @Override
+	public void configureView(Bundle savedInstanceState) {
     	super.configureView(savedInstanceState);
     	
     	behavior.configureView(this);

@@ -113,6 +113,7 @@ public class User extends Model {
 		UUID uuid = hash.get("id") == null ? UUID.randomUUID() : UUID.fromString((String) hash.get("id"));
 		return new User(name, uuid);
 	}
+	@Override
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
 		hash.put("name", this.name);

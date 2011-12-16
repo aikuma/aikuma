@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -92,9 +91,6 @@ public class BoldApplicationTest {
 			
 			specificTimeline.setUser(specificUser);
 			unspecifiedTimeline.setUser(unspecifiedUser);
-			
-			application.addTimeline(specificTimeline);
-			application.addTimeline(unspecifiedTimeline);
 		}
 		
 		@Test
@@ -169,17 +165,19 @@ public class BoldApplicationTest {
 		public void setUp() throws Exception {
 			super.setUp();
 			
+			application.getTimelines().clear();
+			
 			current = new Timeline("current_");
 			application.setCurrentTimeline(timeline);
 			
 			timelines = new Timelines();
 			timelines.add(current);
 			timelines.add(timeline);
-			
-			Iterator<Timeline> timelinesIterator = timelines.iterator();
-			while (timelinesIterator.hasNext()) {
-				application.addTimeline(timelinesIterator.next());
-			}
+
+//			Iterator<Timeline> timelinesIterator = timelines.iterator();
+//			while (timelinesIterator.hasNext()) {
+//				application.addTimeline(timelinesIterator.next());
+//			}
 		}
 		
 		@Test

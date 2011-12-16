@@ -25,7 +25,7 @@ public class SegmentTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void fromHash() {
-		Segment loaded = Segment.fromHash((Map<String, Object>) JSONValue.parse("{\"identifier\":\"Some Identifier\"}"));
+		Segment loaded = Segment.fromHash((Map<String, Object>) JSONValue.parse("{\"id\":\"Some Identifier\"}"));
 		assertEquals("Some Identifier", loaded.getIdentifier());
 	}
 	@SuppressWarnings("unchecked")
@@ -37,7 +37,7 @@ public class SegmentTest {
 	
 	@Test
 	public void toHash() {
-		assertEquals("{\"identifier\":\"some_identifier\"}", JSONValue.toJSONString(segment.toHash()));
+		assertEquals("{\"id\":\"some_identifier\"}", JSONValue.toJSONString(segment.toHash()));
 	}
 	
 	@Test

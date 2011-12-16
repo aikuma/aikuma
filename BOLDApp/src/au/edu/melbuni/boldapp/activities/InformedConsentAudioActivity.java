@@ -35,7 +35,7 @@ public class InformedConsentAudioActivity extends BoldActivity {
     public void installBehavior(Bundle savedInstanceState) {
         installHelp(R.layout.informed_consent_audio_help);
     	
-    	final View recordButton = (View) findViewById(R.id.recordButton);
+    	final View recordButton = findViewById(R.id.recordButton);
         recordButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
@@ -52,7 +52,7 @@ public class InformedConsentAudioActivity extends BoldActivity {
 			}
 		});
     	
-        final View playButton = (View) findViewById(R.id.playButton);
+        final View playButton = findViewById(R.id.playButton);
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
@@ -69,7 +69,7 @@ public class InformedConsentAudioActivity extends BoldActivity {
 			}
 		});
     	
-        final View nextButton = (View) findViewById(R.id.nextButton);
+        final View nextButton = findViewById(R.id.nextButton);
         nextButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

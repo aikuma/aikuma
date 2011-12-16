@@ -61,6 +61,7 @@ public class Users extends Model implements Collection<User> { // TODO implement
 		return new Users(users);
 	}
 
+	@Override
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
 		ArrayList<String> usersIds = new ArrayList<String>();
@@ -94,10 +95,12 @@ public class Users extends Model implements Collection<User> { // TODO implement
 		return users.get(index);
 	}
 
+	@Override
 	public int size() {
 		return users.size();
 	}
 
+	@Override
 	public boolean add(User user) {
 		return users.add(user);
 	}
@@ -106,10 +109,12 @@ public class Users extends Model implements Collection<User> { // TODO implement
 		return users.contains(object);
 	}
 
+	@Override
 	public void clear() {
 		users.clear();
 	}
 
+	@Override
 	public Iterator<User> iterator() {
 		return users.iterator();
 	}

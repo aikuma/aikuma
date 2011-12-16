@@ -35,7 +35,7 @@ public class Segment extends Observable {
 	}
 	
 	public static Segment fromHash(Map<String, Object> hash) {
-		String identifier = hash.get("id") == null ? "" : (String) hash.get("identifier");
+		String identifier = hash.get("id") == null ? "" : (String) hash.get("id");
 		return new Segment(identifier);
 	}
 	public Map<String, Object> toHash() {
