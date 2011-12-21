@@ -18,7 +18,6 @@ class Segment
   def soundfile_path
     directory + "/soundfile.gp3"
   end
-
   # Prepare this user's directory.
   #
   def prepare_directory

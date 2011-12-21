@@ -3,6 +3,8 @@ package au.edu.melbuni.boldapp.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.NoSuchElementException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,10 +31,10 @@ public class TimelinesTest {
 	public static class WithoutTimelines extends TimelinesTest {
 		
 		@Test
-		public void get() { // delegates
+		public void first() { // delegates
 			try {
-				timelines.get(0);
-			} catch (IndexOutOfBoundsException e) {
+				timelines.first();
+			} catch (NoSuchElementException e) {
 				assertNotNull(e);
 			}
 		}
@@ -64,8 +66,8 @@ public class TimelinesTest {
 		}
 		
 		@Test
-		public void get() { // delegates
-			assertEquals(currentTimeline, timelines.get(0));
+		public void first() { // delegates
+			assertEquals(currentTimeline, timelines.first());
 		}
 		
 		@Test
@@ -76,7 +78,7 @@ public class TimelinesTest {
 		@Test
 		public void contains() { // delegates
 			assertEquals(true, timelines.contains(currentTimeline));
-			assertEquals(false, timelines.contains(new Timeline("test_")));
+			assertEquals(false, timelines.contains(new Timeline("bla_")));
 		}
 		
 	}

@@ -127,20 +127,24 @@ public class Synchronizer {
 		
 		List<String> serverSegmentIds = server.getSegmentIds(timeline.getIdentifier());
 		
-		synchronizeWithIds(serverSegmentIds, segments.getIds(), new SynchronizerCallbacks() {
-			@Override
-			public void serverMore(String id) {
-				Segment segment = server.getSegment(id);
-				if (segment != null) {
-					moreSegments.add(segment);
+		synchronizeWithIds(
+			serverSegmentIds,
+			segments.getIds(),
+			new SynchronizerCallbacks() {
+				@Override
+				public void serverMore(String id) {
+					Segment segment = server.getSegment(id);
+					if (segment != null) {
+						moreSegments.add(segment);
+					}
+				}
+			
+				@Override
+				public void localMore(String id) {
+					server.post(segments.find(id), timeline.getIdentifier());
 				}
 			}
-			
-			@Override
-			public void localMore(String id) {
-				server.post(segments.find(id), timeline.getIdentifier());
-			}
-		});
+		);
 		
 		segments.addAll(moreSegments);
 		

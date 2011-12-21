@@ -21,10 +21,9 @@ public class AllTimelines {
 		return timelines.contains(timeline);
 	}
 	
+	// Adds the timeline only if it's not already there.
+	//
 	public static boolean add(Timeline timeline) {
-		if (timelines.contains(timeline)) {
-			return false;
-		}
 		return timelines.add(timeline);
 	}
 

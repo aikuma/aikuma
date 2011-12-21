@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import au.edu.melbuni.boldapp.persisters.Persister;
 
@@ -17,13 +19,13 @@ import au.edu.melbuni.boldapp.persisters.Persister;
  */
 public class Timelines extends Model implements Collection<Timeline> {
 	
-	ArrayList<Timeline> timelines;
+	SortedSet<Timeline> timelines;
 
 	public Timelines() {
-		this(new ArrayList<Timeline>());
+		this(new TreeSet<Timeline>());
 	}
 	
-	public Timelines(ArrayList<Timeline> timelines) {
+	public Timelines(SortedSet<Timeline> timelines) {
 		this.timelines = timelines;
 	}
 	
@@ -60,7 +62,7 @@ public class Timelines extends Model implements Collection<Timeline> {
 	@SuppressWarnings("unchecked")
 	public static Timelines fromHash(Persister persister, Users users, Map<String, Object> hash) {
 		ArrayList<String> timelineIds = (ArrayList<String>) hash.get("timelines");
-		ArrayList<Timeline> timelines = new ArrayList<Timeline>();
+		SortedSet<Timeline> timelines = new TreeSet<Timeline>();
 		if (timelineIds != null) {
 			for (String timelineId : timelineIds) {
 				Timeline timeline = Timeline.load(users, persister, timelineId);
@@ -106,22 +108,25 @@ public class Timelines extends Model implements Collection<Timeline> {
 		}
 		return null;
 	}
-
-
-	// Delegation.
-	//
-	public Timeline get(int index) {
-		return timelines.get(index);
+	
+	public Timeline first() {
+		return timelines.first();
 	}
 
 	@Override
 	public int size() {
 		return timelines.size();
 	}
-
+	
+	// Timelines only contain a timeline once.
+	//
 	@Override
 	public boolean add(Timeline timeline) {
-		return timelines.add(timeline);
+		if (timelines.add(timeline)) {
+			AllTimelines.add(timeline);
+			return true;
+		}
+		return false;
 	}
 
 	public boolean contains(Timeline object) {

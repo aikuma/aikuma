@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import au.edu.melbuni.boldapp.persisters.Persister;
 
@@ -82,7 +84,7 @@ public class Users extends Model implements Collection<User> { // TODO implement
 	}
 	
 	public Timelines getTimelines() {
-		ArrayList<Timeline> timelines = new ArrayList<Timeline>();
+		SortedSet<Timeline> timelines = new TreeSet<Timeline>();
 		for (User user : users) {
 			timelines.addAll(user.getTimelines());
 		}

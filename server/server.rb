@@ -1,5 +1,7 @@
 require 'json'
 
+BOLD_DIR = Dir.pwd
+
 require File.expand_path '../models/user', __FILE__
 require File.expand_path '../models/users', __FILE__
 require File.expand_path '../models/timeline', __FILE__

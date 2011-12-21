@@ -1,7 +1,9 @@
 package au.edu.melbuni.boldapp.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,8 +37,18 @@ public class AllTimelinesTest {
 	}
 	
 	@Test
-	public void add() {
-		// TODO
+	public void addWithoutTimeline() {
+		AllTimelines.add(new Timeline("prefix_"));
+	}
+	
+	@Test
+	public void addWithTimeline() {
+		Timeline timeline = new Timeline("prefix_");
+		AllTimelines.add(timeline);
+		
+		assertFalse(AllTimelines.add(timeline));
+		
+		assertEquals(1, AllTimelines.getTimelines().size());
 	}
 	
 	// "Functional" tests.

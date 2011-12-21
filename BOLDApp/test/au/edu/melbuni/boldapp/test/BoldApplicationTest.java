@@ -26,8 +26,10 @@ public class BoldApplicationTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		BoldApplicationTest.timeline    = new Timeline("test_");
-		BoldApplicationTest.application = new BoldApplication();
+		timeline    = new Timeline("test_");
+		application = new BoldApplication();
+		
+		application.getTimelines().clear();
 	}
 	
 	@Test
@@ -115,7 +117,7 @@ public class BoldApplicationTest {
 			
 			// Relations.
 			//
-			assertEquals(specificUser, application.getTimelines().get(0).getUser());
+			assertEquals(specificUser, application.getTimelines().first().getUser());
 		}
 		
 	}
@@ -173,11 +175,6 @@ public class BoldApplicationTest {
 			timelines = new Timelines();
 			timelines.add(current);
 			timelines.add(timeline);
-
-//			Iterator<Timeline> timelinesIterator = timelines.iterator();
-//			while (timelinesIterator.hasNext()) {
-//				application.addTimeline(timelinesIterator.next());
-//			}
 		}
 		
 		@Test

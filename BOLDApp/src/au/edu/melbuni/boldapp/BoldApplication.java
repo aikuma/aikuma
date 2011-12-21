@@ -12,7 +12,6 @@ import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class BoldApplication extends Application {
 
-	private Timelines timelines = null;
 	private Users users;
 
 	private User currentUser;
@@ -31,7 +30,8 @@ public class BoldApplication extends Application {
 		//
 		this.users       = persister.loadUsers();
 		this.currentUser = persister.loadCurrentUser(users);
-		this.timelines   = AllTimelines.load(persister, users);
+		AllTimelines.load(persister, users); // AllTimelines holds the global timelines.
+		
 		// this.currentTimeline = persister.loadCurrentTimeline();
 	}
 
@@ -88,10 +88,7 @@ public class BoldApplication extends Application {
 	}
 
 	public Timelines getTimelines() {
-		if (timelines == null) {
-			timelines = AllTimelines.getTimelines(); // The central timelines collection.
-		}
-		return timelines;
+		return AllTimelines.getTimelines();
 	}
 
 	public boolean addTimeline(Timeline timeline) {

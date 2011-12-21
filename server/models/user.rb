@@ -28,7 +28,7 @@ class User
   # belong to the user are saved.
   #
   def directory
-    File.expand_path "../../public/user/#{id}", __FILE__
+    File.expand_path "#{BOLD_DIR}/public/user/#{id}", __FILE__
   end
 
   # Returns a JSON form of this user.

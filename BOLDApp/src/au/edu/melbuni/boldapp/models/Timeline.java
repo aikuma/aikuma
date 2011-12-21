@@ -23,7 +23,7 @@ import au.edu.melbuni.boldapp.persisters.Persister;
  * Note: Could also be called Segments.
  * 
  */
-public class Timeline {
+public class Timeline implements Comparable<Timeline> {
 	
 	String prefix;
 	UUID uuid;
@@ -90,6 +90,10 @@ public class Timeline {
 		}
 		
 		Segments segments = Segments.load(new JSONPersister(), prefix, uuid);
+		
+		if (segments == null) {
+			throw new RuntimeException("segments are null");
+		}
 		
 		Timeline timeline = new Timeline(prefix, uuid, segments);
 		timeline.setDate(date);
@@ -202,6 +206,14 @@ public class Timeline {
 		if (hasSegment()) {
 			segments.select(0);
 		}
+	}
+
+	@Override
+	public int compareTo(Timeline other) {
+		if (other instanceof Timeline) {
+			return this.getIdentifier().compareTo(other.getIdentifier());
+		}
+		return 0;
 	}
 
 }

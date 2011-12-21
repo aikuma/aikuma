@@ -37,7 +37,7 @@ public class TimelineItemAdapter extends BaseAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		return timelines.get(position);
+		return timelines.toArray()[position];
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class TimelineItemAdapter extends BaseAdapter {
 		
 		// Bind the data efficiently with the references.
 		// TODO
-		Timeline timeline = Bundler.getTimelines(activity).get(position);
+		Timeline timeline = (Timeline) Bundler.getTimelines(activity).toArray()[position];
 		User user = timeline.getUser();
 		if (user != null) {
 			references.userPicture.setImageDrawable(user.getProfileImage());

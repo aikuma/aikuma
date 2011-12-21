@@ -94,7 +94,7 @@ public class JSONPersister extends Persister {
 		try {
 			timeline = Timeline.fromHash(users, fromJSON(readTimeline(identifier)));
 		} catch (IOException e) {
-			System.out.println("OUCH " + e);
+			// System.out.println("OUCH " + e);
 		}
 		return timeline;
 	}
@@ -111,7 +111,7 @@ public class JSONPersister extends Persister {
 		try {
 			segments = Segments.fromHash(this, fromJSON(readSegments()));
 		} catch (IOException e) {
-			segments = new Segments(prefix);
+			// segments = new Segments(prefix);
 		}
 		return segments;
 	}
@@ -127,7 +127,7 @@ public class JSONPersister extends Persister {
 		try {
 			segment = Segment.fromHash(fromJSON(readSegment(identifier)));
 		} catch (IOException e) {
-			segment = new Segment(identifier);
+			// segment = new Segment(identifier);
 		}
 		return segment;
 	}

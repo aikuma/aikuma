@@ -8,6 +8,7 @@ import android.widget.ListView;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.adapters.TimelineItemAdapter;
+import au.edu.melbuni.boldapp.models.Timeline;
 
 public class OriginalSelectionActivity extends BoldActivity {
 	@Override
@@ -46,9 +47,8 @@ public class OriginalSelectionActivity extends BoldActivity {
 							int position, long id) {
 						Bundler.setCurrentTimeline(
 								OriginalSelectionActivity.this,
-								Bundler.getTimelines(
-										OriginalSelectionActivity.this).get(
-										position));
+								(Timeline) Bundler.getTimelines(
+										OriginalSelectionActivity.this).toArray()[position]);
 						startActivityForResult(new Intent(
 								getApplicationContext(), ListenActivity.class),
 								0);
