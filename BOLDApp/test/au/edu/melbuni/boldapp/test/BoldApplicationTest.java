@@ -26,7 +26,7 @@ public class BoldApplicationTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		timeline    = new Timeline("test_");
+		timeline    = new Timeline();
 		application = new BoldApplication();
 		
 		application.getTimelines().clear();
@@ -88,8 +88,8 @@ public class BoldApplicationTest {
 			
 			// Timelines.
 			//
-			specificTimeline = new Timeline("test_");
-			Timeline unspecifiedTimeline = new Timeline("test_");
+			specificTimeline = new Timeline();
+			Timeline unspecifiedTimeline = new Timeline();
 			
 			specificTimeline.setUser(specificUser);
 			unspecifiedTimeline.setUser(unspecifiedUser);
@@ -169,7 +169,7 @@ public class BoldApplicationTest {
 			
 			application.getTimelines().clear();
 			
-			current = new Timeline("current_");
+			current = new Timeline();
 			application.setCurrentTimeline(timeline);
 			
 			timelines = new Timelines();

@@ -38,12 +38,12 @@ public class AllTimelinesTest {
 	
 	@Test
 	public void addWithoutTimeline() {
-		AllTimelines.add(new Timeline("prefix_"));
+		AllTimelines.add(new Timeline());
 	}
 	
 	@Test
 	public void addWithTimeline() {
-		Timeline timeline = new Timeline("prefix_");
+		Timeline timeline = new Timeline();
 		AllTimelines.add(timeline);
 		
 		assertFalse(AllTimelines.add(timeline));
@@ -58,7 +58,7 @@ public class AllTimelinesTest {
 	public void creatingNewTimelineAddsToAllTimelines() {
 		assertTrue(AllTimelines.getTimelines().isEmpty());
 		
-		Timeline timeline = new Timeline("prefix_");
+		Timeline timeline = new Timeline();
 		Timelines timelines = new Timelines();
 		
 		timelines.add(timeline);

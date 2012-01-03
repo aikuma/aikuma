@@ -46,7 +46,7 @@ public class TimelinesTest {
 		
 		@Test
 		public void contains() { // delegates
-			assertEquals(false, timelines.contains(new Timeline("test_")));
+			assertEquals(false, timelines.contains(new Timeline()));
 		}
 		
 	}
@@ -60,7 +60,7 @@ public class TimelinesTest {
 		public void setUp() throws Exception {
 			super.setUp();
 			
-			currentTimeline = new Timeline("test_");
+			currentTimeline = new Timeline();
 			
 			timelines.add(currentTimeline);
 		}
@@ -78,7 +78,7 @@ public class TimelinesTest {
 		@Test
 		public void contains() { // delegates
 			assertEquals(true, timelines.contains(currentTimeline));
-			assertEquals(false, timelines.contains(new Timeline("bla_")));
+			assertEquals(false, timelines.contains(new Timeline()));
 		}
 		
 	}

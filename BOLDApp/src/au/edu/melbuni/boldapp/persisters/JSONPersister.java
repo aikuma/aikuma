@@ -34,7 +34,6 @@ public class JSONPersister extends Persister {
 	
 	@Override
 	public void save(Users users) {
-		write(users, toJSON(users.toHash()));
 		users.saveEach(this);
 	}
 	
@@ -42,7 +41,7 @@ public class JSONPersister extends Persister {
 	public Users loadUsers() {
 		Users users = null;
 		try {
-			users = Users.fromHash(this, fromJSON(readUsers()));
+			users = Users.fromHash(this, readUsers());
 		} catch (IOException e) {
 			users = new Users();
 		}
@@ -67,7 +66,6 @@ public class JSONPersister extends Persister {
 	
 	@Override
 	public void save(Timelines timelines) {
-		write(timelines, toJSON(timelines.toHash()));
 		timelines.saveEach(this);
 	}
 	
@@ -75,7 +73,7 @@ public class JSONPersister extends Persister {
 	public Timelines loadTimelines(Users users) {
 		Timelines timelines = null;
 		try {
-			timelines = Timelines.fromHash(this, users, fromJSON(readTimelines()));
+			timelines = Timelines.fromHash(this, users, readTimelines());
 		} catch (IOException e) {
 			timelines = new Timelines();
 		}
@@ -101,7 +99,6 @@ public class JSONPersister extends Persister {
 	
 	@Override
 	public void save(Segments segments) {
-		write(segments, toJSON(segments.toHash()));
 		segments.saveEach(this);
 	}
 	
@@ -109,7 +106,7 @@ public class JSONPersister extends Persister {
 	public Segments loadSegments(String prefix) {
 		Segments segments = null;
 		try {
-			segments = Segments.fromHash(this, fromJSON(readSegments()));
+			segments = Segments.fromHash(this, readSegments());
 		} catch (IOException e) {
 			// segments = new Segments(prefix);
 		}

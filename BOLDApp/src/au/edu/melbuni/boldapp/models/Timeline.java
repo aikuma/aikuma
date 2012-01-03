@@ -25,7 +25,6 @@ import au.edu.melbuni.boldapp.persisters.Persister;
  */
 public class Timeline implements Comparable<Timeline> {
 	
-	String prefix;
 	UUID uuid;
 	Date date;
 	String location;
@@ -34,20 +33,19 @@ public class Timeline implements Comparable<Timeline> {
 	User user;
 	Timelines timelines;
 	
-	public Timeline(String prefix) {
-		this(prefix, UUID.randomUUID());
+	public Timeline() {
+		this(UUID.randomUUID());
 	}
 	
-	public Timeline(String prefix, String identifier) {
-		this(prefix, UUID.fromString(identifier));
+	public Timeline(String identifier) {
+		this(UUID.fromString(identifier));
 	}
 	
-	public Timeline(String prefix, UUID uuid) {
-		this(prefix, uuid, generateSegmentsFrom(prefix, uuid)); // TODO
+	public Timeline(UUID uuid) {
+		this(uuid, new Segments());
 	}
 	
-	public Timeline(String prefix, UUID uuid, Segments segments) {
-		this.prefix = prefix;
+	public Timeline(UUID uuid, Segments segments) {
 		this.uuid = uuid;
 		this.date = new Date();
 		this.location = "Some Location";
@@ -69,8 +67,6 @@ public class Timeline implements Comparable<Timeline> {
 	}
 	
 	public static Timeline fromHash(Users users, Map<String, Object> hash) {
-		String prefix = hash.get("prefix") == null ? "" : (String) hash.get("prefix");
-		
 		UUID uuid = hash.get("id") == null ? UUID.randomUUID() : UUID.fromString((String) hash.get("id"));
 		
 		String dateString = hash.get("date") == null ? "" : (String) hash.get("date");
@@ -89,13 +85,13 @@ public class Timeline implements Comparable<Timeline> {
 			throw new NullPointerException("No User " + userReference + " for Timeline " + uuid + " found.");
 		}
 		
-		Segments segments = Segments.load(new JSONPersister(), prefix, uuid);
+		Segments segments = Segments.load(new JSONPersister(), uuid);
 		
 		if (segments == null) {
 			throw new RuntimeException("segments are null");
 		}
 		
-		Timeline timeline = new Timeline(prefix, uuid, segments);
+		Timeline timeline = new Timeline(uuid, segments);
 		timeline.setDate(date);
 		timeline.setUser(user);
 		
@@ -105,16 +101,10 @@ public class Timeline implements Comparable<Timeline> {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
 		
 		hash.put("id", this.getIdentifier());
-		hash.put("prefix", this.prefix);
 		hash.put("date", this.date.toGMTString());
-		System.out.println(this.user);
 		hash.put("user_id", this.user.getIdentifier());
 		
 		return hash;
-	}
-	
-	public static Segments generateSegmentsFrom(String prefix, UUID uuid) {
-		return new Segments(prefix + uuid.toString());
 	}
 	
 	// Load a timeline based on its uuid.

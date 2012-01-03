@@ -1,11 +1,9 @@
 package au.edu.melbuni.boldapp.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
-import java.util.Map;
 
 import org.json.simple.JSONValue;
 import org.junit.Before;
@@ -14,7 +12,6 @@ import org.junit.runner.RunWith;
 
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
-import au.edu.melbuni.boldapp.persisters.JSONPersister;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
@@ -25,16 +22,11 @@ public class SegmentsTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		segments = new Segments("test_");
+		segments = new Segments();
 	}
 	
 	@Test
 	public void makeTestRunnerHappy() {}
-	
-	@Test
-	public void getPrefix() {
-		assertEquals("test_", segments.getPrefix());
-	}
 	
 	@RunWith(RobolectricTestRunner.class)
 	public static class WithoutSegments extends SegmentsTest {
@@ -70,7 +62,7 @@ public class SegmentsTest {
 		
 		@Test
 		public void toHash() {
-			assertEquals("{\"prefix\":\"test_\",\"segments\":[]}", JSONValue.toJSONString(segments.toHash()));
+			assertEquals("{\"segments\":[]}", JSONValue.toJSONString(segments.toHash()));
 		}
 		
 	}
@@ -121,25 +113,31 @@ public class SegmentsTest {
 		
 		@Test
 		public void toHash() {
-			assertEquals("{\"prefix\":\"test_\",\"segments\":[\"" + currentSegment.getIdentifier() + "\",\"" + otherSegment.getIdentifier() + "\"]}", JSONValue.toJSONString(segments.toHash()));
+			assertEquals("{\"segments\":[\"" + currentSegment.getIdentifier() + "\",\"" + otherSegment.getIdentifier() + "\"]}", JSONValue.toJSONString(segments.toHash()));
 		}
 		
 	}
-	
-	@SuppressWarnings("unchecked")
-	@Test
-	public void fromHash() {
-		Segments loaded = Segments.fromHash(
-			new JSONPersister(),
-			(Map<String, Object>) JSONValue.parse("{\"prefix\":\"some_prefix_\",\"segments\":[\"\",\"\"]}")
-		);
-		assertEquals("some_prefix_", loaded.getPrefix());
-	}
-	@SuppressWarnings("unchecked")
-	@Test
-	public void fromHashWithoutData() {
-		Segments loaded = Segments.fromHash(new JSONPersister(), (Map<String, Object>) JSONValue.parse("{}"));
-		assertEquals("", loaded.getPrefix());
-	}
+
+// TODO
+//
+//	@SuppressWarnings("unchecked")
+//	@Test
+//	public void fromHash() {
+//		List<String> ids = new ArrayList<String>();
+//		ids.add("1");
+//		ids.add("2");
+//		ids.add("3");
+//		Segments loaded = Segments.fromHash(
+//			new JSONPersister(),
+//			ids
+//		);
+//		assertEquals(ids, loaded.getIds());
+//	}
+//	@SuppressWarnings("unchecked")
+//	@Test
+//	public void fromHashWithoutData() {
+//		Segments loaded = Segments.fromHash(new JSONPersister(), (Map<String, Object>) JSONValue.parse("{}"));
+//		assertEquals("", loaded.getPrefix());
+//	}
 
 }

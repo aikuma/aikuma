@@ -50,9 +50,7 @@ public class Users extends Model implements Collection<User> { // TODO implement
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static Users fromHash(Persister persister, Map<String, Object> hash) {
-		ArrayList<String> usersIds = (ArrayList<String>) hash.get("users");
+	public static Users fromHash(Persister persister, List<String> usersIds) {
 		ArrayList<User> users = new ArrayList<User>();
 		if (usersIds != null) {
 			for (String userId : usersIds) {

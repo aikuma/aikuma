@@ -24,7 +24,6 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 	
 	// Stored.
 	// 
-	String prefix;
 	ArrayList<Segment> segments;
 	
 	// Volatile.
@@ -37,17 +36,12 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 	//
 	SegmentItemAdapter adapter;
 
-	public Segments(String prefix) {
-		this(prefix, new ArrayList<Segment>());
+	public Segments() {
+		this(new ArrayList<Segment>());
 	}
 	
-	public Segments(String prefix, ArrayList<Segment> segments) {
-		this.prefix = prefix;
+	public Segments(ArrayList<Segment> segments) {
 		this.segments = segments;
-	}
-	
-	public String getPrefix() {
-		return prefix;
 	}
 	
 	public List<String> getIds() {
@@ -61,8 +55,8 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 	// Persistence.
 	//
 	
-	public static Segments load(Persister persister, String prefix, UUID uuid) {
-		return persister.loadSegments(prefix + uuid.toString());
+	public static Segments load(Persister persister, UUID uuid) {
+		return persister.loadSegments(uuid.toString());
 	}
 
 	public void saveEach(Persister persister) {
@@ -71,11 +65,7 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static Segments fromHash(Persister persister, Map<String, Object> hash) {
-		String prefix = hash.get("prefix") == null ? "" : (String) hash.get("prefix"); // TODO throw?
-
-		ArrayList<String> segmentIds = (ArrayList<String>) hash.get("segments");
+	public static Segments fromHash(Persister persister, List<String> segmentIds) {
 		ArrayList<Segment> segments = new ArrayList<Segment>();
 		if (segmentIds != null) {
 			for (String segmentId : segmentIds) {
@@ -84,12 +74,11 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 			}
 		}
 		
-		return new Segments(prefix, segments);
+		return new Segments(segments);
 	}
 
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
-		hash.put("prefix", this.prefix);
 		
 		ArrayList<String> segmentIds = new ArrayList<String>();
 		for (Segment segment : segments) {
@@ -311,7 +300,7 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 	//
 	protected Segment getSelectedForRecording() {
 		if (selectedForRecording == null) {
-			add(new Segment(prefix + new Integer(segmentCounter++).toString()));
+			add(new Segment(new Integer(segmentCounter++).toString()));
 		}
 		
 		selectedForRecording.select();

@@ -6,9 +6,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import android.os.Environment;
+import au.edu.melbuni.boldapp.UUIDFileFilter;
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
 import au.edu.melbuni.boldapp.models.Timeline;
@@ -23,7 +26,7 @@ import au.edu.melbuni.boldapp.models.Users;
 // Because that is something else entirely.
 //
 public abstract class Persister {
-	
+
 	public Persister() {
 		// Create the necessary directories.
 		//
@@ -34,37 +37,37 @@ public abstract class Persister {
 
 	// Public API.
 	//
-	
+
 	public abstract String toJSON(Object object);
-	
+
 	public abstract Map<String, Object> fromJSON(String jsonData);
-	
+
 	public abstract void save(Users users);
-	
+
 	public abstract Users loadUsers();
 
 	public abstract void save(User user);
 
 	public abstract User loadUser(String identifier);
-	
+
 	public abstract void save(Timelines timelines);
-	
+
 	public abstract Timelines loadTimelines(Users users);
-	
+
 	public abstract void save(Timeline timeline);
-	
+
 	public abstract Timeline loadTimeline(Users users, String identifier);
 
 	public abstract void save(Segments segments);
-	
+
 	public abstract Segments loadSegments(String prefix);
-	
+
 	public abstract void save(Segment segment);
-	
+
 	public abstract Segment loadSegment(String identifier);
-	
+
 	public abstract String fileExtension();
-	
+
 	public static String getBasePath() {
 		File external = Environment.getExternalStorageDirectory();
 		if (external != null) {
@@ -76,10 +79,10 @@ public abstract class Persister {
 		//
 		return "./mnt/sdcard/bold/"; // During e.g. tests.
 	}
-	
+
 	// Current
 	//
-	
+
 	// Returns null if no current user has been saved.
 	//
 	public User loadCurrentUser(Users users) {
@@ -89,48 +92,24 @@ public abstract class Persister {
 		} catch (IOException e) {
 			identifier = null;
 		}
-		
+
 		User user = users.find(identifier);
 		if (user != null) {
 			return user;
 		}
-		
+
 		return null;
 	}
-	
+
 	public void saveCurrentUser(User user) {
 		write(pathForCurrentUser(), user.getIdentifier());
 	}
-	
-//	// Returns null if no current timeline has been saved.
-//	//
-//	public Timeline loadCurrentTimeline(Timelines timelines) {
-//		String identifier = read(pathForCurrentUser());
-//		for (Timeline timeline : timelines) {
-//			if (timeline.getIdentifierString() == identifier) {
-//				return timeline;
-//			}
-//		}
-//		return null;
-//	}
-//	
-//	public void saveCurrentTimeline(Timeline timeline) {
-//		write(pathForCurrentUser(), timeline.getIdentifierString());
-//	}
-//	
-//	public String pathForCurrentTimeline() {
-//		return "current/timeline.txt";
-//	}
 
 	// User(s).
 	//
-	
-	public void write(Users users, String data) {
-		write(pathFor(users), data);
-	}
-	
-	public String readUsers() throws IOException {
-		return read(pathForUsers());
+
+	public List<String> readUsers() throws IOException {
+		return extractIdsFrom(new File(dirForUsers()));
 	}
 
 	public void write(User user, String data) {
@@ -143,13 +122,9 @@ public abstract class Persister {
 
 	// Segment(s).
 	//
-	
-	public void write(Segments segments, String data) {
-		write(pathFor(segments), data);
-	}
 
-	public String readSegments() throws IOException {
-		return read(pathForSegments());
+	public List<String> readSegments() throws IOException {
+		return extractIdsFrom(new File(dirForSegments()));
 	}
 
 	public void write(Segment segment, String data) {
@@ -162,13 +137,12 @@ public abstract class Persister {
 
 	// Timeline(s).
 	//
-	
-	public void write(Timelines timelines, String data) {
-		write(pathFor(timelines), data);
-	}
 
-	public String readTimelines() throws IOException {
-		return read(pathForTimelines());
+	// Reads all the JSON files from a directory and
+	// returns the name part.
+	//
+	public List<String> readTimelines() throws IOException {
+		return extractIdsFrom(new File(dirForTimelines()));
 	}
 
 	public void write(Timeline timeline, String data) {
@@ -182,6 +156,18 @@ public abstract class Persister {
 	// Helper methods.
 	//
 	
+	public List<String> extractIdsFrom(File directory) {
+		List<String> ids = new ArrayList<String>();
+		
+		if (directory.exists()) {
+			File[] files = directory.listFiles(new UUIDFileFilter());
+			for (File file : files) {
+				ids.add(file.getName().replaceAll("\\.json$", ""));
+			}
+		}
+		return ids;
+	}
+
 	public String pathFor(Users users) {
 		return pathForUsers();
 	}
@@ -189,59 +175,58 @@ public abstract class Persister {
 	public String pathFor(User user) {
 		return pathForUser(user.getIdentifier());
 	}
-	
+
 	public String pathFor(Timelines timelines) {
 		return pathForTimelines();
 	}
-	
+
 	public String pathFor(Timeline timeline) {
 		return pathForTimeline(timeline.getIdentifier());
 	}
-	
+
 	public String pathFor(Segments segments) {
 		return pathForSegments();
 	}
-	
+
 	public String pathFor(Segment segment) {
-		return pathForTimeline(segment.getIdentifier());
+		return pathForSegment(segment.getIdentifier());
 	}
-	
-	
+
 	// Paths
 	//
-	
+
 	public String pathForCurrentUser() {
 		return getBasePath() + "users/current.txt";
 	}
-	
+
 	public String dirForUsers() {
 		return getBasePath() + "users/";
 	}
-	
+
 	public String pathForUsers() {
 		return dirForUsers() + "list" + fileExtension();
 	}
-	
+
 	public String pathForUser(String identifier) {
 		return dirForUsers() + identifier + fileExtension();
 	}
-	
+
 	public String dirForTimelines() {
 		return getBasePath() + "timelines/";
 	}
-	
+
 	public String pathForTimelines() {
 		return dirForTimelines() + "list" + fileExtension();
 	}
-	
+
 	public String pathForTimeline(String identifier) {
 		return dirForTimelines() + identifier + fileExtension();
 	}
-	
+
 	public String dirForSegments() {
 		return getBasePath() + "segments/";
 	}
-	
+
 	public String pathForSegments() {
 		return dirForSegments() + "list" + fileExtension(); // TODO Really?
 	}
@@ -259,11 +244,11 @@ public abstract class Persister {
 			File file = new File(fileName);
 			file.getParentFile().mkdirs();
 			file.createNewFile();
-			
-		    BufferedWriter bufferedWriter = new BufferedWriter(
-		    		new FileWriter(file, false));
-		    bufferedWriter.write(data);
-		    bufferedWriter.close();
+
+			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(
+					file, false));
+			bufferedWriter.write(data);
+			bufferedWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println(fileName);
@@ -274,17 +259,16 @@ public abstract class Persister {
 	//
 	public String read(String fileName) throws IOException {
 		StringBuffer buffer = new StringBuffer(1000);
-        BufferedReader reader = new BufferedReader(
-                new FileReader(fileName));
-        char[] buf = new char[1024];
-        int numRead=0;
-        while((numRead=reader.read(buf)) != -1){
-            String readData = String.valueOf(buf, 0, numRead);
-            buffer.append(readData);
-            buf = new char[1024];
-        }
-        reader.close();
-        return buffer.toString();
+		BufferedReader reader = new BufferedReader(new FileReader(fileName));
+		char[] buf = new char[1024];
+		int numRead = 0;
+		while ((numRead = reader.read(buf)) != -1) {
+			String readData = String.valueOf(buf, 0, numRead);
+			buffer.append(readData);
+			buf = new char[1024];
+		}
+		reader.close();
+		return buffer.toString();
 	}
 
 }

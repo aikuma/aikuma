@@ -59,9 +59,7 @@ public class Timelines extends Model implements Collection<Timeline> {
 		return "timeline_";
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static Timelines fromHash(Persister persister, Users users, Map<String, Object> hash) {
-		ArrayList<String> timelineIds = (ArrayList<String>) hash.get("timelines");
+	public static Timelines fromHash(Persister persister, Users users, List<String> timelineIds) {
 		SortedSet<Timeline> timelines = new TreeSet<Timeline>();
 		if (timelineIds != null) {
 			for (String timelineId : timelineIds) {

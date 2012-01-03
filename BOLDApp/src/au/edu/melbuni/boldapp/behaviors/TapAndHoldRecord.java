@@ -17,7 +17,7 @@ public class TapAndHoldRecord implements Behavior<RecordActivity> {
 
 	@Override
 	public void installBehavior(final RecordActivity activity) {
-     	final Timeline timeline = new Timeline("recording_");
+     	final Timeline timeline = new Timeline();
 	    final ImageButton playButton = (ImageButton) activity.findViewById(R.id.playButton);
 	    final ImageButton recordButton = (ImageButton) activity.findViewById(R.id.recordButton);
 
