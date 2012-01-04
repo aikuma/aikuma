@@ -13,11 +13,11 @@ import au.edu.melbuni.boldapp.models.Users;
 public class Bundler {
 	
 	public static void load(Activity activity) {
-		((BoldApplication) activity.getApplication()).load();
+		getApplication(activity).load();
 	}
 	
 	public static void save(Activity activity) {
-		((BoldApplication) activity.getApplication()).save();
+		getApplication(activity).save();
 	}
 
 	public static void saveNewUser(Activity activity, User user) {
@@ -26,11 +26,11 @@ public class Bundler {
 	}
 
 	public static User getCurrentUser(Activity activity) {
-		return ((BoldApplication) activity.getApplication()).getCurrentUser();
+		return getApplication(activity).getCurrentUser();
 	}
 
 	public static void setCurrentUser(Activity activity, User user) {
-		((BoldApplication) activity.getApplication()).setCurrentUser(user);
+		getApplication(activity).setCurrentUser(user);
 	}
 
 	public static void addUser(Activity activity, User user) {
@@ -44,11 +44,11 @@ public class Bundler {
 	}
 	
 	public static Timeline getCurrentTimeline(Activity activity) {
-		return ((BoldApplication) activity.getApplication()).getCurrentTimeline();
+		return getApplication(activity).getCurrentTimeline();
 	}
 
 	public static void setCurrentTimeline(Activity activity, Timeline timeline) {
-		((BoldApplication) activity.getApplication()).setCurrentTimeline(timeline);
+		getApplication(activity).setCurrentTimeline(timeline);
 	}
 	
 	public static void addTimeline(Activity activity, Timeline timeline) {

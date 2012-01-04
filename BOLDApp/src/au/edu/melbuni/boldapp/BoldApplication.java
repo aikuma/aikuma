@@ -30,7 +30,7 @@ public class BoldApplication extends Application {
 		//
 		this.users       = persister.loadUsers();
 		this.currentUser = persister.loadCurrentUser(users);
-		AllTimelines.load(persister, users); // AllTimelines holds the global timelines.
+		AllTimelines.load(persister, users); // AllTimelines holds the global list of timelines.
 		
 		// this.currentTimeline = persister.loadCurrentTimeline();
 	}

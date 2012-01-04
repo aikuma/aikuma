@@ -168,25 +168,25 @@ public abstract class Persister {
 		return ids;
 	}
 
-	public String pathFor(Users users) {
-		return pathForUsers();
-	}
+//	public String pathFor(Users users) {
+//		return pathForUsers();
+//	}
 
 	public String pathFor(User user) {
 		return pathForUser(user.getIdentifier());
 	}
 
-	public String pathFor(Timelines timelines) {
-		return pathForTimelines();
-	}
+//	public String pathFor(Timelines timelines) {
+//		return pathForTimelines();
+//	}
 
 	public String pathFor(Timeline timeline) {
 		return pathForTimeline(timeline.getIdentifier());
 	}
 
-	public String pathFor(Segments segments) {
-		return pathForSegments();
-	}
+//	public String pathFor(Segments segments) {
+//		return pathForSegments();
+//	}
 
 	public String pathFor(Segment segment) {
 		return pathForSegment(segment.getIdentifier());
@@ -203,9 +203,9 @@ public abstract class Persister {
 		return getBasePath() + "users/";
 	}
 
-	public String pathForUsers() {
-		return dirForUsers() + "list" + fileExtension();
-	}
+//	public String pathForUsers() {
+//		return dirForUsers() + "list" + fileExtension();
+//	}
 
 	public String pathForUser(String identifier) {
 		return dirForUsers() + identifier + fileExtension();
@@ -215,9 +215,9 @@ public abstract class Persister {
 		return getBasePath() + "timelines/";
 	}
 
-	public String pathForTimelines() {
-		return dirForTimelines() + "list" + fileExtension();
-	}
+//	public String pathForTimelines() {
+//		return dirForTimelines() + "list" + fileExtension();
+//	}
 
 	public String pathForTimeline(String identifier) {
 		return dirForTimelines() + identifier + fileExtension();
@@ -227,9 +227,9 @@ public abstract class Persister {
 		return getBasePath() + "segments/";
 	}
 
-	public String pathForSegments() {
-		return dirForSegments() + "list" + fileExtension(); // TODO Really?
-	}
+//	public String pathForSegments() {
+//		return dirForSegments() + "list" + fileExtension(); // TODO Really?
+//	}
 
 	public String pathForSegment(String identifier) {
 		return dirForSegments() + identifier + fileExtension();
