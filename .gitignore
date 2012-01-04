@@ -1,8 +1,8 @@
 *.class
 *.json
-.metadata/*
-BOLDApp/bin/*
-BOLDApp/gen/*
+.metadata
+BOLDApp/bin
+BOLDApp/gen
 
 .DS_Store
 **/.DS_Store

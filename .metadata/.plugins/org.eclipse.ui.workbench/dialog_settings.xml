@@ -21,4 +21,10 @@
 			<item value="com.android.ide.eclipse.ddms.views.category"/>
 		</list>
 	</section>
+	<section name="ImportExportAction">
+		<item value="com.android.ide.eclipse.adt.project.ExportWizard" key="ImportExportPage.STORE_SELECTED_EXPORT_WIZARD_ID"/>
+		<list key="ImportExportPage.STORE_EXPANDED_EXPORT_CATEGORIES">
+			<item value="com.android.ide.eclipse.wizards.category"/>
+		</list>
+	</section>
 </section>
