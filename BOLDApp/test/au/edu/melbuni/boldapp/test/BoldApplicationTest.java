@@ -11,10 +11,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import au.edu.melbuni.boldapp.BoldApplication;
+import au.edu.melbuni.boldapp.models.AllUsers;
 import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.Timelines;
 import au.edu.melbuni.boldapp.models.User;
 import au.edu.melbuni.boldapp.models.Users;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
@@ -29,6 +31,7 @@ public class BoldApplicationTest {
 		timeline    = new Timeline();
 		application = new BoldApplication();
 		
+		AllUsers.clear();
 		application.getTimelines().clear();
 	}
 	
@@ -102,8 +105,16 @@ public class BoldApplicationTest {
 		
 		@Test
 		public void saveAndLoad() {
+//			System.out.println(specificTimeline.getUser());
+//			System.out.println(specificUser);
+
+			new JSONPersister().deleteAll();
+			
 			application.save();
 			application.load();
+			
+//			System.out.println(application.getCurrentUser());
+//			System.out.println(application.getTimelines().first().getUser());
 			
 			// Basics.
 			//

@@ -1,19 +1,20 @@
 package au.edu.melbuni.boldapp;
 
-import au.edu.melbuni.boldapp.persisters.Persister;
-
+import java.io.File;
+import java.io.IOException;
 
 public class Sounder {
 
-	public static String getBasePath() {
-		return Persister.getBasePath() + "recordings/";
-	}
-
-	public static String generateFullFilename(String relativeFilename) {
-		String fileName = getBasePath();
-		fileName += relativeFilename;
-		fileName += ".3gp";
-		return fileName;
+	public static String prepareFile(String fileName) {
+		File file = new File(fileName + ".3gp");
+		File parentFile = new File(file.getParent());
+		parentFile.mkdirs();
+		try {
+			return file.getCanonicalPath();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 }

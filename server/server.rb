@@ -1,15 +1,17 @@
-require 'json'
+# require 'json'
 
 BOLD_DIR = Dir.pwd
 
-require File.expand_path '../models/user', __FILE__
-require File.expand_path '../models/users', __FILE__
-require File.expand_path '../models/timeline', __FILE__
-require File.expand_path '../models/timelines', __FILE__
-require File.expand_path '../models/segment', __FILE__
-require File.expand_path '../models/segments', __FILE__
-
-require File.expand_path '../models/storage', __FILE__
+# The current version of the app uses no models
+# but just offers a storage frontend.
+#
+# require File.expand_path '../models/user', __FILE__
+# require File.expand_path '../models/users', __FILE__
+# require File.expand_path '../models/timeline', __FILE__
+# require File.expand_path '../models/timelines', __FILE__
+# require File.expand_path '../models/segment', __FILE__
+# require File.expand_path '../models/segments', __FILE__
+# require File.expand_path '../models/storage', __FILE__
 
 require 'sinatra'
 

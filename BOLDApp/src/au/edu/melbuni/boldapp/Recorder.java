@@ -10,7 +10,6 @@
  */
 package au.edu.melbuni.boldapp;
 
-import java.io.File;
 import java.io.IOException;
 
 import android.media.MediaRecorder;
@@ -23,9 +22,6 @@ public class Recorder extends Sounder {
 	private boolean recording = false;
 
 	public Recorder() {
-		File directory = new File(getBasePath());
-		directory.mkdirs();
-		
 		prepareNextRecording();
 	}
 	
@@ -35,12 +31,11 @@ public class Recorder extends Sounder {
 		recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 	}
 
-	public void startRecording(String fileName) {
+	public void startRecording(String relativeFilename) {
 		if (recording) { return; }
 		recording = true;
-
-		recorder.setOutputFile(generateFullFilename(fileName));
-		System.out.println(generateFullFilename(fileName));
+		
+		recorder.setOutputFile(prepareFile(relativeFilename));
 
 		try {
 			recorder.prepare();

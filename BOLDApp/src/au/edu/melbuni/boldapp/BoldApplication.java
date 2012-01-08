@@ -2,6 +2,7 @@ package au.edu.melbuni.boldapp;
 
 import android.app.Application;
 import au.edu.melbuni.boldapp.models.AllTimelines;
+import au.edu.melbuni.boldapp.models.AllUsers;
 import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.Timelines;
 import au.edu.melbuni.boldapp.models.User;
@@ -11,8 +12,6 @@ import au.edu.melbuni.boldapp.persisters.Persister;
 
 
 public class BoldApplication extends Application {
-
-	private Users users;
 
 	private User currentUser;
 	private Timeline currentTimeline;
@@ -28,9 +27,9 @@ public class BoldApplication extends Application {
 		
 		// TODO Define the save / load order somewhere else.
 		//
-		this.users       = persister.loadUsers();
-		this.currentUser = persister.loadCurrentUser(users);
-		AllTimelines.load(persister, users); // AllTimelines holds the global list of timelines.
+		AllUsers.load(persister); // TODO Define in loadUsers() etc.;
+		this.currentUser = persister.loadCurrentUser(AllUsers.getUsers());
+		AllTimelines.load(persister, AllUsers.getUsers());
 		
 		// this.currentTimeline = persister.loadCurrentTimeline();
 	}
@@ -44,9 +43,8 @@ public class BoldApplication extends Application {
 		// TODO Define the save / load order somewhere else.
 		//
 		persister.save(getUsers());
-		persister.saveCurrentUser(getCurrentUser());
+		persister.saveCurrentUser(this);
 		persister.save(getTimelines());
-//		persister.saveCurrentTimeline(currentTimeline);
 	}
 
 	public User getCurrentUser() {
@@ -61,10 +59,7 @@ public class BoldApplication extends Application {
 	}
 
 	public Users getUsers() {
-		if (users == null) {
-			users = new Users();
-		}
-		return users;
+		return AllUsers.getUsers();
 	}
 
 	public boolean addUser(User user) {
@@ -76,7 +71,7 @@ public class BoldApplication extends Application {
 	}
 
 	public void clearUsers() {
-		users.clear();
+		AllUsers.clear();
 	}
 
 	public Timeline getCurrentTimeline() {

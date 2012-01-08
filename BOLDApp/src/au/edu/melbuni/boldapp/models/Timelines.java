@@ -64,7 +64,7 @@ public class Timelines extends Model implements Collection<Timeline> {
 		if (timelineIds != null) {
 			for (String timelineId : timelineIds) {
 				Timeline timeline = Timeline.load(users, persister, timelineId);
-				timelines.add(timeline);
+				if (timeline != null) { timelines.add(timeline); }
 			}
 		}
 		return new Timelines(timelines);

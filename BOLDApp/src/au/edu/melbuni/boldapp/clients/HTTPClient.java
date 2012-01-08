@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp;
+package au.edu.melbuni.boldapp.clients;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -40,7 +40,7 @@ import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.User;
 import au.edu.melbuni.boldapp.models.Users;
 
-public class HTTPClient {
+public class HTTPClient extends Basic {
 
 	public class SpecificNameValuePair implements NameValuePair {
 
@@ -74,16 +74,16 @@ public class HTTPClient {
 
 	}
 
-	String serverURI;
 	HttpClient client;
 
 	public HTTPClient(String serverURI) {
-		this.serverURI = serverURI;
+		super(serverURI);
 		this.client = null;
 	}
 
 	//
 	//
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<String> getUserIds() {
 		return (List<String>) getBody("/users/ids");
@@ -93,6 +93,7 @@ public class HTTPClient {
 	//
 	// Note: Also gets the user picture.
 	//
+	@Override
 	@SuppressWarnings("unchecked")
 	public User getUser(String userId) {
 		Map<String, Object> hash = (Map<String, Object>) getBody("/user/" + userId + ".json");
@@ -101,11 +102,13 @@ public class HTTPClient {
 		return user;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<String> getTimelineIds() {
 		return (List<String>) getBody("/timelines/ids");
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Timeline getTimeline(String timelineId, String userId, Users users) {
 		// TODO No user id needed?
@@ -115,14 +118,26 @@ public class HTTPClient {
 		return timeline;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<String> getSegmentIds(String timelineId) {
 		return (List<String>) getBody("/timeline/" + timelineId + "/segments/ids");
 	}
+	
+	@Override
+	public boolean doesExist(User user) {
+		return parseResponseExists(get("/user/" + user.getIdentifier()));
+	}
+	
+	@Override
+	public boolean doesExist(Timeline timeline) {
+		return parseResponseExists(get("/timeline/" + timeline.getIdentifier()));
+	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	public Segment getSegment(String segmentId) {
-		if (doesSegmentExist(segmentId)) {
+	public Segment getSegment(String timelineId, String segmentId) {
+		if (doesSegmentExist(timelineId, segmentId)) {
 			Map<String, Object> hash = (Map<String, Object>) getBody("/segment/" + segmentId + ".json");
 			Segment segment = Segment.fromHash(hash);
 			// TODO Refactor!!!
@@ -142,36 +157,34 @@ public class HTTPClient {
 	//
 	// Note: Includes sending his user picture.
 	//
-	public HttpResponse post(User user) {
+	@Override
+	public boolean post(User user) {
 		HttpResponse response = post("/users", user.toHash());
 		postFile("/user/" + user.getIdentifier() + "/picture", user.getProfileImagePath());
-		return response;
+		return isResponseOk(response);
 	}
 
 	// Sends the timeline to the server.
 	//
-	public HttpResponse post(Timeline timeline) {
-		return post("/timelines", timeline.toHash());
+	@Override
+	public boolean post(Timeline timeline) {
+		HttpResponse response =  post("/timelines", timeline.toHash());
+		return isResponseOk(response);
 	}
 
-	public HttpResponse post(Segment segment, String timelineId) {
+	@Override
+	public boolean post(Segment segment, String timelineId) {
 		HttpResponse response = post("/timeline/" + timelineId + "/segments", segment.toHash());
 		postFile("/segment/" + segment.getIdentifier() + "/soundfile", segment.getSoundfilePath());
-		return response;
+		return isResponseOk(response);
 	}
 	
-	public boolean doesExist(User user) {
-		return parseResponseExists(get("/user/" + user.getIdentifier()));
+	public boolean isResponseOk(HttpResponse response) {
+		return response.getStatusLine().getStatusCode() == 200;
 	}
 	
-	public boolean doesExist(Timeline timeline) {
-		return parseResponseExists(get("/timeline/" + timeline.getIdentifier()));
-	}
-	
-	public boolean doesExist(Segment segment) {
-		return doesSegmentExist(segment.getIdentifier());
-	}
-	public boolean doesSegmentExist(String segmentId) {
+	@Override
+	public boolean doesSegmentExist(String timelineId, String segmentId) {
 		return parseResponseExists(get("/segment/" + segmentId));
 	}
 	
@@ -226,6 +239,7 @@ public class HTTPClient {
 		return execute(post);
 	}
 	
+	@Override
 	public URI getServerURI(String path) {
 		URI server = null;
 
@@ -239,6 +253,7 @@ public class HTTPClient {
 		return server;
 	}
 	
+	@Override
 	public void lazilyInitializeClient() {
 		if (client == null) {
 			client = new DefaultHttpClient();

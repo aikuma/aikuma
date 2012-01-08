@@ -62,8 +62,8 @@ public class Timeline implements Comparable<Timeline> {
 		return segments;
 	}
 	
-	public void saveEach(Persister persister) {
-		persister.save(segments);
+	public void saveEach(Persister persister, String timelineIdentifier) {
+		persister.save(timelineIdentifier, segments);
 	}
 	
 	public static Timeline fromHash(Users users, Map<String, Object> hash) {
@@ -81,8 +81,11 @@ public class Timeline implements Comparable<Timeline> {
 		String userReference = hash.get("user_id") == null ? null : (String) hash.get("user_id");
 		User user = users.find(userReference);
 		
+		// No user for this timeline found.
+		//
 		if (user == null) {
-			throw new NullPointerException("No User " + userReference + " for Timeline " + uuid + " found.");
+			// throw new NullPointerException("No User " + userReference + " for Timeline " + uuid + " found.");
+			return null;
 		}
 		
 		Segments segments = Segments.load(new JSONPersister(), uuid);
@@ -150,7 +153,7 @@ public class Timeline implements Comparable<Timeline> {
 	// If one is finished, it selects the next etc.
 	//
 	public void startPlaying(final Player player, final OnCompletionListener onCompletionListener) {
-		segments.startPlaying(player, new OnCompletionListener() {
+		segments.startPlaying(player, getIdentifier(), new OnCompletionListener() {
 			@Override
 			public void onCompletion(Sounder sounder) {
 				segments.stopPlaying(player);
@@ -158,18 +161,18 @@ public class Timeline implements Comparable<Timeline> {
 					if (onCompletionListener != null) { onCompletionListener.onCompletion(sounder); }
 					return;
 				}
-				segments.startPlaying(player, this);
+				segments.startPlaying(player, getIdentifier(), this);
 			}
 		});
 	}
 	
 	public void startPlayingLast(Player player) {
 		segments.selectLastForPlaying();
-		segments.startPlaying(player);
+		segments.startPlaying(player, getIdentifier());
 	}
 	
 	public void startPlayingLastByDefault(Player player) {
-		segments.startPlaying(player, true);
+		segments.startPlaying(player, getIdentifier(), true);
 	}
 
 	public void stopPlaying(Player player) {
@@ -177,7 +180,7 @@ public class Timeline implements Comparable<Timeline> {
 	}
 
 	public void startRecording(Recorder recorder) {
-		segments.startRecording(recorder);
+		segments.startRecording(recorder, getIdentifier());
 	}
 
 	public void stopRecording(Recorder recorder) {

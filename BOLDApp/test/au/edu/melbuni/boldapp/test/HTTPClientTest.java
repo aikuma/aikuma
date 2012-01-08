@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import au.edu.melbuni.boldapp.HTTPClient;
+import au.edu.melbuni.boldapp.clients.HTTPClient;
 
 @RunWith(CustomTestRunner.class)
 public class HTTPClientTest {

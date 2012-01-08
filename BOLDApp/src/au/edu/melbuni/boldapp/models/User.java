@@ -17,6 +17,7 @@ import android.util.Log;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.Recorder;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
@@ -93,7 +94,8 @@ public class User extends Model {
 	}
 	
 	public void startRecording(Recorder recorder) {
-		audio.startRecording(recorder);
+		Persister persister = new JSONPersister();
+		audio.startRecording(recorder, persister.dirForUsers() + getIdentifier());
 	}
 	
 	public void stopRecording(Recorder recorder) {
@@ -101,7 +103,8 @@ public class User extends Model {
 	}
 	
 	public void startPlaying(Player player, OnCompletionListener listener) {
-		audio.startPlaying(player, listener);
+		Persister persister = new JSONPersister();
+		audio.startPlaying(player, persister.dirForUsers() + getIdentifier(), listener);
 	}
 	
 	public void stopPlaying(Player player) {
@@ -225,7 +228,7 @@ public class User extends Model {
 	
 	@Override
 	public String toString() {
-		return "User: " + name + ", " + uuid.toString() + " (" + super.toString() + ")";
+		return "User(" + uuid.toString() + ", \"" + name + "\")";
 	}
 
 }

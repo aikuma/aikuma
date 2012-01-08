@@ -19,7 +19,7 @@ public class Player extends Sounder {
 		}
 		playing = true;
 		try {
-			player.setDataSource(generateFullFilename(fileName));
+			player.setDataSource(prepareFile(fileName));
 			player.prepare();
 			if (listener != null) {
 				player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

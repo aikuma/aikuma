@@ -3,6 +3,8 @@ package au.edu.melbuni.boldapp;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.edu.melbuni.boldapp.clients.Basic;
+import au.edu.melbuni.boldapp.clients.FTPClient;
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
 import au.edu.melbuni.boldapp.models.Timeline;
@@ -13,7 +15,7 @@ import au.edu.melbuni.boldapp.models.Users;
 public class Synchronizer {
 	
 	String serverURI;
-	HTTPClient server; // Yes, this looks strange, but it fits better with the method calls.
+	Basic server; // Yes, this looks strange, but it fits better with the method calls.
 	
 	public Synchronizer(String serverURI) {
 		this.serverURI = serverURI;
@@ -21,22 +23,27 @@ public class Synchronizer {
 	
 	public void lazilyInitializeClient() {
 		if (this.server == null) {
-			this.server = new HTTPClient(this.serverURI);
+			this.server = new FTPClient(this.serverURI);
 		}
 	}
 	
-	// Synchronizes:
+	// Synchronizes depth-first:
 	//  1. The users itself, user after user.
 	//  2. The timelines for each user.
 	//  3. The segments for each timeline.
-	// (all depth-first)
 	//
 	public boolean synchronize(final Users users) {
 		lazilyInitializeClient();
 		
 		final List<User> serverMoreUsers = new ArrayList<User>();
 		
-		synchronizeWithIds(server.getUserIds(), users.getIds(), new SynchronizerCallbacks() {
+		List<String> userIds = null;
+//		try {
+			userIds = server.getUserIds();
+//		} catch(NullPointerException ne) {
+//			return false; // TODO Refactor and use specialized Exception.
+//		}
+		synchronizeWithIds(userIds, users.getIds(), new SynchronizerCallbacks() {
 			@Override
 			public void serverMore(String id) {
 				User user = server.getUser(id);
@@ -160,7 +167,7 @@ public class Synchronizer {
 	public boolean synchronize(Segment segment, Timeline timeline) {
 		lazilyInitializeClient();
 		
-		if (!server.doesExist(segment)) {
+		if (!server.doesExist(timeline, segment)) {
 			server.post(segment, timeline.getIdentifier());
 		}
 		

@@ -2,7 +2,6 @@ package au.edu.melbuni.boldapp.test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -10,9 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import au.edu.melbuni.boldapp.models.Timeline;
-import au.edu.melbuni.boldapp.models.Timelines;
 import au.edu.melbuni.boldapp.models.User;
-import au.edu.melbuni.boldapp.models.Users;
 import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
@@ -26,10 +23,10 @@ public class PersisterTest {
 		persister = new JSONPersister();
 	}
 	
-	@Test
-	public void pathForWithUsers() {
-		assertEquals("./mnt/sdcard/bold/users/list.json", persister.pathFor(new Users(new ArrayList<User>())));
-	}
+//	@Test
+//	public void pathForWithUsers() {
+//		assertEquals("./mnt/sdcard/bold/users/list.json", persister.pathFor(new Users(new ArrayList<User>())));
+//	}
 	
 	@Test
 	public void pathForWithUser() {
@@ -39,13 +36,13 @@ public class PersisterTest {
 		);
 	}
 	
-	@Test
-	public void pathForWithTimelines() {
-		assertEquals(
-		  "./mnt/sdcard/bold/timelines/list.json",
-		  persister.pathFor(new Timelines())
-		);
-	}
+//	@Test
+//	public void pathForWithTimelines() {
+//		assertEquals(
+//		  "./mnt/sdcard/bold/timelines/list.json",
+//		  persister.pathFor(new Timelines())
+//		);
+//	}
 	
 	@Test
 	public void pathForWithTimeline() {
@@ -61,10 +58,10 @@ public class PersisterTest {
 		assertEquals("./mnt/sdcard/bold/users/", persister.dirForUsers());
 	}
 	
-	@Test
-	public void pathForUsers() {
-		assertEquals("./mnt/sdcard/bold/users/list.json", persister.pathForUsers());
-	}
+//	@Test
+//	public void pathForUsers() {
+//		assertEquals("./mnt/sdcard/bold/users/list.json", persister.pathForUsers());
+//	}
 	
 	@Test
 	public void pathForUser() {
@@ -76,10 +73,10 @@ public class PersisterTest {
 		assertEquals("./mnt/sdcard/bold/timelines/", persister.dirForTimelines());
 	}
 
-	@Test
-	public void pathForTimelines() {
-		assertEquals("./mnt/sdcard/bold/timelines/list.json", persister.pathForTimelines());
-	}
+//	@Test
+//	public void pathForTimelines() {
+//		assertEquals("./mnt/sdcard/bold/timelines/list.json", persister.pathForTimelines());
+//	}
 	
 	@Test
 	public void pathForTimeline() {
@@ -88,17 +85,17 @@ public class PersisterTest {
 	
 	@Test
 	public void dirForSegments() {
-		assertEquals("./mnt/sdcard/bold/segments/", persister.dirForSegments());
+		assertEquals("./mnt/sdcard/bold/timelines/timelineIdentifier/segments/", persister.dirForSegments("timelineIdentifier"));
 	}
 	
-	@Test
-	public void pathForSegments() {
-		assertEquals("./mnt/sdcard/bold/segments/list.json", persister.pathForSegments());
-	}
+//	@Test
+//	public void pathForSegments() {
+//		assertEquals("./mnt/sdcard/bold/segments/list.json", persister.pathForSegments());
+//	}
 	
 	@Test
 	public void pathForSegment() {
-		assertEquals("./mnt/sdcard/bold/segments/identifier.json", persister.pathForSegment("identifier"));
+		assertEquals("./mnt/sdcard/bold/timelines/timelineIdentifier/segments/identifier.json", persister.pathForSegment("timelineIdentifier", "identifier"));
 	}
 	
 }

@@ -88,6 +88,10 @@ public class Users extends Model implements Collection<User> { // TODO implement
 		}
 		return new Timelines(timelines);
 	}
+	
+	public String toString() {
+		return users.toString();
+	}
 
 	// Delegation.
 	//

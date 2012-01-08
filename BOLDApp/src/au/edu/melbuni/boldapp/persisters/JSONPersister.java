@@ -83,7 +83,7 @@ public class JSONPersister extends Persister {
 	@Override
 	public void save(Timeline timeline) {
 		write(timeline, toJSON(timeline.toHash()));
-		timeline.saveEach(this);
+		timeline.saveEach(this, timeline.getIdentifier());
 	}
 	
 	@Override
@@ -98,15 +98,17 @@ public class JSONPersister extends Persister {
 	}
 	
 	@Override
-	public void save(Segments segments) {
-		segments.saveEach(this);
+	public void save(String timelineIdentifier, Segments segments) {
+		segments.saveEach(this, timelineIdentifier);
 	}
 	
 	@Override
-	public Segments loadSegments(String prefix) {
+	public Segments loadSegments(String timelineIdentifier) {
 		Segments segments = null;
 		try {
-			segments = Segments.fromHash(this, readSegments());
+			// TODO Use timelineIdentifier only once.
+			//
+			segments = Segments.fromHash(this, timelineIdentifier, readSegments(timelineIdentifier));
 		} catch (IOException e) {
 			// segments = new Segments(prefix);
 		}
@@ -114,15 +116,15 @@ public class JSONPersister extends Persister {
 	}
 
 	@Override
-	public void save(Segment segment) {
-		write(segment, toJSON(segment.toHash()));
+	public void save(String timelineIdentifier, Segment segment) {
+		write(timelineIdentifier, segment, toJSON(segment.toHash()));
 	}
 	
 	@Override
-	public Segment loadSegment(String identifier) {
+	public Segment loadSegment(String timelineIdentifier, String identifier) {
 		Segment segment = null;
 		try {
-			segment = Segment.fromHash(fromJSON(readSegment(identifier)));
+			segment = Segment.fromHash(fromJSON(readSegment(timelineIdentifier, identifier)));
 		} catch (IOException e) {
 			// segment = new Segment(identifier);
 		}

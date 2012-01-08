@@ -17,6 +17,7 @@ import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.Recorder;
 import au.edu.melbuni.boldapp.adapters.SegmentItemAdapter;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
 import au.edu.melbuni.boldapp.views.HorizontalListView;
 
@@ -59,17 +60,17 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 		return persister.loadSegments(uuid.toString());
 	}
 
-	public void saveEach(Persister persister) {
+	public void saveEach(Persister persister, String timelineIdentifier) {
 		for (Segment segment : segments) {
-			persister.save(segment);
+			persister.save(timelineIdentifier, segment);
 		}
 	}
 
-	public static Segments fromHash(Persister persister, List<String> segmentIds) {
+	public static Segments fromHash(Persister persister, String timelineIdentifier, List<String> segmentIds) {
 		ArrayList<Segment> segments = new ArrayList<Segment>();
 		if (segmentIds != null) {
 			for (String segmentId : segmentIds) {
-				Segment segment = Segment.load(persister, segmentId);
+				Segment segment = Segment.load(persister, timelineIdentifier, segmentId);
 				segments.add(segment);
 			}
 		}
@@ -164,7 +165,7 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 		return false;
 	}
 
-	public void startPlaying(Player player, OnCompletionListener listener, boolean lastByDefault) {
+	public void startPlaying(Player player, String timelineIdentifier, OnCompletionListener listener, boolean lastByDefault) {
 		System.out.println("SaP");
 
 		Segment segment = getSelectedForPlaying(lastByDefault);
@@ -172,20 +173,21 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 		if (segment == null) {
 			return;
 		}
-
-		segment.startPlaying(player, listener);
+		
+		Persister persister = new JSONPersister();
+		segment.startPlaying(player, persister.dirForSegments(timelineIdentifier), listener);
 	}
 	
-	public void startPlaying(Player player, OnCompletionListener listener) {
-		startPlaying(player, listener, false);
+	public void startPlaying(Player player, String timelineIdentifier, OnCompletionListener listener) {
+		startPlaying(player, timelineIdentifier, listener, false);
 	}
 	
-	public void startPlaying(Player player, boolean lastByDefault) {
-		startPlaying(player, null, lastByDefault);
+	public void startPlaying(Player player, String timelineIdentifier, boolean lastByDefault) {
+		startPlaying(player, timelineIdentifier, null, lastByDefault);
 	}
 	
-	public void startPlaying(Player player) {
-		startPlaying(player, null, false);
+	public void startPlaying(Player player, String timelineIdentifier) {
+		startPlaying(player, timelineIdentifier, null, false);
 	}
 
 	public void stopPlaying(Player player, boolean lastByDefault) {
@@ -204,10 +206,11 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 		stopPlaying(player, false);
 	}
 
-	public void startRecording(Recorder recorder) {
+	public void startRecording(Recorder recorder, String timelineIdentifier) {
 		System.out.println("SaR");
-
-		getSelectedForRecording().startRecording(recorder);
+		
+		Persister persister = new JSONPersister();
+		getSelectedForRecording().startRecording(recorder, persister.dirForSegments(timelineIdentifier));
 	}
 
 	public void stopRecording(Recorder recorder) {

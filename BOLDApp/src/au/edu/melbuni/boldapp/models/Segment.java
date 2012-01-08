@@ -46,12 +46,14 @@ public class Segment extends Observable {
 	
 	// Load a segment based on its identifier.
 	//
-	public static Segment load(Persister persister, String identifier) {
-		return persister.loadSegment(identifier);
+	public static Segment load(Persister persister, String timelineIdentifier, String identifier) {
+		return persister.loadSegment(timelineIdentifier, identifier);
 	}
 	
+	// TODO Work on this one!
+	//
 	public String getSoundfilePath() {
-		return Sounder.generateFullFilename("recording_" + getIdentifier());
+		return Sounder.prepareFile("recording_" + getIdentifier());
 	}
 	
 	public void putSoundfile(byte[] bytes) {
@@ -79,8 +81,8 @@ public class Segment extends Observable {
 	
 	// Save the segment's metadata.
 	//
-	public void save(Persister persister) {
-		persister.save(this);
+	public void save(Persister persister, String timelineIdentifier) {
+		persister.save(timelineIdentifier, this);
 	}
 	
 	public boolean isPlaying() {
@@ -103,8 +105,8 @@ public class Segment extends Observable {
 		return this.selected;
 	}
 
-	public void startPlaying(Player player, OnCompletionListener listener) {
-		player.startPlaying(identifier, listener);
+	public void startPlaying(Player player, String directory, OnCompletionListener listener) {
+		player.startPlaying(directory + identifier, listener);
 		setPlaying(true);
 	}
 
@@ -113,8 +115,8 @@ public class Segment extends Observable {
 		setPlaying(false);
 	}
 
-	public void startRecording(Recorder recorder) {
-		recorder.startRecording(identifier);
+	public void startRecording(Recorder recorder, String directory) {
+		recorder.startRecording(directory + identifier);
 		setRecording(true);
 	}
 

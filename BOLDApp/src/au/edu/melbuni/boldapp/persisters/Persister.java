@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.os.Environment;
+import au.edu.melbuni.boldapp.BoldApplication;
 import au.edu.melbuni.boldapp.UUIDFileFilter;
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
@@ -32,7 +33,6 @@ public abstract class Persister {
 		//
 		new File(dirForUsers()).mkdir();
 		new File(dirForTimelines()).mkdir();
-		new File(dirForSegments()).mkdir();
 	}
 
 	// Public API.
@@ -58,13 +58,13 @@ public abstract class Persister {
 
 	public abstract Timeline loadTimeline(Users users, String identifier);
 
-	public abstract void save(Segments segments);
+	public abstract void save(String timelineIdentifier, Segments segments);
 
-	public abstract Segments loadSegments(String prefix);
+	public abstract Segments loadSegments(String timelineIdentifier);
 
-	public abstract void save(Segment segment);
+	public abstract void save(String timelineIdentifier, Segment segment);
 
-	public abstract Segment loadSegment(String identifier);
+	public abstract Segment loadSegment(String timelineIdentifier, String identifier);
 
 	public abstract String fileExtension();
 
@@ -82,6 +82,19 @@ public abstract class Persister {
 
 	// Current
 	//
+	
+	public void deleteAll() {
+		deleteUsers();
+		deleteTimelines();
+	}
+	public void deleteUsers() {
+		File[] files = new File(dirForUsers()).listFiles();
+		for (File file : files) { file.delete(); }
+	}
+	public void deleteTimelines() {
+		File[] files = new File(dirForTimelines()).listFiles();
+		for (File file : files) { file.delete(); }
+	}
 
 	// Returns null if no current user has been saved.
 	//
@@ -94,15 +107,13 @@ public abstract class Persister {
 		}
 
 		User user = users.find(identifier);
-		if (user != null) {
-			return user;
-		}
+		if (user != null) { return user; }
 
 		return null;
 	}
 
-	public void saveCurrentUser(User user) {
-		write(pathForCurrentUser(), user.getIdentifier());
+	public void saveCurrentUser(BoldApplication application) {
+		write(pathForCurrentUser(), application.getCurrentUser().getIdentifier());
 	}
 
 	// User(s).
@@ -123,16 +134,16 @@ public abstract class Persister {
 	// Segment(s).
 	//
 
-	public List<String> readSegments() throws IOException {
-		return extractIdsFrom(new File(dirForSegments()));
+	public List<String> readSegments(String timelineIdentifier) throws IOException {
+		return extractIdsFrom(new File(dirForSegments(timelineIdentifier)));
 	}
 
-	public void write(Segment segment, String data) {
-		write(pathFor(segment), data);
+	public void write(String timelineIdentifier, Segment segment, String data) {
+		write(pathFor(timelineIdentifier, segment), data);
 	}
 
-	public String readSegment(String identifier) throws IOException {
-		return read(pathForSegment(identifier));
+	public String readSegment(String timelineIdentifier, String identifier) throws IOException {
+		return read(pathForSegment(timelineIdentifier, identifier));
 	}
 
 	// Timeline(s).
@@ -165,6 +176,7 @@ public abstract class Persister {
 				ids.add(file.getName().replaceAll("\\.json$", ""));
 			}
 		}
+		
 		return ids;
 	}
 
@@ -188,8 +200,8 @@ public abstract class Persister {
 //		return pathForSegments();
 //	}
 
-	public String pathFor(Segment segment) {
-		return pathForSegment(segment.getIdentifier());
+	public String pathFor(String timelineIdentifier, Segment segment) {
+		return pathForSegment(timelineIdentifier, segment.getIdentifier());
 	}
 
 	// Paths
@@ -223,21 +235,19 @@ public abstract class Persister {
 		return dirForTimelines() + identifier + fileExtension();
 	}
 
-	public String dirForSegments() {
-		return getBasePath() + "segments/";
+	public String dirForSegments(String timelineIdentifier) {
+		return dirForTimelines() + timelineIdentifier + "/segments/";
 	}
 
 //	public String pathForSegments() {
 //		return dirForSegments() + "list" + fileExtension(); // TODO Really?
 //	}
 
-	public String pathForSegment(String identifier) {
-		return dirForSegments() + identifier + fileExtension();
+	public String pathForSegment(String timelineIdentifier, String identifier) {
+		return dirForSegments(timelineIdentifier) + identifier + fileExtension();
 	}
 
 	// Write the data to the file.
-	//
-	// TODO Buffer?
 	//
 	public void write(String fileName, String data) {
 		try {
