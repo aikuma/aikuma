@@ -3,7 +3,7 @@ package au.edu.melbuni.boldapp;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.melbuni.boldapp.clients.Basic;
+import au.edu.melbuni.boldapp.clients.Client;
 import au.edu.melbuni.boldapp.clients.FTPClient;
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
@@ -15,7 +15,7 @@ import au.edu.melbuni.boldapp.models.Users;
 public class Synchronizer {
 	
 	String serverURI;
-	Basic server; // Yes, this looks strange, but it fits better with the method calls.
+	Client server; // Yes, "Client server" looks strange, but it fits better with the method calls.
 	
 	public Synchronizer(String serverURI) {
 		this.serverURI = serverURI;

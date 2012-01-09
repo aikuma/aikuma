@@ -14,7 +14,7 @@ import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.User;
 import au.edu.melbuni.boldapp.models.Users;
 
-public class FTPClient extends Basic {
+public class FTPClient extends Client {
 	
 	org.apache.commons.net.ftp.FTPClient client;
 	

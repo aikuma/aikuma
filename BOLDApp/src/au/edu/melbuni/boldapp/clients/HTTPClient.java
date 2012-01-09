@@ -40,7 +40,7 @@ import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.User;
 import au.edu.melbuni.boldapp.models.Users;
 
-public class HTTPClient extends Basic {
+public class HTTPClient extends Client {
 
 	public class SpecificNameValuePair implements NameValuePair {
 

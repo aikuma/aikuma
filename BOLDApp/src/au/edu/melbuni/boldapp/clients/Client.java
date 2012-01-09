@@ -8,11 +8,11 @@ import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.User;
 import au.edu.melbuni.boldapp.models.Users;
 
-public abstract class Basic {
+public abstract class Client {
 
 	protected String serverURI;
 	
-	public Basic(String serverURI) {
+	public Client(String serverURI) {
 		this.serverURI = serverURI;
 	}
 	
