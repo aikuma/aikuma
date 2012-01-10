@@ -20,6 +20,8 @@ public abstract class Client {
 		return doesSegmentExist(timeline.getIdentifier(), segment.getIdentifier());
 	}
 	
+	public abstract Object getClient();
+	
 	public abstract URI getServerURI(String path);
 
 	public abstract void lazilyInitializeClient();
@@ -36,7 +38,7 @@ public abstract class Client {
 
 	public abstract boolean post(User user);
 
-	public abstract Segment getSegment(String segmentId);
+	public abstract Segment getSegment(String segmentId, String timelineId);
 
 	public abstract List<String> getSegmentIds(String timelineId);
 

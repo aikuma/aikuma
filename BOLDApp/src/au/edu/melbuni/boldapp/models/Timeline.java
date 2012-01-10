@@ -208,5 +208,14 @@ public class Timeline implements Comparable<Timeline> {
 		}
 		return 0;
 	}
+	
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof Timeline) {
+			Timeline other = (Timeline) object;
+			return this.compareTo(other) == 0;
+		}
+		return false; 
+	}
 
 }

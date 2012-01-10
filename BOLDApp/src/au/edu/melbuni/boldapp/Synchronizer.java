@@ -140,7 +140,7 @@ public class Synchronizer {
 			new SynchronizerCallbacks() {
 				@Override
 				public void serverMore(String id) {
-					Segment segment = server.getSegment(id);
+					Segment segment = server.getSegment(id, timeline.getIdentifier());
 					if (segment != null) {
 						moreSegments.add(segment);
 					}

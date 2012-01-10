@@ -80,6 +80,11 @@ public class HTTPClient extends Client {
 		super(serverURI);
 		this.client = null;
 	}
+	
+	@Override
+	public Object getClient() {
+		return client;
+	}
 
 	//
 	//

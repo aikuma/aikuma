@@ -139,6 +139,15 @@ public class Segment extends Observable {
 		notifyObservers();
 	}
 	
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof Segment) {
+			Segment other = (Segment) object;
+			return getIdentifier().equals(other.getIdentifier());
+		}
+		return false; 
+	}
+	
 	public static class ViewHandler implements Observer {
 		
 		private View view;
