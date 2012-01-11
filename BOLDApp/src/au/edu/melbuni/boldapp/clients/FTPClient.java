@@ -134,11 +134,11 @@ public class FTPClient extends Client {
 		if (external != null) {
 			// On the phone.
 			//
-			return "production";
+			return "production/";
 		}
 		// During e.g. tests.
 		//
-		return "test";
+		return "test/";
 	}
 
 	public boolean cdToBase() {
@@ -207,6 +207,9 @@ public class FTPClient extends Client {
 		if (cdToUsers()) {
 			Persister persister = new JSONPersister();
 			result = postFileWithSameName(persister.pathFor(user));
+			maybeMakeAndCd(user.getIdentifier());
+			postFileWithSameName(user.getProfileImagePath(), true);
+			postFileWithSameName(user.getProfileAudioPath(), true);
 		}
 		return result;
 	}
@@ -233,36 +236,63 @@ public class FTPClient extends Client {
 	}
 
 	@Override
-	public Segment getSegment(String segmentId, String timelineId) {
-		cdToSegments(timelineId);
-		getFileWithSameName(segmentId + ".json");
-		return Segment.load(new JSONPersister(), timelineId, segmentId);
-	}
-
-	@Override
 	public List<String> getSegmentIds(String timelineId) {
 		cdToSegments(timelineId);
 		return getIds();
+	}
+	
+	@Override
+	public User getUser(String userId) {
+		cdToUsers();
+		String fileName = Persister.getBasePath() + "users/" + userId + ".json";
+		if (getFile(fileName)) {
+			User user = User.load(new JSONPersister(), userId);
+			getAssociatedFiles(user);
+			return user;
+		} else {
+			return null;
+		}
+	}
+	public void getAssociatedFiles(User user) {
+		cdToUsers();
+		maybeMakeAndCd(user.getIdentifier());
+		getFile(user.getProfileImagePath());
+		getFile(user.getProfileAudioPath());
 	}
 
 	@Override
 	public Timeline getTimeline(String timelineId, String userId, Users users) {
 		cdToTimelines();
-		getFileWithSameName(timelineId + ".json");
-		return Timeline.load(users, new JSONPersister(), timelineId);
+		// TODO
+		String fileName = Persister.getBasePath() + "timelines/" + timelineId + ".json";
+		if (getFile(fileName)) {
+			Timeline timeline = Timeline.load(users, new JSONPersister(), timelineId);
+			getAssociatedFiles(timeline);
+			return timeline;
+		} else {
+			return null;
+		}
+	}
+	public void getAssociatedFiles(Timeline timeline) {
+		// TODO Decide whether to load the segments here.
+	}
+	
+	@Override
+	public Segment getSegment(String segmentId, String timelineId) {
+		cdToSegments(timelineId);
+		// TODO
+		String fileName = Persister.getBasePath() + "timelines/" + timelineId + "/segments/" + segmentId + ".json";
+		if (getFile(fileName)) {
+			return Segment.load(new JSONPersister(), timelineId, segmentId);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public List<String> getTimelineIds() {
 		cdToTimelines();
 		return getIds();
-	}
-
-	@Override
-	public User getUser(String userId) {
-		cdToUsers();
-		getFileWithSameName(userId + ".json");
-		return User.load(new JSONPersister(), userId);
 	}
 
 	@Override
@@ -284,7 +314,13 @@ public class FTPClient extends Client {
 	}
 	
 	public boolean postFileWithSameName(String path) {
+		return postFileWithSameName(path, false);
+	}
+	public boolean postFileWithSameName(String path, boolean optional) {
 		File file = new File(path);
+		if (optional && !file.exists()) {
+			return false;
+		}
 		InputStream stream = null;
 		boolean result = false;
 		login();
@@ -306,20 +342,20 @@ public class FTPClient extends Client {
 		return result;
 	}
 	
-	public boolean getFileWithSameName(String filename) {
+	public boolean getFile(String filename) {
+		login();
 		OutputStream stream = null;
 		boolean result = false;
-		login();
 		try {
 			client.type(FTP.ASCII_FILE_TYPE);
 			stream = new FileOutputStream(filename);
-			result = client.retrieveFile(filename, stream);
+			File remoteFile = new File(filename);
+			result = client.retrieveFile(remoteFile.getName(), stream);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e.getMessage());
 		} finally {
 			try {
-				stream.close();
+				if (stream != null) { stream.close(); }
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

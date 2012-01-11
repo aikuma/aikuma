@@ -52,7 +52,18 @@ public class UserTest {
 	
 	@Test
 	public void getProfileImagePath() {
-		assertEquals("./mnt/sdcard/bold/users/profile_f47ac10b-58cc-4372-a567-0e02b2c3d479.png", user.getProfileImagePath());
+		assertEquals(
+			"./mnt/sdcard/bold/users/f47ac10b-58cc-4372-a567-0e02b2c3d479/profile.png",
+			user.getProfileImagePath()
+		);
+	}
+	
+	@Test
+	public void getProfileAudioPath() {
+		assertEquals(
+			"./mnt/sdcard/bold/users/f47ac10b-58cc-4372-a567-0e02b2c3d479/profile",
+			user.getProfileAudioPath()
+		);
 	}
 	
 	@Test

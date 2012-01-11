@@ -53,7 +53,7 @@ public class User extends Model {
 	}
 
 	public User(String name, UUID uuid) {
-		this(name, uuid, new Segment(uuid.toString())); // TODO Really use the uuid?
+		this(name, uuid, new Segment(""));
 	}
 	
 	public User(String name, UUID uuid, Segment segment) {
@@ -94,8 +94,7 @@ public class User extends Model {
 	}
 	
 	public void startRecording(Recorder recorder) {
-		Persister persister = new JSONPersister();
-		audio.startRecording(recorder, persister.dirForUsers() + getIdentifier());
+		audio.startRecording(recorder, getProfileAudioPath());
 	}
 	
 	public void stopRecording(Recorder recorder) {
@@ -103,8 +102,7 @@ public class User extends Model {
 	}
 	
 	public void startPlaying(Player player, OnCompletionListener listener) {
-		Persister persister = new JSONPersister();
-		audio.startPlaying(player, persister.dirForUsers() + getIdentifier(), listener);
+		audio.startPlaying(player, getProfileAudioPath(), listener);
 	}
 	
 	public void stopPlaying(Player player) {
@@ -122,6 +120,10 @@ public class User extends Model {
 		hash.put("name", this.name);
 		hash.put("id", this.uuid.toString());
 		return hash;
+	}
+	
+	public String getProfileAudioPath() {
+		return new JSONPersister().dirForUsers() + getIdentifier() + "/profile";
 	}
 	
 	// Load a user based on his UUID.
@@ -144,13 +146,8 @@ public class User extends Model {
 		return "users/" + this.uuid.toString() + "/name";
 	}
 	
-	public String getRelativeProfilePathStub() {
-		return "users/profile_";
-	}
 	public String getProfileImagePath() {
-		// TODO
-		//
-		return Persister.getBasePath() + getRelativeProfilePathStub() + this.uuid.toString() + ".png";
+		return new JSONPersister().dirForUsers() + getIdentifier() + "/profile.png";
 	}
 	public Drawable getProfileImage() {
     	return Drawable.createFromPath(getProfileImagePath());

@@ -65,7 +65,7 @@ public class UserSelectionActivity extends BoldActivity {
 //				HttpResponse response = new HTTPClient("http://128.250.22.12:4567").post(user);
 				
 				Users users = Bundler.getUsers(UserSelectionActivity.this);
-				new Synchronizer("http://128.250.22.12:4567").synchronize(users);
+				new Synchronizer("128.250.22.12").synchronize(users);
 				
 				Toast toast = Toast.makeText(UserSelectionActivity.this, users.getIds().toString(), 2000);
 				toast.setGravity(Gravity.TOP, -30, 50);

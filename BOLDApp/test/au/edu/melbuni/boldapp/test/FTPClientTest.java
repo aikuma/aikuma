@@ -47,6 +47,7 @@ public class FTPClientTest {
 		if (user == null) {
 			user = new User("Test User",
 					UUID.fromString("12345678-1234-1234-1234-123456789012"));
+			user.setProfileImage("fakeimagedata");
 			user.save(new JSONPersister());
 		}
 
@@ -80,7 +81,7 @@ public class FTPClientTest {
 	public void getBaseDir() {
 		// Make sure that we're in the right directory.
 		//
-		assertEquals("test", ftp.getBaseDir());
+		assertEquals("test/", ftp.getBaseDir());
 	}
 
 	@Test
@@ -97,21 +98,21 @@ public class FTPClientTest {
 
 	@Test
 	public void cdToBase() {
-		ftp.login();
+		// No login needed.
 		assertTrue(ftp.cdToBase());
 		ftp.logout();
 	}
 
 	@Test
 	public void cdToUsers() {
-		ftp.login();
+		// No login needed.
 		assertTrue(ftp.cdToUsers());
 		ftp.logout();
 	}
 
 	@Test
 	public void postUser() {
-		ftp.login();
+		// No login needed.
 		User user = new User("Test User",
 				UUID.fromString("12345678-1234-1234-1234-123456789012"));
 		user.save(new JSONPersister());
@@ -137,21 +138,21 @@ public class FTPClientTest {
 
 	@Test
 	public void cdToTimelines() {
-		ftp.login();
+		// No login needed.
 		assertTrue(ftp.cdToTimelines());
 		ftp.logout();
 	}
 
 	@Test
 	public void postTimeline() {
-		ftp.login();
+		// No login needed.
 		assertTrue(ftp.post(timeline));
 		ftp.logout();
 	}
 
 	@Test
 	public void postSegments() {
-		ftp.login();
+		// No login needed.
 		for (Segment segment : timeline.getSegments()) {
 			assertTrue(ftp.post(segment, timeline.getIdentifier()));
 		}
@@ -160,21 +161,21 @@ public class FTPClientTest {
 
 	@Test
 	public void cdToExistingSegments() {
-		ftp.login();
+		// No login needed.
 		assertTrue(ftp.cdToSegments(timeline.getIdentifier()));
 		ftp.logout();
 	}
 
 	@Test
 	public void cdToNonexistingSegments() {
-		ftp.login();
+		// No login needed.
 		assertFalse(ftp.cdToSegments("nonExistingtimelineId"));
 		ftp.logout();
 	}
 	
 	@Test
 	public void getUser() {
-		ftp.login();
+		// No login needed.
 		assertEquals(
 			user,
 			ftp.getUser(user.getIdentifier())
@@ -183,8 +184,18 @@ public class FTPClientTest {
 	}
 	
 	@Test
+	public void getNonExistingUser() {
+		// No login needed.
+		assertEquals(
+			null,
+			ftp.getUser(new User().getIdentifier())
+		);
+		ftp.logout();
+	}
+	
+	@Test
 	public void getTimeline() {
-		ftp.login();
+		// No login needed.
 		Users users = new Users();
 		users.add(user);
 		assertEquals(
@@ -199,8 +210,23 @@ public class FTPClientTest {
 	}
 	
 	@Test
+	public void getNonExistingTimeline() {
+		// No login needed.
+		Users users = new Users();
+		assertEquals(
+			null,
+			ftp.getTimeline(
+				new Timeline().getIdentifier(),
+				new User().getIdentifier(),
+				users
+			)
+		);
+		ftp.logout();
+	}
+	
+	@Test
 	public void getSegment() {
-		ftp.login();
+		// No login needed.
 		assertEquals(
 			segment,
 			ftp.getSegment(segment.getIdentifier(), timeline.getIdentifier())
@@ -210,7 +236,7 @@ public class FTPClientTest {
 
 	@Test
 	public void getSegmentIds() {
-		ftp.login();
+		// No login needed.
 		List<String> expected = new ArrayList<String>();
 		expected.add(segment.getIdentifier());
 		assertEquals(
@@ -222,42 +248,42 @@ public class FTPClientTest {
 	
 	@Test
 	public void doesExistUser() {
-		ftp.login();
+		// No login needed.
 		assertTrue(ftp.doesExist(user));
 		ftp.logout();
 	}
 	
 	@Test
 	public void doesExistNonExistingUser() {
-		ftp.login();
+		// No login needed.
 		assertFalse(ftp.doesExist(new User()));
 		ftp.logout();
 	}
 	
 	@Test
 	public void doesExistTimeline() {
-		ftp.login();
+		// No login needed.
 		assertTrue(ftp.doesExist(timeline));
 		ftp.logout();
 	}
 	
 	@Test
 	public void doesExistNonExistingTimeline() {
-		ftp.login();
+		// No login needed.
 		assertFalse(ftp.doesExist(new Timeline()));
 		ftp.logout();
 	}
 	
 	@Test
 	public void doesSegmentExist() {
-		ftp.login();
+		// No login needed.
 		assertTrue(ftp.doesSegmentExist(timeline.getIdentifier(), segment.getIdentifier()));
 		ftp.logout();
 	}
 	
 	@Test
 	public void getUserIds() {
-		ftp.login();
+		// No login needed.
 		List<String> expected = new ArrayList<String>();
 		expected.add(user.getIdentifier());
 		assertEquals(
@@ -269,7 +295,7 @@ public class FTPClientTest {
 	
 	@Test
 	public void getTimelineIds() {
-		ftp.login();
+		// No login needed.
 		List<String> expected = new ArrayList<String>();
 		expected.add(timeline.getIdentifier());
 		assertEquals(
