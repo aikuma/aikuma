@@ -34,15 +34,12 @@ public class FTPClientTest {
 	FTPClient ftp;
 	User user;
 	Timeline timeline;
-	Segment segment;
+	Segment segment1;
+	Segment segment2;
 
 	@Before
 	public void setUp() throws Exception {
 		ftp = new FTPClient("localhost");
-
-		// ftp.login();
-		// ftp.deleteAll();
-		// ftp.logout();
 
 		if (user == null) {
 			user = new User("Test User",
@@ -56,13 +53,80 @@ public class FTPClientTest {
 					UUID.fromString("12345678-1234-1234-1234-123456789012"));
 			timeline.setUser(user);
 			
-			if (segment == null) {
-				segment = new Segment("test");
+			if (segment1 == null) {
+				segment1 = new Segment("test1");
 			}
-			timeline.getSegments().add(segment);
+			timeline.getSegments().add(segment1);
+			
+			if (segment2 == null) {
+				segment2 = new Segment("test2");
+			}
+			timeline.getSegments().add(segment2);
 
 			timeline.save(new JSONPersister());
 		}
+	}
+	
+//	boolean deletedAll = false;
+//	public void deleteAll() {
+//		if (!deletedAll) {
+//			ftp.login();
+//			ftp.deleteAll();
+//			ftp.logout();
+//			deletedAll = true;
+//		}
+//	}
+	
+	@Test
+	public void integrationPostRetrieveUser() {
+		// No login needed.
+		User user = new User("Test User",
+				UUID.fromString("12345678-1234-1234-1234-123456789012"));
+		user.setProfileImage("some_image_data");
+		user.save(new JSONPersister());
+		
+		assertTrue(ftp.post(user));
+		
+		new JSONPersister().deleteAll();
+		
+		assertEquals(null, new JSONPersister().loadUser(user.getIdentifier()));
+		
+		User ftpUser = ftp.getUser(user.getIdentifier());
+		assertEquals(user, ftpUser);
+		assertEquals("some_image_data", ftpUser.getProfileImageData());
+		
+		User loadedUser = new JSONPersister().loadUser(user.getIdentifier());
+		assertEquals(user, loadedUser);
+		assertEquals("some_image_data", loadedUser.getProfileImageData());
+		
+		ftp.logout();
+	}
+	
+	@Test
+	public void integrationPostRetrieveTimelineAndSegments() {
+		// No login needed.
+		Timeline timeline = new Timeline(UUID.fromString("12345678-1234-1234-1234-123456789012"));
+		Segment segment = new Segment("integrationPostRetrieveTimeline");
+		timeline.getSegments().add(segment);
+		timeline.setUser(user);
+		
+		timeline.save(new JSONPersister());
+		assertTrue(ftp.post(timeline));
+		
+		new JSONPersister().deleteAll();
+		
+		ArrayList<User> users = new ArrayList<User>();
+		users.add(user);
+		
+		assertEquals(null, new JSONPersister().loadTimeline(new Users(users), timeline.getIdentifier()));
+		
+		assertEquals(timeline, ftp.getTimeline(timeline.getIdentifier(), user.getIdentifier(), new Users(users)));
+		assertEquals(segment, timeline.getSegments().get(0));
+		
+		assertEquals(timeline, new JSONPersister().loadTimeline(new Users(users), timeline.getIdentifier()));
+		assertEquals(segment, timeline.getSegments().get(0));
+		
+		ftp.logout();
 	}
 	
 	@Test
@@ -228,8 +292,8 @@ public class FTPClientTest {
 	public void getSegment() {
 		// No login needed.
 		assertEquals(
-			segment,
-			ftp.getSegment(segment.getIdentifier(), timeline.getIdentifier())
+			segment1,
+			ftp.getSegment(segment1.getIdentifier(), timeline.getIdentifier())
 		);
 		ftp.logout();
 	}
@@ -238,7 +302,8 @@ public class FTPClientTest {
 	public void getSegmentIds() {
 		// No login needed.
 		List<String> expected = new ArrayList<String>();
-		expected.add(segment.getIdentifier());
+		expected.add(segment1.getIdentifier());
+		expected.add(segment2.getIdentifier());
 		assertEquals(
 			expected,
 			ftp.getSegmentIds(timeline.getIdentifier())
@@ -277,7 +342,7 @@ public class FTPClientTest {
 	@Test
 	public void doesSegmentExist() {
 		// No login needed.
-		assertTrue(ftp.doesSegmentExist(timeline.getIdentifier(), segment.getIdentifier()));
+		assertTrue(ftp.doesSegmentExist(timeline.getIdentifier(), segment1.getIdentifier()));
 		ftp.logout();
 	}
 	

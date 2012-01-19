@@ -2,7 +2,6 @@ package au.edu.melbuni.boldapp.persisters;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 import org.json.simple.JSONValue;
 
@@ -59,7 +58,7 @@ public class JSONPersister extends Persister {
 		try {
 			user = User.fromHash(fromJSON(readUser(identifier)));
 		} catch (IOException e) {
-			user = new User(UUID.fromString(identifier));
+			// TODO
 		}
 		return user;
 	}

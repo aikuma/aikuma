@@ -1,9 +1,11 @@
 package au.edu.melbuni.boldapp.models;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -151,6 +153,26 @@ public class User extends Model {
 	}
 	public Drawable getProfileImage() {
     	return Drawable.createFromPath(getProfileImagePath());
+	}
+	public String getProfileImageData() {
+		try {
+			StringBuffer fileData = new StringBuffer(1000);
+	        BufferedReader reader = new BufferedReader(
+	                new FileReader(getProfileImagePath()));
+	        char[] buf = new char[1024];
+	        int numRead=0;
+	        while((numRead = reader.read(buf)) != -1){
+	            String readData = String.valueOf(buf, 0, numRead);
+	            fileData.append(readData);
+	            buf = new char[1024];
+	        }
+	        reader.close();
+	        return fileData.toString();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
 	}
 	public boolean hasProfileImage() {
 		File image = new File(getProfileImagePath());
