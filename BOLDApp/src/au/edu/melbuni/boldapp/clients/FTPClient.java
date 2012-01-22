@@ -208,8 +208,8 @@ public class FTPClient extends Client {
 			Persister persister = new JSONPersister();
 			result = postFileWithSameName(persister.pathFor(user));
 			maybeMakeAndCd(user.getIdentifier());
-			postFileWithSameName(user.getProfileImagePath(), true);
-			postFileWithSameName(user.getProfileAudioPath(), true);
+			postFileWithSameName(user.getProfileImagePath(), true, true);
+			postFileWithSameName(user.getProfileAudioPath(), true, true);
 		}
 		return result;
 	}
@@ -256,8 +256,8 @@ public class FTPClient extends Client {
 	public void getAssociatedFiles(User user) {
 		cdToUsers();
 		maybeMakeAndCd(user.getIdentifier());
-		getFile(user.getProfileImagePath());
-		getFile(user.getProfileAudioPath());
+		getFile(user.getProfileImagePath(), true);
+		getFile(user.getProfileAudioPath(), true);
 	}
 
 	@Override
@@ -317,6 +317,9 @@ public class FTPClient extends Client {
 		return postFileWithSameName(path, false);
 	}
 	public boolean postFileWithSameName(String path, boolean optional) {
+		return postFileWithSameName(path, optional, false);
+	}
+	public boolean postFileWithSameName(String path, boolean optional, boolean binary) {
 		File file = new File(path);
 		if (optional && !file.exists()) {
 			return false;
@@ -325,7 +328,11 @@ public class FTPClient extends Client {
 		boolean result = false;
 		login();
 		try {
-			client.type(FTP.ASCII_FILE_TYPE);
+			if (binary) {
+				client.type(FTP.BINARY_FILE_TYPE);
+			} else {
+				client.type(FTP.ASCII_FILE_TYPE);
+			}
 			stream = new FileInputStream(file);
 			result = client.storeFile(file.getName(), stream);
 		} catch (IOException e) {
@@ -343,11 +350,25 @@ public class FTPClient extends Client {
 	}
 	
 	public boolean getFile(String filename) {
+		return getFile(filename, false);
+	}
+	public boolean getFile(String filename, boolean binary) {
 		login();
 		OutputStream stream = null;
 		boolean result = false;
 		try {
-			client.type(FTP.ASCII_FILE_TYPE);
+			if (binary) {
+				client.type(FTP.BINARY_FILE_TYPE);
+			} else {
+				client.type(FTP.ASCII_FILE_TYPE);
+			}
+			
+			// TODO Dry.
+			//
+        	File file = new File(filename);
+        	file.getParentFile().mkdirs();
+        	file.createNewFile();
+			
 			stream = new FileOutputStream(filename);
 			File remoteFile = new File(filename);
 			result = client.retrieveFile(remoteFile.getName(), stream);
@@ -372,8 +393,7 @@ public class FTPClient extends Client {
 			strings = client.listNames("*"
 					+ new JSONPersister().fileExtension());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			strings = new String[0];
 		}
 		List<String> results = new ArrayList<String>();
 		for (String string : strings) {
