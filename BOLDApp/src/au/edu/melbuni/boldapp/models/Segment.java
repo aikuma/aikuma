@@ -9,6 +9,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 import android.util.Log;
 import android.view.View;
 import au.edu.melbuni.boldapp.Player;
@@ -167,17 +168,17 @@ public class Segment extends Observable {
 			System.out.println(">>>" + segment.recording + segment.playing + segment.selected);
 			
 			if (segment.recording) {
-				view.setBackgroundColor(Color.RED);
+				view.getBackground().setColorFilter(Color.RED, Mode.MULTIPLY);
 				return;
 			}
 			if (segment.playing) {
-				view.setBackgroundColor(Color.GREEN);
+				view.getBackground().setColorFilter(Color.GREEN, Mode.MULTIPLY);
 				return;
 			}
 			if (segment.selected) {
-				view.setBackgroundColor(Color.LTGRAY);
+				view.getBackground().clearColorFilter();
 			} else {
-				view.setBackgroundColor(Color.GRAY);
+				view.getBackground().setColorFilter(Color.GRAY, Mode.MULTIPLY);
 			}
 		}
 	}

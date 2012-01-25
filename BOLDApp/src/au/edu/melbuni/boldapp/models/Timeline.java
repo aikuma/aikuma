@@ -142,7 +142,7 @@ public class Timeline implements Comparable<Timeline> {
 	}
 	
 	public CharSequence getItemText() {
-		return date.toLocaleString() + " " + location;
+		return date.toLocaleString() + " " + segments.size() + " segment(s)";
 	}
 
 	// Delegator methods.

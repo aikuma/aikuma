@@ -3,10 +3,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:baselineAligned="false" android:orientation="vertical">
-    <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout1" android:layout_height="wrap_content" android:layout_weight="0">
-        <TextView android:layout_width="wrap_content" android:text="18/10/11" android:textAppearance="?android:attr/textAppearanceMedium" android:id="@+id/textView1" android:layout_height="wrap_content" android:layout_gravity="center"></TextView>
-        <TextView android:layout_width="wrap_content" android:text="Location" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:id="@+id/textView2" android:layout_marginLeft="10dip" android:layout_gravity="center"></TextView>
-    </LinearLayout>
     <au.edu.melbuni.boldapp.HorizontalListView android:id="@+id/timeline"
   											   android:layout_width="fill_parent"
   											   android:layout_weight="0" android:layout_height="35dip" android:layout_margin="4dip">

@@ -19,4 +19,5 @@
     <string name="informed_consent_photo_hindi">अपनी तस्वीर ले कृपया</string>
     <string name="next">✔</string>
     <string name="help">\?</string>
+    <color name="red_recording">#F00</color>
 </resources>

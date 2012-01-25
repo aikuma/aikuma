@@ -3,6 +3,7 @@ package au.edu.melbuni.boldapp.behaviors;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -78,11 +79,11 @@ public class TapAndReleaseRecord implements Behavior<RecordActivity> {
 					timeline.setUser(Bundler.getCurrentUser(activity));
 					Bundler.addTimeline(activity, timeline);
 					
-					recordButton.setBackgroundColor(Color.LTGRAY);
+					recordButton.getBackground().clearColorFilter();
 				} else {
 					timeline.startRecording(activity.getRecorder());
 					
-					recordButton.setBackgroundColor(Color.RED);
+					recordButton.getBackground().setColorFilter(Color.RED, Mode.MULTIPLY);
 				}
 				TapAndReleaseRecord.this.toggleRecording();
 			}

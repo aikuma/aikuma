@@ -1,6 +1,7 @@
 package au.edu.melbuni.boldapp.behaviors;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 import android.view.View;
 import android.widget.ImageButton;
 import au.edu.melbuni.boldapp.Bundler;
@@ -46,15 +47,16 @@ public class TapAndReleaseListen implements Behavior<ListenActivity> {
 			public void onClick(View v) {
 				if (isPlaying()) {
 					timeline.stopPlaying(player);
-					playButton.setBackgroundColor(Color.LTGRAY);
+					
+					playButton.getBackground().clearColorFilter();
 				} else {
 					timeline.startPlaying(player, new OnCompletionListener() {
 						@Override
 						public void onCompletion(Sounder sounder) {
-							playButton.setBackgroundColor(Color.LTGRAY);
+							playButton.getBackground().clearColorFilter();
 						}
 					});
-					playButton.setBackgroundColor(Color.GREEN);
+					playButton.getBackground().setColorFilter(Color.GREEN, Mode.MULTIPLY);
 				}
 				togglePlaying();
 			}

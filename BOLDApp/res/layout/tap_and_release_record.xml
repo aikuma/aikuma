@@ -11,30 +11,11 @@
     </LinearLayout> -->
 
     <LinearLayout
-        android:id="@+id/LinearLayout01"
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0" >
-
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="18/10/11"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="10dip"
-            android:text="Location"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-    <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout3" android:layout_weight="1" android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="0dp" >
 
         <LinearLayout
             android:id="@+id/linearLayout2"
@@ -49,18 +30,27 @@
                 android:layout_height="76dp"
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
-                android:src="@drawable/icon" />
+                android:src="@drawable/button_delete" />
 
             <ImageButton
                 android:id="@+id/playButton"
                 android:layout_width="match_parent"
                 android:layout_height="76dp"
+                android:layout_margin="0dp"
                 android:layout_weight="5"
                 android:scaleType="fitCenter"
                 android:src="@drawable/button_play" />
 
         </LinearLayout>
 
-        <ImageButton android:id="@+id/recordButton" android:src="@drawable/button_record" android:layout_width="match_parent" android:scaleType="center" android:layout_height="match_parent" android:layout_weight="1"></ImageButton>
+        <ImageButton
+            android:id="@+id/recordButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:scaleType="center"
+            android:src="@drawable/button_record" >
+</ImageButton>
     </LinearLayout>
 </LinearLayout>
