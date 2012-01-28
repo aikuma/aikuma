@@ -56,10 +56,11 @@ public class SegmentItemAdapter extends BaseAdapter {
 					.findViewById(R.id.segment);
 
 			Segment segment = segments.get(position);
-			
+
 			System.out.println("Adding Observer");
-			
-			segment.addObserver(new Segment.ViewHandler(references.segment));
+
+			segment.addObserver(new au.edu.melbuni.boldapp.observers.Segment(
+					references.segment));
 		} else {
 			// Get the ViewReferences back to get fast access to the TextView
 			// and the ImageView.
