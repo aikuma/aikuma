@@ -5,12 +5,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -62,50 +58,48 @@ public class BoldActivity extends Activity {
 	// Installs the help and enables the help button.
 	//
 	public void installHelp(final int helpLayout) {
-        final View helpButton = findViewById(R.id.helpButton);
-        
-        helpButton.setEnabled(true);
-        
-        helpButton.setOnTouchListener(new View.OnTouchListener() {
-        	@Override
-			public boolean onTouch(View v, MotionEvent motionEvent) {
-        		if (helpDialog == null) {
-        			LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        			View newView = layoutInflater.inflate(helpLayout, null, false);
-        			
-        			helpDialog = new AlertDialog.Builder(v.getContext()).
-        				setView(newView).
-        				create();
-        		}
-        		
-    			WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-    			params.copyFrom(helpDialog.getWindow().getAttributes());
-    			
-//    			params.layoutAnimationParameters = new LayoutAnimationController(new Animation());
-    			
-    			params.dimAmount = 0.8f;
-    			params.gravity = Gravity.RIGHT;
-    	        
-    			DisplayMetrics metrics = getResources().getDisplayMetrics();
-    	        int width = metrics.widthPixels;
-    	        int height = metrics.heightPixels;
-    	        
-    			params.width = 4 * width / 5;
-    			params.height = height;
-    			
-        		helpDialog.show();
-        		
-        		helpDialog.getWindow().setAttributes(params);
-            	
-        		return false;
-            }
-        });
-        helpButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				helpDialog.hide();
-			}
-		});
+//        final View helpButton = findViewById(R.id.helpButton);
+//        
+//        helpButton.setEnabled(true);
+//        
+//        helpButton.setOnTouchListener(new View.OnTouchListener() {
+//        	@Override
+//			public boolean onTouch(View v, MotionEvent motionEvent) {
+//        		if (helpDialog == null) {
+//        			LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        			View newView = layoutInflater.inflate(helpLayout, null, false);
+//        			
+//        			helpDialog = new AlertDialog.Builder(v.getContext()).
+//        				setView(newView).
+//        				create();
+//        		}
+//        		
+//    			WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+//    			params.copyFrom(helpDialog.getWindow().getAttributes());
+//    			
+//    			params.dimAmount = 0.8f;
+//    			params.gravity = Gravity.RIGHT;
+//    	        
+//    			DisplayMetrics metrics = getResources().getDisplayMetrics();
+//    	        int width = metrics.widthPixels;
+//    	        int height = metrics.heightPixels;
+//    	        
+//    			params.width = 4 * width / 5;
+//    			params.height = height;
+//    			
+//        		helpDialog.show();
+//        		
+//        		helpDialog.getWindow().setAttributes(params);
+//            	
+//        		return false;
+//            }
+//        });
+//        helpButton.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				helpDialog.hide();
+//			}
+//		});
 	}
 
 	public void addToMenu(int layout) {
@@ -133,7 +127,7 @@ public class BoldActivity extends Activity {
 		setContentView(R.layout.base);
 
 		addToMenu(R.layout.user);
-		addToMenu(R.layout.help);
+//		addToMenu(R.layout.help);
 		addToMenu(R.layout.configuration);
 
 		// Menu behavior.

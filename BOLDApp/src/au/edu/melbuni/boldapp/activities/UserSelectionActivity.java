@@ -47,96 +47,111 @@ public class UserSelectionActivity extends BoldActivity {
 
 	public void installBehavior(Bundle savedInstanceState) {
 		
-		// TODO Testing Wifi Multicast
-		//
 		final ImageButton configurationButton = (ImageButton) findViewById(R.id.configurationButton);
-		configurationButton.setOnLongClickListener(new View.OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View v) {
-//				WifiManager wifi = (WifiManager) getSystemService( Context.WIFI_SERVICE );
-//				MulticastLock lock = wifi.createMulticastLock("bold_multicast_lock");
-//				lock.setReferenceCounted(true);
-//				lock.acquire();
-//				
-//				wifi.startScan(); // CHANGE_WIFI_STATE
-				
-//				User user = Bundler.getCurrentUser(UserSelectionActivity.this);
-				
-//				HttpResponse response = new HTTPClient("http://128.250.22.12:4567").post(user);
-				
-				Users users = Bundler.getUsers(UserSelectionActivity.this);
-				new Synchronizer("128.250.22.12").synchronize(users);
-				
-				Toast toast = Toast.makeText(UserSelectionActivity.this, users.getIds().toString(), 2000);
-				toast.setGravity(Gravity.TOP, -30, 50);
-				toast.show();
-				
-				// Save all the data now that we are synced.
-				//
-				((BoldApplication) getApplication()).save();
+		if (configurationButton != null) {
+			configurationButton
+					.setOnLongClickListener(new View.OnLongClickListener() {
+						@Override
+						public boolean onLongClick(View v) {
+							// WifiManager wifi = (WifiManager)
+							// getSystemService( Context.WIFI_SERVICE );
+							// MulticastLock lock =
+							// wifi.createMulticastLock("bold_multicast_lock");
+							// lock.setReferenceCounted(true);
+							// lock.acquire();
+							//
+							// wifi.startScan(); // CHANGE_WIFI_STATE
 
-				
-//				if (response != null) {
-//					new AlertDialog.Builder(v.getContext())
-//					.setIcon(android.R.drawable.ic_dialog_alert)
-//					.setMessage(response.toString())
-//					.setPositiveButton("OK",
-//							new DialogInterface.OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialog,
-//								int which) {
-//
-//						}
-//					}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialog, int which) {
-//
-//						}
-//					}).show();
-//				}
-				
-//				List<ScanResult> scanResults = wifi.getScanResults();
-//				for (ScanResult scanResult : scanResults) {
-//					new AlertDialog.Builder(v.getContext())
-//					.setIcon(android.R.drawable.ic_dialog_alert)
-//					.setMessage(scanResult.toString())
-//					.setPositiveButton("OK",
-//							new DialogInterface.OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialog,
-//								int which) {
-//							
-//						}
-//					}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialog, int which) {
-//							
-//						}
-//					}).show();
-//				}
-//
-//				lock.release();
-				
-				return true;
-			}
-		});
-		
+							// User user =
+							// Bundler.getCurrentUser(UserSelectionActivity.this);
+
+							// HttpResponse response = new
+							// HTTPClient("http://128.250.22.12:4567").post(user);
+
+							Users users = Bundler
+									.getUsers(UserSelectionActivity.this);
+							new Synchronizer("128.250.22.12")
+									.synchronize(users);
+
+							Toast toast = Toast.makeText(
+									UserSelectionActivity.this, users.getIds()
+											.toString(), 2000);
+							toast.setGravity(Gravity.TOP, -30, 50);
+							toast.show();
+
+							// Save all the data now that we are synced.
+							//
+							((BoldApplication) getApplication()).save();
+
+							// if (response != null) {
+							// new AlertDialog.Builder(v.getContext())
+							// .setIcon(android.R.drawable.ic_dialog_alert)
+							// .setMessage(response.toString())
+							// .setPositiveButton("OK",
+							// new DialogInterface.OnClickListener() {
+							// @Override
+							// public void onClick(DialogInterface dialog,
+							// int which) {
+							//
+							// }
+							// }).setNegativeButton("Cancel", new
+							// DialogInterface.OnClickListener() {
+							// @Override
+							// public void onClick(DialogInterface dialog, int
+							// which) {
+							//
+							// }
+							// }).show();
+							// }
+
+							// List<ScanResult> scanResults =
+							// wifi.getScanResults();
+							// for (ScanResult scanResult : scanResults) {
+							// new AlertDialog.Builder(v.getContext())
+							// .setIcon(android.R.drawable.ic_dialog_alert)
+							// .setMessage(scanResult.toString())
+							// .setPositiveButton("OK",
+							// new DialogInterface.OnClickListener() {
+							// @Override
+							// public void onClick(DialogInterface dialog,
+							// int which) {
+							//
+							// }
+							// }).setNegativeButton("Cancel", new
+							// DialogInterface.OnClickListener() {
+							// @Override
+							// public void onClick(DialogInterface dialog, int
+							// which) {
+							//
+							// }
+							// }).show();
+							// }
+							//
+							// lock.release();
+
+							return true;
+						}
+					});
+		}
+
 		// New User
 		//
 		LinearLayout addNewUserLayout = (LinearLayout) findViewById(R.id.addNewUser);
 		addNewUserLayout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Bundler.setCurrentUser(UserSelectionActivity.this, User.newUnconsentedUser());
+				Bundler.setCurrentUser(UserSelectionActivity.this,
+						User.newUnconsentedUser());
 				startActivityForResult(new Intent(view.getContext(),
 						InformedConsentConfirmActivity.class), 0);
 			}
 		});
-		
+
 		ListView usersListView = (ListView) findViewById(R.id.users);
-		usersListView.setAdapter(new UserItemAdapter(this, Bundler.getUsers(this)));
-		
-		// Selects the user on a short click. 
+		usersListView.setAdapter(new UserItemAdapter(this, Bundler
+				.getUsers(this)));
+
+		// Selects the user on a short click.
 		//
 		usersListView
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -149,7 +164,7 @@ public class UserSelectionActivity extends BoldActivity {
 						finish();
 					}
 				});
-		
+
 		// Plays the user's audio on long click.
 		//
 		usersListView
@@ -157,14 +172,15 @@ public class UserSelectionActivity extends BoldActivity {
 					@Override
 					public boolean onItemLongClick(AdapterView<?> parent,
 							View view, int position, long id) {
-						User selectedUser = Bundler.getUsers(UserSelectionActivity.this)
-								.get(position);
-						selectedUser.startPlaying(new Player(), new OnCompletionListener() {
-							@Override
-							public void onCompletion(Sounder sounder) {
-								((Player) sounder).stopPlaying();
-							}
-						});
+						User selectedUser = Bundler.getUsers(
+								UserSelectionActivity.this).get(position);
+						selectedUser.startPlaying(new Player(),
+								new OnCompletionListener() {
+									@Override
+									public void onCompletion(Sounder sounder) {
+										((Player) sounder).stopPlaying();
+									}
+								});
 						return true;
 					}
 				});

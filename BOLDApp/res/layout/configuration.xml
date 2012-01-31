@@ -10,7 +10,7 @@
         android:layout_gravity="center"
         android:layout_margin="4dip"
         android:scaleType="fitCenter"
-        android:src="@drawable/help_record"
+        android:src="@drawable/replace"
         android:tag="helpButton" >
 </ImageButton>
 </LinearLayout>

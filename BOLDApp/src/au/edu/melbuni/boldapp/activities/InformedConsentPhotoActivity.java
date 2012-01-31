@@ -30,7 +30,7 @@ public class InformedConsentPhotoActivity extends BoldActivity {
     };
     
     public void installBehavior(Bundle savedInstanceState) {
-    	installHelp(R.layout.informed_consent_photo_help);
+//    	installHelp(R.layout.informed_consent_photo_help);
     	
     	final User currentUser = Bundler.getCurrentUser(this);
     	

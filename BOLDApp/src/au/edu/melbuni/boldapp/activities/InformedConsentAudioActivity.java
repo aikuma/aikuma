@@ -33,7 +33,7 @@ public class InformedConsentAudioActivity extends BoldActivity {
     };
     
     public void installBehavior(Bundle savedInstanceState) {
-        installHelp(R.layout.informed_consent_audio_help);
+//        installHelp(R.layout.informed_consent_audio_help);
     	
     	final View recordButton = findViewById(R.id.recordButton);
         recordButton.setOnTouchListener(new View.OnTouchListener() {

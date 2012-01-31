@@ -18,23 +18,23 @@ public class MainActivity extends BoldActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		Bundler.load(this);
-//		Users users = Bundler.getUsers(this);
-//		if (users.isEmpty()) {
-//			throw new RuntimeException(users.toString());
-//		}
+		// Users users = Bundler.getUsers(this);
+		// if (users.isEmpty()) {
+		// throw new RuntimeException(users.toString());
+		// }
 
 		configureView(savedInstanceState);
 		installBehavior(savedInstanceState);
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
 		Bundler.save(this);
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -81,52 +81,71 @@ public class MainActivity extends BoldActivity {
 						OriginalSelectionActivity.class), 0);
 			}
 		});
-		
+
 		// TODO Remove.
 		//
 		final ImageButton configurationButton = (ImageButton) findViewById(R.id.configurationButton);
-		configurationButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				new AlertDialog.Builder(v.getContext())
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setMessage("Switch Recording style")
-				.setPositiveButton("Press/Hold",
-						new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog,
-							int which) {
-						RecordActivity.setBehavior(new TapAndHoldRecord());
-					}
-				}).setNegativeButton("Tap/Release", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						RecordActivity.setBehavior(new TapAndReleaseRecord());
-					}
-				}).show();
-			}
-		});
-		configurationButton.setOnLongClickListener(new View.OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View v) {
-				new AlertDialog.Builder(v.getContext())
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setMessage("Switch Listening style")
-				.setPositiveButton("Press/Hold",
-						new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog,
-							int which) {
-						ListenActivity.setBehavior(new TapAndHoldListen());
-					}
-				}).setNegativeButton("Tap/Release", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						ListenActivity.setBehavior(new TapAndReleaseListen());
-					}
-				}).show();
-				return false;
-			}
-		});
+		if (configurationButton != null) {
+			configurationButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					new AlertDialog.Builder(v.getContext())
+							.setIcon(android.R.drawable.ic_dialog_alert)
+							.setMessage("Switch Recording style")
+							.setPositiveButton("Press/Hold",
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											RecordActivity
+													.setBehavior(new TapAndHoldRecord());
+										}
+									})
+							.setNegativeButton("Tap/Release",
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											RecordActivity
+													.setBehavior(new TapAndReleaseRecord());
+										}
+									}).show();
+				}
+			});
+			configurationButton
+					.setOnLongClickListener(new View.OnLongClickListener() {
+						@Override
+						public boolean onLongClick(View v) {
+							new AlertDialog.Builder(v.getContext())
+									.setIcon(android.R.drawable.ic_dialog_alert)
+									.setMessage("Switch Listening style")
+									.setPositiveButton(
+											"Press/Hold",
+											new DialogInterface.OnClickListener() {
+												@Override
+												public void onClick(
+														DialogInterface dialog,
+														int which) {
+													ListenActivity
+															.setBehavior(new TapAndHoldListen());
+												}
+											})
+									.setNegativeButton(
+											"Tap/Release",
+											new DialogInterface.OnClickListener() {
+												@Override
+												public void onClick(
+														DialogInterface dialog,
+														int which) {
+													ListenActivity
+															.setBehavior(new TapAndReleaseListen());
+												}
+											}).show();
+							return false;
+						}
+					});
+		}
 	};
 }
