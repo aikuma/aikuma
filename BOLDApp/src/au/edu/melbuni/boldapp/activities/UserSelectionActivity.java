@@ -70,8 +70,8 @@ public class UserSelectionActivity extends BoldActivity {
 
 							Users users = Bundler
 									.getUsers(UserSelectionActivity.this);
-							new Synchronizer("128.250.22.12")
-									.synchronize(users);
+							new Synchronizer("192.168.0.199")
+									.synchronize(users); // 128.250.22.12 / 128.250.29.213
 
 							Toast toast = Toast.makeText(
 									UserSelectionActivity.this, users.getIds()
