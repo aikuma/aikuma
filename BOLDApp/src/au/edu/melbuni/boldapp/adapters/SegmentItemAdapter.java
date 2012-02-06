@@ -1,5 +1,7 @@
 package au.edu.melbuni.boldapp.adapters;
 
+import java.util.Observer;
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,13 +56,12 @@ public class SegmentItemAdapter extends BaseAdapter {
 			references = new ViewReferences();
 			references.segment = (TextView) convertView
 					.findViewById(R.id.segment);
-
+			
+			Observer observer = new au.edu.melbuni.boldapp.observers.Segment(
+					references.segment);
+			
 			Segment segment = segments.get(position);
-
-			System.out.println("Adding Observer");
-
-			segment.addObserver(new au.edu.melbuni.boldapp.observers.Segment(
-					references.segment));
+			segment.addObserver(observer);
 		} else {
 			// Get the ViewReferences back to get fast access to the TextView
 			// and the ImageView.

@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import au.edu.melbuni.boldapp.BoldApplication;
 import au.edu.melbuni.boldapp.models.AllUsers;
+import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.Timelines;
 import au.edu.melbuni.boldapp.models.User;
@@ -74,6 +75,7 @@ public class BoldApplicationTest {
 		
 		User specificUser;
 		Timeline specificTimeline;
+		Segment specificSegment;
 		
 		@Before
 		public void setUp() throws Exception {
@@ -81,7 +83,7 @@ public class BoldApplicationTest {
 			
 			// Users.
 			//
-			specificUser = new User();
+			specificUser         = new User();
 			User unspecifiedUser = new User();
 			
 			application.addUser(specificUser);
@@ -91,11 +93,19 @@ public class BoldApplicationTest {
 			
 			// Timelines.
 			//
-			specificTimeline = new Timeline();
+			specificTimeline             = new Timeline();
 			Timeline unspecifiedTimeline = new Timeline();
 			
 			specificTimeline.setUser(specificUser);
 			unspecifiedTimeline.setUser(unspecifiedUser);
+			
+			// Segments.
+			//
+			Segment unspecificSegment = new Segment("0");
+			specificSegment           = new Segment("1");
+			
+			specificTimeline.getSegments().add(unspecificSegment);
+			specificTimeline.getSegments().add(specificSegment);
 		}
 		
 		@Test
@@ -111,6 +121,11 @@ public class BoldApplicationTest {
 			new JSONPersister().deleteAll();
 			
 			application.save();
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			application.load();
 			
 //			System.out.println(application.getCurrentUser());
@@ -125,6 +140,10 @@ public class BoldApplicationTest {
 			
 			assertNotNull(application.getTimelines());
 			assertEquals(2, application.getTimelines().size());
+			
+			Timeline loadedSpecificTimeline = application.getTimelines().first();
+			assertEquals("0", loadedSpecificTimeline.getSegments().get(0).getIdentifier());
+			assertEquals(specificSegment, loadedSpecificTimeline.getSegments().get(1));
 			
 			// Relations.
 			//

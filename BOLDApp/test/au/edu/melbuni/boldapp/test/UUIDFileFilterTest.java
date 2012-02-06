@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import au.edu.melbuni.boldapp.UUIDFileFilter;
+import au.edu.melbuni.boldapp.filefilters.UUIDFileFilter;
 
 @RunWith(CustomTestRunner.class)
 public class UUIDFileFilterTest {

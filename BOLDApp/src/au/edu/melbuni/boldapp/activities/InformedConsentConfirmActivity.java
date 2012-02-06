@@ -65,7 +65,9 @@ public class InformedConsentConfirmActivity extends BoldActivity {
         nextButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Bundler.saveNewUser(InformedConsentConfirmActivity.this, Bundler.getCurrentUser(InformedConsentConfirmActivity.this));
+				User user = Bundler.getCurrentUser(InformedConsentConfirmActivity.this);
+				user.setConsented(true);
+				Bundler.saveNewUser(InformedConsentConfirmActivity.this, user);
 				finish();
 			}
 		});

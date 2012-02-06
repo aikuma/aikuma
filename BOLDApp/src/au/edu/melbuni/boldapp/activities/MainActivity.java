@@ -12,6 +12,7 @@ import au.edu.melbuni.boldapp.behaviors.TapAndHoldListen;
 import au.edu.melbuni.boldapp.behaviors.TapAndHoldRecord;
 import au.edu.melbuni.boldapp.behaviors.TapAndReleaseListen;
 import au.edu.melbuni.boldapp.behaviors.TapAndReleaseRecord;
+import au.edu.melbuni.boldapp.models.User;
 
 public class MainActivity extends BoldActivity {
 
@@ -39,6 +40,12 @@ public class MainActivity extends BoldActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		Bundler.save(this);
+	}
+	
+	@Override
+	protected void onResume() {
+		checkButtonsEnabled();
+		super.onResume();
 	}
 
 	@Override
@@ -81,6 +88,8 @@ public class MainActivity extends BoldActivity {
 						OriginalSelectionActivity.class), 0);
 			}
 		});
+		
+		checkButtonsEnabled();
 
 		// TODO Remove.
 		//
@@ -147,5 +156,16 @@ public class MainActivity extends BoldActivity {
 						}
 					});
 		}
+	}
+
+	private void checkButtonsEnabled() {
+		final ImageButton recordButton = (ImageButton) findViewById(R.id.recordButton);
+		final ImageButton listenButton = (ImageButton) findViewById(R.id.listenButton);
+		
+		User user = Bundler.getCurrentUser(this);
+		boolean enableButtons = user.hasGivenConsent();
+		
+		recordButton.setEnabled(enableButtons);
+		listenButton.setEnabled(enableButtons);
 	};
 }

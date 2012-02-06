@@ -82,16 +82,16 @@ public class FTPClient extends Client {
 				client.connect(serverURI);
 			}
 			if (!loggedIn) {
-				result = client.login("bold", "bold");
+				result = client.login("admin", "bold2016");
 				loggedIn = result;
 			}
 			// client.enterRemotePassiveMode();
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e.getMessage());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e.getMessage());
 		}
 		return result;
 	}

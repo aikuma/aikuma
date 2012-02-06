@@ -152,5 +152,34 @@ public class Segment extends Observable {
 		}
 		return false;
 	}
+	
+//	public static class ViewHandler implements Observer {
+//		
+//		private View view;
+//		
+//		public ViewHandler(View view) {
+//			this.view = view;
+//		}
+//		
+//		@Override
+//		public void update(Observable observable, Object data) {
+//			Segment segment = (Segment) observable;
+//			
+//			if (segment.isRecording()) {
+//				view.getBackground().setColorFilter(Color.RED, Mode.MULTIPLY);
+//				return;
+//			}
+//			if (segment.isPlaying()) {
+//				view.getBackground().setColorFilter(Color.GREEN, Mode.MULTIPLY);
+//				return;
+//			}
+//			if (segment.isSelected()) {
+//				view.getBackground().clearColorFilter();
+//			} else {
+//				view.getBackground().setColorFilter(Color.GRAY, Mode.MULTIPLY);
+//			}
+//		}
+//		
+//	}
 
 }

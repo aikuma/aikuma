@@ -62,16 +62,10 @@ public class UserSelectionActivity extends BoldActivity {
 							//
 							// wifi.startScan(); // CHANGE_WIFI_STATE
 
-							// User user =
-							// Bundler.getCurrentUser(UserSelectionActivity.this);
-
-							// HttpResponse response = new
-							// HTTPClient("http://128.250.22.12:4567").post(user);
-
 							Users users = Bundler
 									.getUsers(UserSelectionActivity.this);
-							new Synchronizer("192.168.0.199")
-									.synchronize(users); // 128.250.22.12 / 128.250.29.213
+							new Synchronizer("192.168.1.1")
+									.synchronize(users); // 0.0.0.0
 
 							Toast toast = Toast.makeText(
 									UserSelectionActivity.this, users.getIds()

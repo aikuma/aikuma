@@ -3,6 +3,7 @@ package au.edu.melbuni.boldapp.persisters;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,7 +13,8 @@ import java.util.Map;
 
 import android.os.Environment;
 import au.edu.melbuni.boldapp.BoldApplication;
-import au.edu.melbuni.boldapp.UUIDFileFilter;
+import au.edu.melbuni.boldapp.filefilters.AnyFileFilter;
+import au.edu.melbuni.boldapp.filefilters.UUIDFileFilter;
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
 import au.edu.melbuni.boldapp.models.Timeline;
@@ -146,7 +148,7 @@ public abstract class Persister {
 
 	public List<String> readSegments(String timelineIdentifier)
 			throws IOException {
-		return extractIdsFrom(new File(dirForSegments(timelineIdentifier)));
+		return extractIdsFrom(new File(dirForSegments(timelineIdentifier)), new AnyFileFilter());
 	}
 
 	public void write(String timelineIdentifier, Segment segment, String data) {
@@ -180,10 +182,13 @@ public abstract class Persister {
 	//
 
 	public List<String> extractIdsFrom(File directory) {
+		return extractIdsFrom(directory, new UUIDFileFilter());
+	}
+	public List<String> extractIdsFrom(File directory, FileFilter filter) {
 		List<String> ids = new ArrayList<String>();
 
 		if (directory.exists()) {
-			File[] files = directory.listFiles(new UUIDFileFilter());
+			File[] files = directory.listFiles(filter);
 			for (File file : files) {
 				ids.add(file.getName().replaceAll("\\.json$", ""));
 			}
