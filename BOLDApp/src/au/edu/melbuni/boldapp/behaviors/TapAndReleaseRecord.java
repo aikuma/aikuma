@@ -4,17 +4,27 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.activities.RecordActivity;
+import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.models.Timeline;
 
 public class TapAndReleaseRecord implements Behavior<RecordActivity> {
 	
+	boolean playing   = false;
 	boolean recording = false;
+	
+	public boolean isPlaying() {
+		return playing;
+	}
+
+	public void togglePlaying() {
+		this.playing = !playing;
+	}
 	
 	public boolean isRecording() {
 		return recording;
@@ -38,17 +48,30 @@ public class TapAndReleaseRecord implements Behavior<RecordActivity> {
 	    
 //	    timeline.installOn(activity);
 	    
-        playButton.setOnTouchListener(new View.OnTouchListener() {
-        	@Override
-			public boolean onTouch(View v, MotionEvent motionEvent) {
-            	timeline.startPlayingLastByDefault(activity.getPlayer());
-            	return false;
-            }
-        });
+//        playButton.setOnTouchListener(new View.OnTouchListener() {
+//        	@Override
+//			public boolean onTouch(View v, MotionEvent motionEvent) {
+//            	timeline.startPlayingLastByDefault(activity.getPlayer());
+//            	return false;
+//            }
+//        });
         playButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				timeline.stopPlaying(activity.getPlayer());
+				if (TapAndReleaseRecord.this.isPlaying()) {
+					timeline.stopPlaying(activity.getPlayer());
+					playButton.getBackground().clearColorFilter();
+				} else {
+					timeline.startPlaying(activity.getPlayer(), new OnCompletionListener() {
+						@Override
+						public void onCompletion(Sounder sounder) {
+							TapAndReleaseRecord.this.togglePlaying(); // TODO Wrong?
+							playButton.getBackground().clearColorFilter();
+						}
+					});
+					playButton.getBackground().setColorFilter(Color.GREEN, Mode.MULTIPLY);
+				}
+				TapAndReleaseRecord.this.togglePlaying();
 			}
 		});
         

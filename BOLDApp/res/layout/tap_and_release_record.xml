@@ -30,7 +30,8 @@
                 android:layout_height="76dp"
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
-                android:src="@drawable/button_delete" />
+                android:src="@drawable/button_delete"
+                android:visibility="gone" />
 
             <ImageButton
                 android:id="@+id/playButton"

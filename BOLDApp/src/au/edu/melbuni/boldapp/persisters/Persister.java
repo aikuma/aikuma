@@ -13,7 +13,7 @@ import java.util.Map;
 
 import android.os.Environment;
 import au.edu.melbuni.boldapp.BoldApplication;
-import au.edu.melbuni.boldapp.filefilters.AnyFileFilter;
+import au.edu.melbuni.boldapp.filefilters.NumberedFileFilter;
 import au.edu.melbuni.boldapp.filefilters.UUIDFileFilter;
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
@@ -145,10 +145,12 @@ public abstract class Persister {
 
 	// Segment(s).
 	//
-
+	
+	// TODO Fix: Use AnyFileFilter and fix problem with synchronizer.
+	//
 	public List<String> readSegments(String timelineIdentifier)
 			throws IOException {
-		return extractIdsFrom(new File(dirForSegments(timelineIdentifier)), new AnyFileFilter());
+		return extractIdsFrom(new File(dirForSegments(timelineIdentifier)), new NumberedFileFilter());
 	}
 
 	public void write(String timelineIdentifier, Segment segment, String data) {

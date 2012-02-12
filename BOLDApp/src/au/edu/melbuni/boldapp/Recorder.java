@@ -30,12 +30,14 @@ public class Recorder extends Sounder {
 		recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
 		recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 	}
-
+	
+	// relativeFilename is /data/timelines/1234-5678.../segments/0.3gp
+	//
 	public void startRecording(String relativeFilename) {
 		if (recording) { return; }
 		recording = true;
 		
-		recorder.setOutputFile(prepareFile(relativeFilename));
+		recorder.setOutputFile(generateFilePath(relativeFilename));
 
 		try {
 			recorder.prepare();

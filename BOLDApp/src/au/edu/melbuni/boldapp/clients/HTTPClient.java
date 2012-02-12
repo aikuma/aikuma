@@ -148,7 +148,7 @@ public class HTTPClient extends Client {
 			// TODO Refactor!!!
 			byte[] bytes = getByteArray("/segment/" + segmentId + "/soundfile.gp3");
 			if (bytes != null) {
-				segment.putSoundfile(bytes);
+				segment.putSoundfile(timelineId, bytes);
 			} else {
 				return null;
 			}
@@ -180,7 +180,7 @@ public class HTTPClient extends Client {
 	@Override
 	public boolean post(Segment segment, String timelineId) {
 		HttpResponse response = post("/timeline/" + timelineId + "/segments", segment.toHash());
-		postFile("/segment/" + segment.getIdentifier() + "/soundfile", segment.getSoundfilePath());
+		postFile("/segment/" + segment.getIdentifier() + "/soundfile", segment.getSoundfilePath(timelineId));
 		return isResponseOk(response);
 	}
 	

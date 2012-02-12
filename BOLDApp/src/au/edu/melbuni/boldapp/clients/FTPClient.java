@@ -113,7 +113,7 @@ public class FTPClient extends Client {
 
 	public boolean maybeMakeAndCd(String pathname) {
 		boolean reply = false;
-		
+
 		try {
 			reply = client.changeWorkingDirectory(pathname);
 			if (!reply) {
@@ -125,8 +125,12 @@ public class FTPClient extends Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return reply;
+	}
+
+	public String getSpecificRouterDir() {
+		return "part0/share/";
 	}
 
 	public String getBaseDir() {
@@ -134,7 +138,7 @@ public class FTPClient extends Client {
 		if (external != null) {
 			// On the phone.
 			//
-			return "production/";
+			return getSpecificRouterDir() + "production/";
 		}
 		// During e.g. tests.
 		//
@@ -229,18 +233,28 @@ public class FTPClient extends Client {
 		boolean result = false;
 		if (cdToSegments(timelineId, true)) {
 			Persister persister = new JSONPersister();
+
+			// The recording.
+			//
+			postFileWithSameName(segment.getSoundfilePath(timelineId), false,
+					true);
+
+			// The segment info.
+			//
 			result = postFileWithSameName(persister
 					.pathFor(timelineId, segment));
 		}
 		return result;
 	}
-
+	
+	// FIXME Fix the fact that the wrong ids are uploaded to the server!
+	//
 	@Override
 	public List<String> getSegmentIds(String timelineId) {
 		cdToSegments(timelineId);
 		return getIds();
 	}
-	
+
 	@Override
 	public User getUser(String userId) {
 		cdToUsers();
@@ -253,6 +267,7 @@ public class FTPClient extends Client {
 			return null;
 		}
 	}
+
 	public void getAssociatedFiles(User user) {
 		cdToUsers();
 		maybeMakeAndCd(user.getIdentifier());
@@ -264,24 +279,28 @@ public class FTPClient extends Client {
 	public Timeline getTimeline(String timelineId, String userId, Users users) {
 		cdToTimelines();
 		// TODO
-		String fileName = Persister.getBasePath() + "timelines/" + timelineId + ".json";
+		String fileName = Persister.getBasePath() + "timelines/" + timelineId
+				+ ".json";
 		if (getFile(fileName)) {
-			Timeline timeline = Timeline.load(users, new JSONPersister(), timelineId);
+			Timeline timeline = Timeline.load(users, new JSONPersister(),
+					timelineId);
 			getAssociatedFiles(timeline);
 			return timeline;
 		} else {
 			return null;
 		}
 	}
+
 	public void getAssociatedFiles(Timeline timeline) {
 		// TODO Decide whether to load the segments here.
 	}
-	
+
 	@Override
 	public Segment getSegment(String segmentId, String timelineId) {
 		cdToSegments(timelineId);
 		// TODO
-		String fileName = Persister.getBasePath() + "timelines/" + timelineId + "/segments/" + segmentId + ".json";
+		String fileName = Persister.getBasePath() + "timelines/" + timelineId
+				+ "/segments/" + segmentId + ".json";
 		if (getFile(fileName)) {
 			return Segment.load(new JSONPersister(), timelineId, segmentId);
 		} else {
@@ -300,7 +319,7 @@ public class FTPClient extends Client {
 		cdToUsers();
 		return getIds();
 	}
-	
+
 	public boolean exists(String remoteName) {
 		boolean result = false;
 		login();
@@ -312,14 +331,19 @@ public class FTPClient extends Client {
 		}
 		return result;
 	}
-	
+
 	public boolean postFileWithSameName(String path) {
 		return postFileWithSameName(path, false);
 	}
+
 	public boolean postFileWithSameName(String path, boolean optional) {
 		return postFileWithSameName(path, optional, false);
 	}
-	public boolean postFileWithSameName(String path, boolean optional, boolean binary) {
+
+	// You need to be in the right directory before you call this method.
+	//
+	public boolean postFileWithSameName(String path, boolean optional,
+			boolean binary) {
 		File file = new File(path);
 		if (optional && !file.exists()) {
 			return false;
@@ -329,9 +353,9 @@ public class FTPClient extends Client {
 		login();
 		try {
 			if (binary) {
-				client.type(FTP.BINARY_FILE_TYPE);
+				client.setFileType(FTP.BINARY_FILE_TYPE);
 			} else {
-				client.type(FTP.ASCII_FILE_TYPE);
+				client.setFileType(FTP.ASCII_FILE_TYPE);
 			}
 			stream = new FileInputStream(file);
 			result = client.storeFile(file.getName(), stream);
@@ -348,27 +372,28 @@ public class FTPClient extends Client {
 		}
 		return result;
 	}
-	
+
 	public boolean getFile(String filename) {
 		return getFile(filename, false);
 	}
+
 	public boolean getFile(String filename, boolean binary) {
 		login();
 		OutputStream stream = null;
 		boolean result = false;
 		try {
 			if (binary) {
-				client.type(FTP.BINARY_FILE_TYPE);
+				client.setFileType(FTP.BINARY_FILE_TYPE);
 			} else {
-				client.type(FTP.ASCII_FILE_TYPE);
+				client.setFileType(FTP.ASCII_FILE_TYPE);
 			}
-			
+
 			// TODO Dry.
 			//
-        	File file = new File(filename);
-        	file.getParentFile().mkdirs();
-        	file.createNewFile();
-			
+			File file = new File(filename);
+			file.getParentFile().mkdirs();
+			file.createNewFile();
+
 			stream = new FileOutputStream(filename);
 			File remoteFile = new File(filename);
 			result = client.retrieveFile(remoteFile.getName(), stream);
@@ -376,7 +401,9 @@ public class FTPClient extends Client {
 			throw new RuntimeException(e.getMessage());
 		} finally {
 			try {
-				if (stream != null) { stream.close(); }
+				if (stream != null) {
+					stream.close();
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -387,10 +414,14 @@ public class FTPClient extends Client {
 	}
 
 	public List<String> getIds() {
+		return getIds("*");
+	}
+
+	public List<String> getIds(String pattern) {
 		String[] strings = null;
 		login();
 		try {
-			strings = client.listNames("*"
+			strings = client.listNames(pattern
 					+ new JSONPersister().fileExtension());
 		} catch (IOException e) {
 			strings = new String[0];

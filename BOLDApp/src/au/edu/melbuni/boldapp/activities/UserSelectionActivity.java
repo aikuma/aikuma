@@ -9,7 +9,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
-import au.edu.melbuni.boldapp.BoldApplication;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
@@ -47,6 +46,8 @@ public class UserSelectionActivity extends BoldActivity {
 
 	public void installBehavior(Bundle savedInstanceState) {
 		
+		addToMenu(R.layout.configuration);
+		
 		final ImageButton configurationButton = (ImageButton) findViewById(R.id.configurationButton);
 		if (configurationButton != null) {
 			configurationButton
@@ -70,12 +71,15 @@ public class UserSelectionActivity extends BoldActivity {
 							Toast toast = Toast.makeText(
 									UserSelectionActivity.this, users.getIds()
 											.toString(), 2000);
+//							Toast toast = Toast.makeText(
+//									UserSelectionActivity.this, users.getIds()
+//											.toString(), 2000);
 							toast.setGravity(Gravity.TOP, -30, 50);
 							toast.show();
 
 							// Save all the data now that we are synced.
 							//
-							((BoldApplication) getApplication()).save();
+//							((BoldApplication) getApplication()).save();
 
 							// if (response != null) {
 							// new AlertDialog.Builder(v.getContext())

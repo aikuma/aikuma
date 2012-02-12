@@ -5,6 +5,15 @@
     android:baselineAligned="false" android:orientation="horizontal">
     <LinearLayout android:layout_height="match_parent" android:id="@+id/linearLayout1" android:orientation="vertical" android:layout_width="match_parent" android:layout_weight="1">
 
+        <TextView
+            android:id="@+id/startText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="&lt;- Start hia, plis!"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:visibility="gone" />
+
         <ImageButton
             android:id="@+id/recordButton"
             android:layout_width="match_parent"

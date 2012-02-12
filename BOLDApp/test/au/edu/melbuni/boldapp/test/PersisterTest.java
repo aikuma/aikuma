@@ -2,12 +2,16 @@ package au.edu.melbuni.boldapp.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.User;
 import au.edu.melbuni.boldapp.persisters.JSONPersister;
@@ -96,6 +100,24 @@ public class PersisterTest {
 	@Test
 	public void pathForSegment() {
 		assertEquals("./mnt/sdcard/bold/timelines/timelineIdentifier/segments/identifier.json", persister.pathForSegment("timelineIdentifier", "identifier"));
+	}
+	
+	@Test
+	public void readSegments() throws IOException {
+		persister.save("someTimelineIdentifier", new Segment("0"));
+		persister.save("someTimelineIdentifier", new Segment("1"));
+		persister.save("someTimelineIdentifier", new Segment("2"));
+		
+		// Note: This one should not be read!
+		//
+		persister.save("someTimelineIdentifier", new Segment("100aa48f-1cbc-4c19-a79b-bc084e8606fb"));
+		
+		List<String> expected = new ArrayList<String>();
+		expected.add("0");
+		expected.add("1");
+		expected.add("2");
+		
+		assertEquals(expected, persister.readSegments("someTimelineIdentifier"));
 	}
 	
 }

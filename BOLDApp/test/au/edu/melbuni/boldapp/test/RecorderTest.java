@@ -22,7 +22,7 @@ public class RecorderTest {
 	public void prepareFile() {
 		assertEquals(
 		  "/Users/admin/temp/eclipse_workspace/BOLDApp/relative/filename.3gp", // TODO Make independent.
-		  Recorder.prepareFile("relative/filename")
+		  Recorder.generateFilePath("relative/filename")
 		);
 	}
 	

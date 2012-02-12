@@ -28,7 +28,7 @@ public class TapAndReleaseListen implements Behavior<ListenActivity> {
 	
 	@Override
 	public void configureView(ListenActivity activity) {
-		activity.setContentView(R.layout.tap_and_release_listen);
+		activity.setContent(R.layout.tap_and_release_listen);
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.Recorder;
 import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class Segment extends Observable {
@@ -51,13 +52,17 @@ public class Segment extends Observable {
 	}
 
 	// TODO Work on this one!
+	// TODO Also unify the sound file name in one method.
 	//
-	public String getSoundfilePath() {
-		return Sounder.prepareFile("recording_" + getIdentifier());
+	public String getSoundfilePath(String timelineIdentifier) {
+		Persister persister = new JSONPersister();
+		return Sounder.generateFilePath(persister.dirForSegments(timelineIdentifier) + getIdentifier());
 	}
-
-	public void putSoundfile(byte[] bytes) {
-		String path = getSoundfilePath(); // TODO Refactor!
+	
+	// TODO Remove.
+	//
+	public void putSoundfile(String timelineIdentifier, byte[] bytes) {
+		String path = getSoundfilePath(timelineIdentifier); // TODO Refactor!
 
 		BufferedOutputStream bufOut = null;
 		try {

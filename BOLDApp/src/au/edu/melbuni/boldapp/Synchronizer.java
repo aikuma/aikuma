@@ -85,22 +85,28 @@ public class Synchronizer {
 	public boolean synchronize(final Timelines timelines, final User user, final Users users) {
 		lazilyInitializeClient();
 		
-		final List<Timeline> moreTimelines = new ArrayList<Timeline>();
+		final List<Timeline> syncTimelines = new ArrayList<Timeline>();
 		
 		synchronizeWithIds(server.getTimelineIds(), timelines.getIds(), new SynchronizerCallbacks() {
 			@Override
 			public void serverMore(String id) {
 				Timeline timeline = server.getTimeline(id, user.getIdentifier(), users);
-				moreTimelines.add(timeline);
+				if (timeline != null) {
+					syncTimelines.add(timeline);
+				}
 			}
 			
 			@Override
 			public void localMore(String id) {
-				server.post(timelines.find(id));
+//				server.post(timelines.find(id));
+				Timeline timeline = timelines.find(id);
+				if (timeline != null) {
+					syncTimelines.add(timeline);
+				}
 			}
 		});
 		
-		timelines.addAll(moreTimelines);
+		timelines.addAll(syncTimelines);
 		
 		// Synchronize the timeline's segments.
 		//
@@ -108,16 +114,16 @@ public class Synchronizer {
 		//
 		List<Timeline> copiedList = new ArrayList<Timeline>(timelines);
 		for (Timeline timeline : copiedList) {
-			synchronize(timeline, users);
+			synchronize(timeline, user, users);
 		}
 		
 		return true;
 	}
 	
-	public boolean synchronize(Timeline timeline, Users users) {
+	public boolean synchronize(Timeline timeline, User user, Users users) {
 		lazilyInitializeClient();
 		
-		Timeline serverTimeline = server.getTimeline(timeline.getIdentifier(), timeline.getUser().getIdentifier(), users);
+		Timeline serverTimeline = server.getTimeline(timeline.getIdentifier(), user.getIdentifier(), users);
 		if (serverTimeline == null) {
 			server.post(timeline);
 		}

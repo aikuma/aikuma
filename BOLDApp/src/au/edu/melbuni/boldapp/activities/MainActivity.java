@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.behaviors.TapAndHoldListen;
@@ -159,13 +160,16 @@ public class MainActivity extends BoldActivity {
 	}
 
 	private void checkButtonsEnabled() {
+		final TextView startText = (TextView) findViewById(R.id.startText);
 		final ImageButton recordButton = (ImageButton) findViewById(R.id.recordButton);
 		final ImageButton listenButton = (ImageButton) findViewById(R.id.listenButton);
 		
 		User user = Bundler.getCurrentUser(this);
-		boolean enableButtons = user.hasGivenConsent();
+		int visible = user.hasGivenConsent() ? View.VISIBLE : View.INVISIBLE;
+		int gone = user.hasGivenConsent() ? View.GONE : View.VISIBLE;
 		
-		recordButton.setEnabled(enableButtons);
-		listenButton.setEnabled(enableButtons);
+		startText.setVisibility(gone);
+		recordButton.setVisibility(visible);
+		listenButton.setVisibility(visible);
 	};
 }
