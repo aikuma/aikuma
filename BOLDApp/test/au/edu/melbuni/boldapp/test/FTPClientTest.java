@@ -120,7 +120,7 @@ public class FTPClientTest {
 		
 		assertEquals(null, new JSONPersister().loadTimeline(new Users(users), timeline.getIdentifier()));
 		
-		assertEquals(timeline, ftp.getTimeline(timeline.getIdentifier(), user.getIdentifier(), new Users(users)));
+		assertEquals(timeline, ftp.getTimeline(timeline.getIdentifier(), new Users(users)));
 		assertEquals(segment, timeline.getSegments().get(0));
 		
 		assertEquals(timeline, new JSONPersister().loadTimeline(new Users(users), timeline.getIdentifier()));
@@ -266,7 +266,6 @@ public class FTPClientTest {
 			timeline,
 			ftp.getTimeline(
 				timeline.getIdentifier(),
-				timeline.getUser().getIdentifier(),
 				users
 			)
 		);
@@ -281,23 +280,32 @@ public class FTPClientTest {
 			null,
 			ftp.getTimeline(
 				new Timeline().getIdentifier(),
-				new User().getIdentifier(),
 				users
 			)
 		);
 		ftp.logout();
 	}
 	
+//	@Test
+//	public void getSegment() {
+//		// No login needed.
+//		assertEquals(
+//			segment1,
+//			ftp.getSegment(segment1.getIdentifier(), timeline.getIdentifier())
+//		);
+//		ftp.logout();
+//	}
+
 	@Test
-	public void getSegment() {
+	public void getSegments() {
 		// No login needed.
 		assertEquals(
-			segment1,
-			ftp.getSegment(segment1.getIdentifier(), timeline.getIdentifier())
+			timeline.getSegments(),
+			ftp.getSegments(timeline.getIdentifier())
 		);
 		ftp.logout();
 	}
-
+	
 	@Test
 	public void getSegmentIds() {
 		// No login needed.

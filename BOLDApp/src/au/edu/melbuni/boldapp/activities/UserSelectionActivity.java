@@ -15,9 +15,10 @@ import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.Synchronizer;
 import au.edu.melbuni.boldapp.adapters.UserItemAdapter;
+import au.edu.melbuni.boldapp.clients.Client;
+import au.edu.melbuni.boldapp.clients.FTPClient;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.models.User;
-import au.edu.melbuni.boldapp.models.Users;
 
 public class UserSelectionActivity extends BoldActivity {
 
@@ -45,9 +46,9 @@ public class UserSelectionActivity extends BoldActivity {
 	};
 
 	public void installBehavior(Bundle savedInstanceState) {
-		
+
 		addToMenu(R.layout.configuration);
-		
+
 		final ImageButton configurationButton = (ImageButton) findViewById(R.id.configurationButton);
 		if (configurationButton != null) {
 			configurationButton
@@ -63,23 +64,21 @@ public class UserSelectionActivity extends BoldActivity {
 							//
 							// wifi.startScan(); // CHANGE_WIFI_STATE
 
-							Users users = Bundler
-									.getUsers(UserSelectionActivity.this);
-							new Synchronizer("192.168.1.1")
-									.synchronize(users); // 0.0.0.0
+							Client server = new FTPClient("192.168.1.1");
+							Synchronizer synchronizer = new Synchronizer(server);
+							int usersSynced = synchronizer.synchronize(UserSelectionActivity.this);
 
 							Toast toast = Toast.makeText(
-									UserSelectionActivity.this, users.getIds()
-											.toString(), 2000);
-//							Toast toast = Toast.makeText(
-//									UserSelectionActivity.this, users.getIds()
-//											.toString(), 2000);
+									UserSelectionActivity.this, "Synchronized " + usersSynced + ".", 2000);
+							// Toast toast = Toast.makeText(
+							// UserSelectionActivity.this, users.getIds()
+							// .toString(), 2000);
 							toast.setGravity(Gravity.TOP, -30, 50);
 							toast.show();
 
 							// Save all the data now that we are synced.
 							//
-//							((BoldApplication) getApplication()).save();
+							// ((BoldApplication) getApplication()).save();
 
 							// if (response != null) {
 							// new AlertDialog.Builder(v.getContext())

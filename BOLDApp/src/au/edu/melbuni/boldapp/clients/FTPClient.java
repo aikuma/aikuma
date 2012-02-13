@@ -15,6 +15,7 @@ import java.util.List;
 import org.apache.commons.net.ftp.FTP;
 
 import android.os.Environment;
+import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.User;
@@ -183,6 +184,20 @@ public class FTPClient extends Client {
 		}
 		return result;
 	}
+	
+	@Override
+	public boolean doesUserExist(String userId) {
+		cdToUsers();
+		String remoteName = userId + new JSONPersister().fileExtension();
+		return exists(remoteName);
+	}
+	
+	@Override
+	public boolean doesTimelineExist(String timelineId) {
+		cdToTimelines();
+		String remoteName = timelineId + new JSONPersister().fileExtension();
+		return exists(remoteName);
+	}
 
 	@Override
 	public boolean doesSegmentExist(String timelineId, String segmentId) {
@@ -191,19 +206,19 @@ public class FTPClient extends Client {
 		return exists(remoteName);
 	}
 
-	@Override
-	public boolean doesExist(Timeline timeline) {
-		cdToTimelines();
-		return exists(timeline.getIdentifier()
-				+ new JSONPersister().fileExtension());
-	}
-
-	@Override
-	public boolean doesExist(User user) {
-		cdToUsers();
-		return exists(user.getIdentifier()
-				+ new JSONPersister().fileExtension());
-	}
+//	@Override
+//	public boolean doesExist(Timeline timeline) {
+//		cdToTimelines();
+//		return exists(timeline.getIdentifier()
+//				+ new JSONPersister().fileExtension());
+//	}
+//
+//	@Override
+//	public boolean doesExist(User user) {
+//		cdToUsers();
+//		return exists(user.getIdentifier()
+//				+ new JSONPersister().fileExtension());
+//	}
 
 	@Override
 	public boolean post(User user) {
@@ -276,7 +291,7 @@ public class FTPClient extends Client {
 	}
 
 	@Override
-	public Timeline getTimeline(String timelineId, String userId, Users users) {
+	public Timeline getTimeline(String timelineId, Users users) {
 		cdToTimelines();
 		// TODO
 		String fileName = Persister.getBasePath() + "timelines/" + timelineId
@@ -284,27 +299,22 @@ public class FTPClient extends Client {
 		if (getFile(fileName)) {
 			Timeline timeline = Timeline.load(users, new JSONPersister(),
 					timelineId);
-			getAssociatedFiles(timeline);
 			return timeline;
 		} else {
 			return null;
 		}
 	}
-
-	public void getAssociatedFiles(Timeline timeline) {
-		// TODO Decide whether to load the segments here.
-	}
-
+	
 	@Override
-	public Segment getSegment(String segmentId, String timelineId) {
+	public void getSegments(String timelineId) {
 		cdToSegments(timelineId);
-		// TODO
-		String fileName = Persister.getBasePath() + "timelines/" + timelineId
-				+ "/segments/" + segmentId + ".json";
-		if (getFile(fileName)) {
-			return Segment.load(new JSONPersister(), timelineId, segmentId);
-		} else {
-			return null;
+		
+		// Get the segments.
+		//
+		List<String> segmentIds = getIds();
+		for (String segmentId : segmentIds) {
+			getFile(segmentId + new JSONPersister().fileExtension());
+			getFile(segmentId + Sounder.getFileExtension());
 		}
 	}
 
@@ -344,7 +354,7 @@ public class FTPClient extends Client {
 	//
 	public boolean postFileWithSameName(String path, boolean optional,
 			boolean binary) {
-		File file = new File(path);
+		File file = new File(path); // TODO Problem??? Does this create a new file?
 		if (optional && !file.exists()) {
 			return false;
 		}

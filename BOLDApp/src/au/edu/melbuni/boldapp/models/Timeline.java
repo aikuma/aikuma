@@ -88,7 +88,7 @@ public class Timeline implements Comparable<Timeline> {
 			return null;
 		}
 		
-		Segments segments = Segments.load(new JSONPersister(), uuid);
+		Segments segments = Segments.load(new JSONPersister(), uuid.toString());
 		
 		if (segments == null) {
 			throw new RuntimeException("segments are null");
@@ -216,6 +216,11 @@ public class Timeline implements Comparable<Timeline> {
 			return this.compareTo(other) == 0;
 		}
 		return false; 
+	}
+
+	public void replaceSegments(Segments segments) {
+		this.segments.clear(); // TODO Necessary?
+		this.segments = segments;
 	}
 
 }

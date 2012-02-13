@@ -28,21 +28,23 @@ public abstract class Client {
 
 	public abstract boolean doesSegmentExist(String timelineId, String segmentId);
 
-	public abstract boolean doesExist(Timeline timeline);
+	public abstract boolean doesTimelineExist(String timelineId);
 
-	public abstract boolean doesExist(User user);
-
+	public abstract boolean doesUserExist(String userId);
+	
 	public abstract boolean post(Segment segment, String timelineId);
 
 	public abstract boolean post(Timeline timeline);
 
 	public abstract boolean post(User user);
 
-	public abstract Segment getSegment(String segmentId, String timelineId);
+	public abstract void getSegments(String timelineId);
+	
+//	public abstract Segment getSegment(String segmentId, String timelineId);
 
 	public abstract List<String> getSegmentIds(String timelineId);
 
-	public abstract Timeline getTimeline(String timelineId, String userId, Users users);
+	public abstract Timeline getTimeline(String timelineId, Users users);
 
 	public abstract List<String> getTimelineIds();
 

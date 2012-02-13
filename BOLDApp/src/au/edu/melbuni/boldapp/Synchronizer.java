@@ -3,187 +3,188 @@ package au.edu.melbuni.boldapp;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import au.edu.melbuni.boldapp.clients.Client;
-import au.edu.melbuni.boldapp.clients.FTPClient;
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
 import au.edu.melbuni.boldapp.models.Timeline;
 import au.edu.melbuni.boldapp.models.Timelines;
 import au.edu.melbuni.boldapp.models.User;
 import au.edu.melbuni.boldapp.models.Users;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
 
 public class Synchronizer {
-	
+
 	String serverURI;
-	Client server; // Yes, "Client server" looks strange, but it fits better with the method calls.
+	protected Client server; // Yes, "Client server" looks strange, but it fits
+								// better with the method calls.
 	
-	public Synchronizer(String serverURI) {
-		this.serverURI = serverURI;
-	}
-	
-	public void lazilyInitializeClient() {
-		if (this.server == null) {
-			this.server = new FTPClient(this.serverURI);
-		}
-	}
-	
-	// Synchronizes depth-first:
-	//  1. The users itself, user after user.
-	//  2. The timelines for each user.
-	//  3. The segments for each timeline.
+	// Note: We do not talk about this.
 	//
-	public boolean synchronize(final Users users) {
-		lazilyInitializeClient();
-		
-		final List<User> serverMoreUsers = new ArrayList<User>();
-		
-		List<String> userIds = null;
-//		try {
-			userIds = server.getUserIds();
-//		} catch(NullPointerException ne) {
-//			return false; // TODO Refactor and use specialized Exception.
-//		}
-		synchronizeWithIds(userIds, users.getIds(), new SynchronizerCallbacks() {
-			@Override
-			public void serverMore(String id) {
-				User user = server.getUser(id);
-				serverMoreUsers.add(user);
-			}
-			
-			@Override
-			public void localMore(String id) {
-				server.post(users.find(id));
-			}
-		});
-		
-		users.addAll(serverMoreUsers);
-		
-		// Synchronize the user's timelines.
-		//
-		// Note: Synchronizes each at a time.
-		//
-		for (User user : users) {
-			synchronize(user, users);
-		}
-		
-		return true;
+	int result;
+	
+	public Synchronizer(Client server) {
+		this.server = server;
 	}
 	
-	public boolean synchronize(User user, Users users) {
-		lazilyInitializeClient();
+	// Synchronize and return how many users were synchronized.
+	//
+	// It first synchronizes all the users, then all the timelines.
+	//
+	public int synchronize(Activity activity) {
+		Users users = Bundler
+				.getUsers(activity);
+		Timelines timelines = Bundler
+				.getTimelines(activity);
+		int usersSynced = synchronize(users);
+		synchronize(timelines, users); // TODO Maybe these are not enough users?
 		
-		User serverUser = server.getUser(user.getIdentifier());
-		if (serverUser == null) {
-			server.post(user);
-		}
-		
-		synchronize(user.getTimelines(), user, users);
-		
-		return true;
+		return usersSynced;
 	}
-	
-	public boolean synchronize(final Timelines timelines, final User user, final Users users) {
-		lazilyInitializeClient();
+
+	// Synchronizes the users itself, user after user.
+	// (In an unspecified order)
+	//
+	public int synchronize(final Users users) {
+		List<String> remoteUserIds = server.getUserIds();
+		List<String> localUserIds = users.getIds();
 		
-		final List<Timeline> syncTimelines = new ArrayList<Timeline>();
-		
-		synchronizeWithIds(server.getTimelineIds(), timelines.getIds(), new SynchronizerCallbacks() {
-			@Override
-			public void serverMore(String id) {
-				Timeline timeline = server.getTimeline(id, user.getIdentifier(), users);
-				if (timeline != null) {
-					syncTimelines.add(timeline);
-				}
-			}
-			
-			@Override
-			public void localMore(String id) {
-//				server.post(timelines.find(id));
-				Timeline timeline = timelines.find(id);
-				if (timeline != null) {
-					syncTimelines.add(timeline);
-				}
-			}
-		});
-		
-		timelines.addAll(syncTimelines);
-		
-		// Synchronize the timeline's segments.
-		//
-		// Note: Synchronizes each at a time.
-		//
-		List<Timeline> copiedList = new ArrayList<Timeline>(timelines);
-		for (Timeline timeline : copiedList) {
-			synchronize(timeline, user, users);
-		}
-		
-		return true;
-	}
-	
-	public boolean synchronize(Timeline timeline, User user, Users users) {
-		lazilyInitializeClient();
-		
-		Timeline serverTimeline = server.getTimeline(timeline.getIdentifier(), user.getIdentifier(), users);
-		if (serverTimeline == null) {
-			server.post(timeline);
-		}
-		
-		synchronize(timeline.getSegments(), timeline);
-		
-		return true;
-	}
-	
-	public boolean synchronize(final Segments segments, final Timeline timeline) {
-		lazilyInitializeClient();
-		
-		final List<Segment> moreSegments = new ArrayList<Segment>();
-		
-		List<String> serverSegmentIds = server.getSegmentIds(timeline.getIdentifier());
-		
-		synchronizeWithIds(
-			serverSegmentIds,
-			segments.getIds(),
-			new SynchronizerCallbacks() {
-				@Override
-				public void serverMore(String id) {
-					Segment segment = server.getSegment(id, timeline.getIdentifier());
-					if (segment != null) {
-						moreSegments.add(segment);
+		result = 0;
+
+		synchronizeWithIds(remoteUserIds, localUserIds,
+				new SynchronizerCallbacks() {
+					@Override
+					public void serverMore(String id) {
+						// Gets the user including files.
+						//
+						User user = getUser(id);
+						if (user != null) {
+							result++;
+						}
 					}
-				}
-			
-				@Override
-				public void localMore(String id) {
-					server.post(segments.find(id), timeline.getIdentifier());
-				}
-			}
-		);
-		
-		segments.addAll(moreSegments);
-		
-		synchronized (segments) {
-			for (Segment segment : segments) {
-				synchronize(segment, timeline);
-			}	
+
+					@Override
+					public void localMore(String id) {
+						// Try to find it.
+						//
+						User user = users.find(id);
+						if (user != null) {
+							push(user);
+							result++;
+						}
+					}
+
+					@Override
+					public void both(String id) {
+						// TODO Only use if the users become editable.
+					}
+				});
+
+		return result;
+	}
+
+	protected User getUser(String userId) {
+		return server.getUser(userId);
+	}
+
+	protected boolean push(User user) {
+		boolean exists = server.doesUserExist(user.getIdentifier());
+		if (!exists) {
+			server.post(user);
+			return true;
 		}
-		
+		return false;
+	}
+
+	protected boolean synchronize(final Timelines timelines,
+			final Users users) {
+		List<String> remoteTimelineIds = server.getTimelineIds();
+		List<String> localTimelineIds = timelines.getIds();
+
+		synchronizeWithIds(remoteTimelineIds, localTimelineIds,
+				new SynchronizerCallbacks() {
+					@Override
+					public void serverMore(String id) {
+						// Gets the timeline including segments;
+						//
+						Timeline timeline = getTimeline(id, users);
+						if (timeline != null) {
+
+						}
+					}
+
+					@Override
+					public void localMore(String id) {
+						Timeline timeline = timelines.find(id);
+						if (timeline != null) {
+							push(timeline);
+						}
+					}
+
+					@Override
+					public void both(String id) {
+						// TODO
+					}
+				});
+
 		return true;
 	}
 	
-	public boolean synchronize(Segment segment, Timeline timeline) {
-		lazilyInitializeClient();
-		
-		if (!server.doesExist(timeline, segment)) {
-			server.post(segment, timeline.getIdentifier());
+	protected Timeline getTimeline(String timelineId, Users users) {
+		Timeline timeline = server.getTimeline(timelineId, users);
+		if (timeline != null) {
+			getSegments(timeline);
 		}
-		
-		return true;
+		return timeline;
 	}
 	
-	public void synchronizeWithIds(List<String> serverIds, List<String> localIds, SynchronizerCallbacks callbacks) {
-		// Check if there are more things on the server.
+	protected boolean push(Timeline timeline) {
+		boolean exists = server.doesTimelineExist(timeline.getIdentifier());
+		if (!exists) {
+			server.post(timeline);
+			push(timeline.getSegments(), timeline.getIdentifier());
+			return true;
+		}
+		return false;
+	}
+	
+	protected void getSegments(Timeline timeline) {
+		server.getSegments(timeline.getIdentifier());
+		
+		// Load the segments into the timeline.
 		//
+		Segments segments = Segments.load(new JSONPersister(), timeline.getIdentifier());
+		if (segments != null) {
+			timeline.replaceSegments(segments);
+		}
+	}
+	
+	protected boolean push(Segments segments, String timelineId) {
+		for (Segment segment : segments) {
+			server.post(segment, timelineId);	
+		}
+		return true;
+	}
+
+	protected void synchronizeWithIds(List<String> serverIds,
+			List<String> localIds, SynchronizerCallbacks callbacks) {
+
+		List<String> bothIds = intersection(localIds, serverIds);
 		List<String> serverMoreIds = difference(serverIds, localIds);
+		List<String> localMoreIds = difference(localIds, serverIds);
+
+		// Check what things both have.
+		//
+		if (!bothIds.isEmpty()) {
+			// Send stuff to the server.
+			//
+			for (String bothId : bothIds) {
+				callbacks.both(bothId);
+			}
+		}
+
+		// Get what we have on the server.
+		//
 		if (!serverMoreIds.isEmpty()) {
 			// Get stuff from the server.
 			//
@@ -191,10 +192,9 @@ public class Synchronizer {
 				callbacks.serverMore(serverMoreId);
 			}
 		}
-		
-		// Check if we have more things locally.
+
+		// Send what we have more locally.
 		//
-		List<String> localMoreIds = difference(localIds, serverIds);
 		if (!localMoreIds.isEmpty()) {
 			// Send stuff to the server.
 			//
@@ -203,19 +203,31 @@ public class Synchronizer {
 			}
 		}
 	};
-	
-	public List<String> difference(List<String> presumedLarger, List<String> presumedSmaller) {
+
+	public List<String> difference(List<String> presumedLarger,
+			List<String> presumedSmaller) {
 		// Copy the larger List.
 		//
 		List<String> largerCopy = new ArrayList<String>();
 		for (String string : presumedLarger) {
 			largerCopy.add(string);
 		}
-		
+
 		// Remove all.
 		//
 		largerCopy.removeAll(presumedSmaller);
 		return largerCopy;
 	}
-	
+
+	public List<String> intersection(List<String> firstList,
+			List<String> secondList) {
+		List<String> result = new ArrayList<String>();
+		for (String string : firstList) {
+			if (secondList.contains(string)) {
+				result.add(string);
+			}
+		}
+		return result;
+	}
+
 }

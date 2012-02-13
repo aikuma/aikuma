@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -56,8 +55,8 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 	// Persistence.
 	//
 	
-	public static Segments load(Persister persister, UUID uuid) {
-		return persister.loadSegments(uuid.toString());
+	public static Segments load(Persister persister, String timelineId) {
+		return persister.loadSegments(timelineId);
 	}
 
 	public void saveEach(Persister persister, String timelineIdentifier) {
