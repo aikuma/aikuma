@@ -52,4 +52,8 @@ public abstract class Client {
 
 	public abstract List<String> getUserIds();
 
+	public abstract boolean postLike(String userId, String timelineId);
+
+	public abstract List<String> getLikesIds(String timelineId);
+
 }

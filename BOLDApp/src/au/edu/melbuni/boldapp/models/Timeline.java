@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ public class Timeline implements Comparable<Timeline> {
 	Date date;
 	String location;
 	Segments segments;
+	Likes likes = new Likes();
 	
 	User user;
 	Timelines timelines;
@@ -58,6 +60,35 @@ public class Timeline implements Comparable<Timeline> {
 		return uuid.toString();
 	}
 	
+	public Likes getLikes() {
+		return this.likes;
+	}
+	
+	// TODO Refactor.
+	//
+	public void setLikes(List<String> userIds) {
+		this.likes = new Likes();
+		for (String userId : userIds) {
+			like(userId);
+		}
+	}
+	
+	public void like(String userId) {
+		likes.add(userId);
+	}
+	
+	public void unlike(String userId) {
+		likes.remove(userId);
+	}
+	
+	public int totalLikes() {
+		return likes.size();
+	}
+	
+	public boolean likedBy(String userId) {
+		return likes.contains(userId);
+	}
+	
 	public Segments getSegments() {
 		return segments;
 	}
@@ -84,8 +115,7 @@ public class Timeline implements Comparable<Timeline> {
 		// No user for this timeline found.
 		//
 		if (user == null) {
-			// throw new NullPointerException("No User " + userReference + " for Timeline " + uuid + " found.");
-			return null;
+			throw new NullPointerException("No User " + userReference + " for Timeline " + uuid + " found.");
 		}
 		
 		Segments segments = Segments.load(new JSONPersister(), uuid.toString());
@@ -112,8 +142,8 @@ public class Timeline implements Comparable<Timeline> {
 	
 	// Load a timeline based on its uuid.
 	//
-	public static Timeline load(Users users, Persister persister, String uuid) {
-		return persister.loadTimeline(users, uuid);
+	public static Timeline load(Users users, Persister persister, String timelineId) {
+		return persister.loadTimeline(users, timelineId);
 	}
 
 	public void save(Persister persister) {

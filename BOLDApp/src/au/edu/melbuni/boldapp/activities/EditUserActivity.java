@@ -60,7 +60,7 @@ public class EditUserActivity extends BoldActivity {
         okButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Bundler.saveNewUser(EditUserActivity.this, Bundler.getCurrentUser(EditUserActivity.this));
+				Bundler.storeNewUser(EditUserActivity.this, Bundler.getCurrentUser(EditUserActivity.this));
 				finish();
 			}
         });

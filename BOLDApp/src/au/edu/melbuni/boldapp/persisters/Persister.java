@@ -180,19 +180,28 @@ public abstract class Persister {
 		return read(pathForTimeline(identifier));
 	}
 
+	// Likes.
+	//
+	public List<String> readLikes(String timelineIdentifier) throws IOException {
+		return extractIdsFrom(new File(dirForLikes(timelineIdentifier)), new UUIDFileFilter(""));
+	}
+	
 	// Helper methods.
 	//
-
+	
 	public List<String> extractIdsFrom(File directory) {
 		return extractIdsFrom(directory, new UUIDFileFilter());
 	}
-	public List<String> extractIdsFrom(File directory, FileFilter filter) {
+	public List<String> extractIdsFrom(File directory, FileFilter fileFilter) {
+		return extractIdsFrom(directory, fileFilter, "\\.json$");
+	}
+	public List<String> extractIdsFrom(File directory, FileFilter filter, String replacementPattern) {
 		List<String> ids = new ArrayList<String>();
 
 		if (directory.exists()) {
 			File[] files = directory.listFiles(filter);
 			for (File file : files) {
-				ids.add(file.getName().replaceAll("\\.json$", ""));
+				ids.add(file.getName().replaceAll(replacementPattern, ""));
 			}
 		}
 
@@ -265,6 +274,14 @@ public abstract class Persister {
 	public String pathForSegment(String timelineIdentifier, String identifier) {
 		return dirForSegments(timelineIdentifier) + identifier
 				+ fileExtension();
+	}
+	
+	public String dirForLikes(String timelineIdentifier) {
+		return dirForTimelines() + timelineIdentifier + "/likes/";
+	}
+
+	public String pathForLike(String timelineIdentifier, String identifier) {
+		return dirForLikes(timelineIdentifier) + identifier;
 	}
 
 	// Write the data to the file.

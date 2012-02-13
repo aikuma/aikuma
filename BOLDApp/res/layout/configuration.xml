@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:layout_margin="1dip"
-        android:src="@drawable/sync"
+        android:src="@drawable/get"
         android:tag="helpButton"
         android:visibility="visible" >
 

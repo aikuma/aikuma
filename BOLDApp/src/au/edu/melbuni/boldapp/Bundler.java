@@ -20,7 +20,7 @@ public class Bundler {
 		getApplication(activity).save();
 	}
 
-	public static void saveNewUser(Activity activity, User user) {
+	public static void storeNewUser(Activity activity, User user) {
 		setCurrentUser(activity, user);
 		addUser(activity, user);
 	}

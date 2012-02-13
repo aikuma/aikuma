@@ -296,15 +296,15 @@ public class FTPClientTest {
 //		ftp.logout();
 //	}
 
-	@Test
-	public void getSegments() {
-		// No login needed.
-		assertEquals(
-			timeline.getSegments(),
-			ftp.getSegments(timeline.getIdentifier())
-		);
-		ftp.logout();
-	}
+//	@Test
+//	public void getSegments() {
+//		// No login needed.
+//		assertEquals(
+//			timeline.getSegments(),
+//			ftp.getSegments(timeline.getIdentifier())
+//		);
+//		ftp.logout();
+//	}
 	
 	@Test
 	public void getSegmentIds() {
@@ -322,28 +322,28 @@ public class FTPClientTest {
 	@Test
 	public void doesExistUser() {
 		// No login needed.
-		assertTrue(ftp.doesExist(user));
+		assertTrue(ftp.doesUserExist(user.getIdentifier()));
 		ftp.logout();
 	}
 	
 	@Test
 	public void doesExistNonExistingUser() {
 		// No login needed.
-		assertFalse(ftp.doesExist(new User()));
+		assertFalse(ftp.doesUserExist(new User().getIdentifier()));
 		ftp.logout();
 	}
 	
 	@Test
 	public void doesExistTimeline() {
 		// No login needed.
-		assertTrue(ftp.doesExist(timeline));
+		assertTrue(ftp.doesTimelineExist(timeline.getIdentifier()));
 		ftp.logout();
 	}
 	
 	@Test
 	public void doesExistNonExistingTimeline() {
 		// No login needed.
-		assertFalse(ftp.doesExist(new Timeline()));
+		assertFalse(ftp.doesTimelineExist(new Timeline().getIdentifier()));
 		ftp.logout();
 	}
 	

@@ -4,15 +4,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.R;
-import au.edu.melbuni.boldapp.behaviors.TapAndHoldListen;
-import au.edu.melbuni.boldapp.behaviors.TapAndHoldRecord;
-import au.edu.melbuni.boldapp.behaviors.TapAndReleaseListen;
-import au.edu.melbuni.boldapp.behaviors.TapAndReleaseRecord;
+import au.edu.melbuni.boldapp.Synchronizer;
 import au.edu.melbuni.boldapp.models.User;
 
 public class MainActivity extends BoldActivity {
@@ -42,7 +41,7 @@ public class MainActivity extends BoldActivity {
 		super.onSaveInstanceState(outState);
 		Bundler.save(this);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		checkButtonsEnabled();
@@ -69,6 +68,8 @@ public class MainActivity extends BoldActivity {
 	public void configureView(Bundle savedInstanceState) {
 		super.configureView(savedInstanceState);
 
+		addToMenu(R.layout.configuration);
+
 		setContent(R.layout.main);
 	};
 
@@ -89,70 +90,37 @@ public class MainActivity extends BoldActivity {
 						OriginalSelectionActivity.class), 0);
 			}
 		});
-		
+
 		checkButtonsEnabled();
 
-		// TODO Remove.
-		//
 		final ImageButton configurationButton = (ImageButton) findViewById(R.id.configurationButton);
 		if (configurationButton != null) {
-			configurationButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					new AlertDialog.Builder(v.getContext())
-							.setIcon(android.R.drawable.ic_dialog_alert)
-							.setMessage("Switch Recording style")
-							.setPositiveButton("Press/Hold",
-									new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(
-												DialogInterface dialog,
-												int which) {
-											RecordActivity
-													.setBehavior(new TapAndHoldRecord());
-										}
-									})
-							.setNegativeButton("Tap/Release",
-									new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(
-												DialogInterface dialog,
-												int which) {
-											RecordActivity
-													.setBehavior(new TapAndReleaseRecord());
-										}
-									}).show();
-				}
-			});
 			configurationButton
 					.setOnLongClickListener(new View.OnLongClickListener() {
 						@Override
 						public boolean onLongClick(View v) {
-							new AlertDialog.Builder(v.getContext())
-									.setIcon(android.R.drawable.ic_dialog_alert)
-									.setMessage("Switch Listening style")
-									.setPositiveButton(
-											"Press/Hold",
-											new DialogInterface.OnClickListener() {
-												@Override
-												public void onClick(
-														DialogInterface dialog,
-														int which) {
-													ListenActivity
-															.setBehavior(new TapAndHoldListen());
-												}
-											})
-									.setNegativeButton(
-											"Tap/Release",
-											new DialogInterface.OnClickListener() {
-												@Override
-												public void onClick(
-														DialogInterface dialog,
-														int which) {
-													ListenActivity
-															.setBehavior(new TapAndReleaseListen());
-												}
-											}).show();
+							try {
+								Synchronizer synchronizer = Synchronizer
+										.getDefault();
+								int[] usersAndTimelinesSynced = synchronizer
+										.synchronize(MainActivity.this);
+
+								Toast toast = Toast.makeText(MainActivity.this,
+										"Synchronized "
+												+ usersAndTimelinesSynced[0]
+												+ " users / "
+												+ usersAndTimelinesSynced[1]
+												+ " timelines.", 2000);
+								toast.setGravity(Gravity.TOP, -30, 50);
+								toast.show();
+							} catch (RuntimeException e) {
+								System.err.println(e.getMessage());
+								
+								Toast toast = Toast.makeText(MainActivity.this,
+										"Go closer, plis.", 2000);
+								toast.setGravity(Gravity.TOP, -30, 50);
+								toast.show();
+							}
 							return false;
 						}
 					});
@@ -163,11 +131,11 @@ public class MainActivity extends BoldActivity {
 		final TextView startText = (TextView) findViewById(R.id.startText);
 		final ImageButton recordButton = (ImageButton) findViewById(R.id.recordButton);
 		final ImageButton listenButton = (ImageButton) findViewById(R.id.listenButton);
-		
+
 		User user = Bundler.getCurrentUser(this);
 		int visible = user.hasGivenConsent() ? View.VISIBLE : View.INVISIBLE;
 		int gone = user.hasGivenConsent() ? View.GONE : View.VISIBLE;
-		
+
 		startText.setVisibility(gone);
 		recordButton.setVisibility(visible);
 		listenButton.setVisibility(visible);

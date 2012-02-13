@@ -42,7 +42,7 @@ public class TapAndReleaseRecord implements Behavior<RecordActivity> {
 	@Override
 	public void installBehavior(final RecordActivity activity) {
      	final Timeline timeline = new Timeline();
-	    final ImageButton playButton = (ImageButton) activity.findViewById(R.id.playButton);
+     	final ImageButton playButton = (ImageButton) activity.findViewById(R.id.playButton);
 	    final ImageButton deleteButton = (ImageButton) activity.findViewById(R.id.deleteButton);
 	    final ImageButton recordButton = (ImageButton) activity.findViewById(R.id.recordButton);
 	    
@@ -101,6 +101,8 @@ public class TapAndReleaseRecord implements Behavior<RecordActivity> {
 					timeline.stopRecording(activity.getRecorder());
 					timeline.setUser(Bundler.getCurrentUser(activity));
 					Bundler.addTimeline(activity, timeline);
+					
+					if (!activity.hasTimeline()) { activity.setTimeline(timeline); }
 					
 					recordButton.getBackground().clearColorFilter();
 				} else {

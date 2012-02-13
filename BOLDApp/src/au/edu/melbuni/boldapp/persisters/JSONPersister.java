@@ -1,6 +1,7 @@
 package au.edu.melbuni.boldapp.persisters;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONValue;
@@ -82,7 +83,14 @@ public class JSONPersister extends Persister {
 	@Override
 	public void save(Timeline timeline) {
 		write(timeline, toJSON(timeline.toHash()));
+		saveLikesFor(timeline); // TODO Probably not a good idea here.
 		timeline.saveEach(this, timeline.getIdentifier());
+	}
+	
+	public void saveLikesFor(Timeline timeline) {
+		for (String userId : timeline.getLikes()) {
+			write(pathForLike(timeline.getIdentifier(), userId), "");
+		}
 	}
 	
 	@Override
@@ -90,10 +98,24 @@ public class JSONPersister extends Persister {
 		Timeline timeline = null;
 		try {
 			timeline = Timeline.fromHash(users, fromJSON(readTimeline(identifier)));
+			loadLikesFor(timeline); // TODO Probably not a good idea here.
 		} catch (IOException e) {
 			// System.out.println("OUCH " + e);
 		}
 		return timeline;
+	}
+	
+	// TODO Make more elegant.
+	//
+	public void loadLikesFor(Timeline timeline) {
+		List<String> userIds;
+		try {
+			userIds = readLikes(timeline.getIdentifier());
+			timeline.setLikes(userIds);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

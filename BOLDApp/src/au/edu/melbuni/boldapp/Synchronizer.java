@@ -5,6 +5,8 @@ import java.util.List;
 
 import android.app.Activity;
 import au.edu.melbuni.boldapp.clients.Client;
+import au.edu.melbuni.boldapp.clients.FTPClient;
+import au.edu.melbuni.boldapp.models.Likes;
 import au.edu.melbuni.boldapp.models.Segment;
 import au.edu.melbuni.boldapp.models.Segments;
 import au.edu.melbuni.boldapp.models.Timeline;
@@ -18,28 +20,49 @@ public class Synchronizer {
 	String serverURI;
 	protected Client server; // Yes, "Client server" looks strange, but it fits
 								// better with the method calls.
-	
+
 	// Note: We do not talk about this.
 	//
-	int result;
-	
+	int userSyncCount;
+	int timelineSyncCount;
+
 	public Synchronizer(Client server) {
 		this.server = server;
 	}
-	
+
+	public static Synchronizer getDefault() {
+		Client server = new FTPClient("192.168.1.1");
+		return new Synchronizer(server);
+	}
+
 	// Synchronize and return how many users were synchronized.
 	//
 	// It first synchronizes all the users, then all the timelines.
 	//
-	public int synchronize(Activity activity) {
-		Users users = Bundler
-				.getUsers(activity);
-		Timelines timelines = Bundler
-				.getTimelines(activity);
-		int usersSynced = synchronize(users);
-		synchronize(timelines, users); // TODO Maybe these are not enough users?
+	public int[] synchronize(Activity activity) {
+		int[] counts = new int[2];
+
+		Users users = Bundler.getUsers(activity);
+		Timelines timelines = Bundler.getTimelines(activity);
+		counts[0] = synchronize(users);
 		
-		return usersSynced;
+		// Reload everything.
+		//
+		// Note: Needs a little nap afterwards.
+		//
+		Bundler.load(activity);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		// Get the latest users to include the recently synced.
+		//
+		users = Bundler.getUsers(activity);
+		counts[1] = synchronize(timelines, users);
+
+		return counts;
 	}
 
 	// Synchronizes the users itself, user after user.
@@ -48,8 +71,8 @@ public class Synchronizer {
 	public int synchronize(final Users users) {
 		List<String> remoteUserIds = server.getUserIds();
 		List<String> localUserIds = users.getIds();
-		
-		result = 0;
+
+		userSyncCount = 0;
 
 		synchronizeWithIds(remoteUserIds, localUserIds,
 				new SynchronizerCallbacks() {
@@ -59,7 +82,7 @@ public class Synchronizer {
 						//
 						User user = getUser(id);
 						if (user != null) {
-							result++;
+							userSyncCount++;
 						}
 					}
 
@@ -70,7 +93,7 @@ public class Synchronizer {
 						User user = users.find(id);
 						if (user != null) {
 							push(user);
-							result++;
+							userSyncCount++;
 						}
 					}
 
@@ -80,24 +103,22 @@ public class Synchronizer {
 					}
 				});
 
-		return result;
+		return userSyncCount;
 	}
 
 	protected User getUser(String userId) {
 		return server.getUser(userId);
 	}
 
-	protected boolean push(User user) {
+	public boolean push(User user) {
 		boolean exists = server.doesUserExist(user.getIdentifier());
 		if (!exists) {
-			server.post(user);
-			return true;
+			return server.post(user);
 		}
 		return false;
 	}
 
-	protected boolean synchronize(final Timelines timelines,
-			final Users users) {
+	protected int synchronize(final Timelines timelines, final Users users) {
 		List<String> remoteTimelineIds = server.getTimelineIds();
 		List<String> localTimelineIds = timelines.getIds();
 
@@ -109,7 +130,7 @@ public class Synchronizer {
 						//
 						Timeline timeline = getTimeline(id, users);
 						if (timeline != null) {
-
+							timelineSyncCount++;
 						}
 					}
 
@@ -118,6 +139,7 @@ public class Synchronizer {
 						Timeline timeline = timelines.find(id);
 						if (timeline != null) {
 							push(timeline);
+							timelineSyncCount++;
 						}
 					}
 
@@ -127,41 +149,63 @@ public class Synchronizer {
 					}
 				});
 
-		return true;
+		return timelineSyncCount;
 	}
-	
+
 	protected Timeline getTimeline(String timelineId, Users users) {
 		Timeline timeline = server.getTimeline(timelineId, users);
+
 		if (timeline != null) {
 			getSegments(timeline);
+			getLikes(timeline);
 		}
+		
 		return timeline;
 	}
-	
-	protected boolean push(Timeline timeline) {
+
+	public boolean push(Timeline timeline) {
 		boolean exists = server.doesTimelineExist(timeline.getIdentifier());
 		if (!exists) {
 			server.post(timeline);
 			push(timeline.getSegments(), timeline.getIdentifier());
+			push(timeline.getLikes(), timeline.getIdentifier());
 			return true;
 		}
 		return false;
 	}
-	
+
 	protected void getSegments(Timeline timeline) {
 		server.getSegments(timeline.getIdentifier());
-		
+
 		// Load the segments into the timeline.
 		//
-		Segments segments = Segments.load(new JSONPersister(), timeline.getIdentifier());
+		Segments segments = Segments.load(new JSONPersister(),
+				timeline.getIdentifier());
 		if (segments != null) {
 			timeline.replaceSegments(segments);
 		}
 	}
 	
+	// TODO I need to synchronize the likes as well!
+	//
+	protected void getLikes(Timeline timeline) {
+		List<String> userIds = server.getLikesIds(timeline.getIdentifier());
+
+		if (userIds != null) {
+			timeline.setLikes(userIds);
+		}
+	}
+
 	protected boolean push(Segments segments, String timelineId) {
 		for (Segment segment : segments) {
-			server.post(segment, timelineId);	
+			server.post(segment, timelineId);
+		}
+		return true;
+	}
+	
+	protected boolean push(Likes likes, String timelineId) {
+		for (String userId : likes) {
+			server.postLike(userId, timelineId);
 		}
 		return true;
 	}

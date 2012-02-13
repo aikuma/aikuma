@@ -20,4 +20,5 @@
     <string name="next">✔</string>
     <string name="help">\?</string>
     <color name="red_recording">#F00</color>
+    <string name="like">Laikim :)</string>
 </resources>

@@ -185,13 +185,30 @@ public class FTPClient extends Client {
 		return result;
 	}
 	
+	public boolean cdToLikes(String timelineId, boolean makeIfNotExists) {
+		boolean result = false;
+		cdToTimelines();
+		try {
+			if (makeIfNotExists) {
+				maybeMakeAndCd(timelineId);
+				result = maybeMakeAndCd("likes");
+			} else {
+				client.changeWorkingDirectory(timelineId);
+				result = client.changeWorkingDirectory("likes");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	@Override
 	public boolean doesUserExist(String userId) {
 		cdToUsers();
 		String remoteName = userId + new JSONPersister().fileExtension();
 		return exists(remoteName);
 	}
-	
+
 	@Override
 	public boolean doesTimelineExist(String timelineId) {
 		cdToTimelines();
@@ -206,20 +223,6 @@ public class FTPClient extends Client {
 		return exists(remoteName);
 	}
 
-//	@Override
-//	public boolean doesExist(Timeline timeline) {
-//		cdToTimelines();
-//		return exists(timeline.getIdentifier()
-//				+ new JSONPersister().fileExtension());
-//	}
-//
-//	@Override
-//	public boolean doesExist(User user) {
-//		cdToUsers();
-//		return exists(user.getIdentifier()
-//				+ new JSONPersister().fileExtension());
-//	}
-
 	@Override
 	public boolean post(User user) {
 		boolean result = false;
@@ -228,7 +231,9 @@ public class FTPClient extends Client {
 			result = postFileWithSameName(persister.pathFor(user));
 			maybeMakeAndCd(user.getIdentifier());
 			postFileWithSameName(user.getProfileImagePath(), true, true);
-			postFileWithSameName(user.getProfileAudioPath(), true, true);
+			postFileWithSameName(
+					user.getProfileAudioPath() + Sounder.getFileExtension(),
+					true, true);
 		}
 		return result;
 	}
@@ -262,12 +267,27 @@ public class FTPClient extends Client {
 		return result;
 	}
 	
+	@Override
+	public boolean postLike(String userId, String timelineId) {
+		boolean result = false;
+		if (cdToLikes(timelineId, true)) {
+			Persister persister = new JSONPersister();
+			result = postFileWithSameName(persister.dirForLikes(timelineId) + userId, true, true);
+		}
+		return result;
+	}
+
 	// FIXME Fix the fact that the wrong ids are uploaded to the server!
 	//
 	@Override
 	public List<String> getSegmentIds(String timelineId) {
 		cdToSegments(timelineId);
 		return getIds();
+	}
+	
+	public List<String> getLikesIds(String timelineId) {
+		cdToLikes(timelineId, true);
+		return getIds("*"); // No ".json".
 	}
 
 	@Override
@@ -285,17 +305,22 @@ public class FTPClient extends Client {
 
 	public void getAssociatedFiles(User user) {
 		cdToUsers();
-		maybeMakeAndCd(user.getIdentifier());
-		getFile(user.getProfileImagePath(), true);
-		getFile(user.getProfileAudioPath(), true);
+		if (maybeMakeAndCd(user.getIdentifier())) {
+			getFile(user.getProfileImagePath(), true);
+			getFile(user.getProfileAudioPath() + Sounder.getFileExtension(),
+					true);
+		}
 	}
 
 	@Override
 	public Timeline getTimeline(String timelineId, Users users) {
 		cdToTimelines();
-		// TODO
+		
+		// TODO Dry.
+		//
 		String fileName = Persister.getBasePath() + "timelines/" + timelineId
-				+ ".json";
+				+ new JSONPersister().fileExtension();
+
 		if (getFile(fileName)) {
 			Timeline timeline = Timeline.load(users, new JSONPersister(),
 					timelineId);
@@ -304,7 +329,7 @@ public class FTPClient extends Client {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public void getSegments(String timelineId) {
 		cdToSegments(timelineId);
@@ -313,8 +338,11 @@ public class FTPClient extends Client {
 		//
 		List<String> segmentIds = getIds();
 		for (String segmentId : segmentIds) {
-			getFile(segmentId + new JSONPersister().fileExtension());
-			getFile(segmentId + Sounder.getFileExtension());
+			
+			// TODO Dry.
+			//
+			getFile(Persister.getBasePath() + "timelines/" + timelineId + "/segments/" + segmentId + new JSONPersister().fileExtension());
+			getFile(Persister.getBasePath() + "timelines/" + timelineId + "/segments/" + segmentId + Sounder.getFileExtension());
 		}
 	}
 
@@ -354,7 +382,8 @@ public class FTPClient extends Client {
 	//
 	public boolean postFileWithSameName(String path, boolean optional,
 			boolean binary) {
-		File file = new File(path); // TODO Problem??? Does this create a new file?
+		File file = new File(path); // TODO Problem??? Does this create a new
+									// file?
 		if (optional && !file.exists()) {
 			return false;
 		}
@@ -375,7 +404,7 @@ public class FTPClient extends Client {
 		} finally {
 			try {
 				stream.close();
-			} catch (IOException e) {
+			} catch (Exception e) { // TODO Was IOException.
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -413,10 +442,11 @@ public class FTPClient extends Client {
 			try {
 				if (stream != null) {
 					stream.close();
+				} else {
+					throw new RuntimeException("stream was null!");
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new RuntimeException(e.getMessage());
 			}
 		}
 
@@ -424,15 +454,14 @@ public class FTPClient extends Client {
 	}
 
 	public List<String> getIds() {
-		return getIds("*");
+		return getIds("*.json");
 	}
-
+	
 	public List<String> getIds(String pattern) {
 		String[] strings = null;
 		login();
 		try {
-			strings = client.listNames(pattern
-					+ new JSONPersister().fileExtension());
+			strings = client.listNames(pattern);
 		} catch (IOException e) {
 			strings = new String[0];
 		}

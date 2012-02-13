@@ -2,21 +2,15 @@ package au.edu.melbuni.boldapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Sounder;
-import au.edu.melbuni.boldapp.Synchronizer;
 import au.edu.melbuni.boldapp.adapters.UserItemAdapter;
-import au.edu.melbuni.boldapp.clients.Client;
-import au.edu.melbuni.boldapp.clients.FTPClient;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.models.User;
 
@@ -46,90 +40,6 @@ public class UserSelectionActivity extends BoldActivity {
 	};
 
 	public void installBehavior(Bundle savedInstanceState) {
-
-		addToMenu(R.layout.configuration);
-
-		final ImageButton configurationButton = (ImageButton) findViewById(R.id.configurationButton);
-		if (configurationButton != null) {
-			configurationButton
-					.setOnLongClickListener(new View.OnLongClickListener() {
-						@Override
-						public boolean onLongClick(View v) {
-							// WifiManager wifi = (WifiManager)
-							// getSystemService( Context.WIFI_SERVICE );
-							// MulticastLock lock =
-							// wifi.createMulticastLock("bold_multicast_lock");
-							// lock.setReferenceCounted(true);
-							// lock.acquire();
-							//
-							// wifi.startScan(); // CHANGE_WIFI_STATE
-
-							Client server = new FTPClient("192.168.1.1");
-							Synchronizer synchronizer = new Synchronizer(server);
-							int usersSynced = synchronizer.synchronize(UserSelectionActivity.this);
-
-							Toast toast = Toast.makeText(
-									UserSelectionActivity.this, "Synchronized " + usersSynced + ".", 2000);
-							// Toast toast = Toast.makeText(
-							// UserSelectionActivity.this, users.getIds()
-							// .toString(), 2000);
-							toast.setGravity(Gravity.TOP, -30, 50);
-							toast.show();
-
-							// Save all the data now that we are synced.
-							//
-							// ((BoldApplication) getApplication()).save();
-
-							// if (response != null) {
-							// new AlertDialog.Builder(v.getContext())
-							// .setIcon(android.R.drawable.ic_dialog_alert)
-							// .setMessage(response.toString())
-							// .setPositiveButton("OK",
-							// new DialogInterface.OnClickListener() {
-							// @Override
-							// public void onClick(DialogInterface dialog,
-							// int which) {
-							//
-							// }
-							// }).setNegativeButton("Cancel", new
-							// DialogInterface.OnClickListener() {
-							// @Override
-							// public void onClick(DialogInterface dialog, int
-							// which) {
-							//
-							// }
-							// }).show();
-							// }
-
-							// List<ScanResult> scanResults =
-							// wifi.getScanResults();
-							// for (ScanResult scanResult : scanResults) {
-							// new AlertDialog.Builder(v.getContext())
-							// .setIcon(android.R.drawable.ic_dialog_alert)
-							// .setMessage(scanResult.toString())
-							// .setPositiveButton("OK",
-							// new DialogInterface.OnClickListener() {
-							// @Override
-							// public void onClick(DialogInterface dialog,
-							// int which) {
-							//
-							// }
-							// }).setNegativeButton("Cancel", new
-							// DialogInterface.OnClickListener() {
-							// @Override
-							// public void onClick(DialogInterface dialog, int
-							// which) {
-							//
-							// }
-							// }).show();
-							// }
-							//
-							// lock.release();
-
-							return true;
-						}
-					});
-		}
 
 		// New User
 		//

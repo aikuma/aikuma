@@ -9,7 +9,9 @@ import android.widget.ImageView;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.Synchronizer;
 import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.persisters.JSONPersister;
 
 public class InformedConsentConfirmActivity extends BoldActivity {
 	
@@ -67,7 +69,17 @@ public class InformedConsentConfirmActivity extends BoldActivity {
 			public void onClick(View v) {
 				User user = Bundler.getCurrentUser(InformedConsentConfirmActivity.this);
 				user.setConsented(true);
-				Bundler.saveNewUser(InformedConsentConfirmActivity.this, user);
+				Bundler.storeNewUser(InformedConsentConfirmActivity.this, user);
+				user.save(new JSONPersister());
+				
+				// Try to synchronize automatically here.
+				//
+				try {
+					Synchronizer.getDefault().push(user);
+				} catch(RuntimeException e) {
+					System.err.println(e.getMessage());
+				}
+				
 				finish();
 			}
 		});

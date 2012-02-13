@@ -122,7 +122,7 @@ public class BoldApplicationTest {
 			
 			application.save();
 			try {
-				Thread.sleep(100);
+				Thread.sleep(1000); // TODO Why do I need to wait this long?
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
