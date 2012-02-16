@@ -89,6 +89,7 @@ public class Users extends Model implements Collection<User> { // TODO implement
 		return new Timelines(timelines);
 	}
 	
+	@Override
 	public String toString() {
 		return users.toString();
 	}

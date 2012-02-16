@@ -69,8 +69,9 @@ public class MainActivity extends BoldActivity {
 		super.configureView(savedInstanceState);
 
 		addToMenu(R.layout.configuration);
-
 		setContent(R.layout.main);
+		
+		setExitNavigation();
 	};
 
 	public void installBehavior(Bundle savedInstanceState) {
@@ -104,7 +105,11 @@ public class MainActivity extends BoldActivity {
 										.getDefault();
 								int[] usersAndTimelinesSynced = synchronizer
 										.synchronize(MainActivity.this);
-
+								
+								// Reload all.
+								//
+								Bundler.load(MainActivity.this);
+								
 								Toast toast = Toast.makeText(MainActivity.this,
 										"Synchronized "
 												+ usersAndTimelinesSynced[0]

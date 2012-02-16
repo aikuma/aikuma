@@ -1,7 +1,8 @@
 package au.edu.melbuni.boldapp.activities;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import au.edu.melbuni.boldapp.Bundler;
@@ -12,7 +13,24 @@ import au.edu.melbuni.boldapp.models.User;
 
 public class InformedConsentAudioActivity extends BoldActivity {
 	
-//	AlertDialog helpDialog;
+	boolean playing   = false;
+	boolean recording = false;
+	
+	public boolean isPlaying() {
+		return playing;
+	}
+
+	public void togglePlaying() {
+		this.playing = !playing;
+	}
+	
+	public boolean isRecording() {
+		return recording;
+	}
+
+	public void toggleRecording() {
+		this.recording = !recording;
+	}
 	
 	Recorder recorder = new Recorder();
 	Player player = new Player();
@@ -33,43 +51,40 @@ public class InformedConsentAudioActivity extends BoldActivity {
     };
     
     public void installBehavior(Bundle savedInstanceState) {
-//        installHelp(R.layout.informed_consent_audio_help);
-    	
     	final View recordButton = findViewById(R.id.recordButton);
-        recordButton.setOnTouchListener(new View.OnTouchListener() {
-        	@Override
-			public boolean onTouch(View v, MotionEvent motionEvent) {
-        		User user = Bundler.getCurrentUser(InformedConsentAudioActivity.this);
-        		user.startRecording(recorder);
-            	return false;
-            }
-        });
+    	final View playButton = findViewById(R.id.playButton);
+    	final View nextButton = findViewById(R.id.nextButton);
+    	
         recordButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-        		User user = Bundler.getCurrentUser(InformedConsentAudioActivity.this);
-        		user.stopRecording(recorder);
+				User user = Bundler.getCurrentUser(InformedConsentAudioActivity.this);
+				if (InformedConsentAudioActivity.this.isRecording()) {
+					user.stopRecording(recorder);
+					recordButton.getBackground().clearColorFilter();
+				} else {
+					user.startRecording(recorder);
+					recordButton.getBackground().setColorFilter(Color.RED, Mode.MULTIPLY);
+				}
+				InformedConsentAudioActivity.this.toggleRecording();
 			}
 		});
     	
-        final View playButton = findViewById(R.id.playButton);
-        playButton.setOnTouchListener(new View.OnTouchListener() {
-        	@Override
-			public boolean onTouch(View v, MotionEvent motionEvent) {
-        		User user = Bundler.getCurrentUser(InformedConsentAudioActivity.this);
-        		user.startPlaying(player, null);
-            	return false;
-            }
-        });
     	playButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				User user = Bundler.getCurrentUser(InformedConsentAudioActivity.this);
-				user.stopPlaying(player);
+				if (InformedConsentAudioActivity.this.isPlaying()) {
+					user.stopPlaying(player);
+					playButton.getBackground().clearColorFilter();
+				} else {
+					user.startPlaying(player, null);
+					playButton.getBackground().setColorFilter(Color.GREEN, Mode.MULTIPLY);
+				}
+				InformedConsentAudioActivity.this.togglePlaying();
 			}
 		});
     	
-        final View nextButton = findViewById(R.id.nextButton);
         nextButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

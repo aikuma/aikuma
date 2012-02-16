@@ -83,8 +83,8 @@ public class JSONPersister extends Persister {
 	@Override
 	public void save(Timeline timeline) {
 		write(timeline, toJSON(timeline.toHash()));
-		saveLikesFor(timeline); // TODO Probably not a good idea here.
 		timeline.saveEach(this, timeline.getIdentifier());
+		saveLikesFor(timeline); // TODO Probably not a good idea here.
 	}
 	
 	public void saveLikesFor(Timeline timeline) {

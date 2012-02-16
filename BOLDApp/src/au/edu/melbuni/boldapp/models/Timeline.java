@@ -172,7 +172,9 @@ public class Timeline implements Comparable<Timeline> {
 	}
 	
 	public CharSequence getItemText() {
-		return date.toLocaleString() + " " + segments.size() + " segment(s)";
+		int likes = getLikes().size();
+		String likeText = likes == 1 ? "like" : "likes";
+		return likes + " " + likeText + " (" + date.toLocaleString() + ")";
 	}
 
 	// Delegator methods.
@@ -234,7 +236,11 @@ public class Timeline implements Comparable<Timeline> {
 	@Override
 	public int compareTo(Timeline other) {
 		if (other instanceof Timeline) {
-			return this.getIdentifier().compareTo(other.getIdentifier());
+			int comparedLikes = other.totalLikes() - this.totalLikes();
+			if (comparedLikes == 0) {
+				return other.date.compareTo(this.date);
+			}
+			return comparedLikes;
 		}
 		return 0;
 	}

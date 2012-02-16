@@ -7,11 +7,10 @@ import au.edu.melbuni.boldapp.Synchronizer;
 import au.edu.melbuni.boldapp.behaviors.Behavior;
 import au.edu.melbuni.boldapp.behaviors.TapAndReleaseRecord;
 import au.edu.melbuni.boldapp.models.Timeline;
-import au.edu.melbuni.boldapp.persisters.JSONPersister;
 
 public class RecordActivity extends BoldActivity {
 	
-	private Timeline timeline = null;
+	protected Timeline timeline = null;
 	
 	Recorder recorder = new Recorder();
 	Player   player   = new Player();
@@ -41,9 +40,18 @@ public class RecordActivity extends BoldActivity {
 	@Override
 	protected void onDestroy() {
 		if (timeline != null) {
-			timeline.save(new JSONPersister());
+			// Stop and save the recording.
+			//
+			// TODO Duplicate code (see TapAndReleaseRecord).
+			//
+//			timeline.stopRecording(recorder);
+//			timeline.setUser(Bundler.getCurrentUser(this));
+//			Bundler.addTimeline(this, timeline);
+//			new JSONPersister().save(timeline);
 			
 			// Try to synchronize automatically here.
+			//
+			// Note: Removed since it didn't work very well.
 			//
 			try {
 				Synchronizer.getDefault().push(timeline);
@@ -66,6 +74,7 @@ public class RecordActivity extends BoldActivity {
 	public void configureView(Bundle savedInstanceState) {
         super.configureView(savedInstanceState);
         behavior.configureView(this);
+        setFinishNavigation();
     };
     
     public void installBehavior(Bundle savedInstanceState) {

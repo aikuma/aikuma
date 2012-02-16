@@ -285,6 +285,7 @@ public class FTPClient extends Client {
 		return getIds();
 	}
 	
+	@Override
 	public List<String> getLikesIds(String timelineId) {
 		cdToLikes(timelineId, true);
 		return getIds("*"); // No ".json".

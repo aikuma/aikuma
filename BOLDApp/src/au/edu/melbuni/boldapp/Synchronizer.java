@@ -25,6 +25,7 @@ public class Synchronizer {
 	//
 	int userSyncCount;
 	int timelineSyncCount;
+	boolean likesSynced;
 
 	public Synchronizer(Client server) {
 		this.server = server;
@@ -145,7 +146,13 @@ public class Synchronizer {
 
 					@Override
 					public void both(String id) {
-						// TODO
+						Timeline timeline = timelines.find(id);
+						if (timeline != null) {
+							boolean likesSynced = synchronizeLikes(timeline);
+							if (likesSynced) {
+								timelineSyncCount++;
+							}
+						}
 					}
 				});
 
@@ -203,11 +210,43 @@ public class Synchronizer {
 		return true;
 	}
 	
-	protected boolean push(Likes likes, String timelineId) {
+	protected void push(Likes likes, String timelineId) {
 		for (String userId : likes) {
-			server.postLike(userId, timelineId);
+			pushLike(userId, timelineId);
 		}
-		return true;
+	}
+	
+	protected void pushLike(String userId, String timelineId) {
+		server.postLike(userId, timelineId);
+	}
+	
+	public boolean synchronizeLikes(final Timeline timeline) {
+		List<String> remoteLikeIds = server.getLikesIds(timeline.getIdentifier());
+		List<String> localLikeIds = timeline.getLikes().getUserIds();
+		
+		likesSynced = false;
+		
+		synchronizeWithIds(remoteLikeIds, localLikeIds,
+				new SynchronizerCallbacks() {
+					@Override
+					public void serverMore(String id) {
+						getLikes(timeline);
+						likesSynced = true;
+					}
+
+					@Override
+					public void localMore(String id) {
+						pushLike(id, timeline.getIdentifier());
+						likesSynced = true;
+					}
+
+					@Override
+					public void both(String id) {
+						
+					}
+				});
+		
+		return likesSynced;
 	}
 
 	protected void synchronizeWithIds(List<String> serverIds,

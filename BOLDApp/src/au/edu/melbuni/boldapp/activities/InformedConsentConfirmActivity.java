@@ -6,12 +6,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import au.edu.melbuni.boldapp.BoldApplication;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Synchronizer;
 import au.edu.melbuni.boldapp.models.User;
 import au.edu.melbuni.boldapp.persisters.JSONPersister;
+import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class InformedConsentConfirmActivity extends BoldActivity {
 	
@@ -72,14 +74,17 @@ public class InformedConsentConfirmActivity extends BoldActivity {
 				Bundler.storeNewUser(InformedConsentConfirmActivity.this, user);
 				user.save(new JSONPersister());
 				
-				// Try to synchronize automatically here.
+				// Set new and sync.
+				//
+				// Synchronize automatically here.
 				//
 				try {
 					Synchronizer.getDefault().push(user);
-				} catch(RuntimeException e) {
+				} catch(Exception e) {
 					System.err.println(e.getMessage());
 				}
 				
+				setResult(UserSelectionActivity.USER_CONFIRMED);
 				finish();
 			}
 		});
@@ -97,6 +102,27 @@ public class InformedConsentConfirmActivity extends BoldActivity {
     			startActivityForResult(new Intent(getApplicationContext(), InformedConsentPhotoActivity.class), TAKE_USER_PICTURE);
     		} else if (requestCode == TAKE_USER_PICTURE) {
     			setUserPictureFromCurrentUser();
+    			
+				User user = Bundler.getCurrentUser(InformedConsentConfirmActivity.this);
+				user.setConsented(true);
+				
+				Bundler.storeNewUser(InformedConsentConfirmActivity.this, user);
+				Persister persister = new JSONPersister();
+				user.save(persister);
+				persister.saveCurrentUser((BoldApplication) this.getApplication());
+				
+				// Set new and sync.
+				//
+				// Synchronize automatically here.
+				//
+				try {
+					Synchronizer.getDefault().push(user);
+				} catch(Exception e) {
+					System.err.println(e.getMessage());
+				}
+				
+				setResult(UserSelectionActivity.USER_CONFIRMED);
+				finish();
     		}
     	} else {
     		finish();

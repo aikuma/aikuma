@@ -15,7 +15,9 @@ import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.models.User;
 
 public class UserSelectionActivity extends BoldActivity {
-
+	
+	static final int USER_CONFIRMED = 0;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -92,5 +94,12 @@ public class UserSelectionActivity extends BoldActivity {
 					}
 				});
 	}
+	
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    	if (resultCode == UserSelectionActivity.USER_CONFIRMED) {
+    		finish();
+    	}
+    }
 
 }

@@ -34,7 +34,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:layout_weight="0" >
+            android:layout_weight="0"
+            android:autoText="false"
+            android:inputType="none"
+            android:singleLine="true" >
 
 </EditText>
 

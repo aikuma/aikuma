@@ -153,4 +153,14 @@ public class BoldActivity extends Activity {
 			}
 		});
 	}
+	
+	protected void setFinishNavigation() {
+		ImageButton navigationButton = (ImageButton) findViewById(R.id.navigationButton);
+		navigationButton.setImageResource(au.edu.melbuni.boldapp.R.drawable.finish);
+	}
+	
+	protected void setExitNavigation() {
+		ImageButton navigationButton = (ImageButton) findViewById(R.id.navigationButton);
+		navigationButton.setImageResource(au.edu.melbuni.boldapp.R.drawable.exit);
+	}
 }
