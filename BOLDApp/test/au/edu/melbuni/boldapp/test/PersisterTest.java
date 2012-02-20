@@ -120,4 +120,23 @@ public class PersisterTest {
 		assertEquals(expected, persister.readSegments("someTimelineIdentifier"));
 	}
 	
+	@Test
+	public void readLikes() throws IOException {
+		User user = new User();
+		Timeline timeline = new Timeline();
+		timeline.setUser(user);
+		
+		timeline.getLikes().add(UUID.fromString("12345678-1234-1234-1234-123456789012").toString());
+		timeline.getLikes().add(UUID.fromString("22345678-1234-1234-1234-123456789012").toString());
+		persister.save(timeline);
+		
+		persister.saveLikesFor(timeline);
+		
+		List<String> expected = new ArrayList<String>();
+		expected.add("12345678-1234-1234-1234-123456789012");
+		expected.add("22345678-1234-1234-1234-123456789012");
+		
+		assertEquals(expected, persister.readLikes(timeline.getIdentifier()));
+	}
+	
 }

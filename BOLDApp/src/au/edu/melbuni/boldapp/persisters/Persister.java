@@ -318,4 +318,10 @@ public abstract class Persister {
 		return buffer.toString();
 	}
 
+	public void saveLikesFor(Timeline timeline) {
+		for (String userId : timeline.getLikes()) {
+			write(pathForLike(timeline.getIdentifier(), userId), "");
+		}
+	}
+
 }

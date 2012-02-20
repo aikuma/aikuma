@@ -87,17 +87,14 @@ public class JSONPersister extends Persister {
 		saveLikesFor(timeline); // TODO Probably not a good idea here.
 	}
 	
-	public void saveLikesFor(Timeline timeline) {
-		for (String userId : timeline.getLikes()) {
-			write(pathForLike(timeline.getIdentifier(), userId), "");
-		}
-	}
-	
 	@Override
 	public Timeline loadTimeline(Users users, String identifier) {
 		Timeline timeline = null;
 		try {
 			timeline = Timeline.fromHash(users, fromJSON(readTimeline(identifier)));
+			if (timeline == null) {
+				return null; // "Fix" for the problem.
+			}
 			loadLikesFor(timeline); // TODO Probably not a good idea here.
 		} catch (IOException e) {
 			// System.out.println("OUCH " + e);

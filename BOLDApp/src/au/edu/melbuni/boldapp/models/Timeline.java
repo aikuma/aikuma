@@ -115,7 +115,8 @@ public class Timeline implements Comparable<Timeline> {
 		// No user for this timeline found.
 		//
 		if (user == null) {
-			throw new NullPointerException("No User " + userReference + " for Timeline " + uuid + " found.");
+			return null; // If there is no user for this timeline, we just ignore the timeline until the user is there.
+			// throw new NullPointerException("No User " + userReference + " for Timeline " + uuid + " found.");
 		}
 		
 		Segments segments = Segments.load(new JSONPersister(), uuid.toString());

@@ -173,6 +173,18 @@ public class SynchronizerTest {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		@Override
+		public boolean postLike(String userId, String timelineId) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public List<String> getLikesIds(String timelineId) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 		
 	}
 	
