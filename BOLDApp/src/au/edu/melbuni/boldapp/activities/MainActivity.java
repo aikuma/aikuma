@@ -117,6 +117,10 @@ public class MainActivity extends BoldActivity {
 					respeakButton.getBackground().setColorFilter(Color.GREEN,
 							Mode.MULTIPLY);
 					listening = true;
+				} else {
+					recognizer.stop();
+					listening = false;
+					respeakButton.getBackground().clearColorFilter();
 				}
 				return false;
 			}
