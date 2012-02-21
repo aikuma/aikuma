@@ -105,7 +105,7 @@ public class MainActivity extends BoldActivity {
 			@Override
 			public boolean onLongClick(View view) {
 				if (!listening) {
-					recognizer.listen(Persister.getBasePath() + "timelines/02a334c4-a855-4d67-9e1c-14404f39725c/segments/0.3gp", new OnCompletionListener() {
+					recognizer.listen(Persister.getBasePath() + "timelines/02a334c4-a855-4d67-9e1c-14404f39725c/segments/0", new OnCompletionListener() {
 
 						@Override
 						public void onCompletion(Sounder sounder) {
