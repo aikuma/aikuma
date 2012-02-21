@@ -1,8 +1,6 @@
 package au.edu.melbuni.boldapp.activities;
 
 import android.os.Bundle;
-import au.edu.melbuni.boldapp.Player;
-import au.edu.melbuni.boldapp.Recorder;
 import au.edu.melbuni.boldapp.Synchronizer;
 import au.edu.melbuni.boldapp.behaviors.Behavior;
 import au.edu.melbuni.boldapp.behaviors.TapAndReleaseRecord;
@@ -11,9 +9,6 @@ import au.edu.melbuni.boldapp.models.Timeline;
 public class RecordActivity extends BoldActivity {
 	
 	protected Timeline timeline = null;
-	
-	Recorder recorder = new Recorder();
-	Player   player   = new Player();
 	
 	static Behavior<RecordActivity> behavior = new TapAndReleaseRecord();
 	
@@ -61,13 +56,6 @@ public class RecordActivity extends BoldActivity {
 		}
 		
 		super.onDestroy();
-	}
-	
-	public Player getPlayer() {
-		return player;
-	}
-	public Recorder getRecorder() {
-		return recorder;
 	}
     
     @Override

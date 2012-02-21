@@ -63,10 +63,10 @@ public class TapAndReleaseRecord implements Behavior<RecordActivity> {
 			@Override
 			public void onClick(View v) {
 				if (TapAndReleaseRecord.this.isPlaying()) {
-					timeline.stopPlaying(activity.getPlayer());
+					timeline.stopPlaying(Bundler.getPlayer());
 					playButton.getBackground().clearColorFilter();
 				} else {
-					timeline.startPlaying(activity.getPlayer(),
+					timeline.startPlaying(Bundler.getPlayer(),
 							new OnCompletionListener() {
 								@Override
 								public void onCompletion(Sounder sounder) {
@@ -111,7 +111,7 @@ public class TapAndReleaseRecord implements Behavior<RecordActivity> {
 			@Override
 			public void onClick(View v) {
 				if (TapAndReleaseRecord.this.isRecording()) {
-					timeline.stopRecording(activity.getRecorder());
+					timeline.stopRecording(Bundler.getRecorder());
 					timeline.setUser(Bundler.getCurrentUser(activity));
 					Bundler.addTimeline(activity, timeline);
 					new JSONPersister().save(timeline);
@@ -124,7 +124,7 @@ public class TapAndReleaseRecord implements Behavior<RecordActivity> {
 
 					recordButton.getBackground().clearColorFilter();
 				} else {
-					timeline.startRecording(activity.getRecorder());
+					timeline.startRecording(Bundler.getRecorder());
 
 					recordButton.getBackground().setColorFilter(Color.RED,
 							Mode.MULTIPLY);

@@ -23,4 +23,28 @@
 </ImageButton>
         <ImageButton android:layout_weight="1" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/main_listen" android:id="@+id/listenButton"></ImageButton>
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <ImageButton
+            android:id="@+id/respeakButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/main_respeak" />
+
+        <ImageButton
+            android:id="@+id/translateButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/unknown_user" />
+
+    </LinearLayout>
+
 </LinearLayout>

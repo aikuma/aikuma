@@ -3,12 +3,9 @@ package au.edu.melbuni.boldapp;
 import java.io.IOException;
 
 import android.media.MediaPlayer;
-import android.util.Log;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 
 public class Player extends Sounder {
-
-	private static final String LOG_TAG = "Player";
 
 	private MediaPlayer player = new MediaPlayer();
 	private boolean playing = false;
@@ -31,8 +28,19 @@ public class Player extends Sounder {
 			}
 			player.start();
 		} catch (IOException e) {
-			Log.e(LOG_TAG, "#prepare() failed");
+			LogWriter.log(e.getMessage());
+			if (listener != null) {
+				listener.onCompletion(this);
+			}
 		}
+	}
+	
+	public void pause() {
+		player.pause();
+	}
+	
+	public void resume() {
+		player.start();
 	}
 
 	public void stopPlaying() {
@@ -42,11 +50,4 @@ public class Player extends Sounder {
 		player.reset();
 		playing = false;
 	}
-
-//	public void pause() {
-//		if (player != null) {
-//			player.release();
-//			player = null;
-//		}
-//	}
 }

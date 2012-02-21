@@ -49,7 +49,7 @@ public class Recorder extends Sounder {
 		//
 		recorder.start();
 	}
-
+	
 	public void stopRecording() {
 		if (!recording) { return; }
 		recorder.stop();
@@ -57,11 +57,4 @@ public class Recorder extends Sounder {
 		
 		prepareNextRecording();
 	}
-
-//	public void pause() {
-//		if (recorder != null) {
-//			recorder.release();
-//			recorder = null;
-//		}
-//	}
 }

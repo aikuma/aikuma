@@ -26,27 +26,27 @@ public class TapAndHoldRecord implements Behavior<RecordActivity> {
         playButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
-            	timeline.startPlayingLastByDefault(activity.getPlayer());
+            	timeline.startPlayingLastByDefault(Bundler.getPlayer());
             	return false;
             }
         });
         playButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				timeline.stopPlaying(activity.getPlayer());
+				timeline.stopPlaying(Bundler.getPlayer());
 			}
 		});
         recordButton.setOnTouchListener(new View.OnTouchListener() {
         	@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
-        		timeline.startRecording(activity.getRecorder());
+        		timeline.startRecording(Bundler.getRecorder());
             	return false;
             }
         });
         recordButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				timeline.stopRecording(activity.getRecorder());
+				timeline.stopRecording(Bundler.getRecorder());
 				timeline.setUser(Bundler.getCurrentUser(activity));
 				Bundler.addTimeline(activity, timeline);
 			}

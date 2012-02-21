@@ -3,6 +3,8 @@ package au.edu.melbuni.boldapp.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -11,10 +13,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.Recognizer;
+import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.Synchronizer;
+import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.models.User;
+import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class MainActivity extends BoldActivity {
+	
+	boolean listening = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -89,6 +97,28 @@ public class MainActivity extends BoldActivity {
 			public void onClick(View view) {
 				startActivityForResult(new Intent(view.getContext(),
 						OriginalSelectionActivity.class), 0);
+			}
+		});
+		final ImageButton respeakButton = (ImageButton) findViewById(R.id.respeakButton);
+		final Recognizer recognizer = new Recognizer();
+		respeakButton.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View view) {
+				if (!listening) {
+					recognizer.listen(Persister.getBasePath() + "timelines/02a334c4-a855-4d67-9e1c-14404f39725c/segments/0.3gp", new OnCompletionListener() {
+
+						@Override
+						public void onCompletion(Sounder sounder) {
+							listening = false;
+							respeakButton.getBackground().clearColorFilter();
+						}
+						
+					});
+					respeakButton.getBackground().setColorFilter(Color.GREEN,
+							Mode.MULTIPLY);
+					listening = true;
+				}
+				return false;
 			}
 		});
 

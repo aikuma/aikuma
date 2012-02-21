@@ -12,6 +12,23 @@ import au.edu.melbuni.boldapp.models.Users;
  */
 public class Bundler {
 	
+	static Player player = null;
+	static Recorder recorder = null;
+	
+	public static Player getPlayer() {
+		if (player == null) {
+			player = new Player();
+		}
+		return player;
+	}
+	
+	public static Recorder getRecorder() {
+		if (recorder == null) {
+			recorder = new Recorder();
+		}
+		return recorder;
+	}
+	
 	public static void load(Activity activity) {
 		getApplication(activity).load();
 	}
