@@ -11,7 +11,7 @@ import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
  * 
  * Note: Used for respeaking.
  */
-public class Recognizer {
+public class Recognizer extends SpeechController {
 
 	Player player;
 	Recorder recorder;
@@ -28,6 +28,13 @@ public class Recognizer {
 	int maxAmplitude;
 	int silenceThreshold;
 	int speechThreshold;
+	
+	int silenceTriggers = 0;
+	int speechTriggers = 0;
+	int silenceTriggerAmount = 4;
+	int speechTriggerAmount = 1;
+	boolean silenceTriggered = true;
+	boolean speechTriggered = false;
 
 	boolean listening = false;
 
@@ -93,6 +100,8 @@ public class Recognizer {
 	 */
 	protected void switchToPlay() {
 		recorder.stopRecording();
+		player.rewind(1000);
+//		player.rampUp(500);
 		player.resume();
 	}
 
@@ -117,14 +126,24 @@ public class Recognizer {
 	 * Whether we have silence.
 	 */
 	public boolean isSilence(int reading) {
-		return reading < silenceThreshold;
+		if (reading < silenceThreshold) {
+			silenceTriggers++;
+		} else {
+			silenceTriggers = 0;
+		}
+		return silenceTriggers > silenceTriggerAmount;
 	}
 
 	/*
 	 * Whether we have speech.
 	 */
 	public boolean isSpeech(int reading) {
-		return reading > speechThreshold;
+		if (reading < speechThreshold) {
+			speechTriggers++;
+		} else {
+			speechTriggers = 0;
+		}
+		return speechTriggers > speechTriggerAmount;
 	}
 
 	protected int getMaxAmplitude(short[] buffer) {
@@ -147,17 +166,17 @@ public class Recognizer {
 		// Check if we need to stop.
 		//
 		if (isSilence(reading)) {
-			LogWriter.log("Silence.");
+			if (silenceTriggered) { return; }
 			switchToPlay();
+			silenceTriggered = true;
+			speechTriggered = false;
 		} else {
 			if (isSpeech(reading)) {
-				LogWriter.log("Speech.");
+				if (speechTriggered) { return; }
 				switchToRecord();
-			} else {
-				// else just continue doing what it does.
-				//
-				LogWriter.log("---");
-			}
+				speechTriggered = true;
+				silenceTriggered = false;
+			} // else just continue doing what it does.
 		}
 	}
 
