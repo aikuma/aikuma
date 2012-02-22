@@ -27,5 +27,7 @@
         <activity android:name=".activities.InformedConsentAudioActivity" android:screenOrientation="landscape"></activity>
         <activity android:name=".activities.InformedConsentNameActivity" android:screenOrientation="landscape"></activity>
         <activity android:name=".activities.InformedConsentPhotoActivity" android:screenOrientation="landscape"></activity>
+        <activity android:screenOrientation="landscape" android:name=".activities.RespeakActivity"></activity>
+        <activity android:screenOrientation="landscape" android:name=".activities.TranscribeActivity"></activity>
     </application>
 </manifest>

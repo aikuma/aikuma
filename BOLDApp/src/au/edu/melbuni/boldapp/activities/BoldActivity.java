@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import au.edu.melbuni.boldapp.Bundler;
+import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.models.User;
 
@@ -149,18 +150,24 @@ public class BoldActivity extends Activity {
 		navigationButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				Player player = Bundler.getPlayer();
+				if (player.isPlaying()) {
+					player.stopPlaying();
+				}
 				BoldActivity.this.finish();
 			}
 		});
 	}
-	
+
 	protected void setFinishNavigation() {
 		ImageButton navigationButton = (ImageButton) findViewById(R.id.navigationButton);
-		navigationButton.setImageResource(au.edu.melbuni.boldapp.R.drawable.finish);
+		navigationButton
+				.setImageResource(au.edu.melbuni.boldapp.R.drawable.finish);
 	}
-	
+
 	protected void setExitNavigation() {
 		ImageButton navigationButton = (ImageButton) findViewById(R.id.navigationButton);
-		navigationButton.setImageResource(au.edu.melbuni.boldapp.R.drawable.exit);
+		navigationButton
+				.setImageResource(au.edu.melbuni.boldapp.R.drawable.exit);
 	}
 }
