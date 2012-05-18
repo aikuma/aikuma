@@ -11,17 +11,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.R;
+import au.edu.melbuni.boldapp.Sounds;
 import au.edu.melbuni.boldapp.Synchronizer;
 import au.edu.melbuni.boldapp.models.User;
 
 public class MainActivity extends BoldActivity {
-	
+
 	boolean listening = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
+		Sounds.prepare(this.getApplicationContext());
+		Sounds.beep();
+		Sounds.beepbeep();
+		
 		Bundler.load(this);
 		// Users users = Bundler.getUsers(this);
 		// if (users.isEmpty()) {
@@ -72,7 +77,7 @@ public class MainActivity extends BoldActivity {
 
 		addToMenu(R.layout.configuration);
 		setContent(R.layout.main);
-		
+
 		setExitNavigation();
 	};
 
@@ -98,8 +103,18 @@ public class MainActivity extends BoldActivity {
 			@Override
 			public boolean onLongClick(View view) {
 				startActivityForResult(new Intent(view.getContext(),
-//						RespeakActivity.class), 0);
-						TranscribeActivity.class), 0);
+						RespeakActivity.class), 0);
+				// TranscribeActivity.class), 0);
+				return false;
+			}
+		});
+		final ImageButton translateButton = (ImageButton) findViewById(R.id.translateButton);
+		translateButton.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View view) {
+				startActivityForResult(new Intent(view.getContext(),
+						OldRespeakActivity.class), 0); // TODO Replace with correct activity.
+				// TranscribeActivity.class), 0);
 				return false;
 			}
 		});
@@ -117,11 +132,11 @@ public class MainActivity extends BoldActivity {
 										.getDefault();
 								int[] usersAndTimelinesSynced = synchronizer
 										.synchronize(MainActivity.this);
-								
+
 								// Reload all.
 								//
 								Bundler.load(MainActivity.this);
-								
+
 								Toast toast = Toast.makeText(MainActivity.this,
 										"Synchronized "
 												+ usersAndTimelinesSynced[0]
@@ -132,7 +147,7 @@ public class MainActivity extends BoldActivity {
 								toast.show();
 							} catch (RuntimeException e) {
 								System.err.println(e.getMessage());
-								
+
 								Toast toast = Toast.makeText(MainActivity.this,
 										"Go closer, plis.", 2000);
 								toast.setGravity(Gravity.TOP, -30, 50);

@@ -1,6 +1,9 @@
-TODO
-- Make a list view out of the timeline (so to automatically display it).
+Compiling:
+BOLDApp > Right Click
+  Android Tools > Export Signed Application Package > ...
 
+Installing:
+adb install -r -e BOLDApp/bin/BOLDApp.apk 
 
 Saved State, Bundle Keys:
 

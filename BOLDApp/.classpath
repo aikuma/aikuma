@@ -7,5 +7,7 @@
 	<classpathentry kind="lib" path="apache-mime4j-0.6.jar"/>
 	<classpathentry kind="lib" path="httpmime-4.0.1.jar"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="commons-net-3.0.1.jar"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

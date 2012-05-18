@@ -10,19 +10,29 @@
         </HorizontalScrollView>
     </LinearLayout> -->
 
-    <SeekBar
-        android:id="@+id/seekBar1"
+    <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_weight="5" />
+        android:layout_height="wrap_content"
+        android:layout_weight="5" >
 
-    <ImageButton
-        android:id="@+id/respeakButton"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="0dp"
-        android:layout_weight="5"
-        android:scaleType="center"
-        android:src="@drawable/button_play" />
+        <ImageButton
+            android:id="@+id/playButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="0dp"
+            android:layout_weight="5"
+            android:scaleType="center"
+            android:src="@drawable/button_play" />
+
+        <ImageButton
+            android:id="@+id/recordButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="0dp"
+            android:layout_weight="5"
+            android:scaleType="center"
+            android:src="@drawable/button_record" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,6 +1,7 @@
 package au.edu.melbuni.boldapp;
 
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
+import au.edu.melbuni.boldapp.models.Segments;
 
 
 /*
@@ -13,16 +14,21 @@ public class Recognizer extends SpeechController {
 
 	Player player;
 	Recorder recorder;
+	
+	Segments recordingSegments;
+	
 	int silenceTriggers = 0;
 	int speechTriggers = 0;
 	protected boolean silenceTriggered = true;
 	protected boolean speechTriggered = false;
 	int silenceTriggerAmount = 5;
-	int speechTriggerAmount = 1;
+	int speechTriggerAmount = 2;
 
 	public Recognizer() {
 		player = Bundler.getPlayer();
 		recorder = Bundler.getRecorder();
+		
+		recordingSegments = new Segments();
 	}
 	
 	public void listen(String fileName, OnCompletionListener completionListener) {
@@ -39,8 +45,19 @@ public class Recognizer extends SpeechController {
 	 * Switches the mode to play mode.
 	 */
 	protected void switchToPlay() {
-		recorder.stopRecording();
-		player.rewind(1250);
+		// TODO Beep!
+		//
+//		Sounds.beepbeep();
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+		
+//		recorder.stopRecording();
+//		recordingSegments.stopRecording(recorder);
+		
+		player.rewind(100);
 		// player.rampUp(500);
 		player.resume();
 	}
@@ -50,7 +67,9 @@ public class Recognizer extends SpeechController {
 	 */
 	protected void switchToRecord() {
 		player.pause();
-		// recorder.startRecording("test"); // FIXME Make this dynamic!
+		
+//		recordingSegments.startRecording(recorder, "demo");
+//		recorder.startRecording("test" + current++); // FIXME Make this dynamic!
 	}
 
 	public void onBufferFull(short[] buffer) {

@@ -102,7 +102,7 @@ public class FTPClient extends Client {
 		try {
 			if (loggedIn) {
 				boolean result = client.logout();
-				loggedIn = result;
+				loggedIn = !result;
 				return result;
 			}
 		} catch (IOException e) {
@@ -368,6 +368,7 @@ public class FTPClient extends Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		logout();
 		return result;
 	}
 
@@ -410,6 +411,7 @@ public class FTPClient extends Client {
 				e.printStackTrace();
 			}
 		}
+		logout();
 		return result;
 	}
 
@@ -450,7 +452,7 @@ public class FTPClient extends Client {
 				throw new RuntimeException(e.getMessage());
 			}
 		}
-
+		logout();
 		return result;
 	}
 
@@ -470,6 +472,7 @@ public class FTPClient extends Client {
 		for (String string : strings) {
 			results.add(string.replace(new JSONPersister().fileExtension(), ""));
 		}
+		logout();
 		return results;
 	}
 }

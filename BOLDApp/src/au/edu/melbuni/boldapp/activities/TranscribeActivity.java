@@ -5,12 +5,12 @@ import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import au.edu.melbuni.boldapp.Demo;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.SpeechController;
 import au.edu.melbuni.boldapp.Transcriber;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
-import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class TranscribeActivity extends BoldActivity {
 
@@ -39,8 +39,7 @@ public class TranscribeActivity extends BoldActivity {
 			public boolean onLongClick(View view) {
 				if (!listening) {
 					transcriber.listen(
-							Persister.getBasePath()
-									+ "timelines/3711a772-078c-4cfe-a2ab-4d4a7dce2d06/segments/0",
+							Demo.getSoundfilePathWithoutExtension(),
 							new OnCompletionListener() {
 
 								@Override

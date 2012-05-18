@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import android.app.Activity;
+import au.edu.melbuni.boldapp.LogWriter;
 import au.edu.melbuni.boldapp.Player;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Recorder;
@@ -53,7 +54,7 @@ public class Timeline implements Comparable<Timeline> {
 		this.location = "Some Location";
 		this.segments = segments;
 		
-		AllTimelines.add(this);
+//		AllTimelines.add(this); // Don't add implicitly.
 	}
 	
 	public String getIdentifier() {
@@ -133,6 +134,8 @@ public class Timeline implements Comparable<Timeline> {
 	}
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
+		
+		LogWriter.log(getIdentifier());
 		
 		hash.put("id", this.getIdentifier());
 		hash.put("date", this.date.toGMTString());

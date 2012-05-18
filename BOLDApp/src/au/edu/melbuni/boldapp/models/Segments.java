@@ -165,8 +165,6 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 	}
 
 	public void startPlaying(Player player, String timelineIdentifier, OnCompletionListener listener, boolean lastByDefault) {
-		System.out.println("SaP");
-
 		Segment segment = getSelectedForPlaying(lastByDefault);
 
 		if (segment == null) {
@@ -190,8 +188,6 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 	}
 
 	public void stopPlaying(Player player, boolean lastByDefault) {
-		System.out.println("SoP");
-
 		Segment segment = getSelectedForPlaying(lastByDefault);
 
 		if (segment == null) {
@@ -206,15 +202,11 @@ public class Segments implements Iterable<Segment>, Collection<Segment> {
 	}
 
 	public void startRecording(Recorder recorder, String timelineIdentifier) {
-		System.out.println("SaR");
-		
 		Persister persister = new JSONPersister();
 		getSelectedForRecording().startRecording(recorder, persister.dirForSegments(timelineIdentifier));
 	}
 
 	public void stopRecording(Recorder recorder) {
-		System.out.println("SoR");
-
 		getSelectedForRecording().stopRecording(recorder);
 
 		// Last recorded will be the next playing.

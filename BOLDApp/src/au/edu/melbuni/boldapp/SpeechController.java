@@ -31,9 +31,9 @@ public abstract class SpeechController {
 		maxAmplitude = 32768; // MediaRecorder.getAudioSourceMax(); // TODO Make
 								// dynamic depending on phone.
 		LogWriter.log("Max amplitude is: " + maxAmplitude);
-		speechThreshold = maxAmplitude / 10; // Speech is more than 1/m of max
+		speechThreshold = maxAmplitude / 6; // Speech is more than 1/m of max
 											// amplitude.
-		silenceThreshold = maxAmplitude / 10; // Silence is less than 1/n of max
+		silenceThreshold = maxAmplitude / 6; // Silence is less than 1/n of max
 												// amplitude.
 	
 		waitForAudioRecord();
