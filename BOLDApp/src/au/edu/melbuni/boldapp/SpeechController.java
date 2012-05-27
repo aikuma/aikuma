@@ -112,7 +112,7 @@ public abstract class SpeechController implements SpeechTriggers {
 
 	protected abstract void onBufferFull(short[] buffer);
 
-	public abstract void silenceTriggered(short[] buffer);
+	public abstract void silenceTriggered(short[] buffer, int reading, boolean justChanged);
 
-	public abstract void speechTriggered(short[] buffer);
+	public abstract void speechTriggered(short[] buffer, int reading, boolean justChanged);
 }

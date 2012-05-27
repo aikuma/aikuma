@@ -135,7 +135,7 @@ public class Timeline implements Comparable<Timeline> {
 	public Map<String, Object> toHash() {
 		Map<String, Object> hash = new LinkedHashMap<String, Object>();
 		
-		LogWriter.log(getIdentifier());
+//		LogWriter.log(getIdentifier());
 		
 		hash.put("id", this.getIdentifier());
 		hash.put("date", this.date.toGMTString());

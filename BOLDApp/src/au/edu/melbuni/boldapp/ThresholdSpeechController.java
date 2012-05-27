@@ -1,7 +1,6 @@
 package au.edu.melbuni.boldapp;
 
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
-import au.edu.melbuni.boldapp.models.Segments;
 
 /*
  * A Recognizer tries to recognize silence or talk from a user and starts and stops
@@ -19,19 +18,22 @@ public class ThresholdSpeechController extends SpeechController {
 
 	ThresholdSpeechAnalyzer speechAnalyzer;
 
-	Segments recordingSegments;
+	boolean changedTrigger = true;
+
+	// Segments recordingSegments;
 
 	public ThresholdSpeechController() {
 		player = Bundler.getPlayer();
-		
+
 		// TODO Change explicit filename.
 		//
-		wavFile = PCMWriter.getInstance("respeaking.wav", listener.getSampleRate(),
-				 	listener.getChannelConfiguration(), listener.getAudioFormat());
+		wavFile = PCMWriter.getInstance("respeaking.wav",
+				listener.getSampleRate(), listener.getChannelConfiguration(),
+				listener.getAudioFormat());
 
 		speechAnalyzer = new ThresholdSpeechAnalyzer(5, 2);
 
-		recordingSegments = new Segments();
+		// recordingSegments = new Segments();
 	}
 
 	public void listen(String fileName, OnCompletionListener completionListener) {
@@ -84,20 +86,17 @@ public class ThresholdSpeechController extends SpeechController {
 												// speechTriggered.
 	}
 
-	public void silenceTriggered(short[] buffer) {
-		if (speechAnalyzer.isSilenceTriggered()) {
-			return; // Silence has already been triggered, explicitly return.
-		} else {
+	public void silenceTriggered(short[] buffer, int reading, boolean justChanged) {
+		if (justChanged) {
 			switchToPlay();
 		}
 	}
 
-	public void speechTriggered(short[] buffer) {
-		if (speechAnalyzer.isSpeechTriggered()) {
-			wavFile.write(buffer);
-		} else {
+	public void speechTriggered(short[] buffer, int reading, boolean justChanged) {
+		if (justChanged) {
 			switchToRecord();
 		}
+		wavFile.write(buffer);
 	}
 
 }

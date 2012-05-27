@@ -2,8 +2,6 @@ package au.edu.melbuni.boldapp;
 
 public class ThresholdSpeechAnalyzer {
 	
-	protected boolean silenceTriggered = true; // Start with silence, always.
-	protected boolean speechTriggered = false;
 	int silenceTriggers = 0;
 	int speechTriggers = 0;
 	int silenceTriggerAmount;
@@ -24,28 +22,9 @@ public class ThresholdSpeechAnalyzer {
 		this.speechRecognizer = new SpeechRecognizer();
 	}
 	
-	protected boolean isSilenceTriggered() {
-		return silenceTriggered;
-	}
-
-	protected boolean isSpeechTriggered() {
-		return speechTriggered;
-	}
-	
-	protected void triggerSilence() {
-		silenceTriggered = true;
-		speechTriggered = false;
-	}
-	
-	protected void triggerSpeech() {
-		silenceTriggered = false;
-		speechTriggered = true;
-	}
-	
 	protected boolean doesTriggerSilence(int reading) {
 		if (silenceRecognizer.isSilence(reading)) {
 			silenceTriggers++;
-			if (!isSilenceTriggered()) { triggerSilence(); }
 		} else {
 			silenceTriggers = 0;
 		}
@@ -55,7 +34,6 @@ public class ThresholdSpeechAnalyzer {
 	protected boolean doesTriggerSpeech(int reading) {
 		if (speechRecognizer.isSpeech(reading)) {
 			speechTriggers++;
-			if (!isSpeechTriggered()) { triggerSpeech(); }
 		} else {
 			speechTriggers = 0;
 		}
@@ -78,14 +56,16 @@ public class ThresholdSpeechAnalyzer {
 	
 	public void analyze(SpeechTriggers trigger, short[] buffer) {
 		int reading = getMaxAmplitude(buffer);
+		
+//		LogWriter.log("Reading: " + reading);
 
 		// Check if we need to callback.
 		//
 		if (doesTriggerSilence(reading)) {
-			trigger.silenceTriggered(buffer);
+			trigger.silenceTriggered(buffer, reading, silenceTriggers == silenceTriggerAmount + 1);
 		} else {
 			if (doesTriggerSpeech(reading)) {
-				trigger.speechTriggered(buffer);
+				trigger.speechTriggered(buffer, reading, speechTriggers == speechTriggerAmount + 1);
 			} // else just continue doing what it does.
 		}
 	}
