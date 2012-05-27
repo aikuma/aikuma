@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import au.edu.melbuni.boldapp.Demo;
 import au.edu.melbuni.boldapp.R;
-import au.edu.melbuni.boldapp.Recognizer;
+import au.edu.melbuni.boldapp.ThresholdSpeechController;
 import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.SpeechController;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
@@ -33,7 +33,7 @@ public class RespeakActivity extends BoldActivity {
 
 	public void installBehavior(Bundle savedInstanceState) {
 		final ImageButton respeakButton = (ImageButton) findViewById(R.id.respeakButton);
-		final SpeechController recognizer = new Recognizer();
+		final SpeechController recognizer = new ThresholdSpeechController();
 		respeakButton.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View view) {

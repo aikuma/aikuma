@@ -1,0 +1,102 @@
+package au.edu.melbuni.boldapp;
+
+import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
+import au.edu.melbuni.boldapp.models.Segments;
+
+/*
+ * A Recognizer tries to recognize silence or talk from a user and starts and stops
+ * his player (and recorder) appropriately.
+ * 
+ * 
+ * TODO Rename Ð it's not the thresholding, but the playing/stopping that makes this class.
+ * 
+ * Note: Used for respeaking.
+ */
+public class ThresholdSpeechController extends SpeechController {
+
+	Player player;
+	PCMWriter writer;
+
+	ThresholdSpeechAnalyzer speechAnalyzer;
+
+	Segments recordingSegments;
+
+	public ThresholdSpeechController() {
+		player = Bundler.getPlayer();
+		
+		// TODO Change explicit filename.
+		//
+		writer = PCMWriter.getInstance("respeaking.wav", listener.getSampleRate(),
+				listener.getChannelConfiguration(), listener.getAudioFormat());
+
+		speechAnalyzer = new ThresholdSpeechAnalyzer(5, 2);
+
+		recordingSegments = new Segments();
+	}
+
+	public void listen(String fileName, OnCompletionListener completionListener) {
+		super.listen(fileName, completionListener);
+		player.startPlaying(fileName, completionListener);
+	}
+
+	public void stop() {
+		player.stopPlaying();
+		super.stop();
+	}
+
+	/*
+	 * Switches the mode to play mode.
+	 */
+	protected void switchToPlay() {
+		// TODO Beep!
+		//
+		// Sounds.beepbeep();
+		// try {
+		// Thread.sleep(1000);
+		// } catch (InterruptedException e) {
+		// e.printStackTrace();
+		// }
+
+		// recorder.stopRecording();
+		// recordingSegments.stopRecording(recorder);
+
+		player.rewind(100);
+		// player.rampUp(500);
+		player.resume();
+	}
+
+	/*
+	 * Switches the mode to record mode.
+	 */
+	protected void switchToRecord() {
+		player.pause();
+
+		// recordingSegments.startRecording(recorder, "demo");
+		// recorder.startRecording("test" + current++); // FIXME Make this
+		// dynamic!
+	}
+
+	public void onBufferFull(short[] buffer) {
+		speechAnalyzer.analyze(this, buffer); // This will call back
+												// silenceTriggered and
+												// speechTriggered.
+	}
+
+	public void silenceTriggered(short[] buffer) {
+		if (speechAnalyzer.isSilenceTriggered()) {
+			return; // Silence has already been triggered, explicitly return.
+		} else {
+			switchToPlay();
+		}
+	}
+
+	public void speechTriggered(short[] buffer) {
+		if (speechAnalyzer.isSpeechTriggered()) {
+			return; // TODO Record here.
+			writer.write(buffer);
+		} else {
+			switchToRecord();
+		}
+	}
+
+}
