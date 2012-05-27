@@ -15,7 +15,7 @@ import au.edu.melbuni.boldapp.models.Segments;
 public class ThresholdSpeechController extends SpeechController {
 
 	Player player;
-	PCMWriter writer;
+	PCMWriter wavFile;
 
 	ThresholdSpeechAnalyzer speechAnalyzer;
 
@@ -26,8 +26,8 @@ public class ThresholdSpeechController extends SpeechController {
 		
 		// TODO Change explicit filename.
 		//
-		writer = PCMWriter.getInstance("respeaking.wav", listener.getSampleRate(),
-				listener.getChannelConfiguration(), listener.getAudioFormat());
+		wavFile = PCMWriter.getInstance("respeaking.wav", listener.getSampleRate(),
+				 	listener.getChannelConfiguration(), listener.getAudioFormat());
 
 		speechAnalyzer = new ThresholdSpeechAnalyzer(5, 2);
 
@@ -37,10 +37,12 @@ public class ThresholdSpeechController extends SpeechController {
 	public void listen(String fileName, OnCompletionListener completionListener) {
 		super.listen(fileName, completionListener);
 		player.startPlaying(fileName, completionListener);
+		wavFile.prepare();
 	}
 
 	public void stop() {
 		player.stopPlaying();
+		wavFile.close();
 		super.stop();
 	}
 
@@ -92,8 +94,7 @@ public class ThresholdSpeechController extends SpeechController {
 
 	public void speechTriggered(short[] buffer) {
 		if (speechAnalyzer.isSpeechTriggered()) {
-			return; // TODO Record here.
-			writer.write(buffer);
+			wavFile.write(buffer);
 		} else {
 			switchToRecord();
 		}
