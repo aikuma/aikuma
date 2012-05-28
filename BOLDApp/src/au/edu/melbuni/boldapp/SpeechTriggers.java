@@ -2,7 +2,8 @@ package au.edu.melbuni.boldapp;
 
 public interface SpeechTriggers {
 
-	public void silenceTriggered(short[] buffer, int reading, boolean justChanged);
-	public void speechTriggered(short[] buffer, int reading, boolean justChanged);
+	public void silenceTriggered(byte[] buffer, boolean justChanged);
+	public void speechTriggered(byte[] buffer, boolean justChanged);
+	public void neitherTriggered(byte[] buffer);
 	
 }

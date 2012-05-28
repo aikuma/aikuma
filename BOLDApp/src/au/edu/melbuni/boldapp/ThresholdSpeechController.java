@@ -18,9 +18,9 @@ public class ThresholdSpeechController extends SpeechController {
 
 	ThresholdSpeechAnalyzer speechAnalyzer;
 
-	boolean changedTrigger = true;
-
-	// Segments recordingSegments;
+	int BUFFERS = 4;
+	byte[][] lastBuffers = new byte[BUFFERS][0];
+	int currentBuffer = 0;
 
 	public ThresholdSpeechController() {
 		player = Bundler.getPlayer();
@@ -32,8 +32,6 @@ public class ThresholdSpeechController extends SpeechController {
 				listener.getAudioFormat());
 
 		speechAnalyzer = new ThresholdSpeechAnalyzer(5, 2);
-
-		// recordingSegments = new Segments();
 	}
 
 	public void listen(String fileName, OnCompletionListener completionListener) {
@@ -80,23 +78,49 @@ public class ThresholdSpeechController extends SpeechController {
 		// dynamic!
 	}
 
-	public void onBufferFull(short[] buffer) {
+	public void onBufferFull(byte[] buffer) {
 		speechAnalyzer.analyze(this, buffer); // This will call back
 												// silenceTriggered and
 												// speechTriggered.
 	}
 
-	public void silenceTriggered(short[] buffer, int reading, boolean justChanged) {
+	public void silenceTriggered(byte[] buffer, boolean justChanged) {
 		if (justChanged) {
 			switchToPlay();
 		}
+		clearBuffers();
 	}
 
-	public void speechTriggered(short[] buffer, int reading, boolean justChanged) {
+	// TODO Rewrite all!
+	//
+	public void speechTriggered(byte[] buffer, boolean justChanged) {
 		if (justChanged) {
 			switchToRecord();
+			wavFile.write(new byte[buffer.length * 8]); // Empty preamble.
+			for (int i = 0; i < BUFFERS; i++) {
+				byte[] current = lastBuffers[(i + currentBuffer + 1) % 4];
+				if (current.length > 0) { wavFile.write(current); }
+			}
+			clearBuffers();
 		}
 		wavFile.write(buffer);
+	}
+
+	@Override
+	public void neitherTriggered(byte[] buffer) {
+		shiftBuffer(buffer);
+	}
+
+	protected void shiftBuffer(byte[] buffer) {
+		currentBuffer += 1;
+		currentBuffer = currentBuffer % BUFFERS;
+		lastBuffers[currentBuffer] = buffer;
+	}
+
+	protected void clearBuffers() {
+		for (int i = 0; i < BUFFERS; i++) {
+			lastBuffers[i] = new byte[0];
+		}
 	}
 
 }

@@ -13,7 +13,7 @@ public abstract class SpeechController implements SpeechTriggers {
 	protected int bufferSize = AudioRecord.getMinBufferSize(samplingRate,
 			channelConfig, audioFormat);
 
-	protected short[] buffer = new short[samplingRate];
+	protected byte[] buffer = new byte[samplingRate];
 	protected AudioRecord listener;
 
 	// protected boolean listening = false;
@@ -110,9 +110,9 @@ public abstract class SpeechController implements SpeechTriggers {
 		}
 	}
 
-	protected abstract void onBufferFull(short[] buffer);
+	protected abstract void onBufferFull(byte[] buffer);
 
-	public abstract void silenceTriggered(short[] buffer, int reading, boolean justChanged);
+	public abstract void silenceTriggered(byte[] buffer, boolean justChanged);
 
-	public abstract void speechTriggered(short[] buffer, int reading, boolean justChanged);
+	public abstract void speechTriggered(byte[] buffer, boolean justChanged);
 }

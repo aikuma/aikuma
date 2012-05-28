@@ -104,25 +104,15 @@ public class PCMWriter {
 
 	// Write the given buffer to the file.
 	//
-	public void write(short[] buffer) {
+	public void write(byte[] buffer) {
 		try {
 			// Write buffer to file.
 			//
-			for (int i = 0; i < buffer.length; i++) {
-				short currentSample = buffer[i];
-
-				// Write short to file.
-				//
-				randomAccessWriter.writeShort(currentSample);
-
-				// Check the amplitude.
-				//
-				if (currentSample > currentAmplitude) {
-					currentAmplitude = currentSample;
-				}
-			}
-			payloadSize += buffer.length * 2; // Remember larger payload, 1
-												// short = 2 bytes.
+			randomAccessWriter.write(buffer);
+			
+			// Remember larger payload.
+			//
+			payloadSize += buffer.length;
 		} catch (IOException e) {
 			Log.e(PCMWriter.class.getName(),
 					"Error occured in updateListener, recording is aborted");

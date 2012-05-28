@@ -7,18 +7,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import au.edu.melbuni.boldapp.SilenceRecognizer;
+import au.edu.melbuni.boldapp.MaximumRecognizer;
 
 @RunWith(CustomTestRunner.class)
 public class SilenceRecognizerTest {
 	
-	private SilenceRecognizer defaultSilenceRecognizer;
-	private SilenceRecognizer specificSilenceRecognizer;
+	private MaximumRecognizer defaultSilenceRecognizer;
+	private MaximumRecognizer specificSilenceRecognizer;
 
 	@Before
 	public void setUp() throws Exception {
-		this.defaultSilenceRecognizer = new SilenceRecognizer();
-		this.specificSilenceRecognizer = new SilenceRecognizer(2);
+		this.defaultSilenceRecognizer = new MaximumRecognizer();
+		this.specificSilenceRecognizer = new MaximumRecognizer(2);
 	}
 	
 	@Test

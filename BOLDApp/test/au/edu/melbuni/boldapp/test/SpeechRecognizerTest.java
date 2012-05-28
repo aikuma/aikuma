@@ -7,18 +7,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import au.edu.melbuni.boldapp.SpeechRecognizer;
+import au.edu.melbuni.boldapp.MaximumSpeechRecognizer;
 
 @RunWith(CustomTestRunner.class)
 public class SpeechRecognizerTest {
 	
-	private SpeechRecognizer defaultSpeechRecognizer;
-	private SpeechRecognizer specificSpeechRecognizer;
+	private MaximumSpeechRecognizer defaultSpeechRecognizer;
+	private MaximumSpeechRecognizer specificSpeechRecognizer;
 
 	@Before
 	public void setUp() throws Exception {
-		this.defaultSpeechRecognizer = new SpeechRecognizer();
-		this.specificSpeechRecognizer = new SpeechRecognizer(2);
+		this.defaultSpeechRecognizer = new MaximumSpeechRecognizer();
+		this.specificSpeechRecognizer = new MaximumSpeechRecognizer(2);
 	}
 	
 	@Test
