@@ -109,7 +109,7 @@ public class PCMWriter {
 			// Write buffer to file.
 			//
 			randomAccessWriter.write(buffer);
-			
+
 			// Remember larger payload.
 			//
 			payloadSize += buffer.length;
@@ -118,6 +118,21 @@ public class PCMWriter {
 					"Error occured in updateListener, recording is aborted");
 			// stop();
 		}
+	}
+
+	public void write(short[] buffer) {
+		byte[] byteBuffer = new byte[buffer.length * 2];
+
+		for (int i = 0; i < buffer.length; i++) {
+			short sample = buffer[i];
+
+			// TODO Use Java helpers?
+			//
+			byteBuffer[i * 2] = (byte) sample;
+			byteBuffer[i * 2 + 1] = (byte) (sample >>> 8);
+		}
+
+		write(byteBuffer);
 	}
 
 	// /*

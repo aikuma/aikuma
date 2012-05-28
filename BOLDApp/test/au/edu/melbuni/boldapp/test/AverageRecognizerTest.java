@@ -22,70 +22,62 @@ public class AverageRecognizerTest {
 		this.specificRecognizer = new AverageRecognizer(1, 1);
 	}
 
-	@Test
-	public void conceptionAboutBytesIsCorrect() {
-		assertEquals(0, (byte) 0);
-		assertEquals(1, (byte) 1);
-		assertEquals(127, (byte) 127);
-		assertEquals(-128, (byte) 128);
-		assertEquals(-1, (byte) 255);
-		assertEquals(0, (byte) 256);
-	}
+//	@Test
+//	public void conceptionAboutBytesIsCorrect() {
+//		assertEquals(0, 0);
+//		assertEquals(1, 1);
+//		assertEquals(127, 127);
+//		assertEquals(-128, 128);
+//		assertEquals(-1, 255);
+//		assertEquals(0, 256);
+//	}
 	
-	@Test
-	public void conceptionAboutConversionIsCorrect() {
-		assertEquals(0, (short)((byte) 0 | ((byte) 0 << 8)));
-		assertEquals(256, (short)((byte) 0 | ((byte) 1 << 8)));
-		
-		
-	}
+//	@Test
+//	public void conceptionAboutConversionIsCorrect() {
+//		assertEquals(0, (short)(0 | (0 << 8)));
+//		assertEquals(256, (short)(0 | (1 << 8)));
+//	}
 	
 	@Test
 	public void getAverageAmplitude1() {
-		assertEquals(0, defaultRecognizer.getAverageAmplitude(new byte[] { 0,
+		assertEquals(0, defaultRecognizer.getAverageAmplitude(new short[] { 0,
 				0, 0, 0 }));
 	}
 
 	@Test
 	public void getAverageAmplitude2() {
-		assertEquals(0, defaultRecognizer.getAverageAmplitude(new byte[] { 1,
+		assertEquals(0, defaultRecognizer.getAverageAmplitude(new short[] { 1,
 				0, 0, 0 }));
 	}
 
 	@Test
 	public void getAverageAmplitude3() {
-		assertEquals(1, defaultRecognizer.getAverageAmplitude(new byte[] { 1,
-				0, 1, 0 }));
+		assertEquals(1, defaultRecognizer.getAverageAmplitude(new short[] { 1,
+				1, 1, 1 }));
 	}
 
 	@Test
 	public void getAverageAmplitude3b() {
-		assertEquals(256, defaultRecognizer.getAverageAmplitude(new byte[] { (byte) 0,
-				(byte) 1, (byte) 0, (byte) 1 }));
+		assertEquals(256, defaultRecognizer.getAverageAmplitude(new short[] { 0,
+				512, 0, 512 }));
 	}
 	
 	@Test
 	public void getAverageAmplitude3c() {
-		assertEquals(128, defaultRecognizer.getAverageAmplitude(new byte[] { (byte) 0,
-				(byte) 0, (byte) 0, (byte) 1 }));
+		assertEquals(128, defaultRecognizer.getAverageAmplitude(new short[] { 0,
+				0, 0, 512 }));
 	}
 	
 	@Test
 	public void getAverageAmplitude4() {
-		assertEquals(32768, defaultRecognizer.getAverageAmplitude(new byte[] { (byte) 0,
-				(byte) 128, (byte) 0, (byte) 128 }));
+		assertEquals(8192, defaultRecognizer.getAverageAmplitude(new short[] { 0,
+				16384, 0, 16384 }));
 	}
 	
 	@Test
 	public void getAverageAmplitude5() {
-		assertEquals(65280, defaultRecognizer.getAverageAmplitude(new byte[] { (byte) 0,
-				(byte) 255, (byte) 0, (byte) 255 }));
-	}
-	
-	@Test
-	public void getAverageAmplitude6() {
-		assertEquals(32640, defaultRecognizer.getAverageAmplitude(new byte[] { (byte) 0,
-				(byte) 0, (byte) 0, (byte) 255 }));
+		assertEquals(2, defaultRecognizer.getAverageAmplitude(new short[] { 1,
+				2, 3, 4 }));
 	}
 
 }

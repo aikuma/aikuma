@@ -26,7 +26,7 @@ public class MaximumRecognizer extends Recognizer {
 	}
 
 	@Override
-	public boolean isSilence(byte[] buffer) {
+	public boolean isSilence(short[] buffer) {
 		int reading = getMaximumAmplitude(buffer);
 		
 		return reading < silenceThreshold;
@@ -39,23 +39,17 @@ public class MaximumRecognizer extends Recognizer {
 		return reading > speechThreshold;
 	}
 
-	protected int getMaximumAmplitude(byte[] buffer) {
+	protected int getMaximumAmplitude(short[] buffer) {
 		short maxValue = 0;
 		
-		for (int i = 0; i < buffer.length / 2; i++) {
-			short value = getShort(buffer[i*2],
-					buffer[i*2+1]);
+		for (int i = 0; i < buffer.length; i++) {
+			short value = buffer[i];
+			
 			if (value > maxValue) {
 				maxValue = value;
 			}
 		}
 	
 		return maxValue;
-	}
-	
-	// TODO Remove duplicate code.
-	//
-	private short getShort(byte argB1, byte argB2) {
-		return (short) (argB1 | (argB2 << 8));
 	}
 }

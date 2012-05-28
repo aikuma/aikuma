@@ -7,13 +7,13 @@ import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 
 public abstract class SpeechController implements SpeechTriggers {
 
-	protected int samplingRate = 8000; // TODO Get as much as possible.
+	protected int samplingRate = 1000; // TODO Get as much as possible.
 	protected int channelConfig = AudioFormat.CHANNEL_IN_MONO;
 	protected int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
-	protected int bufferSize = AudioRecord.getMinBufferSize(samplingRate,
-			channelConfig, audioFormat);
+//	protected int bufferSize = AudioRecord.getMinBufferSize(samplingRate,
+//			channelConfig, audioFormat);
 
-	protected byte[] buffer = new byte[samplingRate];
+	protected short[] buffer = new short[samplingRate];
 	protected AudioRecord listener;
 
 	// protected boolean listening = false;
@@ -110,9 +110,9 @@ public abstract class SpeechController implements SpeechTriggers {
 		}
 	}
 
-	protected abstract void onBufferFull(byte[] buffer);
+	protected abstract void onBufferFull(short[] buffer);
 
-	public abstract void silenceTriggered(byte[] buffer, boolean justChanged);
+	public abstract void silenceTriggered(short[] buffer, boolean justChanged);
 
-	public abstract void speechTriggered(byte[] buffer, boolean justChanged);
+	public abstract void speechTriggered(short[] buffer, boolean justChanged);
 }

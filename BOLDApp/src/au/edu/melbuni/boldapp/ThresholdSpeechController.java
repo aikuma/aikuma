@@ -1,5 +1,7 @@
 package au.edu.melbuni.boldapp;
 
+import org.apache.commons.net.ntp.TimeStamp;
+
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 
 /*
@@ -19,8 +21,10 @@ public class ThresholdSpeechController extends SpeechController {
 	ThresholdSpeechAnalyzer speechAnalyzer;
 
 	int BUFFERS = 4;
-	byte[][] lastBuffers = new byte[BUFFERS][0];
+	short[][] lastBuffers = new short[BUFFERS][0];
 	int currentBuffer = 0;
+	
+	boolean recording = false;
 
 	public ThresholdSpeechController() {
 		player = Bundler.getPlayer();
@@ -31,7 +35,7 @@ public class ThresholdSpeechController extends SpeechController {
 				listener.getSampleRate(), listener.getChannelConfiguration(),
 				listener.getAudioFormat());
 
-		speechAnalyzer = new ThresholdSpeechAnalyzer(5, 2);
+		speechAnalyzer = new ThresholdSpeechAnalyzer(44, BUFFERS);
 	}
 
 	public void listen(String fileName, OnCompletionListener completionListener) {
@@ -59,10 +63,12 @@ public class ThresholdSpeechController extends SpeechController {
 		// e.printStackTrace();
 		// }
 
+		recording = false;
+		
 		// recorder.stopRecording();
 		// recordingSegments.stopRecording(recorder);
 
-		player.rewind(100);
+		player.rewind(1000 * (BUFFERS / (listener.getSampleRate() / 1000)));
 		// player.rampUp(500);
 		player.resume();
 	}
@@ -72,19 +78,20 @@ public class ThresholdSpeechController extends SpeechController {
 	 */
 	protected void switchToRecord() {
 		player.pause();
-
+		recording = true;
+		
 		// recordingSegments.startRecording(recorder, "demo");
 		// recorder.startRecording("test" + current++); // FIXME Make this
 		// dynamic!
 	}
 
-	public void onBufferFull(byte[] buffer) {
+	public void onBufferFull(short[] buffer) {
 		speechAnalyzer.analyze(this, buffer); // This will call back
 												// silenceTriggered and
 												// speechTriggered.
 	}
 
-	public void silenceTriggered(byte[] buffer, boolean justChanged) {
+	public void silenceTriggered(short[] buffer, boolean justChanged) {
 		if (justChanged) {
 			switchToPlay();
 		}
@@ -93,33 +100,39 @@ public class ThresholdSpeechController extends SpeechController {
 
 	// TODO Rewrite all!
 	//
-	public void speechTriggered(byte[] buffer, boolean justChanged) {
+	public void speechTriggered(short[] buffer, boolean justChanged) {
+		// TODO This probably gets called too often.
+		//
 		if (justChanged) {
 			switchToRecord();
-			wavFile.write(new byte[buffer.length * 8]); // Empty preamble.
+			wavFile.write(new byte[buffer.length * 30]); // Empty preamble.
 			for (int i = 0; i < BUFFERS; i++) {
-				byte[] current = lastBuffers[(i + currentBuffer + 1) % 4];
-				if (current.length > 0) { wavFile.write(current); }
+				short[] current = lastBuffers[(i + currentBuffer + 1) % BUFFERS];
+//				if (current.length > 0) { wavFile.write(current); }
 			}
 			clearBuffers();
 		}
 		wavFile.write(buffer);
+//		LogWriter.log(TimeStamp.getCurrentTime().toString() + ": written " + buffer.length + " bytes.");
 	}
 
 	@Override
-	public void neitherTriggered(byte[] buffer) {
+	public void neitherTriggered(short[] buffer) {
 		shiftBuffer(buffer);
+		if (recording) {
+			speechTriggered(buffer, false);
+		}
 	}
 
-	protected void shiftBuffer(byte[] buffer) {
+	protected void shiftBuffer(short[] buffer) {
 		currentBuffer += 1;
 		currentBuffer = currentBuffer % BUFFERS;
-		lastBuffers[currentBuffer] = buffer;
+		lastBuffers[currentBuffer] = buffer.clone();
 	}
 
 	protected void clearBuffers() {
 		for (int i = 0; i < BUFFERS; i++) {
-			lastBuffers[i] = new byte[0];
+			lastBuffers[i] = new short[]{};
 		}
 	}
 

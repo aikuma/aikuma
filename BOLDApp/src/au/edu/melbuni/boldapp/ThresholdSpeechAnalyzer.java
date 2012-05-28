@@ -1,5 +1,7 @@
 package au.edu.melbuni.boldapp;
 
+import org.apache.commons.net.ntp.TimeStamp;
+
 public class ThresholdSpeechAnalyzer {
 	
 	int silenceTriggers = 0;
@@ -17,10 +19,10 @@ public class ThresholdSpeechAnalyzer {
 		this.silenceTriggerAmount = silenceTriggerAmount;
 		this.speechTriggerAmount = speechTriggerAmount;
 		
-		this.recognizer = new AverageRecognizer(10, 10);
+		this.recognizer = new AverageRecognizer(48, 32);
 	}
 	
-	protected boolean doesTriggerSilence(byte[] buffer) {
+	protected boolean doesTriggerSilence(short[] buffer) {
 		if (recognizer.isSilence(buffer)) {
 			silenceTriggers++;
 		} else {
@@ -29,7 +31,7 @@ public class ThresholdSpeechAnalyzer {
 		return silenceTriggers > silenceTriggerAmount;
 	}
 	
-	protected boolean doesTriggerSpeech(byte[] buffer) {
+	protected boolean doesTriggerSpeech(short[] buffer) {
 		if (recognizer.isSpeech(buffer)) {
 			speechTriggers++;
 		} else {
@@ -38,7 +40,9 @@ public class ThresholdSpeechAnalyzer {
 		return speechTriggers > speechTriggerAmount;
 	}
 	
-	public void analyze(SpeechTriggers trigger, byte[] buffer) {
+	public void analyze(SpeechTriggers trigger, short[] buffer) {
+		LogWriter.log(TimeStamp.getCurrentTime().toString() + ": analyze.");
+		
 		// Check if we need to callback.
 		//
 		if (doesTriggerSilence(buffer)) {
