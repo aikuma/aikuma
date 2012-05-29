@@ -51,7 +51,7 @@ public class ThresholdSpeechAnalyzer {
 			if (doesTriggerSpeech(buffer)) {
 				trigger.speechTriggered(buffer, speechTriggers == speechTriggerAmount + 1);
 			} else {
-				trigger.neitherTriggered(buffer);
+//				trigger.neitherTriggered(buffer);
 			}
 		}
 	}

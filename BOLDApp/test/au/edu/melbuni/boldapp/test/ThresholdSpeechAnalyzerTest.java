@@ -22,12 +22,12 @@ public class ThresholdSpeechAnalyzerTest {
 		}
 		
 		@Override
-		public void silenceTriggered(short[] buffer) {
+		public void silenceTriggered(short[] buffer, boolean justChanged) {
 			this.silenceTriggered += 1;
 		}
 		
 		@Override
-		public void speechTriggered(short[] buffer) {
+		public void speechTriggered(short[] buffer, boolean justChanged) {
 			this.speechTriggered += 1;
 		}
 		

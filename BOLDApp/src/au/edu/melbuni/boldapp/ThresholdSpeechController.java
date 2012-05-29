@@ -1,8 +1,7 @@
 package au.edu.melbuni.boldapp;
 
-import org.apache.commons.net.ntp.TimeStamp;
-
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
+import au.edu.melbuni.boldapp.listeners.OnSpeechListener;
 
 /*
  * A Recognizer tries to recognize silence or talk from a user and starts and stops
@@ -15,18 +14,28 @@ import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
  */
 public class ThresholdSpeechController extends SpeechController {
 
+	OnSpeechListener speechListener;
 	Player player;
 	PCMWriter wavFile;
 
-	ThresholdSpeechAnalyzer speechAnalyzer;
-
-	int BUFFERS = 4;
-	short[][] lastBuffers = new short[BUFFERS][0];
-	int currentBuffer = 0;
+	BufferingThresholdSpeechAnalyzer speechAnalyzer;
 	
 	boolean recording = false;
 
-	public ThresholdSpeechController() {
+	public ThresholdSpeechController(OnSpeechListener speechListener) {
+		this.speechListener = speechListener != null ? speechListener : new OnSpeechListener() {
+			
+			@Override
+			public void onSpeech() {
+				
+			}
+			
+			@Override
+			public void onSilence() {
+				
+			}
+		};
+		
 		player = Bundler.getPlayer();
 
 		// TODO Change explicit filename.
@@ -35,7 +44,7 @@ public class ThresholdSpeechController extends SpeechController {
 				listener.getSampleRate(), listener.getChannelConfiguration(),
 				listener.getAudioFormat());
 
-		speechAnalyzer = new ThresholdSpeechAnalyzer(44, BUFFERS);
+		speechAnalyzer = new BufferingThresholdSpeechAnalyzer(44, 3);
 	}
 
 	public void listen(String fileName, OnCompletionListener completionListener) {
@@ -45,8 +54,8 @@ public class ThresholdSpeechController extends SpeechController {
 	}
 
 	public void stop() {
-		player.stopPlaying();
 		wavFile.close();
+		player.stopPlaying();
 		super.stop();
 	}
 
@@ -62,13 +71,15 @@ public class ThresholdSpeechController extends SpeechController {
 		// } catch (InterruptedException e) {
 		// e.printStackTrace();
 		// }
-
+		
+		speechListener.onSilence();
 		recording = false;
 		
 		// recorder.stopRecording();
 		// recordingSegments.stopRecording(recorder);
 
-		player.rewind(1000 * (BUFFERS / (listener.getSampleRate() / 1000)));
+//		player.rewind(1000 * (3 / (listener.getSampleRate() / 1000)));
+		player.rewind(100);
 		// player.rampUp(500);
 		player.resume();
 	}
@@ -78,6 +89,7 @@ public class ThresholdSpeechController extends SpeechController {
 	 */
 	protected void switchToRecord() {
 		player.pause();
+		speechListener.onSpeech();
 		recording = true;
 		
 		// recordingSegments.startRecording(recorder, "demo");
@@ -86,16 +98,15 @@ public class ThresholdSpeechController extends SpeechController {
 	}
 
 	public void onBufferFull(short[] buffer) {
-		speechAnalyzer.analyze(this, buffer); // This will call back
-												// silenceTriggered and
-												// speechTriggered.
+		// This will call back silenceTriggered and speechTriggered.
+		//
+		speechAnalyzer.analyze(this, buffer);
 	}
 
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
 		if (justChanged) {
 			switchToPlay();
 		}
-		clearBuffers();
 	}
 
 	// TODO Rewrite all!
@@ -105,35 +116,8 @@ public class ThresholdSpeechController extends SpeechController {
 		//
 		if (justChanged) {
 			switchToRecord();
-			wavFile.write(new byte[buffer.length * 30]); // Empty preamble.
-			for (int i = 0; i < BUFFERS; i++) {
-				short[] current = lastBuffers[(i + currentBuffer + 1) % BUFFERS];
-//				if (current.length > 0) { wavFile.write(current); }
-			}
-			clearBuffers();
 		}
 		wavFile.write(buffer);
-//		LogWriter.log(TimeStamp.getCurrentTime().toString() + ": written " + buffer.length + " bytes.");
-	}
-
-	@Override
-	public void neitherTriggered(short[] buffer) {
-		shiftBuffer(buffer);
-		if (recording) {
-			speechTriggered(buffer, false);
-		}
-	}
-
-	protected void shiftBuffer(short[] buffer) {
-		currentBuffer += 1;
-		currentBuffer = currentBuffer % BUFFERS;
-		lastBuffers[currentBuffer] = buffer.clone();
-	}
-
-	protected void clearBuffers() {
-		for (int i = 0; i < BUFFERS; i++) {
-			lastBuffers[i] = new short[]{};
-		}
 	}
 
 }

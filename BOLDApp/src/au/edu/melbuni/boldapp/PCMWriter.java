@@ -60,10 +60,6 @@ public class PCMWriter {
 	//
 	private static final int TIMER_INTERVAL = 120;
 
-	// Stores current amplitude (only in uncompressed mode)
-	//
-	private int currentAmplitude = 0;
-
 	// Output file path
 	//
 	private String fullFilename = null;
@@ -108,6 +104,8 @@ public class PCMWriter {
 		try {
 			// Write buffer to file.
 			//
+			LogWriter.log("rAW null? => " + (randomAccessWriter != null));
+			LogWriter.log("buffer null? => " + (buffer != null));
 			randomAccessWriter.write(buffer);
 
 			// Remember larger payload.
@@ -395,14 +393,6 @@ public class PCMWriter {
 			Log.e(PCMWriter.class.getName(),
 					"I/O exception occured while closing output file");
 		}
-	}
-
-	/*
-	 * 
-	 * Converts a byte[2] to a short, in LITTLE_ENDIAN format
-	 */
-	private short getShort(byte argB1, byte argB2) {
-		return (short) (argB1 | (argB2 << 8));
 	}
 
 }

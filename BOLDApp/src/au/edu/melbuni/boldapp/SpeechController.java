@@ -1,5 +1,7 @@
 package au.edu.melbuni.boldapp;
 
+import java.util.Arrays;
+
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -106,7 +108,9 @@ public abstract class SpeechController implements SpeechTriggers {
 
 	protected void read() {
 		while (listener.read(buffer, 0, buffer.length) > 0) {
-			onBufferFull(buffer);
+			// Hand in a copy of the buffer.
+			//
+			onBufferFull(Arrays.copyOf(buffer, buffer.length));
 		}
 	}
 

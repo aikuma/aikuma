@@ -28,11 +28,7 @@ public class AverageRecognizer extends Recognizer {
 	@Override
 	public boolean isSilence(short[] buffer) {
 		int reading = getAverageAmplitude(buffer);
-
-//		for (int i = 0; i < buffer.length; i++) {
-//			LogWriter.log("" + buffer[i]);
-//		}
-
+		
 		return reading < silenceThreshold;
 	}
 
@@ -57,30 +53,4 @@ public class AverageRecognizer extends Recognizer {
 
 		return amount == 0 ? sum : sum / amount;
 	}
-
-	// // Convoluted version of
-	// // argB1 | (argB2 << 8)
-	// //
-	// private int getInt(byte b1, byte b2) {
-	// return (int) b1 | b2 << 8;
-	//
-	// // ByteBuffer byteBuffer = ByteBuffer.allocate(2);
-	// // byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-	// // byteBuffer.put(0, b2);
-	// // byteBuffer.put(1, b1);
-	// // return (int) byteBuffer.getShort();
-	//
-	// // int intB2 = (int) argB2;
-	// // intB2 = (intB2 << 8);
-	// // if (intB2 < 0) { intB2 += 65536; }
-	// // System.out.println(intB2);
-	// //
-	// // int intB1 = (int) argB1;
-	// // if (intB1 < 0) { intB1 += 512; }
-	// // System.out.println(intB1);
-	// //
-	// // int value = intB2 + intB1;
-	// // return value;
-	// }
-
 }
