@@ -28,11 +28,11 @@ public class BufferingThresholdSpeechAnalyzerTest {
 		
 		@Override
 		public void speechTriggered(short[] buffer, boolean justChanged) {
-			System.out.print("buffer: [");
-			for (int i = 0; i < buffer.length; i++) {
-				System.out.print("" + buffer[i] + ", ");
-			}
-			System.out.println("]");
+//			System.out.print("buffer: [");
+//			for (int i = 0; i < buffer.length; i++) {
+//				System.out.print("" + buffer[i] + ", ");
+//			}
+//			System.out.println("]");
 			
 			this.speechTriggered += 1;
 		}
@@ -52,7 +52,7 @@ public class BufferingThresholdSpeechAnalyzerTest {
 	@Before
 	public void setUp() throws Exception {
 		this.defaultSpeechAnalyzer = new BufferingThresholdSpeechAnalyzer();
-		this.specificSpeechAnalyzer = new BufferingThresholdSpeechAnalyzer(1, 1);
+		this.specificSpeechAnalyzer = new BufferingThresholdSpeechAnalyzer(2, 2);
 		
 		this.testClass = new SpeechTriggersTestClass();
 	}
@@ -140,7 +140,7 @@ public class BufferingThresholdSpeechAnalyzerTest {
 		// Lots of silence.
 		//
 		for (int i = 0; i < 20; i++) {
-			specificSpeechAnalyzer.analyze(testClass, new short[]{1});
+			specificSpeechAnalyzer.analyze(testClass, new short[]{(short) i});
 		}
 		
 //		specificSpeechAnalyzer.analyze(testClass, new short[]{6000});
@@ -154,7 +154,9 @@ public class BufferingThresholdSpeechAnalyzerTest {
 		
 		// This silence does not trigger silence.
 		//
-		specificSpeechAnalyzer.analyze(testClass, new short[]{1});
+		for (int i = 0; i < 2; i++) {
+			specificSpeechAnalyzer.analyze(testClass, new short[]{1});
+		}
 
 //		specificSpeechAnalyzer.analyze(testClass, new short[]{6000});
 //		specificSpeechAnalyzer.analyze(testClass, new short[]{6000}); // 4
@@ -168,12 +170,12 @@ public class BufferingThresholdSpeechAnalyzerTest {
 		
 		// Triggers silence.
 		//
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 3; i++) {
 			specificSpeechAnalyzer.analyze(testClass, new short[]{1});
 		}
 		
 		assertEquals(1, testClass.silenceTriggered);
-		assertEquals(9, testClass.speechTriggered);
+		assertEquals(10, testClass.speechTriggered);
 	}
 	
 }

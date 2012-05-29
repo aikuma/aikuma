@@ -12,10 +12,10 @@ public class BufferingThresholdSpeechAnalyzer {
 	// Buffer used for the part before speech is detected
 	// (the ramp up of speech).
 	//
-	short[] onsetBuffer; 
+	short[] onsetBuffer;
 	int ONSET_BUFFERS = 8;
-	
-	int EMPTY_SPEECH_PREAMBLE_BUFFERS = 5;
+
+	int EMPTY_SPEECH_PREAMBLE_BUFFERS = 1;
 
 	// Buffer for buffering after speech (when
 	// silence has begun).
@@ -62,23 +62,44 @@ public class BufferingThresholdSpeechAnalyzer {
 		return speechTriggers > speechTriggerAmount;
 	}
 
+	private void debugBuffer(short[] buffer) {
+		System.out.print("buffer: [");
+		int i;
+		for (i = 0; i < buffer.length - 1; i++) {
+			System.out.print("" + buffer[i] + ", ");
+		}
+		System.out.print("" + buffer[i]);
+		System.out.println("]");
+	}
+
 	protected void shiftOnsetBufferWith(short[] buffer) {
+		// debugBuffer(buffer);
+		// System.out.println("oBl1: " + onsetBuffer.length);
+		// debugBuffer(onsetBuffer);
+
 		onsetBuffer = Arrays.copyOfRange(onsetBuffer, buffer.length,
 				onsetBuffer.length);
-		
-		int offset = onsetBuffer.length - 1;
-		
-//		addToOnsetBuffer(buffer);
-		
-		// Copy the buffer to avoid reference problems.
+
+		// // System.out.println("oBl2: " + onsetBuffer.length);
+		// // debugBuffer(onsetBuffer);
 		//
-		short[] copiedBuffer = Arrays.copyOf(buffer, buffer.length);
-		
-		// Add the copied current buffer onto the end.
+		// int offset = onsetBuffer.length - 1;
 		//
-		for (int i = 0; i < buffer.length; i++) {
-			onsetBuffer[i + offset] = copiedBuffer[i];
-		}
+		// // System.out.println("o: " + offset);
+
+		addToOnsetBuffer(buffer);
+		//
+		// // Copy the buffer to avoid reference problems.
+		// //
+		// short[] copiedBuffer = Arrays.copyOf(buffer, buffer.length);
+		// // debugBuffer(copiedBuffer);
+		//
+		// // Add the copied current buffer onto the end.
+		// //
+		// for (int i = 0; i < buffer.length; i++) {
+		// // debugBuffer(onsetBuffer);
+		// onsetBuffer[i + offset] = copiedBuffer[i];
+		// }
 	}
 
 	protected void replaceOnsetBufferWith(short[] buffer) {
@@ -103,7 +124,7 @@ public class BufferingThresholdSpeechAnalyzer {
 			afterBuffer[i + offset] = copiedBuffer[i];
 		}
 	}
-	
+
 	// TODO Duplicate method.
 	//
 	protected void addToOnsetBuffer(short[] buffer) {
@@ -132,7 +153,7 @@ public class BufferingThresholdSpeechAnalyzer {
 	protected void clearAfterBuffer() {
 		afterBuffer = new short[] {};
 	}
-	
+
 	// Switches back and forth between modes:
 	// If in silent mode (speech == false), it will
 	// wait until speech occurs.
@@ -153,36 +174,37 @@ public class BufferingThresholdSpeechAnalyzer {
 		} else { // We are in silence mode. Wait for enough speech.
 			if (doesTriggerSpeech(buffer)) {
 				speech = true;
-				
+
 				// Empty preamble.
 				//
-				trigger.speechTriggered(new short[onsetBuffer.length * EMPTY_SPEECH_PREAMBLE_BUFFERS],
-						true);
-				
+				trigger.speechTriggered(new short[onsetBuffer.length
+						* EMPTY_SPEECH_PREAMBLE_BUFFERS], true);
+
 				// Hand in the totally collected speech.
 				//
 				trigger.speechTriggered(onsetBuffer, false);
-				
+
 				// Clear onset buffer.
 				//
 				clearOnsetBuffer();
 			} else { // Still in silence mode.
-				
+
 				// TODO See what's going wrong here.
 				//
-//				// Remember n "silent" buffers to add after speech, always.
-//				//
-//				if (afterBuffer.length <= (buffer.length * AFTER_SPEECH_BUFFERS)) {
-//					addToAfterBuffer(buffer);
-//				} else {
-//					// The buffers are ready to be written.
-//					//
-//					trigger.speechTriggered(afterBuffer, false);
-//					
-//					// Reset after speech buffering.
-//					//
-//					clearAfterBuffer();
-//				}
+				// // Remember n "silent" buffers to add after speech, always.
+				// //
+				// if (afterBuffer.length <= (buffer.length *
+				// AFTER_SPEECH_BUFFERS)) {
+				// addToAfterBuffer(buffer);
+				// } else {
+				// // The buffers are ready to be written.
+				// //
+				// trigger.speechTriggered(afterBuffer, false);
+				//
+				// // Reset after speech buffering.
+				// //
+				// clearAfterBuffer();
+				// }
 
 				// Remember n "silent" buffers to add before speech, always.
 				//

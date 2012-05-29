@@ -103,7 +103,7 @@ public class MainActivity extends BoldActivity {
 			@Override
 			public boolean onLongClick(View view) {
 				startActivityForResult(new Intent(view.getContext(),
-						RespeakActivity.class), 0);
+						RespeakSelectionActivity.class), 0);
 				// TranscribeActivity.class), 0);
 				return false;
 			}

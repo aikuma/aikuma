@@ -1,7 +1,6 @@
 package au.edu.melbuni.boldapp;
 
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
-import au.edu.melbuni.boldapp.listeners.OnSpeechListener;
 
 /*
  * A Recognizer tries to recognize silence or talk from a user and starts and stops
@@ -14,49 +13,33 @@ import au.edu.melbuni.boldapp.listeners.OnSpeechListener;
  */
 public class ThresholdSpeechController extends SpeechController {
 
-	OnSpeechListener speechListener;
+	// OnSpeechListener speechListener;
 	Player player;
 	PCMWriter wavFile;
 
 	BufferingThresholdSpeechAnalyzer speechAnalyzer;
-	
+
 	boolean recording = false;
 
-	public ThresholdSpeechController(OnSpeechListener speechListener) {
-		this.speechListener = speechListener != null ? speechListener : new OnSpeechListener() {
-			
-			@Override
-			public void onSpeech() {
-				
-			}
-			
-			@Override
-			public void onSilence() {
-				
-			}
-		};
-		
+	public ThresholdSpeechController() {
 		player = Bundler.getPlayer();
-
-		// TODO Change explicit filename.
-		//
-		wavFile = PCMWriter.getInstance("respeaking.wav",
-				listener.getSampleRate(), listener.getChannelConfiguration(),
-				listener.getAudioFormat());
+		
+		wavFile = PCMWriter.getInstance(listener.getSampleRate(),
+				listener.getChannelConfiguration(), listener.getAudioFormat());
 
 		speechAnalyzer = new BufferingThresholdSpeechAnalyzer(44, 3);
 	}
 
-	public void listen(String fileName, OnCompletionListener completionListener) {
-		super.listen(fileName, completionListener);
-		player.startPlaying(fileName, completionListener);
-		wavFile.prepare();
+	public void listen(String sourceFilename, String targetFilename, OnCompletionListener completionListener) {
+		super.listen(sourceFilename, targetFilename, completionListener);
+		player.startPlaying(sourceFilename, completionListener);
+		wavFile.prepare(targetFilename);
 	}
 
 	public void stop() {
+		super.stop();
 		wavFile.close();
 		player.stopPlaying();
-		super.stop();
 	}
 
 	/*
@@ -71,17 +54,21 @@ public class ThresholdSpeechController extends SpeechController {
 		// } catch (InterruptedException e) {
 		// e.printStackTrace();
 		// }
-		
-		speechListener.onSilence();
+
+		// speechListener.onSilence();
 		recording = false;
-		
+
 		// recorder.stopRecording();
 		// recordingSegments.stopRecording(recorder);
 
-//		player.rewind(1000 * (3 / (listener.getSampleRate() / 1000)));
-		player.rewind(100);
+		// player.rewind(1000 * (3 / (listener.getSampleRate() / 1000)));
+		rewind(166);
 		// player.rampUp(500);
 		player.resume();
+	}
+
+	protected void rewind(int miliseconds) {
+		player.rewind(miliseconds);
 	}
 
 	/*
@@ -89,9 +76,9 @@ public class ThresholdSpeechController extends SpeechController {
 	 */
 	protected void switchToRecord() {
 		player.pause();
-		speechListener.onSpeech();
+		// speechListener.onSpeech();
 		recording = true;
-		
+
 		// recordingSegments.startRecording(recorder, "demo");
 		// recorder.startRecording("test" + current++); // FIXME Make this
 		// dynamic!
@@ -112,8 +99,6 @@ public class ThresholdSpeechController extends SpeechController {
 	// TODO Rewrite all!
 	//
 	public void speechTriggered(short[] buffer, boolean justChanged) {
-		// TODO This probably gets called too often.
-		//
 		if (justChanged) {
 			switchToRecord();
 		}

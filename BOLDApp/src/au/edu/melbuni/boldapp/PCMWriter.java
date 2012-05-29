@@ -13,9 +13,9 @@ import au.edu.melbuni.boldapp.persisters.Persister;
  */
 public class PCMWriter {
 
-	public static PCMWriter getInstance(String filename, int sampleRate,
+	public static PCMWriter getInstance(int sampleRate,
 			int channelConfig, int audioFormat) {
-		return new PCMWriter(filename, sampleRate, channelConfig, audioFormat);
+		return new PCMWriter(sampleRate, channelConfig, audioFormat);
 	}
 
 	// // Tries all sample rates.
@@ -62,7 +62,7 @@ public class PCMWriter {
 
 	// Output file path
 	//
-	private String fullFilename = null;
+	private String fullFilename;
 
 	// File writer (only in uncompressed mode).
 	//
@@ -190,7 +190,7 @@ public class PCMWriter {
 	 * state is set to ERROR.
 	 * 
 	 */
-	public PCMWriter(String filename, int sampleRate, int channelConfig,
+	public PCMWriter(int sampleRate, int channelConfig,
 			int audioFormat) {
 		try {
 			// Convert the Android attributes to internal attributes.
@@ -235,8 +235,6 @@ public class PCMWriter {
 				Log.w(PCMWriter.class.getName(), "Increasing buffer size to "
 						+ Integer.toString(bufferSize));
 			}
-
-			fullFilename = Persister.getBasePath() + filename;
 		} catch (Exception e) {
 			if (e.getMessage() != null) {
 				Log.e(PCMWriter.class.getName(), e.getMessage());
@@ -293,7 +291,9 @@ public class PCMWriter {
 	/**
 	 * Prepares the writer for recording by writing the WAV file header.
 	 */
-	public void prepare() {
+	public void prepare(String filename) {
+		fullFilename = Persister.getBasePath() + filename;
+		
 		try {
 			// Random access file.
 			//
