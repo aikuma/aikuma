@@ -31,5 +31,6 @@
         </activity>
         <activity android:screenOrientation="landscape" android:name=".activities.TranscribeActivity"></activity>
         <activity android:screenOrientation="landscape" android:name=".activities.OldRespeakActivity"></activity>
+        <activity android:name=".activities.RespeakSelectionActivity"></activity>
     </application>
 </manifest>

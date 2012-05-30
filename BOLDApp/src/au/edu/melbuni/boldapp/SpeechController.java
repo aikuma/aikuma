@@ -48,7 +48,6 @@ public abstract class SpeechController implements SpeechTriggers {
 		do {
 			listener = getListener(index, AudioFormat.ENCODING_PCM_16BIT,
 					AudioFormat.CHANNEL_CONFIGURATION_MONO);
-			LogWriter.log("listener INITIALIZED? " + sampleRates[index] + " : " + (listener.getState() == AudioRecord.STATE_INITIALIZED));
 			index += 1;
 		} while (listener != null
 				&& (listener.getState() != AudioRecord.STATE_INITIALIZED));

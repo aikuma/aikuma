@@ -54,52 +54,17 @@ public class BufferingThresholdSpeechAnalyzer {
 	protected boolean doesTriggerSpeech(short[] buffer) {
 		if (recognizer.isSpeech(buffer)) {
 			speechTriggers++;
-
-			addToOnsetBuffer(buffer);
 		} else {
 			speechTriggers = 0;
 		}
 		return speechTriggers > speechTriggerAmount;
 	}
 
-	private void debugBuffer(short[] buffer) {
-		System.out.print("buffer: [");
-		int i;
-		for (i = 0; i < buffer.length - 1; i++) {
-			System.out.print("" + buffer[i] + ", ");
-		}
-		System.out.print("" + buffer[i]);
-		System.out.println("]");
-	}
-
 	protected void shiftOnsetBufferWith(short[] buffer) {
-		// debugBuffer(buffer);
-		// System.out.println("oBl1: " + onsetBuffer.length);
-		// debugBuffer(onsetBuffer);
-
 		onsetBuffer = Arrays.copyOfRange(onsetBuffer, buffer.length,
 				onsetBuffer.length);
 
-		// // System.out.println("oBl2: " + onsetBuffer.length);
-		// // debugBuffer(onsetBuffer);
-		//
-		// int offset = onsetBuffer.length - 1;
-		//
-		// // System.out.println("o: " + offset);
-
 		addToOnsetBuffer(buffer);
-		//
-		// // Copy the buffer to avoid reference problems.
-		// //
-		// short[] copiedBuffer = Arrays.copyOf(buffer, buffer.length);
-		// // debugBuffer(copiedBuffer);
-		//
-		// // Add the copied current buffer onto the end.
-		// //
-		// for (int i = 0; i < buffer.length; i++) {
-		// // debugBuffer(onsetBuffer);
-		// onsetBuffer[i + offset] = copiedBuffer[i];
-		// }
 	}
 
 	protected void replaceOnsetBufferWith(short[] buffer) {
@@ -129,12 +94,12 @@ public class BufferingThresholdSpeechAnalyzer {
 	//
 	protected void addToOnsetBuffer(short[] buffer) {
 		int offset = onsetBuffer.length;
-
+		
 		// Create a new buffer.
 		//
 		onsetBuffer = Arrays.copyOf(onsetBuffer, onsetBuffer.length
 				+ buffer.length);
-
+		
 		// Copy the buffer to avoid reference problems.
 		//
 		short[] copiedBuffer = Arrays.copyOf(buffer, buffer.length);
@@ -179,6 +144,10 @@ public class BufferingThresholdSpeechAnalyzer {
 				//
 				trigger.speechTriggered(new short[onsetBuffer.length
 						* EMPTY_SPEECH_PREAMBLE_BUFFERS], true);
+				
+				// Add the buffer to the speech.
+				//
+				addToOnsetBuffer(buffer);
 
 				// Hand in the totally collected speech.
 				//
@@ -216,4 +185,18 @@ public class BufferingThresholdSpeechAnalyzer {
 			}
 		}
 	}
+	
+//	private void debugBuffer(short[] buffer) {
+//		debugBuffer(buffer, "default");
+//	}
+//	
+//	private void debugBuffer(short[] buffer, String id) {
+//		System.out.print("buffer (" + id + "): [");
+//		int i;
+//		for (i = 0; i < buffer.length - 1; i++) {
+//			System.out.print("" + buffer[i] + ", ");
+//		}
+//		System.out.print("" + buffer[i]);
+//		System.out.println("]");
+//	}
 }

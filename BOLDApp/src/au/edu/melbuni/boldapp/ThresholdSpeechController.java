@@ -27,12 +27,12 @@ public class ThresholdSpeechController extends SpeechController {
 		wavFile = PCMWriter.getInstance(listener.getSampleRate(),
 				listener.getChannelConfiguration(), listener.getAudioFormat());
 
-		speechAnalyzer = new BufferingThresholdSpeechAnalyzer(44, 3);
+		speechAnalyzer = new BufferingThresholdSpeechAnalyzer(88, 3);
 	}
 
 	public void listen(String sourceFilename, String targetFilename, OnCompletionListener completionListener) {
 		super.listen(sourceFilename, targetFilename, completionListener);
-		player.startPlaying(sourceFilename, completionListener);
+		player.startPlaying(sourceFilename, "", completionListener);
 		wavFile.prepare(targetFilename);
 	}
 
@@ -67,7 +67,7 @@ public class ThresholdSpeechController extends SpeechController {
 		player.resume();
 	}
 
-	protected void rewind(int miliseconds) {
+	public void rewind(int miliseconds) {
 		player.rewind(miliseconds);
 	}
 

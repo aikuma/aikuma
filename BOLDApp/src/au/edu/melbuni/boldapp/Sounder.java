@@ -10,7 +10,11 @@ public class Sounder {
 	}
 	
 	public static String generateFilePath(String fileName) {
-		File file = new File(fileName + getFileExtension());
+		return generateFilePath(fileName, getFileExtension());
+	}
+	
+	public static String generateFilePath(String fileName, String extension) {
+		File file = new File(fileName + extension);
 		File parentFile = new File(file.getParent());
 		parentFile.mkdirs();
 		try {

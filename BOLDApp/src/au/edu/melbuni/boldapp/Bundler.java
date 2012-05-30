@@ -18,6 +18,8 @@ public class Bundler {
 
 	static Player player = null;
 	static Recorder recorder = null;
+	
+	static RespeakOriginal respeakOriginal;
 
 	public static Player getPlayer() {
 		if (player == null) {
@@ -104,6 +106,14 @@ public class Bundler {
 		}
 
 		return originals;
+	}
+	
+	public static void setRespeakOriginal(RespeakOriginal respeakOriginal) {
+		Bundler.respeakOriginal = respeakOriginal;
+	}
+	
+	public static RespeakOriginal getCurrentRespeakOriginal() {
+		return respeakOriginal;
 	}
 
 }

@@ -8,6 +8,7 @@ import android.widget.ListView;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.adapters.RespeakItemAdapter;
+import au.edu.melbuni.boldapp.models.RespeakOriginal;
 
 public class RespeakSelectionActivity extends BoldActivity {
 
@@ -48,10 +49,8 @@ public class RespeakSelectionActivity extends BoldActivity {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view,
 							int position, long id) {
-//						Bundler.setCurrentTimeline(
-//								RespeakSelectionActivity.this,
-//								(Timeline) Bundler.getTimelines(
-//										RespeakSelectionActivity.this).toArray()[position]);
+						RespeakOriginal respeakOriginal = Bundler.getRespeakOriginals(RespeakSelectionActivity.this).get(position);
+						Bundler.setRespeakOriginal(respeakOriginal);
 						startActivityForResult(new Intent(
 								getApplicationContext(), RespeakActivity.class),
 								0);

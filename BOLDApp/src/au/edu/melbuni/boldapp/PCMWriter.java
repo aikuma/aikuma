@@ -6,15 +6,14 @@ import java.io.RandomAccessFile;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.util.Log;
-import au.edu.melbuni.boldapp.persisters.Persister;
 
 /*
  * A writer that can handle PCM/WAV files.
  */
 public class PCMWriter {
 
-	public static PCMWriter getInstance(int sampleRate,
-			int channelConfig, int audioFormat) {
+	public static PCMWriter getInstance(int sampleRate, int channelConfig,
+			int audioFormat) {
 		return new PCMWriter(sampleRate, channelConfig, audioFormat);
 	}
 
@@ -60,10 +59,6 @@ public class PCMWriter {
 	//
 	private static final int TIMER_INTERVAL = 120;
 
-	// Output file path
-	//
-	private String fullFilename;
-
 	// File writer (only in uncompressed mode).
 	//
 	private RandomAccessFile randomAccessWriter;
@@ -104,8 +99,6 @@ public class PCMWriter {
 		try {
 			// Write buffer to file.
 			//
-			LogWriter.log("rAW null? => " + (randomAccessWriter != null));
-			LogWriter.log("buffer null? => " + (buffer != null));
 			randomAccessWriter.write(buffer);
 
 			// Remember larger payload.
@@ -190,8 +183,7 @@ public class PCMWriter {
 	 * state is set to ERROR.
 	 * 
 	 */
-	public PCMWriter(int sampleRate, int channelConfig,
-			int audioFormat) {
+	public PCMWriter(int sampleRate, int channelConfig, int audioFormat) {
 		try {
 			// Convert the Android attributes to internal attributes.
 			//
@@ -291,9 +283,7 @@ public class PCMWriter {
 	/**
 	 * Prepares the writer for recording by writing the WAV file header.
 	 */
-	public void prepare(String filename) {
-		fullFilename = Persister.getBasePath() + filename;
-		
+	public void prepare(String fullFilename) {
 		try {
 			// Random access file.
 			//

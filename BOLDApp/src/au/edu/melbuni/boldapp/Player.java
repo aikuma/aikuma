@@ -19,14 +19,18 @@ public class Player extends Sounder {
 		return playing;
 	}
 
-	public void startPlaying(String fileName,
+	public void startPlaying(String fileName, OnCompletionListener listener) {
+		startPlaying(fileName, getFileExtension(), listener);
+	}
+	
+	public void startPlaying(String fileName, String extension,
 			final OnCompletionListener listener) {
 		if (playing) {
 			return;
 		}
 		playing = true;
 		try {
-			player.setDataSource(generateFilePath(fileName));
+			player.setDataSource(generateFilePath(fileName, extension));
 			player.prepare();
 			if (listener != null) {
 				player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
