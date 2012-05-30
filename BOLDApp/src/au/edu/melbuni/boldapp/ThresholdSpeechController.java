@@ -61,8 +61,8 @@ public class ThresholdSpeechController extends SpeechController {
 		// recorder.stopRecording();
 		// recordingSegments.stopRecording(recorder);
 
-		// player.rewind(1000 * (3 / (listener.getSampleRate() / 1000)));
-		rewind(166);
+//		rewind(1000 * (8 / (listener.getSampleRate() / 1000)));
+		rewind(650);
 		// player.rampUp(500);
 		player.resume();
 	}

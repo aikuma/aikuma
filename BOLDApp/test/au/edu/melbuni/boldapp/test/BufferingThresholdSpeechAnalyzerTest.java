@@ -208,4 +208,29 @@ public class BufferingThresholdSpeechAnalyzerTest {
 		}
 	}
 	
+	@Test
+	public void addToOnsetBufferWithEmptyBuffer() {
+		specificSpeechAnalyzer.addToOnsetBuffer(new short[] {});
+		assertEquals(0, specificSpeechAnalyzer.getOnsetBuffer().length); 
+	}
+	
+//	@Test
+//	public void addToOnsetBufferWithNullBuffer() {
+//		specificSpeechAnalyzer.addToOnsetBuffer(null);
+//		assertEquals(0, specificSpeechAnalyzer.getOnsetBuffer().length); 
+//	}
+	
+	@Test
+	public void addToOnsetBufferWithSmallAndEmptyBuffer() {
+		specificSpeechAnalyzer.addToOnsetBuffer(new short[] {1, 2, 3});
+		specificSpeechAnalyzer.addToOnsetBuffer(new short[] {});
+		assertEquals(3, specificSpeechAnalyzer.getOnsetBuffer().length); 
+	}
+	
+//	@Test
+//	public void addToOnsetBufferWithSmallAndNullBuffer() {
+//		specificSpeechAnalyzer.addToOnsetBuffer(new short[] {1, 2, 3});
+//		specificSpeechAnalyzer.addToOnsetBuffer(null);
+//		assertEquals(3, specificSpeechAnalyzer.getOnsetBuffer().length); 
+//	}
 }

@@ -92,7 +92,7 @@ public class BufferingThresholdSpeechAnalyzer {
 
 	// TODO Duplicate method.
 	//
-	protected void addToOnsetBuffer(short[] buffer) {
+	public void addToOnsetBuffer(short[] buffer) {
 		int offset = onsetBuffer.length;
 		
 		// Create a new buffer.
@@ -125,6 +125,8 @@ public class BufferingThresholdSpeechAnalyzer {
 	// If speech occurs, it will hand over a combined buffer.
 	//
 	public void analyze(SpeechTriggers trigger, short[] buffer) {
+		if (buffer == null) { return; }
+		
 		// Check if we need to callback.
 		//
 		if (speech) {
@@ -184,6 +186,12 @@ public class BufferingThresholdSpeechAnalyzer {
 				}
 			}
 		}
+	}
+
+	// For testing.
+	//
+	public short[] getOnsetBuffer() {
+		return onsetBuffer;
 	}
 	
 //	private void debugBuffer(short[] buffer) {
