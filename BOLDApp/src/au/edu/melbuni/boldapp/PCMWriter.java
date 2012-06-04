@@ -1,5 +1,6 @@
 package au.edu.melbuni.boldapp;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -12,6 +13,8 @@ import android.util.Log;
  */
 public class PCMWriter {
 
+	String fullFilename;
+	
 	public static PCMWriter getInstance(int sampleRate, int channelConfig,
 			int audioFormat) {
 		return new PCMWriter(sampleRate, channelConfig, audioFormat);
@@ -279,15 +282,25 @@ public class PCMWriter {
 	// return 0;
 	// }
 	// }
+	
+	private void createRandomAccessFile(String fullFilename) {
+		try {
+			// Random access file.
+			//
+			randomAccessWriter = new RandomAccessFile(this.fullFilename, "rw");
+		} catch (FileNotFoundException e) {
+			
+		}
+	}
 
 	/**
 	 * Prepares the writer for recording by writing the WAV file header.
 	 */
 	public void prepare(String fullFilename) {
+		this.fullFilename = fullFilename;
+		
 		try {
-			// Random access file.
-			//
-			randomAccessWriter = new RandomAccessFile(fullFilename, "rw");
+			createRandomAccessFile(fullFilename);
 
 			// Write the full WAV PCM file header.
 			//
@@ -367,6 +380,8 @@ public class PCMWriter {
 	 * Finalizes the wave file.
 	 */
 	public void close() {
+		createRandomAccessFile(fullFilename);
+		
 		try {
 			// Write size to RIFF header.
 			//

@@ -23,14 +23,15 @@ public class ThresholdSpeechController extends SpeechController {
 
 	public ThresholdSpeechController() {
 		player = Bundler.getPlayer();
-		
+
 		wavFile = PCMWriter.getInstance(listener.getSampleRate(),
 				listener.getChannelConfiguration(), listener.getAudioFormat());
 
 		speechAnalyzer = new BufferingThresholdSpeechAnalyzer(88, 3);
 	}
 
-	public void listen(String sourceFilename, String targetFilename, OnCompletionListener completionListener) {
+	public void listen(String sourceFilename, String targetFilename,
+			OnCompletionListener completionListener) {
 		super.listen(sourceFilename, targetFilename, completionListener);
 		player.startPlaying(sourceFilename, "", completionListener);
 		wavFile.prepare(targetFilename);
@@ -46,14 +47,16 @@ public class ThresholdSpeechController extends SpeechController {
 	 * Switches the mode to play mode.
 	 */
 	protected void switchToPlay() {
-		// TODO Beep!
+		
+		// TODO Move into beepbeep if possible.
 		//
-		// Sounds.beepbeep();
-		// try {
-		// Thread.sleep(1000);
-		// } catch (InterruptedException e) {
-		// e.printStackTrace();
-		// }
+//		Thread t = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				Sounds.beepbeep();
+//			}
+//		});
+//		t.start();
 
 		// speechListener.onSilence();
 		recording = false;
@@ -61,7 +64,7 @@ public class ThresholdSpeechController extends SpeechController {
 		// recorder.stopRecording();
 		// recordingSegments.stopRecording(recorder);
 
-//		rewind(1000 * (8 / (listener.getSampleRate() / 1000)));
+		// rewind(1000 * (8 / (listener.getSampleRate() / 1000)));
 		rewind(650);
 		// player.rampUp(500);
 		player.resume();

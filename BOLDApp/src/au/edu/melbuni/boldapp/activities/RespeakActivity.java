@@ -1,22 +1,20 @@
 package au.edu.melbuni.boldapp.activities;
 
-import android.graphics.Color;
-import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnLongClickListener;
-import android.widget.Button;
-import android.widget.ImageButton;
 import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.ThresholdSpeechController;
+import au.edu.melbuni.boldapp.extensions.ColorfulImageButton;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.persisters.Persister;
 
 public class RespeakActivity extends BoldActivity {
 
 	boolean listening = false;
+
+	final ThresholdSpeechController recognizer = new ThresholdSpeechController();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,11 +31,17 @@ public class RespeakActivity extends BoldActivity {
 		setContent(R.layout.respeak);
 	};
 
-	public void installBehavior(Bundle savedInstanceState) {
-		final ImageButton respeakButton = (ImageButton) findViewById(R.id.respeakButton);
-		final Button respeakBackButton = (Button) findViewById(R.id.respeakBackButton);
+	@Override
+	protected void onDestroy() {
+		// Stop the recognizer.
+		//
+		recognizer.stop();
+		super.onDestroy();
+	}
 
-		final ThresholdSpeechController recognizer = new ThresholdSpeechController();
+	public void installBehavior(Bundle savedInstanceState) {
+		final ColorfulImageButton respeakButton = (ColorfulImageButton) findViewById(R.id.respeakButton);
+//		final Button respeakBackButton = (Button) findViewById(R.id.respeakBackButton);
 
 		// TouchDelegate touchDelegate = new TouchDelegate(new Rect(0, 0,
 		// Resources.getSystem().getDisplayMetrics().widthPixels,
@@ -54,7 +58,7 @@ public class RespeakActivity extends BoldActivity {
 		respeakButton.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View view) {
-				if (!listening) {
+				if (!respeakButton.isActivated()) {
 					String selectedFilename = Bundler
 							.getCurrentRespeakOriginal().getRelativeFilename();
 					String sourceFilename = Persister.getBasePath()
@@ -62,38 +66,36 @@ public class RespeakActivity extends BoldActivity {
 					String targetFilename = Persister.getBasePath()
 							+ "respeak_" + selectedFilename;
 
+					// Start listening (opens a new recording).
+					//
 					recognizer.listen(sourceFilename, targetFilename,
 							new OnCompletionListener() {
 
 								@Override
 								public void onCompletion(Sounder sounder) {
-									listening = false;
-									respeakButton.getBackground()
-											.clearColorFilter();
+									recognizer.stop();
+									respeakButton.deactivate();
 								}
 
 							});
-					respeakButton.getBackground().setColorFilter(Color.GREEN,
-							Mode.MULTIPLY);
-					listening = true;
+					respeakButton.activate();
 				} else {
 					recognizer.stop();
-					listening = false;
-					respeakButton.getBackground().clearColorFilter();
+					respeakButton.deactivate();
 				}
 				return false;
 			}
 		});
 
-		respeakBackButton.setOnLongClickListener(new OnLongClickListener() {
-
-			@Override
-			public boolean onLongClick(View v) {
-				if (listening) {
-					recognizer.rewind(1000);
-				}
-				return false;
-			}
-		});
+//		respeakBackButton.setOnLongClickListener(new OnLongClickListener() {
+//
+//			@Override
+//			public boolean onLongClick(View v) {
+//				if (listening) {
+//					recognizer.rewind(1000);
+//				}
+//				return false;
+//			}
+//		});
 	}
 }

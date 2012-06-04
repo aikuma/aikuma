@@ -28,7 +28,7 @@
 
     </LinearLayout>
 
-    <ImageButton
+    <au.edu.melbuni.boldapp.extensions.ColorfulImageButton
         android:id="@+id/respeakButton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
