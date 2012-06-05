@@ -17,7 +17,7 @@ public class TimestampedFilename {
 	*   "hello.wav" becomes "hello-3456789012.wav"
 	*/
 	public static String getFilenameFor(String filename) {
-		return filename.replaceFirst("(\\.\\w+)$", "-"
+		return filename.replaceFirst("((\\.\\w+)*)$", "-"
 				+ TimeStamp.getCurrentTime().getSeconds() + "$1");
 	}
 
