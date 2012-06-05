@@ -307,6 +307,7 @@ public class PCMWriter {
 
 			// Set file length to 0, to prevent unexpected
 			// behaviour in case the file already existed.
+			//
 			randomAccessWriter.setLength(0);
 
 			// "RIFF" announcement.
@@ -380,6 +381,8 @@ public class PCMWriter {
 	 * Finalizes the wave file.
 	 */
 	public void close() {
+		// This is only necessary as the randomAccessWriter might be closed.
+		//
 		createRandomAccessFile(fullFilename);
 		
 		try {

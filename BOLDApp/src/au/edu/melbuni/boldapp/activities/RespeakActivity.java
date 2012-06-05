@@ -6,6 +6,7 @@ import au.edu.melbuni.boldapp.Bundler;
 import au.edu.melbuni.boldapp.R;
 import au.edu.melbuni.boldapp.Sounder;
 import au.edu.melbuni.boldapp.ThresholdSpeechController;
+import au.edu.melbuni.boldapp.TimestampedFilename;
 import au.edu.melbuni.boldapp.extensions.ColorfulImageButton;
 import au.edu.melbuni.boldapp.listeners.OnCompletionListener;
 import au.edu.melbuni.boldapp.persisters.Persister;
@@ -41,7 +42,8 @@ public class RespeakActivity extends BoldActivity {
 
 	public void installBehavior(Bundle savedInstanceState) {
 		final ColorfulImageButton respeakButton = (ColorfulImageButton) findViewById(R.id.respeakButton);
-//		final Button respeakBackButton = (Button) findViewById(R.id.respeakBackButton);
+		// final Button respeakBackButton = (Button)
+		// findViewById(R.id.respeakBackButton);
 
 		// TouchDelegate touchDelegate = new TouchDelegate(new Rect(0, 0,
 		// Resources.getSystem().getDisplayMetrics().widthPixels,
@@ -68,7 +70,8 @@ public class RespeakActivity extends BoldActivity {
 
 					// Start listening (opens a new recording).
 					//
-					recognizer.listen(sourceFilename, targetFilename,
+					recognizer.listen(sourceFilename,
+							TimestampedFilename.getFilenameFor(targetFilename),
 							new OnCompletionListener() {
 
 								@Override
@@ -87,15 +90,15 @@ public class RespeakActivity extends BoldActivity {
 			}
 		});
 
-//		respeakBackButton.setOnLongClickListener(new OnLongClickListener() {
-//
-//			@Override
-//			public boolean onLongClick(View v) {
-//				if (listening) {
-//					recognizer.rewind(1000);
-//				}
-//				return false;
-//			}
-//		});
+		// respeakBackButton.setOnLongClickListener(new OnLongClickListener() {
+		//
+		// @Override
+		// public boolean onLongClick(View v) {
+		// if (listening) {
+		// recognizer.rewind(1000);
+		// }
+		// return false;
+		// }
+		// });
 	}
 }
