@@ -19,7 +19,7 @@ public class ThresholdSpeechController extends SpeechController {
 
 	BufferingThresholdSpeechAnalyzer speechAnalyzer;
 
-	boolean recording = false;
+//	boolean recording = false;
 
 	public ThresholdSpeechController() {
 		player = Bundler.getPlayer();
@@ -59,7 +59,7 @@ public class ThresholdSpeechController extends SpeechController {
 //		t.start();
 
 		// speechListener.onSilence();
-		recording = false;
+//		recording = false;
 
 		// recorder.stopRecording();
 		// recordingSegments.stopRecording(recorder);
@@ -79,12 +79,7 @@ public class ThresholdSpeechController extends SpeechController {
 	 */
 	protected void switchToRecord() {
 		player.pause();
-		// speechListener.onSpeech();
-		recording = true;
-
-		// recordingSegments.startRecording(recorder, "demo");
-		// recorder.startRecording("test" + current++); // FIXME Make this
-		// dynamic!
+//		recording = true;
 	}
 
 	public void onBufferFull(short[] buffer) {
@@ -99,8 +94,6 @@ public class ThresholdSpeechController extends SpeechController {
 		}
 	}
 
-	// TODO Rewrite all!
-	//
 	public void speechTriggered(short[] buffer, boolean justChanged) {
 		if (justChanged) {
 			switchToRecord();
