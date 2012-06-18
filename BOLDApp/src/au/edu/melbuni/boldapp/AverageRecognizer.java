@@ -45,7 +45,8 @@ public class AverageRecognizer extends Recognizer {
 
 		for (int i = 0; i < buffer.length; i++) {
 			short value = buffer[i];
-			if (value > 0) { 
+			
+			if (value >= 0) { 
 				sum += value;
 				amount += 1;
 			}
