@@ -13,7 +13,7 @@ import au.edu.melbuni.boldapp.AudioCommand;
 public class AudioCommandTest {
 
 	private AudioCommand audioCommand;
-
+	
 	@Before
 	public void setUp() throws Exception {
 		short[][] pattern = new short[][] { { 0, 100 }, { 3000, 6000 },

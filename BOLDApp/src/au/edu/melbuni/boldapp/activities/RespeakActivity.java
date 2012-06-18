@@ -42,21 +42,7 @@ public class RespeakActivity extends BoldActivity {
 
 	public void installBehavior(Bundle savedInstanceState) {
 		final ColorfulImageButton respeakButton = (ColorfulImageButton) findViewById(R.id.respeakButton);
-		// final Button respeakBackButton = (Button)
-		// findViewById(R.id.respeakBackButton);
-
-		// TouchDelegate touchDelegate = new TouchDelegate(new Rect(0, 0,
-		// Resources.getSystem().getDisplayMetrics().widthPixels,
-		// Resources.getSystem().getDisplayMetrics().heightPixels),
-		// respeakButton) {
-		// @Override
-		// public boolean onTouchEvent(MotionEvent event) {
-		// LogWriter.log("touchingggg!");
-		// return true;
-		// }
-		// };
-		// respeakButton.getRootView().setTouchDelegate(touchDelegate);
-
+		
 		respeakButton.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View view) {
@@ -73,13 +59,11 @@ public class RespeakActivity extends BoldActivity {
 					recognizer.listen(sourceFilename,
 							TimestampedFilename.getFilenameFor(targetFilename),
 							new OnCompletionListener() {
-
 								@Override
 								public void onCompletion(Sounder sounder) {
 									recognizer.stop();
 									respeakButton.deactivate();
 								}
-
 							});
 					respeakButton.activate();
 				} else {

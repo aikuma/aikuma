@@ -103,7 +103,6 @@ public abstract class SpeechController implements SpeechTriggers {
 
 	public void stop() {
 		listener.stop();
-		// listening = false;
 	}
 
 	protected void read() {

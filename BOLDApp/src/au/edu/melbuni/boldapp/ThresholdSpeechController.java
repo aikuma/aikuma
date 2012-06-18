@@ -31,9 +31,15 @@ public class ThresholdSpeechController extends SpeechController {
 	}
 
 	public void listen(String sourceFilename, String targetFilename,
-			OnCompletionListener completionListener) {
+			final OnCompletionListener completionListener) {
 		super.listen(sourceFilename, targetFilename, completionListener);
-		player.startPlaying(sourceFilename, "", completionListener);
+		player.startPlaying(sourceFilename, "", new OnCompletionListener() {
+			@Override
+			public void onCompletion(Sounder sounder) {
+				stop();
+				completionListener.onCompletion(sounder);
+			}
+		});
 		wavFile.prepare(targetFilename);
 	}
 
