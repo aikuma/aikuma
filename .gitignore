@@ -1,15 +1,11 @@
 *.class
 *.json
 .metadata
+
+BOLDApp/tmp
 BOLDApp/bin
 BOLDApp/gen
+BOLDApp/mnt/sdcard/bold
 
 .DS_Store
 **/.DS_Store
-
-BOLDApp/bin
-BOLDApp/bin/classes.dex
-
-BOLDApp/gen
-
-BOLDApp/mnt/sdcard/bold
