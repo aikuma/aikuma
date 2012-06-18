@@ -6,4 +6,10 @@ BOLDApp/gen
 
 .DS_Store
 **/.DS_Store
+
+BOLDApp/bin
 BOLDApp/bin/classes.dex
+
+BOLDApp/gen
+
+BOLDApp/mnt/sdcard/bold
