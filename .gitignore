@@ -11,3 +11,5 @@ server/public/
 
 .DS_Store
 **/.DS_Store
+
+local.properties
