@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import au.edu.melbuni.boldapp.AverageRecognizer;
-import au.edu.melbuni.boldapp.MaximumRecognizer;
 
 @RunWith(CustomTestRunner.class)
 public class AverageSilenceRecognizerTest {
