@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:baselineAligned="false" android:orientation="horizontal">
+    <LinearLayout android:layout_height="match_parent" android:id="@+id/linearLayout1" android:orientation="vertical" android:layout_width="match_parent" android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/startText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="&lt;- Start hia, plis!"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/recordButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/main_record_animated" >
+</ImageButton>
+        <ImageButton android:layout_weight="1" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/main_listen" android:id="@+id/listenButton"></ImageButton>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <ImageButton
+            android:id="@+id/respeakButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/main_respeak" />
+
+        <ImageButton
+            android:id="@+id/translateButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/main_translate" />
+
+    </LinearLayout>
+
+</LinearLayout>
