@@ -43,54 +43,13 @@
 		android:layout_height="match_parent"
 		android:layout_weight="1"
 	>
-		<LinearLayout
-			android:id="@+id/MainOptionsTop"
-			android:orientation="vertical"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_weight="1"
-		>
 			<ImageButton
-				android:id="@+id/goToRecord"
+				android:id="@+id/Record"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_weight="1"
 				android:scaleType="centerInside"
-				android:src="@drawable/main_record"
-				android:onClick="goToRecord"
+				android:src="@drawable/button_record"
 			/>
-			<ImageButton
-				android:id="@+id/goToRespeak"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:scaleType="centerInside"
-				android:src="@drawable/main_respeak"
-			/>
-		</LinearLayout>
-		<LinearLayout
-			android:id="@+id/MainOptionsBottom"
-			android:orientation="vertical"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_weight="1"
-		>
-			<ImageButton
-				android:id="@+id/goToListen"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:scaleType="centerInside"
-				android:src="@drawable/main_listen"
-			/>
-			<ImageButton
-				android:id="@+id/goToTranslate"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:scaleType="centerInside"
-				android:src="@drawable/main_translate"
-			/>
-		</LinearLayout>
 	</LinearLayout>
 </LinearLayout>
