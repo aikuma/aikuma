@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:orientation="horizontal"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		>
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+>
 	<!--
 	<TextView
 		android:layout_width="fill_parent" 
@@ -11,11 +11,75 @@
 		android:text="Hello World, okMyFirstActivity"
 	/>
 	-->
-	<ImageButton
-		android:id="@+id/someButton"
+	<LinearLayout
+		android:id="@+id/Frame"
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_weight="3"
+	>
+		<ImageButton
+			android:id="@+id/UserIcon"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:src="@drawable/unknown_user"
+		/>
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/MainOptions"
+		android:orientation="horizontal"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_weight="1"
-		android:src="@drawable/icon"
-	/>
+	>
+		<LinearLayout
+			android:id="@+id/MainOptionsTop"
+			android:orientation="vertical"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+		>
+			<ImageButton
+				android:id="@+id/Record"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:scaleType="centerInside"
+				android:src="@drawable/main_record"
+			/>
+			<ImageButton
+				android:id="@+id/Respeak"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:scaleType="centerInside"
+				android:src="@drawable/main_respeak"
+			/>
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/MainOptionsBottom"
+			android:orientation="vertical"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+		>
+			<ImageButton
+				android:id="@+id/Listen"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:scaleType="centerInside"
+				android:src="@drawable/main_listen"
+			/>
+			<ImageButton
+				android:id="@+id/Translate"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:scaleType="centerInside"
+				android:src="@drawable/main_translate"
+			/>
+		</LinearLayout>
+	</LinearLayout>
 </LinearLayout>
