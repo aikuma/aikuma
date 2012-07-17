@@ -19,14 +19,6 @@
 			android:onClick="goBack"
 			android:layout_alignParentLeft="true"
 		/>
-		<ImageButton
-			android:id="@+id/UserIcon"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:scaleType="centerInside"
-			android:src="@drawable/unknown_user"
-			android:layout_alignParentRight="true"
-		/>
 		<!--
 		<TextView
 			android:id="@+id/UserName"
@@ -39,18 +31,26 @@
 		-->
 	</RelativeLayout>
 	<LinearLayout
-		android:id="@+id/MainOptions"
-		android:orientation="horizontal"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_weight="1"
+			android:orientation="vertical"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
 	>
-			<Button
-				android:id="@+id/Create"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:text="@string/create_user"
-			/>
+		<Button
+			android:id="@+id/UserIcon"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:layout_alignParentRight="true"
+			android:text="@string/create_user"
+			android:onClick="createUser"
+		/>
+		<Button
+			android:id="@+id/changeUser"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:text="@string/change_user"
+			android:onClick="changeUser"
+		/>
 	</LinearLayout>
 </LinearLayout>

@@ -6,6 +6,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.io.File;
+
+import android.os.Environment;
 
 //import au.edu.melbuni.boldapp.persisters.Persister;
 
@@ -19,6 +22,14 @@ public class CustomExceptionHandler implements UncaughtExceptionHandler {
 	 */
 	public CustomExceptionHandler() {
 		this.defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+	}
+
+	public static String getBasePath() {
+		File external = Environment.getExternalStorageDirectory();
+		if (external != null) {
+			return external.getAbsolutePath() + "/bold/";
+		}
+		return "/mnt/sdcard/bold/";
 	}
 
 	@Override
@@ -35,9 +46,9 @@ public class CustomExceptionHandler implements UncaughtExceptionHandler {
 		defaultUEH.uncaughtException(t, e);
 	}
 
-	private void writeToFile(String stacktrace, String filename) {
+	public void writeToFile(String stacktrace, String filename) {
 		try {
-			BufferedWriter bos = new BufferedWriter(new FileWriter(filename));
+			BufferedWriter bos = new BufferedWriter(new FileWriter(getBasePath() + filename));
 			bos.write(stacktrace);
 			bos.flush();
 			bos.close();

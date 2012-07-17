@@ -17,6 +17,7 @@
 			android:layout_height="wrap_content"
 			android:scaleType="centerInside"
 			android:src="@drawable/back"
+			android:onClick="goBack"
 		/>
 		<ImageButton
 			android:id="@+id/UserIcon"
