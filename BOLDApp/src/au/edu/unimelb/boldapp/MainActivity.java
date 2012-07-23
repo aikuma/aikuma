@@ -4,21 +4,13 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
-import java.io.*;
-import java.lang.Thread.UncaughtExceptionHandler;
 import android.util.Log;
 
-public class MainActivity extends Activity
-{
-	/** Called when the activity is first created. */
+public class MainActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-	/**
-		Thread.setDefaultUncaughtExceptionHandler(
-				new CustomExceptionHandler());
-	**/
 		setContentView(R.layout.main);
 	}
 
@@ -38,7 +30,9 @@ public class MainActivity extends Activity
 	}
 
 	public void goToRecord(View view) {
+		Log.i("okokok", "yes");
 		Intent intent = new Intent(this, RecordActivity.class);
+		Log.i("okokok", "yes0");
 		startActivity(intent);
 	}
 

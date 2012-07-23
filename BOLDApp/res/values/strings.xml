@@ -3,4 +3,5 @@
 	<string name="app_name">BOLDApp</string>
 	<string name="create_user">Create User</string>
 	<string name="change_user">Change User</string>
+	<string name="edit_username">User Name</string>
 </resources>
