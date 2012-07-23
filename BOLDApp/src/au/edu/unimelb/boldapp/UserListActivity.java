@@ -9,14 +9,39 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.R;
+import java.io.File;
+
+import android.util.Log;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class UserListActivity extends ListActivity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		String[] values = new String[] {"Richtung", "Zukunft"};
+
+		//Get an array of all the UUIDs from the "users" directory
+		File dir = new File(FileIO.getAppRootPath() + "users");
+		String[] userUuids = dir.list();
+
+		//Get the usernames from the metadata files
+		String[] userNames = new String[userUuids.length];
+		JSONParser parser = new JSONParser();
+		for (int i=0; i < userUuids.length; i++){
+			String jsonStr = FileIO.read("users/" + userUuids[i] +
+					"/metadata.json");
+			try {
+				Object obj = parser.parse(jsonStr);
+				JSONObject jsonObj = (JSONObject) obj;
+				userNames[i] = jsonObj.get("name").toString();
+			} catch (Exception e) {
+				Log.e("CaughtExceptions", e.getMessage());
+			}
+		}
+
+		//Use usernames as the array of text to be displayed
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, values);
+				android.R.layout.simple_list_item_1, userNames);
 		setListAdapter(adapter);
 	}
 

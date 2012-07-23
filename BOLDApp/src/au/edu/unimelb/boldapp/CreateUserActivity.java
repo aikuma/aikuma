@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.EditText;
 import java.util.UUID;
 import android.util.Log;
-
 import java.io.StringWriter;
 import org.json.simple.JSONObject;
 
@@ -28,21 +27,23 @@ public class CreateUserActivity extends Activity {
 		EditText editText = (EditText) findViewById(R.id.edit_message);
 		String username = editText.getText().toString();
 
+		//Generate the uuid that is associated with the user
 		UUID uuid = UUID.randomUUID();
 
 		//Create the JSON object
 		JSONObject obj = new JSONObject();
 		obj.put("name", username);
+		obj.put("uuid", uuid.toString());
 
 		//Write the JSON object the the file
 		StringWriter stringWriter = new StringWriter();
 		try {
 			obj.writeJSONString(stringWriter);
 		} catch (Exception e) {
-			Log.e("CaughtStuff", e.getMessage());
+			Log.e("CaughtExceptions", e.getMessage());
 		}
 		String jsonText = stringWriter.toString();
-		FileIO.write("users/" + uuid.toString() + "metadata.json", jsonText);
+		FileIO.write("users/" + uuid.toString() + "/metadata.json", jsonText);
 	}
 
 }
