@@ -11,6 +11,9 @@ import java.io.FileInputStream;
 public abstract class FileIO {
 	static final String appRootPath = "bold/";
 
+	/**
+	Returns the absolute path to the application's data.
+	*/
 	public static String getAppRootPath(){
 		File external = Environment.getExternalStorageDirectory();
 		String path = external.getAbsolutePath() + "/" + appRootPath;

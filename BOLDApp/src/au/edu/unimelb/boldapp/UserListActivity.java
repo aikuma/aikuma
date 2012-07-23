@@ -17,9 +17,11 @@ import org.json.simple.parser.JSONParser;
 
 public class UserListActivity extends ListActivity {
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	/**
+	Loads the usernames of all the users into an array of strings.
 
+	*/
+	private String[] loadUserNames() {
 		//Get an array of all the UUIDs from the "users" directory
 		File dir = new File(FileIO.getAppRootPath() + "users");
 		String[] userUuids = dir.list();
@@ -38,7 +40,13 @@ public class UserListActivity extends ListActivity {
 				Log.e("CaughtExceptions", e.getMessage());
 			}
 		}
+		return userNames;
+	}
 
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		String[] userNames = loadUserNames();
 		//Use usernames as the array of text to be displayed
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, userNames);

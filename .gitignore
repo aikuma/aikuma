@@ -1,6 +1,7 @@
 *.class
 *.json
 .metadata
+*.swp
 
 BOLDApp/tmp
 BOLDApp/bin
