@@ -46,7 +46,11 @@ public class UserListActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		String[] userNames = loadUserNames();
+		User[] users = FileIO.loadUsers();
+		String[] userNames = new String[users.length];
+		for(int i = 0; i < users.length; i++) {
+			userNames[i] = users[i].getName();
+		}
 		//Use usernames as the array of text to be displayed
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, userNames);

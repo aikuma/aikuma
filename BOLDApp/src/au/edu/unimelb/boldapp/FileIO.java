@@ -8,6 +8,10 @@ import android.util.Log;
 import java.util.Scanner;
 import java.io.FileInputStream;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import java.util.UUID;
+
 public abstract class FileIO {
 	static final String appRootPath = "bold/";
 
@@ -63,5 +67,33 @@ public abstract class FileIO {
 		}
 		Log.i("yoyoyo", "gaybacon" + text.toString());
 		return text.toString();
+	}
+
+	public static User[] loadUsers() {
+		// Get an array of all the UUIDs from the "users" directory
+		File dir = new File(getAppRootPath() + "users");
+		String[] userUuids = dir.list();
+
+		// Get the user data from the metadata.json files
+		User[] users = new User[userUuids.length];
+		JSONParser parser = new JSONParser();
+		for (int i=0; i < userUuids.length; i++) {
+			String jsonStr = read("users/" + userUuids[i] + "/metadata.json");
+			try {
+				Object obj = parser.parse(jsonStr);
+				JSONObject jsonObj = (JSONObject) obj;
+				users[i] = new User(
+						UUID.fromString(jsonObj.get("uuid").toString()),
+						jsonObj.get("name").toString());
+			} catch (Exception e) {
+				Log.e("GottaCatchEmAll", e.getMessage());
+			}
+		}
+		//Log.i("gogogo", Integer.toString(users.length));
+		//for (int j=0; j < users.length; j++) {
+		//	Log.i("gogogo", users[j].getName());
+		//	Log.i("gogogo", users[j].getUuid().toString());
+		//}
+		return users;
 	}
 }
