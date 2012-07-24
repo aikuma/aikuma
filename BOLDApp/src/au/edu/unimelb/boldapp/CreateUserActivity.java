@@ -10,6 +10,10 @@ import java.io.StringWriter;
 import org.json.simple.JSONObject;
 import android.content.Intent;
 
+/**
+ * Activity that offers the user the ability to enter text in a text box and
+ * press a button that then subsequently creates a corresponding user.
+ */
 public class CreateUserActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,9 @@ public class CreateUserActivity extends Activity {
 		this.finish();
 	}
 
+	/**
+	 * Go back to the user selection activity.
+	 */
 	public void goBack(View view) {
 		Intent intent = new Intent(this, UserSelectionActivity.class);
 		startActivity(intent);

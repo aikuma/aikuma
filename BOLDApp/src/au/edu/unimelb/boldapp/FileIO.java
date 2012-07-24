@@ -17,6 +17,9 @@ public abstract class FileIO {
 
 	/**
 	Returns the absolute path to the application's data.
+
+	@return A string representation of the absolute path to the application's
+			data
 	*/
 	public static String getAppRootPath(){
 		File external = Environment.getExternalStorageDirectory();
@@ -69,6 +72,12 @@ public abstract class FileIO {
 		return text.toString();
 	}
 
+	/**
+	Method to load all the users from the users directory, into a list of User
+	objects.
+	
+	@return An array of all the users as user objects
+	*/
 	public static User[] loadUsers() {
 		// Get an array of all the UUIDs from the "users" directory
 		File dir = new File(getAppRootPath() + "users");
@@ -89,11 +98,6 @@ public abstract class FileIO {
 				Log.e("GottaCatchEmAll", e.getMessage());
 			}
 		}
-		//Log.i("gogogo", Integer.toString(users.length));
-		//for (int j=0; j < users.length; j++) {
-		//	Log.i("gogogo", users[j].getName());
-		//	Log.i("gogogo", users[j].getUuid().toString());
-		//}
 		return users;
 	}
 }

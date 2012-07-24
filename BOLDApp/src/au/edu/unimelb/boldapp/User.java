@@ -2,6 +2,9 @@ package au.edu.unimelb.boldapp;
 
 import java.util.UUID;
 
+/**
+ * The class that contains user data when in memory.
+ */
 public class User {
 
 	private UUID uuid;

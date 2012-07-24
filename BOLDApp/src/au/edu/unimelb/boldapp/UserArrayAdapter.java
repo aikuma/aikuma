@@ -18,9 +18,13 @@ import java.util.Collections;
 
 import android.R;
 
+/**
+	Array adapter to take the ListView's getItem and getView requests and adapt
+	it to an array of users.
+*/
 public class UserArrayAdapter extends ArrayAdapter<User> {
-	protected static final int listItemLayout = 
-			android.R.layout.simple_list_item_1; 
+	protected static final int listItemLayout =
+			android.R.layout.simple_list_item_1;
 	
 	protected LayoutInflater inflater;
 

@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.view.View;
 import android.util.Log;
 
+/**
+ * The activity that is first run when the application is started.
+ */
 public class MainActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -30,9 +33,7 @@ public class MainActivity extends Activity {
 	}
 
 	public void goToRecord(View view) {
-		Log.i("okokok", "yes");
 		Intent intent = new Intent(this, RecordActivity.class);
-		Log.i("okokok", "yes0");
 		startActivity(intent);
 	}
 

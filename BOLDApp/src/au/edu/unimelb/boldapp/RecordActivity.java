@@ -8,9 +8,7 @@ import android.util.Log;
 public class RecordActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.i("okokok", "yes01");
 		super.onCreate(savedInstanceState);
-		Log.i("okokok", "yes1");
 		setContentView(R.layout.record);
 	}
 
