@@ -47,19 +47,25 @@ public class UserListActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 
 		User[] users = FileIO.loadUsers();
+		/*
 		String[] userNames = new String[users.length];
 		for(int i = 0; i < users.length; i++) {
 			userNames[i] = users[i].getName();
 		}
+		*/
 		//Use usernames as the array of text to be displayed
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, userNames);
+		/*
+		ArrayAdapter<User> adapter = new ArrayAdapter<User>(this,
+				android.R.layout.simple_list_item_1, users);
+		setListAdapter(adapter);
+		*/
+		ArrayAdapter adapter = new UserArrayAdapter(this, users);
 		setListAdapter(adapter);
 	}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		String item = (String) getListAdapter().getItem(position);
-		Toast.makeText(this, item + " selected", Toast.LENGTH_LONG).show();
+		User user = (User) getListAdapter().getItem(position);
+		Toast.makeText(this, user.getName() + " selected", Toast.LENGTH_LONG).show();
 	}
 }
