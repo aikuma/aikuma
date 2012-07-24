@@ -7,7 +7,7 @@ public abstract class GlobalState {
 		return currentUser;
 	}
 
-	public void setCurrentUser(User currentUser) {
-		this.currentUser = currentUser;
+	public static void setCurrentUser(User currentUser) {
+		GlobalState.currentUser = currentUser;
 	}
 }

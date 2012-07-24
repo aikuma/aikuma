@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.R;
+//import android.R;
 import java.io.File;
 
 import android.util.Log;
@@ -17,10 +17,12 @@ import org.json.simple.parser.JSONParser;
 
 public class UserListActivity extends ListActivity {
 
+	
 	/**
 	Loads the usernames of all the users into an array of strings.
 
 	*/
+	/*
 	private String[] loadUserNames() {
 		//Get an array of all the UUIDs from the "users" directory
 		File dir = new File(FileIO.getAppRootPath() + "users");
@@ -42,9 +44,12 @@ public class UserListActivity extends ListActivity {
 		}
 		return userNames;
 	}
+	*/
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.user_selection);
+
 
 		User[] users = FileIO.loadUsers();
 		/*
@@ -66,6 +71,8 @@ public class UserListActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		User user = (User) getListAdapter().getItem(position);
+		GlobalState.setCurrentUser(user);
 		Toast.makeText(this, user.getName() + " selected", Toast.LENGTH_LONG).show();
+		this.finish();
 	}
 }
