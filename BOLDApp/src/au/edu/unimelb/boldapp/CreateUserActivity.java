@@ -8,6 +8,7 @@ import java.util.UUID;
 import android.util.Log;
 import java.io.StringWriter;
 import org.json.simple.JSONObject;
+import android.content.Intent;
 
 public class CreateUserActivity extends Activity {
 	@Override
@@ -44,6 +45,16 @@ public class CreateUserActivity extends Activity {
 		}
 		String jsonText = stringWriter.toString();
 		FileIO.write("users/" + uuid.toString() + "/metadata.json", jsonText);
+
+		Intent intent = new Intent(this, UserSelectionActivity.class);
+		startActivity(intent);
+		this.finish();
+	}
+
+	public void goBack(View view) {
+		Intent intent = new Intent(this, UserSelectionActivity.class);
+		startActivity(intent);
+		this.finish();
 	}
 
 }

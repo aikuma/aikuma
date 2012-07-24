@@ -27,7 +27,6 @@ public class UserSelectionActivity extends ListActivity {
 		GlobalState.setCurrentUser(user);
 		Toast.makeText(this,
 				user.getName() + " selected", Toast.LENGTH_LONG).show();
-		this.finish();
 	}
 
 	@Override
@@ -42,6 +41,7 @@ public class UserSelectionActivity extends ListActivity {
 	public void createUser(View view) {
 		Intent intent = new Intent(this, CreateUserActivity.class);
 		startActivity(intent);
+		this.finish();
 	}
 	/*
 	public void changeUser(View view) {

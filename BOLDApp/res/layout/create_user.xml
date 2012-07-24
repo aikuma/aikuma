@@ -2,16 +2,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
-    <EditText android:id="@+id/edit_message"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/edit_username" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/create_user"
-		android:onClick="createUser"
-	/>
+    android:orientation="vertical">
+	<RelativeLayout
+		android:id="@+id/Frame"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_weight="3"
+	>
+		<ImageButton
+			android:id="@+id/Back"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:src="@drawable/back"
+			android:onClick="goBack"
+			android:layout_alignParentLeft="true"
+		/>
+		<!--
+		<TextView
+			android:id="@+id/UserName"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="2"
+			android:text="User Name"
+			android:textSize="20sp"
+		/>
+		-->
+	</RelativeLayout>
+	<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+	>
+		<EditText android:id="@+id/edit_message"
+			android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:hint="@string/edit_username" />
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/create_user"
+			android:onClick="createUser"
+		/>
+	</LinearLayout>
 </LinearLayout>
