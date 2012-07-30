@@ -80,4 +80,49 @@
     <!-- version-tag: 1 -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
+    <property name="test.absolute.dir" location="${test.dir}"/>
+    <property name="out.test-classes.dir" value="${out.absolute.dir}/testClasses"/>
+    <property name="out.test-classes.absolute.dir" value="${out.test-classes.dir}"/>
+    <property name="test.external.libs.absolute.dir" location="${test.external.libs.dir}"/>
+    <property name="publish.dir" location="${out.absolute.dir}/publish"/>
+
+    <target name="compile.tests" depends="-compile"
+            description="compile module source; test classes" unless="skip.tests">
+        <mkdir dir="${out.test-classes.absolute.dir}"/>
+
+        <javac encoding="ascii" source="1.6" target="1.6" debug="true" extdirs=""
+               destdir="${out.test-classes.absolute.dir}"
+               verbose="${verbose}" classpath="${robolectric.sample.external.libs.dir}">
+            <src path="${test.absolute.dir}"/>
+            <classpath>
+                <pathelement path="${out.classes.absolute.dir}"/>
+                <path refid="android.target.classpath"/>
+                <fileset dir="${test.external.libs.absolute.dir}" includes="*.jar"/>
+                <fileset dir="${robolectric.sample.external.libs.dir}" includes="*.jar"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="test" depends="compile.tests" description="test all">
+        <mkdir dir="${basedir}/out/reports/tests"/>
+        <junit showoutput="true" failureproperty="junit.failure">
+            <formatter type="plain"/>
+            <formatter type="xml"/>
+            <batchtest todir="${basedir}/out/reports/tests">
+                <fileset dir="${test.absolute.dir}">
+                    <include name="*Test.java"/>
+                </fileset>
+            </batchtest>
+            <classpath>
+                <pathelement path="${out.classes.absolute.dir}"/>
+                <pathelement path="${out.test-classes.absolute.dir}"/>
+                <fileset dir="${test.external.libs.absolute.dir}" includes="*.jar"/>
+                <fileset dir="${robolectric.sample.external.libs.dir}" includes="*.jar"/>
+
+                <path refid="android.target.classpath"/>
+            </classpath>
+        </junit>
+        <fail if="junit.failure" message="Unit test(s) failed.  See reports!"/>
+    </target>
+
 </project>
