@@ -17,7 +17,7 @@ public abstract class Analyzer {
    *  something worthwhile to record and the second
    *  if we detected only silence.
    *
-   *  @param recorder A recorder
+   *  @param recorder A Recorder.
    *
    */
 	public abstract void analyze(Recorder recorder, short[] buffer) {
