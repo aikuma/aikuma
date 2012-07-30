@@ -6,10 +6,19 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
-import PCMWriter;
+import au.edu.melbuni.boldapp.audio.analyzers.SimpleAnalyzer;
 
-/**
+/** Recorder used to get input from eg. a microphone and
+ *  output into a file.
+ * 
+ *  Usage:
+ *    Recorder recorder = new Recorder();
+ *    recorder.listen("/mnt/sdcard/bold/recordings/target_file.wav")
+ *    recorder.pause();
+ *    recorder.resume();
+ *    recorder.stop();
  *
+ *  Note that stopping the recorder closes and finalizes the WAV file.
  */
 public abstract class Recorder implements SpeechTriggers {
 
@@ -34,12 +43,19 @@ public abstract class Recorder implements SpeechTriggers {
   
   /** Default constructor.
    *
-   * Note: Uses default recording parameters.
+   * Note: Uses an analyzer which tells the recorder to always record.
    */
 	public Recorder() {
-    this(new )
+    this(new SimpleAnalyzer())
 	}
   
+  /** Default constructor.
+   *
+   * @param Pass in an analyzer which decides whether
+   *        the recorder should record or ignore the input.
+   *
+   * Note: Uses default recording parameters.
+   */
   public Recorder(Analyzer analyzer) {
     this.analyzer = analyzer;
     
@@ -85,7 +101,7 @@ public abstract class Recorder implements SpeechTriggers {
    * Note: It converts the Android parameters into
    * parameters that are useful for AudioRecord.
    */
-	public static AudioRecord getListener(int index, int audioFormat, int channelConfig) {
+	protected static AudioRecord getListener(int index, int audioFormat, int channelConfig) {
 		if (index >= sampleRates.length) {
 			index = sampleRates.length - 1; // Fall back.
 		}
@@ -178,7 +194,7 @@ public abstract class Recorder implements SpeechTriggers {
    *  will be called, allowing the recorder to handle
    *  the incoming data using an analyzer.
    */
-	public void onBufferFull(short[] buffer) {
+	protected void onBufferFull(short[] buffer) {
 		// This will call back the methods:
     //  * silenceTriggered
     //  * audioTriggered
@@ -194,12 +210,12 @@ public abstract class Recorder implements SpeechTriggers {
   //
   
   /** By default simply writes the buffer to the file. */
-	public void audioTriggered(short[] buffer, boolean justChanged) {
+	protected void audioTriggered(short[] buffer, boolean justChanged) {
 		file.write(buffer);
 	}
   
   /** Does nothing by default if silence is triggered. */
-	public void silenceTriggered(short[] buffer, boolean justChanged) {
+	protected void silenceTriggered(short[] buffer, boolean justChanged) {
     
 	}
 }
