@@ -6,6 +6,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
+import au.edu.melbuni.boldapp.audio.analyzers.Analyzer;
 import au.edu.melbuni.boldapp.audio.analyzers.SimpleAnalyzer;
 
 /** Recorder used to get input from eg. a microphone and
@@ -20,7 +21,7 @@ import au.edu.melbuni.boldapp.audio.analyzers.SimpleAnalyzer;
  *
  *  Note that stopping the recorder closes and finalizes the WAV file.
  */
-public abstract class Recorder implements SpeechTriggers {
+public abstract class Recorder {
 
 	protected int samplingRate;
 	protected int channelConfig;
@@ -46,7 +47,7 @@ public abstract class Recorder implements SpeechTriggers {
    * Note: Uses an analyzer which tells the recorder to always record.
    */
 	public Recorder() {
-    this(new SimpleAnalyzer())
+    this(new SimpleAnalyzer());
 	}
   
   /** Default constructor.
@@ -210,12 +211,12 @@ public abstract class Recorder implements SpeechTriggers {
   //
   
   /** By default simply writes the buffer to the file. */
-	protected void audioTriggered(short[] buffer, boolean justChanged) {
+	public void audioTriggered(short[] buffer, boolean justChanged) {
 		file.write(buffer);
 	}
   
   /** Does nothing by default if silence is triggered. */
-	protected void silenceTriggered(short[] buffer, boolean justChanged) {
+	public void silenceTriggered(short[] buffer, boolean justChanged) {
     
 	}
 }
