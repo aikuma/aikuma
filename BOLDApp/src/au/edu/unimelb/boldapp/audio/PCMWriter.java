@@ -20,7 +20,6 @@ import android.util.Log;
  */
 public class PCMWriter {
   
-  
 	String fullFilename;
 	
   /** 
