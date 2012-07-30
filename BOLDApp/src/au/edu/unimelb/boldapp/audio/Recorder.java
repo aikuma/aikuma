@@ -217,6 +217,6 @@ public abstract class Recorder {
   
   /** Does nothing by default if silence is triggered. */
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
-    
+    // Intentionally empty.
 	}
 }
