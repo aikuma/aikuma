@@ -96,7 +96,7 @@
             <src path="${test.absolute.dir}"/>
             <classpath>
                 <pathelement path="${out.classes.absolute.dir}"/>
-                <path refid="android.target.classpath"/>
+                <path refid="project.target.class.path"/>
                 <fileset dir="${test.external.libs.absolute.dir}" includes="*.jar"/>
                 <fileset dir="${robolectric.sample.external.libs.dir}" includes="*.jar"/>
             </classpath>
@@ -119,7 +119,7 @@
                 <fileset dir="${test.external.libs.absolute.dir}" includes="*.jar"/>
                 <fileset dir="${robolectric.sample.external.libs.dir}" includes="*.jar"/>
 
-                <path refid="android.target.classpath"/>
+                <path refid="project.target.class.path"/>
             </classpath>
         </junit>
         <fail if="junit.failure" message="Unit test(s) failed.  See reports!"/>
