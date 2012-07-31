@@ -26,6 +26,7 @@
 			android:scaleType="centerInside"
 			android:src="@drawable/unknown_user"
 			android:layout_alignParentRight="true"
+			android:onClick="goToUserSelection"
 		/>
 	</RelativeLayout>
 	<LinearLayout
@@ -42,6 +43,7 @@
 				android:layout_weight="1"
 				android:scaleType="centerInside"
 				android:src="@drawable/button_record"
+				android:onClick="record"
 			/>
 	</LinearLayout>
 </LinearLayout>
