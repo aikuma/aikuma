@@ -5,6 +5,7 @@ import java.util.Arrays;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.util.Log;
 
 import au.edu.unimelb.boldapp.audio.analyzers.Analyzer;
 import au.edu.unimelb.boldapp.audio.analyzers.SimpleAnalyzer;
@@ -23,15 +24,11 @@ import au.edu.unimelb.boldapp.audio.analyzers.SimpleAnalyzer;
  */
 public class Recorder {
 
-	protected int samplingRate;
-	protected int channelConfig;
-	protected int audioFormat;
-
 	/** Recording buffer.
 	 *
 	 *  Used to ferry samples to a PCM based file/consumer.
 	 */
-	protected short[] buffer = new short[samplingRate];
+	protected short[] buffer = new short[1000];
 
 	/** AudioRecord listens to the microphone */
 	protected AudioRecord listener;
@@ -60,10 +57,6 @@ public class Recorder {
 	public Recorder(Analyzer analyzer) {
 		this.analyzer = analyzer;
 
-		samplingRate = 1000;
-		audioFormat = AudioFormat.ENCODING_PCM_16BIT;
-		channelConfig = AudioFormat.CHANNEL_IN_MONO;
-
 		setUpListener();
 		setUpFile();
 	}
@@ -85,17 +78,15 @@ public class Recorder {
 	 * rates until it finds one the device supports.
 	 */
 	public void waitForAudioRecord() {
-		int index = 0;
+		listener = getListener(44100, AudioFormat.ENCODING_PCM_16BIT,
+				AudioFormat.CHANNEL_CONFIGURATION_MONO);
 		do {
-			listener = getListener(index, AudioFormat.ENCODING_PCM_16BIT,
-					AudioFormat.CHANNEL_CONFIGURATION_MONO);
-			index += 1;
-		} while (listener != null
-				&& (listener.getState() != AudioRecord.STATE_INITIALIZED));
+			//Log.i("yoyoyo", Integer.toString(index));
+		} while (listener.getState() != AudioRecord.STATE_INITIALIZED);
 	}
 
 	/** List of sample rates we want the device to try. */
-	private final static int[] sampleRates = { 44100, 22050, 11025, 8000 };
+	//private final static int[] sampleRates = { 44100, 22050, 11025, 8000 };
 
 	/** Tries to get a listening device for the built-in/external microphone.
 	 *
@@ -103,10 +94,11 @@ public class Recorder {
 	 * parameters that are useful for AudioRecord.
 	 */
 	protected static AudioRecord getListener(
-			int index, int audioFormat, int channelConfig) {
-		if (index >= sampleRates.length) {
-			index = sampleRates.length - 1; // Fall back.
-		}
+			int sampleRate, int audioFormat, int channelConfig) {
+		//if (index >= sampleRates.length) {
+		//	index = sampleRates.length - 1; // Fall back.
+			//return null;
+		//}
 
 		// Sample size.
 		//
@@ -130,7 +122,7 @@ public class Recorder {
 		//
 
 		/** Get the right sample rate. */
-		int sampleRate = sampleRates[index];
+		//int sampleRate = sampleRates[index];
 
 		/** The period used for callbacks to onBufferFull. */
 		int framePeriod = sampleRate * 120 / 1000;
@@ -148,8 +140,6 @@ public class Recorder {
 		// Prepare the target file for writing.
 		file.prepare(targetFilename);
 
-		// Start listening to the audio device.
-		listener.startRecording();
 
 		// Simply reads and reads...
 		//
@@ -183,11 +173,19 @@ public class Recorder {
 
 	/** Read from the listener's buffer and call the callback. */
 	protected void read() {
+		// Start listening to the audio device.
+		listener.startRecording();
+
+		//Log.i("yoyoyo", "entered read");
+		//int thing;
 		while (listener.read(buffer, 0, buffer.length) > 0) {
 			// Hand in a copy of the buffer.
 			//
+		//Log.i("yoyoyo", "" + buffer[0]);
 			onBufferFull(Arrays.copyOf(buffer, buffer.length));
 		}
+		//Log.i("yoyoyo", " " + thing);
+
 	}
 
 	/** As soon as enough data has been read, this method
