@@ -1,0 +1,34 @@
+Tentative BOLD Mobile App Development Plan
+------------------------------------------
+
+To be frank: As with all plans, they are subject to change / not set in stone.
+This document expresses a wish where we (ie. I, Florian ;)) would like to be at some point in time.
+
+It denotes goals on a weekly basis.
+They are intentionally short/concise.
+
+August:
+  - Recording
+  - Respeaking / Translating
+  - File Structure (for Listening)
+  - Listening (Filters: per User/Date, Sorting: Latest/Username)
+
+September:
+  - More User Details (Recorded Name, Picture)
+  
+  We now have a prototype that already could (should?) be released.
+  
+  - Networking (WLAN with FTP): Serialisation methods on User/Audio Metadata.
+                                Synchronise files to the FTP server, first users, then recordings.
+  - Networking, Part 2.
+  
+  We now have a networked prototype.
+  
+  - 
+  - 
+
+October:
+  - 
+  - 
+  - 
+  - 
