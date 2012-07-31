@@ -1,6 +1,6 @@
-package au.edu.melbuni.boldapp.audio.analyzers;
+package au.edu.unimelb.boldapp.audio.analyzers;
 
-import au.edu.melbuni.boldapp.audio.Recorder;
+import au.edu.unimelb.boldapp.audio.Recorder;
 
 public class SimpleAnalyzer extends Analyzer {
 

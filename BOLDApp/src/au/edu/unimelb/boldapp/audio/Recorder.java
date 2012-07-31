@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp.audio;
+package au.edu.unimelb.boldapp.audio;
 
 import java.util.Arrays;
 
@@ -6,8 +6,8 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
-import au.edu.melbuni.boldapp.audio.analyzers.Analyzer;
-import au.edu.melbuni.boldapp.audio.analyzers.SimpleAnalyzer;
+import au.edu.unimelb.boldapp.audio.analyzers.Analyzer;
+import au.edu.unimelb.boldapp.audio.analyzers.SimpleAnalyzer;
 
 /** Recorder used to get input from eg. a microphone and
  *  output into a file.
@@ -21,69 +21,69 @@ import au.edu.melbuni.boldapp.audio.analyzers.SimpleAnalyzer;
  *
  *  Note that stopping the recorder closes and finalizes the WAV file.
  */
-public abstract class Recorder {
+public class Recorder {
 
 	protected int samplingRate;
 	protected int channelConfig;
 	protected int audioFormat;
-  
-  /** Recording buffer.
-   *  
-   *  Used to ferry samples to a PCM based file/consumer.
-   */
+
+	/** Recording buffer.
+	 *
+	 *  Used to ferry samples to a PCM based file/consumer.
+	 */
 	protected short[] buffer = new short[samplingRate];
-  
-  /** AudioRecord listens to the microphone */
+
+	/** AudioRecord listens to the microphone */
 	protected AudioRecord listener;
-  
-  /** File to write to. */
-  protected PCMWriter file;
-  
-  /** Analyzer that analyzes the incoming data. */
-  Analyzer analyzer;
-  
-  /** Default constructor.
-   *
-   * Note: Uses an analyzer which tells the recorder to always record.
-   */
+
+	/** File to write to. */
+	protected PCMWriter file;
+
+	/** Analyzer that analyzes the incoming data. */
+	Analyzer analyzer;
+
+	/** Default constructor.
+	 *
+	 *Note: Uses an analyzer which tells the recorder to always record.
+	 */
 	public Recorder() {
-    this(new SimpleAnalyzer());
+		this(new SimpleAnalyzer());
 	}
-  
-  /** Default constructor.
-   *
-   * @param Pass in an analyzer which decides whether
-   *        the recorder should record or ignore the input.
-   *
-   * Note: Uses default recording parameters.
-   */
-  public Recorder(Analyzer analyzer) {
-    this.analyzer = analyzer;
-    
-  	samplingRate = 1000;
-    audioFormat = AudioFormat.ENCODING_PCM_16BIT;
-  	channelConfig = AudioFormat.CHANNEL_IN_MONO;
-    
+
+	/** Default constructor.
+	 *
+	 * @param Pass in an analyzer which decides whether
+	 *        the recorder should record or ignore the input.
+	 *
+	 * Note: Uses default recording parameters.
+	 */
+	public Recorder(Analyzer analyzer) {
+		this.analyzer = analyzer;
+
+		samplingRate = 1000;
+		audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+		channelConfig = AudioFormat.CHANNEL_IN_MONO;
+
 		setUpListener();
-    setUpFile();
-  }
-  
-  /** Sets up the listening device. Eg. the microphone. */
+		setUpFile();
+	}
+
+	/** Sets up the listening device. Eg. the microphone. */
 	protected void setUpListener() {
 		waitForAudioRecord();
 	}
-  
-  /** Sets the file up for writing. */
-  protected void setUpFile() {
+
+	/** Sets the file up for writing. */
+	protected void setUpFile() {
 		file = PCMWriter.getInstance(listener.getSampleRate(),
 				listener.getChannelConfiguration(), listener.getAudioFormat());
-  }
-  
-  /** Waits for the listening device.
-   *
-   * Note: This goes through all the sample
-   * rates until it finds one the device supports.
-   */
+}
+
+	/** Waits for the listening device.
+	 *
+	 * Note: This goes through all the sample
+	 * rates until it finds one the device supports.
+	 */
 	public void waitForAudioRecord() {
 		int index = 0;
 		do {
@@ -93,16 +93,17 @@ public abstract class Recorder {
 		} while (listener != null
 				&& (listener.getState() != AudioRecord.STATE_INITIALIZED));
 	}
-  
-  /** List of sample rates we want the device to try. */
+
+	/** List of sample rates we want the device to try. */
 	private final static int[] sampleRates = { 44100, 22050, 11025, 8000 };
-  
-  /** Tries to get a listening device for the built-in/external microphone.
-   *
-   * Note: It converts the Android parameters into
-   * parameters that are useful for AudioRecord.
-   */
-	protected static AudioRecord getListener(int index, int audioFormat, int channelConfig) {
+
+	/** Tries to get a listening device for the built-in/external microphone.
+	 *
+	 * Note: It converts the Android parameters into
+	 * parameters that are useful for AudioRecord.
+	 */
+	protected static AudioRecord getListener(
+			int index, int audioFormat, int channelConfig) {
 		if (index >= sampleRates.length) {
 			index = sampleRates.length - 1; // Fall back.
 		}
@@ -127,33 +128,31 @@ public abstract class Recorder {
 		
 		// Calculate buffer size.
 		//
-    
-    /** Get the right sample rate. */
+
+		/** Get the right sample rate. */
 		int sampleRate = sampleRates[index];
-    
-    /** The period used for callbacks to onBufferFull. */
+
+		/** The period used for callbacks to onBufferFull. */
 		int framePeriod = sampleRate * 120 / 1000;
-    
-    /** The buffer needed for the above period */
+
+		/** The buffer needed for the above period */
 		int bufferSize = framePeriod * 2 * sampleSize * numberOfChannels / 8;
 
 		return new AudioRecord(MediaRecorder.AudioSource.MIC,
 				sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO,
 				AudioFormat.ENCODING_PCM_16BIT, bufferSize);
 	}
-  
-  /** Start listening. */
+
+	/** Start listening. */
 	public void listen(String targetFilename) {
-    // Prepare the target file for writing.
-    //
-    file.prepare(targetFilename);
-    
-    // Start listening to the audio device.
-    //
-    listener.startRecording();
-    
-    // Simply reads and reads...
-    //
+		// Prepare the target file for writing.
+		file.prepare(targetFilename);
+
+		// Start listening to the audio device.
+		listener.startRecording();
+
+		// Simply reads and reads...
+		//
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -162,27 +161,27 @@ public abstract class Recorder {
 		});
 		t.start();
 	}
-  
-  /** Stop listening to the microphone and close the file.
-   *
-   * Note: Once stopped you cannot restart the recorder.
-   */
+
+	/** Stop listening to the microphone and close the file.
+	 *
+	 * Note: Once stopped you cannot restart the recorder.
+	 */
 	public void stop() {
 		listener.stop();
-    file.close();
+		file.close();
 	}
-  
-  /** Pause listening to the microphone. */
+
+	/** Pause listening to the microphone. */
 	public void pause() {
 		listener.stop();
 	}
-  
-  /** Resume listening to the microphone. */
+
+	/** Resume listening to the microphone. */
 	public void resume() {
 		listener.startRecording();
 	}
-  
-  /** Read from the listener's buffer and call the callback. */
+
+	/** Read from the listener's buffer and call the callback. */
 	protected void read() {
 		while (listener.read(buffer, 0, buffer.length) > 0) {
 			// Hand in a copy of the buffer.
@@ -190,33 +189,33 @@ public abstract class Recorder {
 			onBufferFull(Arrays.copyOf(buffer, buffer.length));
 		}
 	}
-  
-  /** As soon as enough data has been read, this method
-   *  will be called, allowing the recorder to handle
-   *  the incoming data using an analyzer.
-   */
+
+	/** As soon as enough data has been read, this method
+	 *  will be called, allowing the recorder to handle
+	 *  the incoming data using an analyzer.
+	 */
 	protected void onBufferFull(short[] buffer) {
 		// This will call back the methods:
-    //  * silenceTriggered
-    //  * audioTriggered
+		//  * silenceTriggered
+		//  * audioTriggered
 		//
 		analyzer.analyze(this, buffer);
 	}
 
-  
-  // The following two methods handle silences/speech
-  // discovered in the input data.
-  //
-  // If you need a different behaviour, override.
-  //
-  
-  /** By default simply writes the buffer to the file. */
+
+	//The following two methods handle silences/speech
+	// discovered in the input data.
+	//
+	// If you need a different behaviour, override.
+	//
+
+	/** By default simply writes the buffer to the file. */
 	public void audioTriggered(short[] buffer, boolean justChanged) {
 		file.write(buffer);
 	}
-  
-  /** Does nothing by default if silence is triggered. */
+
+	/** Does nothing by default if silence is triggered. */
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
-    // Intentionally empty.
+		// Intentionally empty.
 	}
 }

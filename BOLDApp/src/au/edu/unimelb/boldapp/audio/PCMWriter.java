@@ -1,4 +1,4 @@
-package au.edu.melbuni.boldapp.audio;
+package au.edu.unimelb.boldapp.audio;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
