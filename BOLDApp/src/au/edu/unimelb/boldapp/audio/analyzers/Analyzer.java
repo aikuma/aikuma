@@ -1,6 +1,6 @@
 package au.edu.unimelb.boldapp.audio.analyzers;
 
-import au.edu.unimelb.boldapp.audio.Recorder;
+import au.edu.unimelb.boldapp.audio.AudioHandler;
 
 /** Base class for analyzers.
  *
@@ -18,8 +18,9 @@ public abstract class Analyzer {
 	 *  something worthwhile to record and the second
 	 *  if we detected only silence.
 	 *
-	 *  @param recorder A Recorder.
+	 *  @param handler Any AudioHandler.
+   *  @param buffer An array of audio samples.
 	 *
 	 */
-	public abstract void analyze(Recorder recorder, short[] buffer);
+	public abstract void analyze(AudioHandler handler, short[] buffer);
 }

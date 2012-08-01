@@ -1,11 +1,11 @@
 package au.edu.unimelb.boldapp.audio.analyzers;
 
-import au.edu.unimelb.boldapp.audio.Recorder;
+import au.edu.unimelb.boldapp.audio.AudioHandler;
 
 public class SimpleAnalyzer extends Analyzer {
 
 	/** Simply always calls audioTriggered. */
-	public void analyze(Recorder recorder, short[] buffer) {
-		recorder.audioTriggered(buffer, false);
+	public void analyze(AudioHandler handler, short[] buffer) {
+		handler.audioTriggered(buffer, false);
 	}
 }

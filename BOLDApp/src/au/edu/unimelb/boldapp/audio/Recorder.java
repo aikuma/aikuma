@@ -22,7 +22,7 @@ import au.edu.unimelb.boldapp.audio.analyzers.SimpleAnalyzer;
  *
  *  Note that stopping the recorder closes and finalizes the WAV file.
  */
-public class Recorder {
+public class Recorder implements AudioHandler {
 
 	/** Recording buffer.
 	 *
