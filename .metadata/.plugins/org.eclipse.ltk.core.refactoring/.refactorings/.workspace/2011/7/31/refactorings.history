@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename Java project &apos;BOLDApp&apos; to &apos;BOLDAppWithFragments&apos;&#x0A;- Original element: &apos;BOLDApp&apos;&#x0A;- Renamed element: &apos;BOLDApp&apos;&#x0A;- Update references to refactored element" description="Rename Java project &apos;BOLDApp&apos;" flags="7" id="org.eclipse.jdt.ui.rename.java.project" input="=BOLDApp" name="BOLDAppWithFragments" references="true" stamp="1311827939059" version="1.0"/>
-</session>
