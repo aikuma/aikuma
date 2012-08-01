@@ -53,13 +53,14 @@ September:
     Set file server (FTP) address.
 
 October:
+
   - Tool for looking at data on memory stick / laptop with FTP server?
     Does not necessarily need to use the same code as on the phone.
 
-After that:
+After that / Future:
   
   - 3G connection to a central server.
   - Spoken language help.
   - Multiple languages.
-  - 
+  - Elan adapter for importing into Elan.
   
