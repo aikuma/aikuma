@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.util.Log;
 import android.content.Intent;
+import android.widget.ImageButton;
 
 import org.json.simple.JSONObject;
 
@@ -30,13 +31,23 @@ public class RecordActivity extends Activity {
 	private Recorder recorder;
 	//private Boolean alreadyStarted;
 
+	/**
+	 * Called when the activity starts.
+	 *
+	 * Generates a UUID for the recording, prepares the file and creates a
+	 * metadata file that includes the name and UUID of the user who made the
+	 * recording.
+	 *
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
 		recording = false;
-		//alreadyStarted = false;
 		recorder = new Recorder();
+
+		// Get Info about the creator and put it in the respective JSON
+		// metadata file User currentUser = GlobalState.getCurrentUser();
 		User currentUser = GlobalState.getCurrentUser();
 		UUID uuid = UUID.randomUUID();
 		JSONObject obj = new JSONObject();
@@ -51,6 +62,8 @@ public class RecordActivity extends Activity {
 		}
 		String jsonText = stringWriter.toString();
 		FileIO.write("recordings/" + uuid.toString() + ".json", jsonText);
+
+		//Prepare the recorder
 		recorder.prepare("/mnt/sdcard/bold/recordings/" +
 				uuid.toString() + ".wav");
 	}
@@ -78,14 +91,17 @@ public class RecordActivity extends Activity {
 	/**
 	 * Start and stop the recording of audio.
 	 *
-	 * @param	view	The record button that was clicked.
+	 * @param	button	The record button that was clicked.
 	 */
 	public void record(View view) {
+		ImageButton button = (ImageButton) view;
 		//Toggle the recording Boolean.
 		recording = !recording;
 		if (recording) {
+			button.setImageResource(R.drawable.main_record);
 			recorder.listen();
 		} else {
+			button.setImageResource(R.drawable.button_record);
 			recorder.pause();
 		}
 	}
