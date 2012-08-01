@@ -3,6 +3,7 @@ package au.edu.unimelb.boldapp.audio;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.File;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -167,7 +168,9 @@ public class PCMWriter {
 		try {
 			// Random access file.
 			//
-			randomAccessWriter = new RandomAccessFile(this.fullFilename, "rw");
+			File file = new File(this.fullFilename);
+			file.getParentFile().mkdirs();
+			randomAccessWriter = new RandomAccessFile(file, "rw");
 		} catch (FileNotFoundException e) {
 			Log.e(PCMWriter.class.getName(),
 					"Could not create RandomAccessFile: " + this.fullFilename);
@@ -175,9 +178,9 @@ public class PCMWriter {
 	}
 
 	/** Prepares the writer for recording by writing the WAV file header.
-   *
-   * @param fullFilename The full path of the file to write.
-   */
+	 *
+	 * @param fullFilename The full path of the file to write.
+	 */
 	public void prepare(String fullFilename) {
 		this.fullFilename = fullFilename;
 		

@@ -1,11 +1,14 @@
 package au.edu.unimelb.boldapp;
 
+import au.edu.unimelb.boldapp.audio.Recorder;
+
+import java.util.UUID;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.util.Log;
 import android.content.Intent;
-import au.edu.unimelb.boldapp.audio.Recorder;
 
 /**
  * The activity that allows one to record audio.
@@ -60,10 +63,10 @@ public class RecordActivity extends Activity {
 		User user = GlobalState.getCurrentUser();
 		String name = user.getName();
 		Log.i("yoyoyo", "hi");
+		UUID uuid = UUID.randomUUID();
 		if (!recording) {
-			recorder.listen("/mnt/sdcard/bold/" +
-					GlobalState.getCurrentUser().getUuid() +
-					"/target_file.wav");
+			recorder.listen("/mnt/sdcard/bold/recordings/" +
+					uuid.toString() + ".wav");
 		} else {
 			recorder.stop();
 		}
