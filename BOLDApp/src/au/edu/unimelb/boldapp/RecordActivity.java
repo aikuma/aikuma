@@ -3,12 +3,15 @@ package au.edu.unimelb.boldapp;
 import au.edu.unimelb.boldapp.audio.Recorder;
 
 import java.util.UUID;
+import java.io.StringWriter;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.util.Log;
 import android.content.Intent;
+
+import org.json.simple.JSONObject;
 
 /**
  * The activity that allows one to record audio.
@@ -34,18 +37,31 @@ public class RecordActivity extends Activity {
 		recording = false;
 		//alreadyStarted = false;
 		recorder = new Recorder();
+		User currentUser = GlobalState.getCurrentUser();
+		UUID uuid = UUID.randomUUID();
+		JSONObject obj = new JSONObject();
+		obj.put("uuid", uuid.toString());
+		obj.put("creatorUUID", currentUser.getUuid());
+		obj.put("creatorName", currentUser.getName());
+		StringWriter stringWriter = new StringWriter();
+		try {
+			obj.writeJSONString(stringWriter);
+		} catch (Exception e) {
+			Log.e("CaughtExceptions", e.getMessage());
+		}
+		String jsonText = stringWriter.toString();
+		FileIO.write("recordings/" + uuid.toString() + ".json", jsonText);
 		recorder.prepare("/mnt/sdcard/bold/recordings/" +
-				//		uuid.toString() + ".wav");
-						"test.wav");
+				uuid.toString() + ".wav");
 	}
 
 	@Override
 	public void onStop() {
+		recorder.stop();
 		super.onStop();
 	}
 
 	public void goBack(View view){
-		recorder.stop();
 		RecordActivity.this.finish();
 	}
 
@@ -66,19 +82,11 @@ public class RecordActivity extends Activity {
 	 */
 	public void record(View view) {
 		//Toggle the recording Boolean.
-		if (!recording) {
-			//if (!alreadyStarted) {
-				UUID uuid = UUID.randomUUID();
-				recorder.listen(/*"/mnt/sdcard/bold/recordings/" +
-				//		uuid.toString() + ".wav");
-						"test.wav"*/);
-				//alreadyStarted = true;
-			//} else {
-			//	recorder.resume();
-			//}
+		recording = !recording;
+		if (recording) {
+			recorder.listen();
 		} else {
 			recorder.pause();
 		}
-		recording = !recording;
 	}
 }

@@ -173,21 +173,6 @@ public class Recorder implements AudioHandler {
 		listener.stop();
 	}
 
-	/** Resume listening to the microphone. */
-	public void resume() {
-		// Simply reads and reads...
-		//
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				read();
-			}
-		});
-		t.start();
-
-		//listener.startRecording();
-	}
-
 	/** Read from the listener's buffer and call the callback. */
 	protected void read() {
 		// Start listening to the audio device.
