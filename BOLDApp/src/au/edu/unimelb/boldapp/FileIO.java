@@ -12,15 +12,24 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import java.util.UUID;
 
+/**
+ * Abstract class that offers various File IO related methods.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public abstract class FileIO {
+	/**
+	 * The application's top level path in the external storage.
+	 */
 	static final String appRootPath = "bold/";
 
 	/**
-	Returns the absolute path to the application's data.
-
-	@return A string representation of the absolute path to the application's
-			data
-	*/
+	 * Returns the absolute path to the application's data.
+	 *
+	 * @return A string representation of the absolute path to the
+	 * application's data
+	 */
 	public static String getAppRootPath(){
 		File external = Environment.getExternalStorageDirectory();
 		String path = external.getAbsolutePath() + "/" + appRootPath;
@@ -28,13 +37,13 @@ public abstract class FileIO {
 	}
 
 	/**
-	Takes a file path and some data and writes the data into the file in the
-	bold directory in external storage.
-
-	@param filePath The filename, including parent paths within the bold dir.
-	@param data The data that is to be written to the file.
-
-	*/
+	 * Takes a file path and some data and writes the data into the file in the
+	 * bold directory in external storage.
+	 *
+	 * @param filePath The filename, including parent paths within the bold
+	 * dir.
+	 * @param data The data that is to be written to the file.
+	 */
 	public static void write(String filePath, String data) {
 		try {
 			String absPath = getAppRootPath() + filePath;
@@ -50,11 +59,12 @@ public abstract class FileIO {
 	}
 
 	/**
-	Takes a file path relative to the bold directory in external storage and
-	returns a string containing the file's contents.
-
-	@param filePath The filename, including parent paths within the bold dir.
-	*/
+	 * Takes a file path relative to the bold directory in external storage and
+	 * returns a string containing the file's contents.
+	 *
+	 * @param filePath The filename, including parent paths within the bold
+	 * dir.
+	 */
 	public static String read(String filePath) {
 		String path = getAppRootPath() + filePath;
 		StringBuilder text = new StringBuilder();
@@ -73,11 +83,11 @@ public abstract class FileIO {
 	}
 
 	/**
-	Method to load all the users from the users directory, into a list of User
-	objects.
-	
-	@return An array of all the users as user objects
-	*/
+	 * Method to load all the users from the users directory into a list of
+	 * User objects.
+	 *
+	 * @return An array of all the users as user objects
+	 */
 	public static User[] loadUsers() {
 		// Get an array of all the UUIDs from the "users" directory
 		File dir = new File(getAppRootPath() + "users");

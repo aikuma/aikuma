@@ -11,9 +11,12 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
-	Activity that allows for the changing of currentUser, and links to the
-	creation of new users.
-*/
+ * Activity that allows for the changing of currentUser, and links to the
+ * creation of new users.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class UserSelectionActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

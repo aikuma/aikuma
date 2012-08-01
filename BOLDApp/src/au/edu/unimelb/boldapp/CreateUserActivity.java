@@ -13,6 +13,10 @@ import android.content.Intent;
 /**
  * Activity that offers the user the ability to enter text in a text box and
  * press a button that then subsequently creates a corresponding user.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ *
  */
 public class CreateUserActivity extends Activity {
 	@Override
@@ -22,11 +26,13 @@ public class CreateUserActivity extends Activity {
 	}
 
 	/**
-	Creates a new user with the name specified in the EditText view.
-
-	The user is given a UUID and a JSON metadata file containing the users name
-	is put in users/<uuid>/
-	*/
+	 * Creates a new user with the name specified in the EditText view.
+	 *
+	 * The user is given a UUID and a JSON metadata file containing the users
+	 * name is put in users/<uuid>/
+	 *
+	 * @param	view	The create user button that was clicked.
+	 */
 	public void createUser(View view) {
 		//Get the username from the EditText view.
 		EditText editText = (EditText) findViewById(R.id.edit_message);
@@ -57,6 +63,7 @@ public class CreateUserActivity extends Activity {
 
 	/**
 	 * Go back to the user selection activity.
+	 * @param	view	the back button.
 	 */
 	public void goBack(View view) {
 		Intent intent = new Intent(this, UserSelectionActivity.class);
