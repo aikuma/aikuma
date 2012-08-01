@@ -135,10 +135,17 @@ public class Recorder implements AudioHandler {
 				AudioFormat.ENCODING_PCM_16BIT, bufferSize);
 	}
 
-	/** Start listening. */
-	public void listen(String targetFilename) {
-		// Prepare the target file for writing.
+	/**
+	 * Prepares the file for recording
+	 */
+	public void prepare(String targetFilename) {
 		file.prepare(targetFilename);
+	}
+
+	/** Start listening. */
+	public void listen(/*String targetFilename*/) {
+		// Prepare the target file for writing.
+		//file.prepare(targetFilename);
 
 
 		// Simply reads and reads...
@@ -168,7 +175,17 @@ public class Recorder implements AudioHandler {
 
 	/** Resume listening to the microphone. */
 	public void resume() {
-		listener.startRecording();
+		// Simply reads and reads...
+		//
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				read();
+			}
+		});
+		t.start();
+
+		//listener.startRecording();
 	}
 
 	/** Read from the listener's buffer and call the callback. */

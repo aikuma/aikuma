@@ -25,13 +25,18 @@ public class RecordActivity extends Activity {
 	 * Instance of the recorder class that offers methods to record.
 	 */
 	private Recorder recorder;
+	//private Boolean alreadyStarted;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
 		recording = false;
+		//alreadyStarted = false;
 		recorder = new Recorder();
+		recorder.prepare("/mnt/sdcard/bold/recordings/" +
+				//		uuid.toString() + ".wav");
+						"test.wav");
 	}
 
 	@Override
@@ -40,6 +45,7 @@ public class RecordActivity extends Activity {
 	}
 
 	public void goBack(View view){
+		recorder.stop();
 		RecordActivity.this.finish();
 	}
 
@@ -60,17 +66,19 @@ public class RecordActivity extends Activity {
 	 */
 	public void record(View view) {
 		//Toggle the recording Boolean.
-		User user = GlobalState.getCurrentUser();
-		String name = user.getName();
-		Log.i("yoyoyo", "hi");
-		UUID uuid = UUID.randomUUID();
 		if (!recording) {
-			recorder.listen("/mnt/sdcard/bold/recordings/" +
-					uuid.toString() + ".wav");
+			//if (!alreadyStarted) {
+				UUID uuid = UUID.randomUUID();
+				recorder.listen(/*"/mnt/sdcard/bold/recordings/" +
+				//		uuid.toString() + ".wav");
+						"test.wav"*/);
+				//alreadyStarted = true;
+			//} else {
+			//	recorder.resume();
+			//}
 		} else {
-			recorder.stop();
+			recorder.pause();
 		}
 		recording = !recording;
-		Log.i("yoyoyo", recording.toString());
 	}
 }
