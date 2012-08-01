@@ -37,20 +37,29 @@ September:
   We now have a prototype that already could (should?) be released.
   
   - Networking (WLAN with FTP)
-    Synchronise files to the FTP server, first users (files + metadata), then recordings/respeakings/translations (files + metadata).
+    Synchronise files to the FTP server:
+    1. Users (files + metadata)
+    2. Recordings/respeakings/translations (files + metadata).
     
   - Networking, Part 2.
-    Get it working with multiple phones.
+    Test with multiple phones / automatically.
   
   We now have a networked prototype.
   
   - Metadata.
-    Add metadata to recordings: GPS, 
+    Add metadata to recordings: GPS. (More here?)
     
   - Settings / Preferences
+    Set file server (FTP) address.
 
 October:
   - Tool for looking at data on memory stick / laptop with FTP server?
+    Does not necessarily need to use the same code as on the phone.
+
+After that:
+  
+  - 3G connection to a central server.
+  - Spoken language help.
+  - Multiple languages.
   - 
-  - 
-  - 
+  
