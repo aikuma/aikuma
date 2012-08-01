@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
+import au.edu.unimelb.boldapp.audio.AudioHandler;
 import au.edu.unimelb.boldapp.audio.analyzers.ThresholdSpeechAnalyzer;
 
 public class ThresholdSpeechAnalyzerTest {
@@ -12,9 +13,9 @@ public class ThresholdSpeechAnalyzerTest {
 	private class TestAudioHandler implements AudioHandler {
 		
 		private int silenceTriggered;
-		private int speechTriggered;
+		private int audioTriggered;
 		
-		private short[] speechBuffer = new short[0];
+		private short[] audioBuffer = new short[0];
 		
 		public TestAudioHandler() {
 			reset();
@@ -26,22 +27,22 @@ public class ThresholdSpeechAnalyzerTest {
 		}
 		
 		@Override
-		public void speechTriggered(short[] buffer, boolean justChanged) {
-			this.speechTriggered += 1;
-			addToSpeechBuffer(buffer);
+		public void audioTriggered(short[] buffer, boolean justChanged) {
+			this.audioTriggered += 1;
+			addToAudioBuffer(buffer);
 		}
 		
 		public void reset() {
 			this.silenceTriggered = 0;
-			this.speechTriggered = 0;
+			this.audioTriggered = 0;
 		}
 		
-		protected void addToSpeechBuffer(short[] buffer) {
-			int offset = speechBuffer.length;
+		protected void addToAudioBuffer(short[] buffer) {
+			int offset = audioBuffer.length;
 
 			// Create a new buffer.
 			//
-			speechBuffer = Arrays.copyOf(speechBuffer, speechBuffer.length
+			audioBuffer = Arrays.copyOf(audioBuffer, audioBuffer.length
 					+ buffer.length);
 
 			// Copy the buffer to avoid reference problems.
@@ -51,7 +52,7 @@ public class ThresholdSpeechAnalyzerTest {
 			// Add the copied current buffer onto the end.
 			//
 			for (int i = 0; i < buffer.length; i++) {
-				speechBuffer[i + offset] = copiedBuffer[i];
+				audioBuffer[i + offset] = copiedBuffer[i];
 			}
 		}
 		
@@ -99,7 +100,7 @@ public class ThresholdSpeechAnalyzerTest {
 	public void defaultAnalyze3() {
 		defaultSpeechAnalyzer.analyze(testClass, new short[]{6000});
 		
-		assertEquals(0, testClass.speechTriggered);
+		assertEquals(0, testClass.audioTriggered);
 	}
 	
 	@Test
@@ -108,7 +109,7 @@ public class ThresholdSpeechAnalyzerTest {
 			defaultSpeechAnalyzer.analyze(testClass, new short[]{6000});
 		}
 		
-		assertEquals(2, testClass.speechTriggered);
+		assertEquals(2, testClass.audioTriggered);
 	}
 	
 	@Test
@@ -135,7 +136,7 @@ public class ThresholdSpeechAnalyzerTest {
 	public void specificAnalyze3() {
 		specificSpeechAnalyzer.analyze(testClass, new short[]{6000});
 		
-		assertEquals(0, testClass.speechTriggered);
+		assertEquals(0, testClass.audioTriggered);
 	}
 	
 	@Test
@@ -144,7 +145,7 @@ public class ThresholdSpeechAnalyzerTest {
 			specificSpeechAnalyzer.analyze(testClass, new short[]{6000});
 		}
 		
-		assertEquals(2, testClass.speechTriggered);
+		assertEquals(2, testClass.audioTriggered);
 	}
 	
 	@Test
@@ -188,7 +189,7 @@ public class ThresholdSpeechAnalyzerTest {
 		}
 		
 		assertEquals(1, testClass.silenceTriggered);
-		assertEquals(10, testClass.speechTriggered);
+		assertEquals(10, testClass.audioTriggered);
 		
 		short[] comparison = new short[]{
 			0, 0, 0, 0, 0, 0, 0, 0,
@@ -198,8 +199,8 @@ public class ThresholdSpeechAnalyzerTest {
 			6000, 6001, 6002,
 			0, 1
 		};
-		for (int i = 0; i < testClass.speechBuffer.length; i++) {
-			assertEquals(comparison[i], testClass.speechBuffer[i]);
+		for (int i = 0; i < testClass.audioBuffer.length; i++) {
+			assertEquals(comparison[i], testClass.audioBuffer[i]);
 		}
 	}
 	

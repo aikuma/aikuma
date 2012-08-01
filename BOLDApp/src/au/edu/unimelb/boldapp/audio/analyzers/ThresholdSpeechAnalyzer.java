@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp;
+package au.edu.unimelb.boldapp.audio.analyzers;
 
 import java.util.Arrays;
 
