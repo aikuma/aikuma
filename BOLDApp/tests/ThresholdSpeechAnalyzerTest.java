@@ -71,11 +71,6 @@ public class ThresholdSpeechAnalyzerTest {
 		this.testClass = new TestAudioHandler();
 	}
 	
-//	@After
-//	public void tearDown() {
-//		this.testClass.reset();
-//	}
-	
 	@Test
 	public void defaultAnalyze1() {
 		defaultSpeechAnalyzer.analyze(testClass, new short[]{1,2,3});
@@ -157,11 +152,6 @@ public class ThresholdSpeechAnalyzerTest {
 			specificSpeechAnalyzer.analyze(testClass, new short[]{(short) i});
 		}
 		
-//		specificSpeechAnalyzer.analyze(testClass, new short[]{6000});
-//		specificSpeechAnalyzer.analyze(testClass, new short[]{6000}); // 1
-//		specificSpeechAnalyzer.analyze(testClass, new short[]{6000}); // 2
-//		specificSpeechAnalyzer.analyze(testClass, new short[]{6000}); // 3
-		
 		for (short i = 0; i < 4; i++) {
 			specificSpeechAnalyzer.analyze(testClass, new short[]{(short) ((short) i+6000)});
 		}
@@ -172,15 +162,9 @@ public class ThresholdSpeechAnalyzerTest {
 			specificSpeechAnalyzer.analyze(testClass, new short[]{(short) i});
 		}
 
-//		specificSpeechAnalyzer.analyze(testClass, new short[]{6000});
-//		specificSpeechAnalyzer.analyze(testClass, new short[]{6000}); // 4
-		
 		for (short i = 0; i < 3; i++) {
 			specificSpeechAnalyzer.analyze(testClass, new short[]{(short) ((short) i+6000)});
 		}
-		
-//		specificSpeechAnalyzer.analyze(testClass, new short[]{1});
-//		specificSpeechAnalyzer.analyze(testClass, new short[]{1}); // 1
 		
 		// Triggers silence.
 		//
