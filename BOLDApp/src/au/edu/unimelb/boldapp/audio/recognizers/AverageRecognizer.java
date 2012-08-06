@@ -2,6 +2,11 @@ package au.edu.unimelb.boldapp.audio.recognizers;
 
 import au.edu.unimelb.boldapp.audio.recognizers.Recognizer;
 
+/** 
+ *
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ */
 public class AverageRecognizer extends Recognizer {
 
 	protected int silenceThreshold;

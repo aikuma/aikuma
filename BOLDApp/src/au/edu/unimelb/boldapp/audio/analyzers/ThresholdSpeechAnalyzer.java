@@ -95,7 +95,7 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
    */
 	public ThresholdSpeechAnalyzer(int silenceTriggerAmount,
 			int speechTriggerAmount) {
-        this(silenceTriggerAmount, speechTriggerAmount, new AverageRecognizer(32, 32))
+        this(silenceTriggerAmount, speechTriggerAmount, new AverageRecognizer(32, 32));
 	}
 
   /** Constructor that takes speech/silence sensitivities and a

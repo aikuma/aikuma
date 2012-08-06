@@ -7,15 +7,21 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
+import au.edu.unimelb.boldapp.audio.Player;
 import au.edu.unimelb.boldapp.audio.analyzers.Analyzer;
 import au.edu.unimelb.boldapp.audio.analyzers.ThresholdSpeechAnalyzer;
+import au.edu.unimelb.boldapp.audio.recognizers.AverageRecognizer;
 
 /** Respeaker used to get input from eg. a microphone and
  *  output into a file. In addition, it also 
  * 
  *  Usage:
  *    Respeaker respeaker = new Respeaker();
- *    respeaker.listen("/mnt/sdcard/bold/recordings/target_file.wav")
+ *    respeaker.prepare(
+ *      "/mnt/sdcard/bold/recordings/source_file.wav",
+ *      "/mnt/sdcard/bold/recordings/target_file.wav"
+ *    );
+ *    respeaker.listen();
  *    respeaker.pause();
  *    respeaker.resume();
  *    respeaker.stop();
@@ -23,32 +29,45 @@ import au.edu.unimelb.boldapp.audio.analyzers.ThresholdSpeechAnalyzer;
  *  Note that stopping the respeaker closes and finalizes the WAV file.
  */
 public class Respeaker extends Recorder {
-
+  
+  /** Player to play the original with. */
+  protected Player player;
+  
 	/** Default constructor. */
-	public Recorder() {
-		this(new ThresholdSpeechAnalyzer(88, 3, new AverageRecognizer(32, 32)));
+  public Respeaker() {
+    super(new ThresholdSpeechAnalyzer(88, 3, new AverageRecognizer(32, 32)));
+    this.player = new Player();
+  }
+  
+  /** Prepare the respeaker by setting a source file and a target file. */
+	public void prepare(String sourceFilename, String targetFilename) {
+    player.prepare(sourceFilename);
+		super.prepare(targetFilename);
 	}
 
-	/** Start listening. */
   @Override
-	public void listen(String targetFilename) {
-		
+	public void listen() {
+    super.listen();
+    player.play();
 	}
 
-	/** Stop listening to the microphone and close the file.
-	 *
-	 * Note: Once stopped you cannot restart the recorder.
-	 */
   @Override
 	public void stop() {
-		super();
+		super.stop();
+    player.stop();
 	}
 
 	/** Pause listening to the microphone. */
   @Override
 	public void pause() {
-		super();
+		super.pause();
+    player.pause();
 	}
+  
+  /** Resume playing. */
+  public void resume() {
+    switchToPlay();
+  }
   
   /** Rewinds the player. */
 	public void rewind(int miliseconds) {
@@ -57,6 +76,7 @@ public class Respeaker extends Recorder {
   
 	/*
 	 * Switches the mode to play mode.
+   *
    * TODO Play a quick beep to inform user.
 	 */
 	protected void switchToPlay() {
