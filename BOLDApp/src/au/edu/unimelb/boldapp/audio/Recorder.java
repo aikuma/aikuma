@@ -10,7 +10,7 @@ import android.util.Log;
 import au.edu.unimelb.boldapp.audio.analyzers.Analyzer;
 import au.edu.unimelb.boldapp.audio.analyzers.SimpleAnalyzer;
 
-/** Recorder used to get input from eg. a microphone and
+/** A Recorder is used to get input from eg. a microphone and
  *  output into a file.
  * 
  *  Usage:
@@ -70,23 +70,15 @@ public class Recorder implements AudioHandler {
 	protected void setUpFile() {
 		file = PCMWriter.getInstance(listener.getSampleRate(),
 				listener.getChannelConfiguration(), listener.getAudioFormat());
-}
+  }
 
-	/** Waits for the listening device.
-	 *
-	 * Note: This goes through all the sample
-	 * rates until it finds one the device supports.
-	 */
+	/** Waits for the listening device. */
 	public void waitForAudioRecord() {
 		listener = getListener(44100, AudioFormat.ENCODING_PCM_16BIT,
 				AudioFormat.CHANNEL_CONFIGURATION_MONO);
 		do {
-			//Log.i("yoyoyo", Integer.toString(index));
 		} while (listener.getState() != AudioRecord.STATE_INITIALIZED);
 	}
-
-	/** List of sample rates we want the device to try. */
-	//private final static int[] sampleRates = { 44100, 22050, 11025, 8000 };
 
 	/** Tries to get a listening device for the built-in/external microphone.
 	 *
@@ -95,10 +87,6 @@ public class Recorder implements AudioHandler {
 	 */
 	protected static AudioRecord getListener(
 			int sampleRate, int audioFormat, int channelConfig) {
-		//if (index >= sampleRates.length) {
-		//	index = sampleRates.length - 1; // Fall back.
-			//return null;
-		//}
 
 		// Sample size.
 		//
@@ -121,9 +109,6 @@ public class Recorder implements AudioHandler {
 		// Calculate buffer size.
 		//
 
-		/** Get the right sample rate. */
-		//int sampleRate = sampleRates[index];
-
 		/** The period used for callbacks to onBufferFull. */
 		int framePeriod = sampleRate * 120 / 1000;
 
@@ -136,18 +121,14 @@ public class Recorder implements AudioHandler {
 	}
 
 	/**
-	 * Prepares the file for recording
+	 * Prepares the recorder for recording.
 	 */
 	public void prepare(String targetFilename) {
 		file.prepare(targetFilename);
 	}
 
 	/** Start listening. */
-	public void listen(/*String targetFilename*/) {
-		// Prepare the target file for writing.
-		//file.prepare(targetFilename);
-
-
+	public void listen() {
 		// Simply reads and reads...
 		//
 		Thread t = new Thread(new Runnable() {
@@ -177,17 +158,13 @@ public class Recorder implements AudioHandler {
 	protected void read() {
 		// Start listening to the audio device.
 		listener.startRecording();
-
-		//Log.i("yoyoyo", "entered read");
-		//int thing;
+    
+    // Wait until something is heard.
 		while (listener.read(buffer, 0, buffer.length) > 0) {
 			// Hand in a copy of the buffer.
 			//
-		//Log.i("yoyoyo", "" + buffer[0]);
 			onBufferFull(Arrays.copyOf(buffer, buffer.length));
 		}
-		//Log.i("yoyoyo", " " + thing);
-
 	}
 
 	/** As soon as enough data has been read, this method
