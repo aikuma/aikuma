@@ -15,9 +15,10 @@ import au.edu.unimelb.boldapp.audio.analyzers.SimpleAnalyzer;
  * 
  *  Usage:
  *    Recorder recorder = new Recorder();
- *    recorder.listen("/mnt/sdcard/bold/recordings/target_file.wav")
+ *    recorder.prepare("/mnt/sdcard/bold/recordings/target_file.wav")
+ *    recorder.listen();
  *    recorder.pause();
- *    recorder.resume();
+ *    recorder.listen();
  *    recorder.stop();
  *
  *  Note that stopping the recorder closes and finalizes the WAV file.
