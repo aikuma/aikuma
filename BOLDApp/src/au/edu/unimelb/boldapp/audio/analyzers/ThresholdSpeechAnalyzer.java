@@ -27,26 +27,52 @@ import au.edu.unimelb.boldapp.audio.recognizers.AverageRecognizer;
  *          listens for further audio to occur.
  *          (Recommended is 0.08 seconds of consecutive
  *          speech data)
+ *
+ * A diagram of how this Analyzer works:
+ *               _----_/\_-_
+ *             _/           \_
+ * ___________/               \____/\________________
+ *   |<- pre ->|<-  speech  ->|<- after ->|<- silence
+ *
+ * 1. The Analyzer remembers PREAMBLE_BUFFERS buffers to
+ *    remember before speech.
+ * 2. As soon as speech occurs (speechTriggerAmount speech buffers
+ *    have occurred), it saves EMPTY_SPEECH_PREAMBLE_BUFFERS buffers
+ *    followed by the PREAMBLE_BUFFERS buffers.
+ * 3. Then it continues to recognize speech until silenceTriggerAmount
+ *    buffers have been recognized as silence.
+ * 4. It then saves AFTER_SPEECH_BUFFERS buffers and starts recognizing
+ *    silence, until 1. occurs again.
  */
 public class ThresholdSpeechAnalyzer extends Analyzer {
-
+  
+  /** How many times silence has been triggered by samples */
 	int silenceTriggers = 0;
+  
+  /** How many times speech has been triggered by samples */
 	int speechTriggers = 0;
+  
+  /** How many times silence needs to be triggered by a slice until actual silence is detected */
 	int silenceTriggerAmount;
+  
+  /** How many times speech needs to be triggered by a slice until actual speech is detected */
 	int speechTriggerAmount;
 
 	// Buffer used for the part before speech is detected
 	// (the ramp up of speech).
 	//
 	short[] onsetBuffer;
+  
+  /** Amount of buffers to remember and insert before speech started */
 	int ONSET_BUFFERS = 8;
-
+  
+  /** Amount of (empty) preamble buffers to insert before speech */
 	int EMPTY_SPEECH_PREAMBLE_BUFFERS = 1;
 
-	// Buffer for buffering after speech (when
-	// silence has begun).
-	//
+	/** Buffer for buffering after speech (when silence has begun). */
 	short[] afterBuffer;
+  
+  /** Amount of buffers to add after speech (to smooth) */
 	int AFTER_SPEECH_BUFFERS = 3;
 
 	boolean speech = false;
