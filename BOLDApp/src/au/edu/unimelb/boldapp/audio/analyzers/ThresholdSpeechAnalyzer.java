@@ -83,7 +83,7 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 	public ThresholdSpeechAnalyzer() {
 		this(88, 3);
 	}
-
+  
   /** Constructor that takes speech/silence sensitivities.
    *
    * @param silenceTriggerAmount How many times does the recognizer
@@ -95,13 +95,29 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
    */
 	public ThresholdSpeechAnalyzer(int silenceTriggerAmount,
 			int speechTriggerAmount) {
+        this(silenceTriggerAmount, speechTriggerAmount, new AverageRecognizer(32, 32))
+	}
+
+  /** Constructor that takes speech/silence sensitivities and a
+   *  recognizer.
+   *
+   * @param silenceTriggerAmount How many times does the recognizer
+   *        need to recognize silence to actually trigger a change
+   *        to silence in this Analyzer?
+   * @param speechTriggerAmount How many times does the recognizer
+   *        need to recognize speech to actually trigger a change
+   *        to speech in this Analyzer?
+   * @param recognizer A silence/audio recognizer.
+   */
+	public ThresholdSpeechAnalyzer(int silenceTriggerAmount,
+			int speechTriggerAmount, Recognizer recognizer) {
 		this.silenceTriggerAmount = silenceTriggerAmount;
 		this.speechTriggerAmount = speechTriggerAmount;
 
 		onsetBuffer = new short[] {};
 		afterBuffer = new short[] {};
 
-		this.recognizer = new AverageRecognizer(32, 32);
+		this.recognizer = recognizer;
 	}
   
   /** Does the given buffer trigger silence? */
