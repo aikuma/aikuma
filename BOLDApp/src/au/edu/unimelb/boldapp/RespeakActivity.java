@@ -20,15 +20,15 @@ import org.json.simple.JSONObject;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class RecordActivity extends Activity {
+public class RespeakActivity extends Activity {
 	/**
 	 * Indicates whether audio is being recorded
 	 */
-	private Boolean recording;
+	//private Boolean recording;
 	/**
 	 * Instance of the recorder class that offers methods to record.
 	 */
-	private Recorder recorder;
+	//private Recorder recorder;
 	//private Boolean alreadyStarted;
 
 	/**
@@ -42,10 +42,11 @@ public class RecordActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.record);
-		recording = false;
-		recorder = new Recorder();
+		setContentView(R.layout.respeak);
+		//recording = false;
+		//recorder = new Recorder();
 
+		/*
 		// Get Info about the creator and put it in the respective JSON
 		// metadata file User currentUser = GlobalState.getCurrentUser();
 		User currentUser = GlobalState.getCurrentUser();
@@ -66,16 +67,17 @@ public class RecordActivity extends Activity {
 		//Prepare the recorder
 		recorder.prepare("/mnt/sdcard/bold/recordings/" +
 				uuid.toString() + ".wav");
+		*/
 	}
 
 	@Override
 	public void onStop() {
-		recorder.stop();
+		//recorder.stop();
 		super.onStop();
 	}
 
 	public void goBack(View view){
-		RecordActivity.this.finish();
+		RespeakActivity.this.finish();
 	}
 
 	/**
@@ -93,16 +95,18 @@ public class RecordActivity extends Activity {
 	 *
 	 * @param	button	The record button that was clicked.
 	 */
+	/*
 	public void record(View view) {
 		ImageButton button = (ImageButton) view;
 		//Toggle the recording Boolean.
 		recording = !recording;
 		if (recording) {
-			button.setImageResource(R.drawable.button_pause);
+			button.setImageResource(R.drawable.main_record);
 			recorder.listen();
 		} else {
 			button.setImageResource(R.drawable.button_record);
 			recorder.pause();
 		}
 	}
+	*/
 }

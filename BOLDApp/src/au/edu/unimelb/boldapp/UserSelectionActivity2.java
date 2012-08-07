@@ -17,11 +17,11 @@ import android.util.Log;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class UserSelectionActivity extends ListActivity {
+public class UserSelectionActivity2 extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.user_selection);
+		setContentView(R.layout.user_selection2);
 
 		User[] users = FileIO.loadUsers();
 		ArrayAdapter adapter = new UserArrayAdapter(this, users);
@@ -34,9 +34,6 @@ public class UserSelectionActivity extends ListActivity {
 		GlobalState.setCurrentUser(user);
 		Toast.makeText(this,
 				user.getName() + " selected", Toast.LENGTH_LONG).show();
-		Intent intent = new Intent(this, MainActivity.class);
-		startActivity(intent);
-		this.finish();
 	}
 
 	@Override
@@ -44,11 +41,9 @@ public class UserSelectionActivity extends ListActivity {
 		super.onStop();
 	}
 
-	/*
 	public void goBack(View view){
-		UserSelectionActivity.this.finish();
+		UserSelectionActivity2.this.finish();
 	}
-	*/
 
 	public void createUser(View view) {
 		Intent intent = new Intent(this, CreateUserActivity.class);

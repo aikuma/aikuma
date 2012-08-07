@@ -69,6 +69,7 @@
 				android:layout_weight="1"
 				android:scaleType="centerInside"
 				android:src="@drawable/main_respeak"
+				android:onClick="goToRespeak"
 			/>
 		</LinearLayout>
 		<LinearLayout

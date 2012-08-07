@@ -54,4 +54,14 @@ public class MainActivity extends Activity {
 		Intent intent = new Intent(this, UserSelectionActivity.class);
 		startActivity(intent);
 	}
+
+	/**
+	 * Load the activity that allows one to respeak audio.
+	 *
+	 * @param	view	The button that was clicked.
+	 */
+	public void goToRespeak(View view) {
+		Intent intent = new Intent(this, RespeakActivity.class);
+		startActivity(intent);
+	}
 }
