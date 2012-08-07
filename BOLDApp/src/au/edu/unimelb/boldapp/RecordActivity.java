@@ -53,7 +53,6 @@ public class RecordActivity extends Activity {
 		JSONObject obj = new JSONObject();
 		obj.put("uuid", uuid.toString());
 		obj.put("creatorUUID", currentUser.getUuid());
-		obj.put("creatorName", currentUser.getName());
 		StringWriter stringWriter = new StringWriter();
 		try {
 			obj.writeJSONString(stringWriter);
