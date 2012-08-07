@@ -110,4 +110,15 @@ public abstract class FileIO {
 		}
 		return users;
 	}
+
+	/**
+	 * Delete the filename supplied as an argument
+	 *
+	 * @param	fileName	Name of the file to be deleted.
+	 */
+	public static void delete(String fileName) {
+		File file = new File(getAppRootPath() + fileName);
+		Log.i("yoyoyo", fileName + " canwrite " + file.canWrite());
+		Log.i("yoyoyo", fileName + " deleted " + file.delete());
+	}
 }

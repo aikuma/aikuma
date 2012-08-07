@@ -147,12 +147,16 @@ public class Recorder implements AudioHandler {
 	 */
 	public void stop() {
 		listener.stop();
+		do {
+		} while (listener.getState() != AudioRecord.RECORDSTATE_STOPPED);
 		file.close();
 	}
 
 	/** Pause listening to the microphone. */
 	public void pause() {
 		listener.stop();
+		do {
+		} while (listener.getState() != AudioRecord.RECORDSTATE_STOPPED);
 	}
 
 	/** Read from the listener's buffer and call the callback. */

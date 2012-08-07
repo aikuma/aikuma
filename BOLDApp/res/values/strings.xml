@@ -4,4 +4,6 @@
 	<string name="create_user">Create User</string>
 	<string name="change_user">Change User</string>
 	<string name="edit_username">User Name</string>
+	<string name="edit_recording_name">Recording Name</string>
+	<string name="save_recording">Save</string>
 </resources>

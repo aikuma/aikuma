@@ -26,5 +26,7 @@
 				android:label="@string/app_name"/>
 		<activity android:name="CreateUserActivity"
 				android:label="@string/app_name"/>
+		<activity android:name="SaveActivity"
+				android:label="@string/app_name"/>
 	</application>
 </manifest> 

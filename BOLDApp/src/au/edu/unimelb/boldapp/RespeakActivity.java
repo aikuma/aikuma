@@ -1,6 +1,6 @@
 package au.edu.unimelb.boldapp;
 
-import au.edu.unimelb.boldapp.audio.Recorder;
+import au.edu.unimelb.boldapp.audio.Respeaker;
 
 import java.util.UUID;
 import java.io.StringWriter;
@@ -43,6 +43,8 @@ public class RespeakActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.respeak);
+
+		Respeaker respeaker = new Respeaker();
 		//recording = false;
 		//recorder = new Recorder();
 

@@ -29,6 +29,10 @@ public class RecordActivity extends Activity {
 	 * Instance of the recorder class that offers methods to record.
 	 */
 	private Recorder recorder;
+	/**
+	 * UUID of the file being recorded.
+	 */
+	private UUID uuid;
 	//private Boolean alreadyStarted;
 
 	/**
@@ -48,8 +52,9 @@ public class RecordActivity extends Activity {
 
 		// Get Info about the creator and put it in the respective JSON
 		// metadata file User currentUser = GlobalState.getCurrentUser();
-		User currentUser = GlobalState.getCurrentUser();
-		UUID uuid = UUID.randomUUID();
+		//User currentUser = GlobalState.getCurrentUser();
+		this.uuid = UUID.randomUUID();
+		/*
 		JSONObject obj = new JSONObject();
 		obj.put("uuid", uuid.toString());
 		obj.put("creatorUUID", currentUser.getUuid());
@@ -61,6 +66,7 @@ public class RecordActivity extends Activity {
 		}
 		String jsonText = stringWriter.toString();
 		FileIO.write("recordings/" + uuid.toString() + ".json", jsonText);
+		*/
 
 		//Prepare the recorder
 		recorder.prepare("/mnt/sdcard/bold/recordings/" +
@@ -74,7 +80,17 @@ public class RecordActivity extends Activity {
 	}
 
 	public void goBack(View view){
+		recorder.stop();
+		FileIO.delete("recordings/" + uuid.toString() + ".wav");
+		FileIO.delete("recordings/" + uuid.toString() + ".json");
 		RecordActivity.this.finish();
+	}
+
+	public void goToSaveActivity(View view){
+		Intent intent = new Intent(this, SaveActivity.class);
+		intent.putExtra("UUID", uuid);
+		startActivity(intent);
+		this.finish();
 	}
 
 	/**
