@@ -61,10 +61,9 @@ public abstract class GlobalState {
 		GlobalState.users = users;
 		HashMap<UUID, User> userMap = new HashMap();
 		for (int i=0; i < users.length; i++) {
-			Log.i("bogan", users[i].getName() + " " + users[i].getUuid());
 			userMap.put(users[i].getUuid(), users[i]);
-			GlobalState.userMap = userMap;
 		}
+		GlobalState.userMap = userMap;
 	}
 
 	/**

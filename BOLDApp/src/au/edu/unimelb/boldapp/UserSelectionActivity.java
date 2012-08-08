@@ -7,7 +7,6 @@ import android.widget.Toast;
 import android.os.Bundle;
 import android.view.View;
 import android.content.Intent;
-
 import android.util.Log;
 
 /**
@@ -18,6 +17,12 @@ import android.util.Log;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class UserSelectionActivity extends ListActivity {
+	/**
+	 * Initialization when the activity starts.
+	 *
+	 * @param	savedInstanceState	Data the activity most recently supplied to
+	 * onSaveInstanceState(Bundle).
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -29,6 +34,14 @@ public class UserSelectionActivity extends ListActivity {
 		setListAdapter(adapter);
 	}
 
+	/**
+	 * When the list item is clicked.
+	 *
+	 * @param	l		the listview
+	 * @param	v		the view that was clicked
+	 * @param	positon	position in the list and array
+	 * @param 	id		id
+	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		User user = (User) getListAdapter().getItem(position);
@@ -40,17 +53,11 @@ public class UserSelectionActivity extends ListActivity {
 		this.finish();
 	}
 
-	@Override
-	public void onStop() {
-		super.onStop();
-	}
-
-	/*
-	public void goBack(View view){
-		UserSelectionActivity.this.finish();
-	}
-	*/
-
+	/**
+	 * Changes to the CreateUserActivity
+	 *
+	 * @param	view	The button that was clicked.
+	 */
 	public void createUser(View view) {
 		Intent intent = new Intent(this, CreateUserActivity.class);
 		startActivity(intent);

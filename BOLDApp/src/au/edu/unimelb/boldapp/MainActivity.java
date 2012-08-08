@@ -13,26 +13,17 @@ import android.util.Log;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class MainActivity extends Activity {
+	/**
+	 * Initialization when the activity is starting.
+	 *
+	 * @param	savedInstanceState	Bundle that contains the data most recently
+	 * supplied to onSaveInstanceState(Bundle).
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-	}
-
-	@Override
-	protected void onRestart() {
-		super.onRestart();
 	}
 
 	/**

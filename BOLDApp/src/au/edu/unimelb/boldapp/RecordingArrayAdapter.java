@@ -1,5 +1,11 @@
 package au.edu.unimelb.boldapp;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Comparator;
+import java.util.Collections;
+
 import android.widget.ArrayAdapter;
 import android.R;
 import android.view.LayoutInflater;
@@ -7,12 +13,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Comparator;
-import java.util.Collections;
 
 /**
  * Array adapter to take the ListView's getItem and getView requesta and adapt

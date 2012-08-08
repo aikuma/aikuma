@@ -30,17 +30,29 @@ public class User {
 		setName(name);
 	}
 
+	/**
+	 * uuid mutator
+	 */
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
 	}
 
+	/**
+	 * name mutator
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * uuid accessor
+	 */
 	public UUID getUuid() {
 		return this.uuid;
 	}
+	/**
+	 * name accessor
+	 */
 	public String getName() {
 		return this.name;
 	}

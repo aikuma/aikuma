@@ -1,7 +1,5 @@
 package au.edu.unimelb.boldapp;
 
-import au.edu.unimelb.boldapp.audio.Recorder;
-
 import java.util.UUID;
 import java.io.StringWriter;
 
@@ -14,6 +12,7 @@ import android.widget.ImageButton;
 
 import org.json.simple.JSONObject;
 
+import au.edu.unimelb.boldapp.audio.Recorder;
 /**
  * The activity that allows one to record audio.
  *
@@ -25,23 +24,24 @@ public class RecordActivity extends Activity {
 	 * Indicates whether audio is being recorded
 	 */
 	private Boolean recording;
+
 	/**
 	 * Instance of the recorder class that offers methods to record.
 	 */
 	private Recorder recorder;
+
 	/**
 	 * UUID of the file being recorded.
 	 */
 	private UUID uuid;
-	//private Boolean alreadyStarted;
 
 	/**
 	 * Called when the activity starts.
 	 *
-	 * Generates a UUID for the recording, prepares the file and creates a
-	 * metadata file that includes the name and UUID of the user who made the
-	 * recording.
+	 * Generates a UUID for the recording, prepares the file.
 	 *
+	 * @param	savedInstanceState	Bundle containing data most recently
+	 * supplied in onSaveInstanceState(bundle).
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,50 +50,40 @@ public class RecordActivity extends Activity {
 		recording = false;
 		recorder = new Recorder();
 
-		// Get Info about the creator and put it in the respective JSON
-		// metadata file User currentUser = GlobalState.getCurrentUser();
-		//User currentUser = GlobalState.getCurrentUser();
 		this.uuid = UUID.randomUUID();
-		/*
-		JSONObject obj = new JSONObject();
-		obj.put("uuid", uuid.toString());
-		obj.put("creatorUUID", currentUser.getUuid());
-		StringWriter stringWriter = new StringWriter();
-		try {
-			obj.writeJSONString(stringWriter);
-		} catch (Exception e) {
-			Log.e("CaughtExceptions", e.getMessage());
-		}
-		String jsonText = stringWriter.toString();
-		FileIO.write("recordings/" + uuid.toString() + ".json", jsonText);
-		*/
 
 		//Prepare the recorder
 		recorder.prepare("/mnt/sdcard/bold/recordings/" +
 				uuid.toString() + ".wav");
 	}
 
+	/**
+	 * Stops the recording when stopped
+	 */
 	@Override
 	public void onStop() {
 		recorder.stop();
 		super.onStop();
 	}
 
+	/**
+	 * Returns to the previous activity without saving the wav.
+	 *
+	 * Delete's the wav file on the way out.
+	 *
+	 * @param	view	The button that was clicked.
+	 */
 	public void goBack(View view){
 		recorder.stop();
-		/*
-		try {
-			Thread.sleep(1000);
-		} catch (Exception e) {
-			Log.i("yoyoyo", "lol");
-		}
-		FileIO.delete("recordings/" + uuid.toString() + ".wav");
-		FileIO.delete("recordings/" + uuid.toString() + ".json");
-		*/
 		FileIO.delete("recordings/" + uuid.toString() + ".wav");
 		RecordActivity.this.finish();
 	}
 
+	/**
+	 * Change to the activity that allows the user to save the wave file.
+	 *
+	 * @param	view	The button that was clicked.
+	 */
 	public void goToSaveActivity(View view){
 		Intent intent = new Intent(this, SaveActivity.class);
 		intent.putExtra("UUID", uuid);

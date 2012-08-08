@@ -1,14 +1,16 @@
 package au.edu.unimelb.boldapp;
 
+import java.io.StringWriter;
+import java.util.UUID;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import java.util.UUID;
 import android.util.Log;
-import java.io.StringWriter;
-import org.json.simple.JSONObject;
 import android.content.Intent;
+
+import org.json.simple.JSONObject;
 
 /**
  * Activity that offers the user the ability to enter text in a text box and
@@ -25,6 +27,12 @@ public class SaveActivity extends Activity {
 	 */
 	private UUID uuid;
 
+	/**
+	 * Initializes when the activity is started.
+	 *
+	 * @param	savedInstanceState	Bundle containing data most recently
+	 * supplied to onSaveInstanceState(Bundle).
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,30 +55,7 @@ public class SaveActivity extends Activity {
 		EditText editText = (EditText) findViewById(R.id.edit_recording_name);
 		String recordingName = editText.getText().toString();
 
-		/*
-		//Generate the uuid that is associated with the user
-		UUID uuid = UUID.randomUUID();
-
-		//Create the JSON object
-		JSONObject obj = new JSONObject();
-		obj.put("name", username);
-		obj.put("uuid", uuid.toString());
-
-		//Write the JSON object the the file
-		StringWriter stringWriter = new StringWriter();
-		try {
-			obj.writeJSONString(stringWriter);
-		} catch (Exception e) {
-			Log.e("CaughtExceptions", e.getMessage());
-		}
-		String jsonText = stringWriter.toString();
-		FileIO.write("users/" + uuid.toString() + "/metadata.json", jsonText);
-
-		Intent intent = new Intent(this, UserSelectionActivity.class);
-		startActivity(intent);
-		this.finish();
-		*/
-
+		//Generate metadata file for the recording.
 		User currentUser = GlobalState.getCurrentUser();
 		JSONObject obj = new JSONObject();
 		obj.put("uuid", uuid.toString());

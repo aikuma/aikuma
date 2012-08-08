@@ -1,14 +1,16 @@
 package au.edu.unimelb.boldapp;
 
+import java.util.UUID;
+import java.io.StringWriter;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import java.util.UUID;
 import android.util.Log;
-import java.io.StringWriter;
-import org.json.simple.JSONObject;
 import android.content.Intent;
+
+import org.json.simple.JSONObject;
 
 /**
  * Activity that offers the user the ability to enter text in a text box and
@@ -19,6 +21,12 @@ import android.content.Intent;
  *
  */
 public class CreateUserActivity extends Activity {
+	/**
+	 * Initialization when the activity starts.
+	 *
+	 * @param	savedInstanceState	Data the activity most recently supplied to
+	 * onSaveInstanceState(Bundle).
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

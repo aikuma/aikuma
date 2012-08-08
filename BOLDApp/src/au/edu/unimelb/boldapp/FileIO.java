@@ -3,16 +3,17 @@ package au.edu.unimelb.boldapp;
 import java.io.File;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import android.os.Environment;
-import android.util.Log;
 import java.util.Scanner;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.util.HashMap;
+import java.util.UUID;
+
+import android.os.Environment;
+import android.util.Log;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import java.util.UUID;
 
 /**
  * Abstract class that offers various File IO related methods.
@@ -56,7 +57,7 @@ public abstract class FileIO {
 			bos.flush();
 			bos.close();
 		} catch (Exception e) {
-			Log.e("CaughtExceptions", e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -64,8 +65,9 @@ public abstract class FileIO {
 	 * Takes a file path relative to the bold directory in external storage and
 	 * returns a string containing the file's contents.
 	 *
-	 * @param filePath The filename, including parent paths within the bold
-	 * dir.
+	 * @param	filePath	The filename, including parent paths within the
+	 * bold dir.
+	 * @return	A string containing the file's contents.
 	 */
 	public static String read(String filePath) {
 		String path = getAppRootPath() + filePath;
@@ -78,17 +80,14 @@ public abstract class FileIO {
 			}
 			scanner.close();
 		} catch (Exception e) {
-			Log.e("CaughtExceptions", e.getMessage());
+			e.printStackTrace();
 		}
-		Log.i("yoyoyo", "gaybacon" + text.toString());
 		return text.toString();
 	}
 
 	/**
 	 * Method to load all the users from the users directory into an array of
-	 * User objects.
-	 *
-	 * @return An array of all the users as User objects.
+	 * User objects in GlobalState.
 	 */
 	public static void loadUsers() {
 		// Get an array of all the UUIDs from the "users" directory
@@ -107,7 +106,7 @@ public abstract class FileIO {
 						UUID.fromString(jsonObj.get("uuid").toString()),
 						jsonObj.get("name").toString());
 			} catch (Exception e) {
-				Log.e("GottaCatchEmAll", e.getMessage());
+				e.printStackTrace();
 			}
 		}
 
@@ -140,10 +139,6 @@ public abstract class FileIO {
 			try {
 				Object obj = parser.parse(jsonStr);
 				JSONObject jsonObj = (JSONObject) obj;
-				/*
-				Log.i("notgeil", " " +
-						UUID.fromString(jsonObj.get("uuid").toString()));
-				*/
 				recordings[i] = new Recording(
 						UUID.fromString(jsonObj.get("uuid").toString()),
 						GlobalState.getUserMap().get(UUID.fromString(
@@ -151,14 +146,10 @@ public abstract class FileIO {
 						jsonObj.get("recording_name").toString());
 			} catch (Exception e) {
 				e.printStackTrace();
-				//String err = (e.getMessage()==null)?"dang":e.getMessage();
-				//Log.e("GottaCatchEmAll", err);
 			}
 		}
 
-
 		GlobalState.setRecordings(recordings);
-		Log.i("bogan", GlobalState.getRecordings()[0].getName());
 	 }
 
 	/**
@@ -168,7 +159,5 @@ public abstract class FileIO {
 	 */
 	public static void delete(String fileName) {
 		File file = new File(getAppRootPath() + fileName);
-		Log.i("yoyoyo", fileName + " canwrite " + file.canWrite());
-		Log.i("yoyoyo", fileName + " deleted " + file.delete());
 	}
 }
