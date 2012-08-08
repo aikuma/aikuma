@@ -21,6 +21,12 @@ import org.json.simple.JSONObject;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class RespeakActivity extends Activity {
+
+	/**
+	 * The recording that is being respoken
+	 */
+	private Recording original;
+
 	/**
 	 * Indicates whether audio is being recorded
 	 */
@@ -42,6 +48,12 @@ public class RespeakActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		//Get the original from the intent
+		Intent intent = getIntent();
+		UUID originalUUID = (UUID) intent.getExtras().get("originalUUID");
+		this.original = GlobalState.getRecordingMap().get(originalUUID);
+		Log.i("durp", this.original.getName());
 		setContentView(R.layout.respeak);
 
 		Respeaker respeaker = new Respeaker();

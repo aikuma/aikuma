@@ -34,6 +34,11 @@ public abstract class GlobalState {
 	private static Recording[] recordings;
 
 	/**
+	 * A map from UUIDs to recordings.
+	 */
+	private static HashMap<UUID, Recording> recordingMap;
+
+	/**
 	 * currentUser accessor
 	 */
 	public static User getCurrentUser() {
@@ -78,6 +83,11 @@ public abstract class GlobalState {
 	 */
 	public static void setRecordings(Recording[] recordings) {
 		GlobalState.recordings = recordings;
+		HashMap<UUID, Recording> recordingMap = new HashMap();
+		for (int i=0; i < recordings.length; i++) {
+			recordingMap.put(recordings[i].getUuid(), recordings[i]);
+		}
+		GlobalState.recordingMap = recordingMap;
 	}
 	
 	/**
@@ -85,5 +95,12 @@ public abstract class GlobalState {
 	 */
 	public static Recording[] getRecordings() {
 		return GlobalState.recordings;
+	}
+
+	/**
+	 * recordingMap accessor
+	 */
+	public static HashMap<UUID, Recording> getRecordingMap() {
+		return GlobalState.recordingMap;
 	}
 }
