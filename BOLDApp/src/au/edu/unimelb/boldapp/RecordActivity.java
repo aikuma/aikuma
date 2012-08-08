@@ -81,8 +81,16 @@ public class RecordActivity extends Activity {
 
 	public void goBack(View view){
 		recorder.stop();
+		/*
+		try {
+			Thread.sleep(1000);
+		} catch (Exception e) {
+			Log.i("yoyoyo", "lol");
+		}
 		FileIO.delete("recordings/" + uuid.toString() + ".wav");
 		FileIO.delete("recordings/" + uuid.toString() + ".json");
+		*/
+		FileIO.delete("recordings/" + uuid.toString() + ".wav");
 		RecordActivity.this.finish();
 	}
 

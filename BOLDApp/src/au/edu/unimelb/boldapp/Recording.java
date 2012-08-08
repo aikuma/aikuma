@@ -1,4 +1,4 @@
-package edu.au.unimelb.boldapp;
+package au.edu.unimelb.boldapp;
 
 import java.util.UUID;
 
@@ -25,23 +25,32 @@ public class Recording {
 	private String name;
 
 	/**
+	 * Default Constructor
+	 */
+	 public Recording(UUID uuid, User creator, String name) {
+	 	setUuid(uuid);
+		setCreator(creator);
+		setName(name);
+	 }
+
+	/**
 	 * uuid mutator
 	 */
-	public setUuid(UUID uuid) {
+	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
 	}
 
 	/**
 	 * creator mutator
 	 */
-	public setCreator(User creator) {
+	public void setCreator(User creator) {
 		this.creator = creator;
 	}
 
 	/**
 	 * name mutator
 	 */
-	public setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 

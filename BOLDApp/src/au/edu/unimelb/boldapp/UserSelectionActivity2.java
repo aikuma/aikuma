@@ -23,8 +23,9 @@ public class UserSelectionActivity2 extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.user_selection2);
 
-		User[] users = FileIO.loadUsers();
-		ArrayAdapter adapter = new UserArrayAdapter(this, users);
+		FileIO.loadUsers();
+		ArrayAdapter adapter = new UserArrayAdapter(this,
+				GlobalState.getUsers());
 		setListAdapter(adapter);
 	}
 

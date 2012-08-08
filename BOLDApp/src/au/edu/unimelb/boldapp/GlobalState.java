@@ -1,5 +1,10 @@
 package au.edu.unimelb.boldapp;
 
+import java.util.HashMap;
+import java.util.UUID;
+
+import android.util.Log;
+
 /**
  * Class to contain our (minimal number of) global variables.
  *
@@ -13,11 +18,73 @@ public abstract class GlobalState {
 	 */
 	private static User currentUser;
 
+	/**
+	 * An array of all the users.
+	 */
+	private static User[] users;
+
+	/**
+	 * A map from UUIDs to users.
+	 */
+	private static HashMap<UUID, User> userMap;
+
+	/**
+	 * An array of all the recordings.
+	 */
+	private static Recording[] recordings;
+
+	/**
+	 * currentUser accessor
+	 */
 	public static User getCurrentUser() {
 		return currentUser;
 	}
 
+	/**
+	 * currentUser mutator
+	 */
 	public static void setCurrentUser(User currentUser) {
 		GlobalState.currentUser = currentUser;
+	}
+
+	/**
+	 * users accessor
+	 */
+	public static User[] getUsers() {
+		return GlobalState.users;
+	}
+	
+	/**
+	 * users mutator; creates a userMap while setting users.
+	 */
+	public static void setUsers(User[] users) {
+		GlobalState.users = users;
+		for (int i=0; i < users.length; i++) {
+			Log.i("jajaja", users[i].getName() + " " + users[i].getUuid());
+			HashMap<UUID, User> userMap = new HashMap();
+			userMap.put(users[i].getUuid(), users[i]);
+			GlobalState.userMap = userMap;
+		}
+	}
+
+	/**
+	 * userMap accessor
+	 */
+	public static HashMap<UUID, User> getUserMap() {
+		return GlobalState.userMap;
+	}
+
+	/**
+	 * recordings mutator
+	 */
+	public static void setRecordings(Recording[] recordings) {
+		GlobalState.recordings = recordings;
+	}
+	
+	/**
+	 * recordings accessor
+	 */
+	public static Recording[] getRecordings() {
+		return GlobalState.recordings;
 	}
 }

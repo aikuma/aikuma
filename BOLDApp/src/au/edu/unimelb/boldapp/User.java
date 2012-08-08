@@ -27,7 +27,7 @@ public class User {
 	 */
 	public User(UUID uuid, String name) {
 		setUuid(uuid);
-		this.name = name;
+		setName(name);
 	}
 
 	public void setUuid(UUID uuid) {

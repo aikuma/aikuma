@@ -74,7 +74,7 @@ public class SaveActivity extends Activity {
 		User currentUser = GlobalState.getCurrentUser();
 		JSONObject obj = new JSONObject();
 		obj.put("uuid", uuid.toString());
-		obj.put("creatorUUID", currentUser.getUuid());
+		obj.put("creatorUUID", currentUser.getUuid().toString());
 		obj.put("recording_name", recordingName);
 		StringWriter stringWriter = new StringWriter();
 		try {

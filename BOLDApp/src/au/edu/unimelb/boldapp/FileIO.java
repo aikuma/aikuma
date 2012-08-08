@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.util.Log;
 import java.util.Scanner;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -83,12 +84,12 @@ public abstract class FileIO {
 	}
 
 	/**
-	 * Method to load all the users from the users directory into a list of
+	 * Method to load all the users from the users directory into an array of
 	 * User objects.
 	 *
-	 * @return An array of all the users as user objects
+	 * @return An array of all the users as User objects.
 	 */
-	public static User[] loadUsers() {
+	public static void loadUsers() {
 		// Get an array of all the UUIDs from the "users" directory
 		File dir = new File(getAppRootPath() + "users");
 		String[] userUuids = dir.list();
@@ -108,8 +109,54 @@ public abstract class FileIO {
 				Log.e("GottaCatchEmAll", e.getMessage());
 			}
 		}
-		return users;
+
+		GlobalState.setUsers(users);
 	}
+
+
+	/**
+	 * Method to load all the recordings from the recordings directory into an
+	 * array of Recording objects.
+	 *
+	 * @return An array of all the recordings as Recording objects.
+	 */
+	 public static void loadRecordings() {
+	 	//Get an array of all the UUIDs from the "recordings" directory
+		File dir = new File(getAppRootPath() + "recordings");
+		JSONFilenameFilter fnf = new JSONFilenameFilter();
+		String[] recordingUuids = dir.list(fnf);
+		/*
+		for (int i = 0; i < recordingUuids.length; i++) {
+			recordingUuids[i] = recordingUuids[i].replace(".json", "");
+			Log.i("yoyoyo", recordingUuids[i]);
+		}
+		*/
+
+		Recording[] recordings = new Recording[recordingUuids.length];
+		JSONParser parser = new JSONParser();
+		for (int i=0; i < recordingUuids.length; i++) {
+			String jsonStr = read("recordings/" + recordingUuids[i]);
+			try {
+				Object obj = parser.parse(jsonStr);
+				JSONObject jsonObj = (JSONObject) obj;
+				/*
+				Log.i("notgeil", " " +
+						UUID.fromString(jsonObj.get("uuid").toString()));
+				*/
+				recordings[i] = new Recording(
+						UUID.fromString(jsonObj.get("uuid").toString()),
+						GlobalState.getUserMap().get(UUID.fromString(
+								jsonObj.get("creator").toString())),
+						jsonObj.get("name").toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+				//String err = (e.getMessage()==null)?"dang":e.getMessage();
+				//Log.e("GottaCatchEmAll", err);
+			}
+		}
+
+		GlobalState.setRecordings(recordings);
+	 }
 
 	/**
 	 * Delete the filename supplied as an argument
