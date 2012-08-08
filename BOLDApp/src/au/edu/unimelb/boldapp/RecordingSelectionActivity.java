@@ -13,7 +13,6 @@ public class RecordingSelectionActivity extends ListActivity {
 		FileIO.loadRecordings();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this,
 				GlobalState.getRecordings());
-		Log.i("yep", " " + GlobalState.getRecordings()[0].getName());
 		setListAdapter(adapter);
 	}
 
