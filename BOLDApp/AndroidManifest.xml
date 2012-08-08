@@ -15,7 +15,7 @@
 				android:label="@string/app_name"/>
 		<activity android:name="RespeakActivity"
 				android:label="@string/app_name"/>
-		<activity android:name="UserSelectionActivity"
+		<activity android:name="InitialUserSelectionActivity"
 				android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -29,6 +29,8 @@
 		<activity android:name="CreateUserActivity"
 				android:label="@string/app_name"/>
 		<activity android:name="SaveActivity"
+				android:label="@string/app_name"/>
+		<activity android:name="UserSelectionActivity"
 				android:label="@string/app_name"/>
 	</application>
 </manifest> 

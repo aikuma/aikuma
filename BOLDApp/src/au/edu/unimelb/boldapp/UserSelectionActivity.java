@@ -17,47 +17,34 @@ import android.util.Log;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class UserSelectionActivity extends ListActivity {
-	/**
-	 * Initialization when the activity starts.
-	 *
-	 * @param	savedInstanceState	Data the activity most recently supplied to
-	 * onSaveInstanceState(Bundle).
-	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.user_selection);
 
 		FileIO.loadUsers();
-		ArrayAdapter adapter = new UserArrayAdapter(this, 
+		ArrayAdapter adapter = new UserArrayAdapter(this,
 				GlobalState.getUsers());
 		setListAdapter(adapter);
 	}
 
-	/**
-	 * When the list item is clicked.
-	 *
-	 * @param	l		the listview
-	 * @param	v		the view that was clicked
-	 * @param	positon	position in the list and array
-	 * @param 	id		id
-	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		User user = (User) getListAdapter().getItem(position);
 		GlobalState.setCurrentUser(user);
 		Toast.makeText(this,
 				user.getName() + " selected", Toast.LENGTH_LONG).show();
-		Intent intent = new Intent(this, MainActivity.class);
-		startActivity(intent);
-		this.finish();
 	}
 
-	/**
-	 * Changes to the CreateUserActivity
-	 *
-	 * @param	view	The button that was clicked.
-	 */
+	@Override
+	public void onStop() {
+		super.onStop();
+	}
+
+	public void goBack(View view){
+		UserSelectionActivity.this.finish();
+	}
+
 	public void createUser(View view) {
 		Intent intent = new Intent(this, CreateUserActivity.class);
 		startActivity(intent);
