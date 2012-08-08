@@ -61,7 +61,8 @@ public class MainActivity extends Activity {
 	 * @param	view	The button that was clicked.
 	 */
 	public void goToRespeak(View view) {
-		Intent intent = new Intent(this, RespeakActivity.class);
+		//Intent intent = new Intent(this, RespeakActivity.class);
+		Intent intent = new Intent(this, RecordingSelectionActivity.class);
 		startActivity(intent);
 	}
 }

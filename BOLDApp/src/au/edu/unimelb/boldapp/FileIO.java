@@ -8,6 +8,7 @@ import android.util.Log;
 import java.util.Scanner;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.util.HashMap;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -146,8 +147,8 @@ public abstract class FileIO {
 				recordings[i] = new Recording(
 						UUID.fromString(jsonObj.get("uuid").toString()),
 						GlobalState.getUserMap().get(UUID.fromString(
-								jsonObj.get("creator").toString())),
-						jsonObj.get("name").toString());
+								jsonObj.get("creatorUUID").toString())),
+						jsonObj.get("recording_name").toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 				//String err = (e.getMessage()==null)?"dang":e.getMessage();
@@ -155,7 +156,9 @@ public abstract class FileIO {
 			}
 		}
 
+
 		GlobalState.setRecordings(recordings);
+		Log.i("bogan", GlobalState.getRecordings()[0].getName());
 	 }
 
 	/**
