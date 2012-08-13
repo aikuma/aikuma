@@ -31,19 +31,29 @@
 	</RelativeLayout>
 	<LinearLayout
 		android:id="@+id/MainOptions"
-		android:orientation="horizontal"
+		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_weight="1"
 	>
 			<ImageButton
-				android:id="@+id/Record"
+				android:id="@+id/Respeak"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:layout_weight="1"
+				android:layout_weight="0.5"
 				android:scaleType="centerInside"
 				android:src="@drawable/button_record"
 				android:onClick="respeak"
+			/>
+			<ImageButton
+				android:id="@+id/Pause"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_weight="0.5"
+				android:scaleType="centerInside"
+				android:src="@drawable/button_pause"
+				android:onClick="pause"
+				android:visibility="invisible"
 			/>
 	</LinearLayout>
 </LinearLayout>

@@ -159,6 +159,7 @@ public class RespeakActivity extends Activity {
 	 *
 	 * @param	button	The button that was clicked.
 	 */
+	 /*
 	public void respeak(View view) {
 		ImageButton button = (ImageButton) view;
 		respeaking = !respeaking;
@@ -175,5 +176,39 @@ public class RespeakActivity extends Activity {
 			respeaker.pause();
 		}
 	}
+	*/
+
+	/**
+	 * Start/resume the respeaking of audio.
+	 *
+	 * @param	button	The button that was clicked
+	 */
+	public void respeak(View view) {
+		ImageButton respeakButton = (ImageButton) view;
+		respeaking = true;
+		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
+		pauseButton.setVisibility(View.VISIBLE);
+		respeakButton.setVisibility(View.INVISIBLE);
+		if (startedRespeaking) {
+			respeaker.resume();
+		} else {
+			startedRespeaking = true;
+			respeaker.listen();
+		}
+	}
+
+	/**
+	 * Pause the respeaking
+	 *
+	 * @param	button	The pause button that was clicked.
+	 */
+	 public void pause(View view) {
+	 	ImageButton pauseButton = (ImageButton) view;
+		respeaking = false;
+		ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
+		respeakButton.setVisibility(View.VISIBLE);
+		pauseButton.setVisibility(View.INVISIBLE);
+		respeaker.pause();
+	 }
 
 }

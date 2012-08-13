@@ -26,6 +26,7 @@
 			android:scaleType="centerInside"
 			android:layout_alignParentLeft="true"
 			android:text="lol"
+			android:textSize="30sp"
 		/>
 		<ImageButton
 			android:id="@+id/UserIcon"
