@@ -56,4 +56,15 @@ public class MainActivity extends Activity {
 		Intent intent = new Intent(this, RecordingSelectionActivity.class);
 		startActivity(intent);
 	}
+
+	/**
+	 * Load the activity that allows one to Listen to audio.
+	 *
+	 * @param	view	The button that was clicked.
+	 */
+	public void goToListen(View view) {
+		//Intent intent = new Intent(this, RespeakActivity.class);
+		Intent intent = new Intent(this, ListenActivity.class);
+		startActivity(intent);
+	}
 }

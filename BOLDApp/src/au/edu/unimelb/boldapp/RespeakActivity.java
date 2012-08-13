@@ -80,7 +80,7 @@ public class RespeakActivity extends Activity {
 		respeaker.prepare(
 				"/mnt/sdcard/bold/recordings/" + originalUUID + ".wav",
 				//"/mnt/sdcard/bold/recordings/" + this.uuid + ".wav");
-				"/mnt/sdcard/bold/respeakings/" + uuid.toString() + ".wav");
+				"/mnt/sdcard/bold/recordings/" + uuid.toString() + ".wav");
 		//recording = false;
 		//recorder = new Recorder();
 
@@ -116,7 +116,7 @@ public class RespeakActivity extends Activity {
 
 	public void goBack(View view){
 		respeaker.stop();
-		FileIO.delete("respeakings/" + uuid.toString() + ".wav");
+		FileIO.delete("recordings/" + uuid.toString() + ".wav");
 		RespeakActivity.this.finish();
 	}
 
@@ -133,6 +133,7 @@ public class RespeakActivity extends Activity {
 		obj.put("uuid", uuid.toString());
 		obj.put("creatorUUID", currentUser.getUuid().toString());
 		obj.put("originalUUID", original.getUuid().toString());
+		obj.put("recording_name", "respeak of " + original.getName());
 		StringWriter stringWriter = new StringWriter();
 		try {
 			obj.writeJSONString(stringWriter);
@@ -140,7 +141,7 @@ public class RespeakActivity extends Activity {
 			Log.e("CaughtExceptions", e.getMessage());
 		}
 		String jsonText = stringWriter.toString();
-		FileIO.write("respeakings/" + uuid.toString() + ".json", jsonText);
+		FileIO.write("recordings/" + uuid.toString() + ".json", jsonText);
 		Toast.makeText(this,
 				"Respeaking of " + original.getName() + " saved",
 				Toast.LENGTH_LONG).show();
