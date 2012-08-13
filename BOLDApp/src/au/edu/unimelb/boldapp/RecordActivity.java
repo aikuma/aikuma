@@ -97,15 +97,25 @@ public class RecordActivity extends Activity {
 	 * @param	button	The record button that was clicked.
 	 */
 	public void record(View view) {
-		ImageButton button = (ImageButton) view;
+		ImageButton recordButton = (ImageButton) view;
 		//Toggle the recording Boolean.
-		recording = !recording;
-		if (recording) {
-			button.setImageResource(R.drawable.button_pause);
-			recorder.listen();
-		} else {
-			button.setImageResource(R.drawable.button_record);
-			recorder.pause();
-		}
+		recording = true;
+		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
+		pauseButton.setVisibility(View.VISIBLE);
+		recordButton.setVisibility(View.INVISIBLE);
+	}
+
+	/**
+	 * Pause the recording of the audio.
+	 *
+	 * @param	button	The pause button that was clicked.
+	 */
+	public void pause(View view) {
+		ImageButton pauseButton = (ImageButton) view;
+		recording = false;
+		ImageButton recordButton = (ImageButton) findViewById(R.id.Record);
+		recordButton.setVisibility(View.VISIBLE);
+		pauseButton.setVisibility(View.INVISIBLE);
+		recorder.pause();
 	}
 }
