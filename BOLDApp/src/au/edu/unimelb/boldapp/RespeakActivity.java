@@ -24,6 +24,11 @@ import org.json.simple.JSONObject;
 public class RespeakActivity extends Activity {
 
 	/**
+	 * Indicates whether the respeaking has been started already
+	 */
+	private Boolean startedRespeaking;
+
+	/**
 	 * Indicates whether audio is being recorded
 	 */
 	 private Boolean respeaking;
@@ -72,6 +77,7 @@ public class RespeakActivity extends Activity {
 		Log.i("durp", this.original.getName());
 		setContentView(R.layout.respeak);
 
+		startedRespeaking = false;
 		respeaking = false;
 		respeaker = new Respeaker();
 
@@ -158,30 +164,16 @@ public class RespeakActivity extends Activity {
 		respeaking = !respeaking;
 		if (respeaking) {
 			button.setImageResource(R.drawable.button_pause);
-			respeaker.listen();
+			if (startedRespeaking) {
+				respeaker.resume();
+			} else {
+				startedRespeaking = true;
+				respeaker.listen();
+			}
 		} else {
 			button.setImageResource(R.drawable.button_record);
 			respeaker.pause();
 		}
 	}
 
-	/**
-	 * Start and stop the recording of audio.
-	 *
-	 * @param	button	The record button that was clicked.
-	 */
-	/*
-	public void record(View view) {
-		ImageButton button = (ImageButton) view;
-		//Toggle the recording Boolean.
-		recording = !recording;
-		if (recording) {
-			button.setImageResource(R.drawable.main_record);
-			recorder.listen();
-		} else {
-			button.setImageResource(R.drawable.button_record);
-			recorder.pause();
-		}
-	}
-	*/
 }
