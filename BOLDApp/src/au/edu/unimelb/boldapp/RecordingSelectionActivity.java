@@ -39,5 +39,6 @@ public class RecordingSelectionActivity extends ListActivity {
 		Intent intent = new Intent(this, RespeakActivity.class);
 		intent.putExtra("originalUUID", original.getUuid());
 		startActivity(intent);
+		RecordingSelectionActivity.this.finish();
 	}
 }

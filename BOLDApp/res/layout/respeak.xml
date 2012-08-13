@@ -20,13 +20,13 @@
 			android:layout_alignParentLeft="true"
 		/>
 		<ImageButton
-			android:id="@+id/UserIcon"
+			android:id="@+id/Save"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:scaleType="centerInside"
-			android:src="@drawable/unknown_user"
+			android:src="@drawable/save"
 			android:layout_alignParentRight="true"
-			android:onClick="goToUserSelection"
+			android:onClick="save"
 		/>
 	</RelativeLayout>
 	<LinearLayout
@@ -43,7 +43,7 @@
 				android:layout_weight="1"
 				android:scaleType="centerInside"
 				android:src="@drawable/button_record"
-				android:onClick="record"
+				android:onClick="respeak"
 			/>
 	</LinearLayout>
 </LinearLayout>

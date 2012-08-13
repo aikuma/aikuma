@@ -11,6 +11,7 @@ import android.view.View;
 import android.util.Log;
 import android.content.Intent;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 
@@ -23,9 +24,24 @@ import org.json.simple.JSONObject;
 public class RespeakActivity extends Activity {
 
 	/**
+	 * Indicates whether audio is being recorded
+	 */
+	 private Boolean respeaking;
+
+	/**
 	 * The recording that is being respoken
 	 */
 	private Recording original;
+
+	/**
+	 * The UUID of the respeaking;
+	 */
+	private UUID uuid;
+
+	/**
+	 * Instance of the respeaker class that offers methods to respeak
+	 */
+	private Respeaker respeaker;
 
 	/**
 	 * Indicates whether audio is being recorded
@@ -56,7 +72,15 @@ public class RespeakActivity extends Activity {
 		Log.i("durp", this.original.getName());
 		setContentView(R.layout.respeak);
 
-		Respeaker respeaker = new Respeaker();
+		respeaking = false;
+		respeaker = new Respeaker();
+
+		this.uuid = UUID.randomUUID();
+
+		respeaker.prepare(
+				"/mnt/sdcard/bold/recordings/" + originalUUID + ".wav",
+				//"/mnt/sdcard/bold/recordings/" + this.uuid + ".wav");
+				"/mnt/sdcard/bold/respeakings/" + uuid.toString() + ".wav");
 		//recording = false;
 		//recorder = new Recorder();
 
@@ -91,17 +115,53 @@ public class RespeakActivity extends Activity {
 	}
 
 	public void goBack(View view){
+		respeaker.stop();
+		FileIO.delete("respeakings/" + uuid.toString() + ".wav");
 		RespeakActivity.this.finish();
 	}
 
 	/**
-	 * Move to the activity that allows one to select users.
+	 * Change to the activity that allows the user to save the wave file.
 	 *
 	 * @param	view	The button that was clicked.
 	 */
-	public void goToUserSelection(View view){
-		Intent intent = new Intent(this, UserSelectionActivity.class);
-		startActivity(intent);
+	public void save(View view) {
+		respeaker.stop();
+		//Generate metadata file for the recording.
+		User currentUser = GlobalState.getCurrentUser();
+		JSONObject obj = new JSONObject();
+		obj.put("uuid", uuid.toString());
+		obj.put("creatorUUID", currentUser.getUuid().toString());
+		obj.put("originalUUID", original.getUuid().toString());
+		StringWriter stringWriter = new StringWriter();
+		try {
+			obj.writeJSONString(stringWriter);
+		} catch (Exception e) {
+			Log.e("CaughtExceptions", e.getMessage());
+		}
+		String jsonText = stringWriter.toString();
+		FileIO.write("respeakings/" + uuid.toString() + ".json", jsonText);
+		Toast.makeText(this,
+				"Respeaking of " + original.getName() + " saved",
+				Toast.LENGTH_LONG).show();
+		this.finish();
+	}
+
+	/**
+	 * Start and stop the respeaking / recording of audio.
+	 *
+	 * @param	button	The button that was clicked.
+	 */
+	public void respeak(View view) {
+		ImageButton button = (ImageButton) view;
+		respeaking = !respeaking;
+		if (respeaking) {
+			button.setImageResource(R.drawable.button_pause);
+			respeaker.listen();
+		} else {
+			button.setImageResource(R.drawable.button_record);
+			respeaker.pause();
+		}
 	}
 
 	/**

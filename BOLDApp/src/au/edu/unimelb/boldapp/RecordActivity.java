@@ -92,16 +92,6 @@ public class RecordActivity extends Activity {
 	}
 
 	/**
-	 * Move to the activity that allows one to select users.
-	 *
-	 * @param	view	The button that was clicked.
-	 */
-	public void goToUserSelection(View view){
-		Intent intent = new Intent(this, UserSelectionActivity.class);
-		startActivity(intent);
-	}
-
-	/**
 	 * Start and stop the recording of audio.
 	 *
 	 * @param	button	The record button that was clicked.
