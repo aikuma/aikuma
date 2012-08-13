@@ -34,6 +34,7 @@ public class UserSelectionActivity extends ListActivity {
 		GlobalState.setCurrentUser(user);
 		Toast.makeText(this,
 				user.getName() + " selected", Toast.LENGTH_LONG).show();
+		UserSelectionActivity.this.finish();
 	}
 
 	@Override

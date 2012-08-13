@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
 import android.util.Log;
+import android.widget.TextView;
 
 /**
  * The main menu activity that is first run when the application is started.
@@ -24,7 +25,22 @@ public class MainActivity extends Activity {
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		//TextView nameView = (TextView) findViewById(R.id.UserName);
+		//Log.i("gah", GlobalState.getCurrentUser().getName());
+		//nameView.setText(GlobalState.getCurrentUser().getName());
 	}
+
+	/**
+	 * Things to do when the activity resumes
+	 */
+	@Override
+	public void onResume() {
+		super.onResume();
+		TextView nameView = (TextView) findViewById(R.id.UserName);
+		Log.i("gah", GlobalState.getCurrentUser().getName());
+		nameView.setText(GlobalState.getCurrentUser().getName());
+	}
+
 
 	/**
 	 * Load the activity that allows one to record audio.

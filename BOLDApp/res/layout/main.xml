@@ -19,6 +19,14 @@
 			android:src="@drawable/back"
 		/>
 		-->
+		<TextView
+			android:id="@+id/UserName"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:layout_alignParentLeft="true"
+			android:text="lol"
+		/>
 		<ImageButton
 			android:id="@+id/UserIcon"
 			android:layout_width="wrap_content"

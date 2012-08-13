@@ -103,6 +103,7 @@ public class RecordActivity extends Activity {
 		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
 		pauseButton.setVisibility(View.VISIBLE);
 		recordButton.setVisibility(View.INVISIBLE);
+		recorder.listen();
 	}
 
 	/**
@@ -112,6 +113,7 @@ public class RecordActivity extends Activity {
 	 */
 	public void pause(View view) {
 		ImageButton pauseButton = (ImageButton) view;
+		//Toggle the recording Boolean.
 		recording = false;
 		ImageButton recordButton = (ImageButton) findViewById(R.id.Record);
 		recordButton.setVisibility(View.VISIBLE);
