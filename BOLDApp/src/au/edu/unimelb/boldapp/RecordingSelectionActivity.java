@@ -9,6 +9,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class RecordingSelectionActivity extends ListActivity {
+
+	/**
+	 * The name of the activity to be started when a recording is selected
+	 */
+	private String nextActivityName;
+
 	/**
 	 * Initialization when the activity starts.
 	 *
@@ -19,6 +25,8 @@ public class RecordingSelectionActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recording_selection);
+		Intent intent = getIntent();
+		nextActivityName = intent.getStringExtra("activity");
 		FileIO.loadRecordings();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this,
 				GlobalState.getRecordings());
@@ -36,7 +44,11 @@ public class RecordingSelectionActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Recording original = (Recording) getListAdapter().getItem(position);
-		Intent intent = new Intent(this, RespeakActivity.class);
+		//Otherwise it is listen
+		Intent intent = new Intent(this, ListenActivity.class);
+		if (nextActivityName.equals("RespeakActivity")) {
+			intent = new Intent(this, RespeakActivity.class);
+		}
 		intent.putExtra("originalUUID", original.getUuid());
 		startActivity(intent);
 		RecordingSelectionActivity.this.finish();

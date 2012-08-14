@@ -70,6 +70,7 @@ public class MainActivity extends Activity {
 	public void goToRespeak(View view) {
 		//Intent intent = new Intent(this, RespeakActivity.class);
 		Intent intent = new Intent(this, RecordingSelectionActivity.class);
+		intent.putExtra("activity", "RespeakActivity");
 		startActivity(intent);
 	}
 
@@ -80,7 +81,8 @@ public class MainActivity extends Activity {
 	 */
 	public void goToListen(View view) {
 		//Intent intent = new Intent(this, RespeakActivity.class);
-		Intent intent = new Intent(this, ListenActivity.class);
+		Intent intent = new Intent(this, RecordingSelectionActivity.class);
+		intent.putExtra("activity", "ListenActivity");
 		startActivity(intent);
 	}
 }
