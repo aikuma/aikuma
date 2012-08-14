@@ -9,13 +9,18 @@
 	<application>
 		<!-- android:label="@string/app_name" -->
 		<activity android:name="MainActivity"
-				android:label="@string/app_name">
+				android:screenOrientation="portrait"
+				android:label="@string/app_name"
+		>
 		</activity>
 		<activity android:name="RecordActivity"
+				android:screenOrientation="portrait"
 				android:label="@string/app_name"/>
 		<activity android:name="RespeakActivity"
+				android:screenOrientation="portrait"
 				android:label="@string/app_name"/>
 		<activity android:name="InitialUserSelectionActivity"
+				android:screenOrientation="portrait"
 				android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -23,16 +28,22 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="UserListActivity"
+				android:screenOrientation="portrait"
 				android:label="@string/app_name"/>
 		<activity android:name="RecordingSelectionActivity"
+				android:screenOrientation="portrait"
 				android:label="@string/app_name"/>
 		<activity android:name="CreateUserActivity"
+				android:screenOrientation="portrait"
 				android:label="@string/app_name"/>
 		<activity android:name="SaveActivity"
+				android:screenOrientation="portrait"
 				android:label="@string/app_name"/>
 		<activity android:name="UserSelectionActivity"
+				android:screenOrientation="portrait"
 				android:label="@string/app_name"/>
 		<activity android:name="ListenActivity"
+				android:screenOrientation="portrait"
 				android:label="@string/app_name"/>
 	</application>
 </manifest> 
