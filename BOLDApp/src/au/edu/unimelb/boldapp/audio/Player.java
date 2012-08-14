@@ -7,7 +7,7 @@ import android.media.MediaPlayer;
 
 public class Player {
 
-	private MediaPlayer player = new MediaPlayer();
+	public MediaPlayer player = new MediaPlayer();
 	private boolean playing = false;
 
 	public boolean isPlaying() {

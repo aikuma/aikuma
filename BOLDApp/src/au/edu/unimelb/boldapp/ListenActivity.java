@@ -11,6 +11,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+
 public class ListenActivity extends Activity {
 	/**
 	 * The player that is used
@@ -46,6 +49,18 @@ public class ListenActivity extends Activity {
 		this.player = new Player();
 		player.prepare("mnt/sdcard/bold/recordings/" +
 				this.recording.getUuid().toString() + ".wav");
+
+		player.player.setOnCompletionListener(new OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer _player) {
+				ImageButton playButton = (ImageButton) 
+						findViewById(R.id.Play);
+				ImageButton pauseButton = (ImageButton) 
+						findViewById(R.id.Pause);
+				pauseButton.setVisibility(View.INVISIBLE);
+				playButton.setVisibility(View.VISIBLE);
+			}
+		});
 	}
 
 	/**
