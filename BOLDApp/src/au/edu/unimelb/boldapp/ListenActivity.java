@@ -2,15 +2,31 @@ package au.edu.unimelb.boldapp;
 
 import au.edu.unimelb.boldapp.audio.Player;
 
-import android.app.ListActivity;
+import java.util.UUID;
+
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.ImageButton;
 
-public class ListenActivity extends ListActivity {
+public class ListenActivity extends Activity {
+	/**
+	 * The player that is used
+	 */
+	private Player player;
+
+	/**
+	 * The recording that is being played
+	 */
+	private Recording recording;
+
+	/**
+	 * Indicates whether the recording is being played or not
+	 */
+	private Boolean playing;
+
 	/**
 	 * Initialization when the activity starts.
 	 *
@@ -19,32 +35,66 @@ public class ListenActivity extends ListActivity {
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		playing = false;
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.recording_selection);
-		FileIO.loadRecordings();
-		ArrayAdapter adapter = new RecordingArrayAdapter(this,
-				GlobalState.getRecordings());
-		setListAdapter(adapter);
+		setContentView(R.layout.listen);
+
+		Intent intent = getIntent();
+		UUID recordingUUID = (UUID) intent.getExtras().get("recordingUUID");
+		this.recording = GlobalState.getRecordingMap().get(recordingUUID);
+
+		this.player = new Player();
+		player.prepare("mnt/sdcard/bold/recordings/" +
+				this.recording.getUuid().toString() + ".wav");
 	}
 
 	/**
-	 * When the list item is clicked.
-	 *
-	 * @param	l		the listview
-	 * @param	v		the view that was clicked
-	 * @param	positon	position in the list and array
-	 * @param 	id		id
+	 * When the activity is stopped
 	 */
 	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		Recording recording = (Recording) getListAdapter().getItem(position);
-		//Intent intent = new Intent(this, RespeakActivity.class);
-		//intent.putExtra("originalUUID", original.getUuid());
-		//startActivity(intent);
-		//ListenActivity.this.finish();
-		Player player = new Player();
-		Log.i("notgeil", recording.getUuid().toString());
-		player.prepare("mnt/sdcard/bold/recordings/" + recording.getUuid().toString() + ".wav");
-		player.play();
+	public void onStop() {
+		super.onStop();
+		player.stop();
+	}
+
+	/**
+	 * When the back button is pressed
+	 *
+	 * @param	view	The button that was clicked.
+	 */
+	public void goBack(View view){
+		player.stop();
+		ListenActivity.this.finish();
+	}
+
+	/**
+	 * When the play button is pressed.
+	 *
+	 * @param	view	The button that was pressed
+	 */
+	public void play(View view) {
+		ImageButton playButton = (ImageButton) view;
+		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
+		pauseButton.setVisibility(View.VISIBLE);
+		playButton.setVisibility(View.INVISIBLE);
+		if (playing) {
+			player.resume();
+		} else {
+			player.play();
+			playing = true;
+		}
+	}
+
+	/**
+	 * When the pause button is pressed
+	 *
+	 * @param	view	The button that was pressed
+	 */
+	public void pause(View view) {
+		ImageButton pauseButton = (ImageButton) view;
+		ImageButton playButton = (ImageButton) findViewById(R.id.Play);
+		playButton.setVisibility(View.VISIBLE);
+		pauseButton.setVisibility(View.INVISIBLE);
+		player.pause();
 	}
 }

@@ -74,7 +74,7 @@ public class RespeakActivity extends Activity {
 
 		//Get the original from the intent
 		Intent intent = getIntent();
-		UUID originalUUID = (UUID) intent.getExtras().get("originalUUID");
+		UUID originalUUID = (UUID) intent.getExtras().get("recordingUUID");
 		this.original = GlobalState.getRecordingMap().get(originalUUID);
 		Log.i("durp", this.original.getName());
 		setContentView(R.layout.respeak);
