@@ -29,15 +29,16 @@ import au.edu.unimelb.boldapp.audio.recognizers.AverageRecognizer;
  *  Note that stopping the respeaker closes and finalizes the WAV file.
  */
 public class Respeaker extends Recorder {
-  
-  /** Player to play the original with. */
-  public Player player;
-  
+
+	/** Player to play the original with. */
+	public Player player;
+
 	/** Default constructor. */
-  public Respeaker() {
-    super(new ThresholdSpeechAnalyzer(88, 3, new AverageRecognizer(32, 32)));
-    this.player = new Player();
-  }
+	public Respeaker() {
+		super(new ThresholdSpeechAnalyzer(88, 3,
+				new AverageRecognizer(32, 32)));
+		this.player = new Player();
+	}
   
 	/** Prepare the respeaker by setting a source file and a target file. */
 	public void prepare(String sourceFilename, String targetFilename) {
@@ -54,7 +55,7 @@ public class Respeaker extends Recorder {
   @Override
 	public void stop() {
 		super.stop();
-    player.stop();
+		player.stop();
 	}
 
 	/** Pause listening to the microphone. */
