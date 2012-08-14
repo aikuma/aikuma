@@ -5,67 +5,82 @@ import java.io.IOException;
 
 import android.media.MediaPlayer;
 
-public class Player {
+/**
+ * An extension of MediaPlayer
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
+public class Player extends MediaPlayer{
 
-	public MediaPlayer player = new MediaPlayer();
+	/**
+	 * Indicates whether the audio is currently being played
+	 */
 	private boolean playing = false;
 
+	/**
+	 * playing accessor
+	 *
+	 * @return	value of playing.
+	 */
 	public boolean isPlaying() {
 		return playing;
 	}
-  
-  /** Prepare playing with the given file. */
-  public void prepare(String fileName) {
+
+	/**
+	 * Prepare playing with the given file.
+	 *
+	 * @param	fileName	The name of the file to be played.
+	 */
+	public void prepare(String fileName) {
 		try {
-			player.setDataSource(generateFilePath(fileName));
+			setDataSource(generateFilePath(fileName));
+			prepare();
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
-  }
-  
-  /** Start playing. */
+	}
+
+	/**
+	 * Start playing.
+	 */
 	public void play() {
 		if (playing) {
 			return;
 		}
 		playing = true;
 		try {
-			player.prepare();
-			player.start();
-    } catch (IOException e) {
-      
+			start();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
-  /** Pause the player. */
-	public void pause() {
-		player.pause();
-	}
-
-  /** Rewind the player a number of miliseconds. */
+	/** Rewind the player a number of miliseconds. */
 	public void rewind(int miliseconds) {
-		int currentPosition = player.getCurrentPosition();
+		int currentPosition = getCurrentPosition();
 		int targetPosition = currentPosition - miliseconds;
 		if (targetPosition < 0) {
 			targetPosition = 0;
 		}
-		player.seekTo(targetPosition);
-	}
-  
-  /** Resume the player. */
-	public void resume() {
-		player.start();
+		seekTo(targetPosition);
 	}
 
-  /** Stop the player. */
+	/** Resume the player. */
+	public void resume() {
+		start();
+	}
+
+	/** Stop the player. */
 	public void stop() {
 		if (!playing) {
 			return;
 		}
-		player.reset(); // TODO We might need to set the data source again.
+		reset();
 		playing = false;
 	}
-  
-  /** Generates all the necessary directories for the file. */
+
+	/** Generates all the necessary directories for the file. */
 	protected String generateFilePath(String fileName) {
 		File file = new File(fileName);
 		File parentFile = new File(file.getParent());

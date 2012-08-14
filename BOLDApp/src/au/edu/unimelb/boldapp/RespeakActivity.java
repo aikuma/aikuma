@@ -93,7 +93,7 @@ public class RespeakActivity extends Activity {
 				//"/mnt/sdcard/bold/recordings/" + this.uuid + ".wav");
 				"/mnt/sdcard/bold/recordings/" + uuid.toString() + ".wav");
 
-		respeaker.player.player.setOnCompletionListener(new OnCompletionListener() {
+		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _player) {
 				ImageButton respeakButton = (ImageButton) 

@@ -28,7 +28,7 @@ public class ListenActivity extends Activity {
 	/**
 	 * Indicates whether the recording is being played or not
 	 */
-	private Boolean playing;
+	private Boolean startedPlaying;
 
 	/**
 	 * Initialization when the activity starts.
@@ -38,7 +38,7 @@ public class ListenActivity extends Activity {
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		playing = false;
+		startedPlaying = false;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listen);
 
@@ -50,7 +50,7 @@ public class ListenActivity extends Activity {
 		player.prepare("mnt/sdcard/bold/recordings/" +
 				this.recording.getUuid().toString() + ".wav");
 
-		player.player.setOnCompletionListener(new OnCompletionListener() {
+		player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _player) {
 				ImageButton playButton = (ImageButton) 
@@ -92,11 +92,11 @@ public class ListenActivity extends Activity {
 		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
 		pauseButton.setVisibility(View.VISIBLE);
 		playButton.setVisibility(View.INVISIBLE);
-		if (playing) {
+		if (startedPlaying) {
 			player.resume();
 		} else {
 			player.play();
-			playing = true;
+			startedPlaying = true;
 		}
 	}
 
