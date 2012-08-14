@@ -28,6 +28,14 @@ public class Player extends MediaPlayer{
 	}
 
 	/**
+	 * playing mutator
+	 *
+	 */
+	public void setPlaying(boolean playing) {
+		this.playing = playing;
+	}
+
+	/**
 	 * Prepare playing with the given file.
 	 *
 	 * @param	fileName	The name of the file to be played.
@@ -69,6 +77,13 @@ public class Player extends MediaPlayer{
 	/** Resume the player. */
 	public void resume() {
 		start();
+		playing = true;
+	}
+
+	/** Pause */
+	public void pause() {
+		super.pause();
+		playing = false;
 	}
 
 	/** Stop the player. */

@@ -62,7 +62,7 @@ public class Respeaker extends Recorder {
   @Override
 	public void pause() {
 		super.pause();
-    player.pause();
+		player.pause();
 	}
   
 	/** Resume playing. */

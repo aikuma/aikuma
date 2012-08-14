@@ -36,15 +36,12 @@
 				android:src="@drawable/button_play"
 				android:onClick="play"
 			/>
-			<ImageButton
-				android:id="@+id/Pause"
+			<SeekBar
+				style="@android:style/Widget.ProgressBar.Horizontal"
+				android:id="@+id/SeekBar"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_weight="0.5"
-				android:scaleType="centerInside"
-				android:src="@drawable/button_pause"
-				android:onClick="pause"
-				android:visibility="invisible"
 			/>
 	</LinearLayout>
 </LinearLayout>

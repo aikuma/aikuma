@@ -53,12 +53,10 @@ public class ListenActivity extends Activity {
 		player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _player) {
-				ImageButton playButton = (ImageButton) 
+				ImageButton button = (ImageButton) 
 						findViewById(R.id.Play);
-				ImageButton pauseButton = (ImageButton) 
-						findViewById(R.id.Pause);
-				pauseButton.setVisibility(View.INVISIBLE);
-				playButton.setVisibility(View.VISIBLE);
+				player.setPlaying(false);
+				button.setImageResource(R.drawable.button_play);
 			}
 		});
 	}
@@ -88,15 +86,24 @@ public class ListenActivity extends Activity {
 	 * @param	view	The button that was pressed
 	 */
 	public void play(View view) {
-		ImageButton playButton = (ImageButton) view;
-		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
-		pauseButton.setVisibility(View.VISIBLE);
-		playButton.setVisibility(View.INVISIBLE);
-		if (startedPlaying) {
-			player.resume();
+		ImageButton button = (ImageButton) view;
+		//ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
+		//pauseButton.setVisibility(View.VISIBLE);
+		//playButton.setVisibility(View.INVISIBLE);
+		if (!player.isPlaying()) {
+			button.setImageResource(R.drawable.button_pause);
+			if (startedPlaying) {
+				player.resume();
+				Log.i("rah", "1");
+			} else {
+				player.play();
+				startedPlaying = true;
+				Log.i("rah", "2");
+			}
 		} else {
-			player.play();
-			startedPlaying = true;
+			button.setImageResource(R.drawable.button_play);
+			player.pause();
+			Log.i("rah", "3");
 		}
 	}
 
@@ -105,6 +112,7 @@ public class ListenActivity extends Activity {
 	 *
 	 * @param	view	The button that was pressed
 	 */
+	 /*
 	public void pause(View view) {
 		ImageButton pauseButton = (ImageButton) view;
 		ImageButton playButton = (ImageButton) findViewById(R.id.Play);
@@ -112,4 +120,5 @@ public class ListenActivity extends Activity {
 		pauseButton.setVisibility(View.INVISIBLE);
 		player.pause();
 	}
+	*/
 }
