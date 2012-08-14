@@ -39,16 +39,16 @@ public class Respeaker extends Recorder {
     this.player = new Player();
   }
   
-  /** Prepare the respeaker by setting a source file and a target file. */
+	/** Prepare the respeaker by setting a source file and a target file. */
 	public void prepare(String sourceFilename, String targetFilename) {
-    player.prepare(sourceFilename);
+		player.prepare(sourceFilename);
 		super.prepare(targetFilename);
 	}
 
   @Override
 	public void listen() {
-    super.listen();
-    player.play();
+		super.listen();
+		player.play();
 	}
 
   @Override
@@ -64,10 +64,11 @@ public class Respeaker extends Recorder {
     player.pause();
 	}
   
-  /** Resume playing. */
-  public void resume() {
-    switchToPlay();
-  }
+	/** Resume playing. */
+	public void resume() {
+		super.listen();
+		switchToPlay();
+	}
   
   /** Rewinds the player. */
 	public void rewind(int miliseconds) {

@@ -87,31 +87,6 @@ public class RespeakActivity extends Activity {
 				"/mnt/sdcard/bold/recordings/" + originalUUID + ".wav",
 				//"/mnt/sdcard/bold/recordings/" + this.uuid + ".wav");
 				"/mnt/sdcard/bold/recordings/" + uuid.toString() + ".wav");
-		//recording = false;
-		//recorder = new Recorder();
-
-		/*
-		// Get Info about the creator and put it in the respective JSON
-		// metadata file User currentUser = GlobalState.getCurrentUser();
-		User currentUser = GlobalState.getCurrentUser();
-		UUID uuid = UUID.randomUUID();
-		JSONObject obj = new JSONObject();
-		obj.put("uuid", uuid.toString());
-		obj.put("creatorUUID", currentUser.getUuid());
-		obj.put("creatorName", currentUser.getName());
-		StringWriter stringWriter = new StringWriter();
-		try {
-			obj.writeJSONString(stringWriter);
-		} catch (Exception e) {
-			Log.e("CaughtExceptions", e.getMessage());
-		}
-		String jsonText = stringWriter.toString();
-		FileIO.write("recordings/" + uuid.toString() + ".json", jsonText);
-
-		//Prepare the recorder
-		recorder.prepare("/mnt/sdcard/bold/recordings/" +
-				uuid.toString() + ".wav");
-		*/
 	}
 
 	@Override
@@ -153,30 +128,6 @@ public class RespeakActivity extends Activity {
 				Toast.LENGTH_LONG).show();
 		this.finish();
 	}
-
-	/**
-	 * Start and stop the respeaking / recording of audio.
-	 *
-	 * @param	button	The button that was clicked.
-	 */
-	 /*
-	public void respeak(View view) {
-		ImageButton button = (ImageButton) view;
-		respeaking = !respeaking;
-		if (respeaking) {
-			button.setImageResource(R.drawable.button_pause);
-			if (startedRespeaking) {
-				respeaker.resume();
-			} else {
-				startedRespeaking = true;
-				respeaker.listen();
-			}
-		} else {
-			button.setImageResource(R.drawable.button_record);
-			respeaker.pause();
-		}
-	}
-	*/
 
 	/**
 	 * Start/resume the respeaking of audio.
