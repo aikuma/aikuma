@@ -2,6 +2,8 @@ package au.edu.unimelb.boldapp;
 
 import java.io.StringWriter;
 import java.util.UUID;
+import java.util.Date;
+import java.text.DateFormat;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.util.Log;
 import android.content.Intent;
+
 
 import org.json.simple.JSONObject;
 
@@ -55,12 +58,17 @@ public class SaveActivity extends Activity {
 		EditText editText = (EditText) findViewById(R.id.edit_recording_name);
 		String recordingName = editText.getText().toString();
 
+		//Get the date
+		String dateTime = DateFormat.getDateTimeInstance().format(
+				new Date());
+
 		//Generate metadata file for the recording.
 		User currentUser = GlobalState.getCurrentUser();
 		JSONObject obj = new JSONObject();
 		obj.put("uuid", uuid.toString());
 		obj.put("creatorUUID", currentUser.getUuid().toString());
 		obj.put("recording_name", recordingName);
+		obj.put("date_time", dateTime);
 		StringWriter stringWriter = new StringWriter();
 		try {
 			obj.writeJSONString(stringWriter);
