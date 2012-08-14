@@ -17,8 +17,11 @@ import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+
 /**
- * The activity that allows one to record audio.
+ * The activity that allows one to respeak audio.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
@@ -89,6 +92,19 @@ public class RespeakActivity extends Activity {
 				"/mnt/sdcard/bold/recordings/" + originalUUID + ".wav",
 				//"/mnt/sdcard/bold/recordings/" + this.uuid + ".wav");
 				"/mnt/sdcard/bold/recordings/" + uuid.toString() + ".wav");
+
+		respeaker.player.player.setOnCompletionListener(new OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer _player) {
+				ImageButton respeakButton = (ImageButton) 
+						findViewById(R.id.Respeak);
+				ImageButton pauseButton = (ImageButton) 
+						findViewById(R.id.Pause);
+				pauseButton.setVisibility(View.INVISIBLE);
+				respeakButton.setVisibility(View.INVISIBLE);
+				Log.i("stopped", "stopped");
+			}
+		});
 	}
 
 	@Override

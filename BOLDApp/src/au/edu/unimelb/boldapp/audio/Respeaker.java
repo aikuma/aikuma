@@ -31,7 +31,7 @@ import au.edu.unimelb.boldapp.audio.recognizers.AverageRecognizer;
 public class Respeaker extends Recorder {
   
   /** Player to play the original with. */
-  protected Player player;
+  public Player player;
   
 	/** Default constructor. */
   public Respeaker() {
