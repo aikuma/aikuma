@@ -17,7 +17,7 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 
 public class ListenActivity extends Activity
-		implements Runnable {
+		implements Runnable, SeekBar.OnSeekBarChangeListener {
 	/**
 	 * The player that is used
 	 */
@@ -64,6 +64,7 @@ public class ListenActivity extends Activity
 				this.recording.getUuid().toString() + ".wav");
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
+		this.seekBar.setOnSeekBarChangeListener(this);
 		this.seekBarThread = new Thread(this);
 
 		player.setOnCompletionListener(new OnCompletionListener() {
@@ -78,6 +79,8 @@ public class ListenActivity extends Activity
 				seekBar.setProgress(seekBar.getMax());
 			}
 		});
+
+		Log.i("progress", "yo");
 
 	}
 
@@ -126,6 +129,8 @@ public class ListenActivity extends Activity
 		} else {
 			button.setImageResource(R.drawable.button_play);
 			player.pause();
+			seekBar.setProgress((int)(((float)player.getCurrentPosition()/
+					(float)player.getDuration())*100));
 		}
 	}
 
@@ -157,10 +162,11 @@ public class ListenActivity extends Activity
 				} else {
 					currentPosition = player.getCurrentPosition();
 				}
+			} catch (InterruptedException e) {
+				return;
 			} catch (Exception e) {
 				Log.i("lammbock", "exception");
 				e.printStackTrace();
-				currentPosition = total;
 				return;
 			}
 			Log.i("lammbock", seekBar.getMax() + " " +
@@ -170,4 +176,25 @@ public class ListenActivity extends Activity
 		Log.i("lammbock", "afterposition: " + currentPosition);
 	}
 
+	@Override
+	public void onProgressChanged(
+			SeekBar seekBar, int progress, boolean fromUser) {
+		if (fromUser) {
+			Log.i("progress", " " +
+					(int)Math.round((((float)progress)/100)*player.getDuration()));
+			player.seekTo((int)Math.round((((float)progress)/100)*player.getDuration()));
+		} else {
+			//Progress was changed programatically
+		}
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+		Log.i("progress", "start");
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+		Log.i("progress", "stop");
+	}
 }
