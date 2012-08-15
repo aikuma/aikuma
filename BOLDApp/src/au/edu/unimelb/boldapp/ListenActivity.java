@@ -9,12 +9,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 
-public class ListenActivity extends Activity {
+public class ListenActivity extends Activity
+		implements Runnable {
 	/**
 	 * The player that is used
 	 */
@@ -29,6 +32,16 @@ public class ListenActivity extends Activity {
 	 * Indicates whether the recording is being played or not
 	 */
 	private Boolean startedPlaying;
+
+	/**
+	 * The progress bar
+	 */
+	private SeekBar seekBar;
+
+	/**
+	 * Thread to deal with updating of progress bar
+	 */
+	private Thread seekBarThread;
 
 	/**
 	 * Initialization when the activity starts.
@@ -50,15 +63,22 @@ public class ListenActivity extends Activity {
 		player.prepare("mnt/sdcard/bold/recordings/" +
 				this.recording.getUuid().toString() + ".wav");
 
+		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
+		this.seekBarThread = new Thread(this);
+
 		player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _player) {
 				ImageButton button = (ImageButton) 
 						findViewById(R.id.Play);
 				player.setPlaying(false);
+				startedPlaying = false;
 				button.setImageResource(R.drawable.button_play);
+				seekBarThread.interrupt();
+				seekBar.setProgress(seekBar.getMax());
 			}
 		});
+
 	}
 
 	/**
@@ -67,6 +87,7 @@ public class ListenActivity extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
+		this.seekBarThread.interrupt();
 		player.stop();
 	}
 
@@ -77,6 +98,7 @@ public class ListenActivity extends Activity {
 	 */
 	public void goBack(View view){
 		player.stop();
+		this.seekBarThread.interrupt();
 		ListenActivity.this.finish();
 	}
 
@@ -94,16 +116,16 @@ public class ListenActivity extends Activity {
 			button.setImageResource(R.drawable.button_pause);
 			if (startedPlaying) {
 				player.resume();
-				Log.i("rah", "1");
 			} else {
 				player.play();
+				seekBar.setProgress(0);
+				this.seekBarThread = new Thread(this);
+				this.seekBarThread.start();
 				startedPlaying = true;
-				Log.i("rah", "2");
 			}
 		} else {
 			button.setImageResource(R.drawable.button_play);
 			player.pause();
-			Log.i("rah", "3");
 		}
 	}
 
@@ -121,4 +143,31 @@ public class ListenActivity extends Activity {
 		player.pause();
 	}
 	*/
+
+	@Override
+	public void run() {
+		int currentPosition = 0;
+		int total = player.getDuration();
+		while (/*player!=null && */currentPosition<total) {
+			try {
+				Thread.sleep(1000);
+				if (player == null) {
+					currentPosition = total;
+					Log.i("lammbock", "null");
+				} else {
+					currentPosition = player.getCurrentPosition();
+				}
+			} catch (Exception e) {
+				Log.i("lammbock", "exception");
+				e.printStackTrace();
+				currentPosition = total;
+				return;
+			}
+			Log.i("lammbock", seekBar.getMax() + " " +
+					(int)(((float)currentPosition/(float)total)*100));
+			seekBar.setProgress((int)(((float)currentPosition/(float)total)*100));
+		}
+		Log.i("lammbock", "afterposition: " + currentPosition);
+	}
+
 }
