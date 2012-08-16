@@ -15,7 +15,7 @@ import android.widget.TextView;
  */
 public class MainActivity extends Activity {
 	/**
-	 * Initialization when the activity is starting.
+	 * Called when the activity is initially created.
 	 *
 	 * @param	savedInstanceState	Bundle that contains the data most recently
 	 * supplied to onSaveInstanceState(Bundle).
@@ -37,7 +37,6 @@ public class MainActivity extends Activity {
 	public void onResume() {
 		super.onResume();
 		TextView nameView = (TextView) findViewById(R.id.UserName);
-		Log.i("gah", GlobalState.getCurrentUser().getName());
 		nameView.setText(GlobalState.getCurrentUser().getName());
 	}
 
