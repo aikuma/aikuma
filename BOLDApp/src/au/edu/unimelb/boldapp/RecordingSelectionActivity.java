@@ -51,6 +51,14 @@ public class RecordingSelectionActivity extends ListActivity {
 		}
 		intent.putExtra("recordingUUID", recording.getUuid());
 		startActivity(intent);
-		RecordingSelectionActivity.this.finish();
+	}
+
+	/**
+	 * Go back
+	 *
+	 * @param	view	the button that was pressed.
+	 */
+	public void goBack(View view) {
+		this.finish();
 	}
 }
