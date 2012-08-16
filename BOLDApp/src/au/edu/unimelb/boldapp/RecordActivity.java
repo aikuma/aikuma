@@ -70,11 +70,11 @@ public class RecordActivity extends Activity {
 	/**
 	 * Returns to the previous activity without saving the wav.
 	 *
-	 * Delete's the wav file on the way out.
+	 * Deletes the wav file on the way out.
 	 *
 	 * @param	view	The button that was clicked.
 	 */
-	public void goBack(View view){
+	public void cancel(View view){
 		recorder.stop();
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
 		RecordActivity.this.finish();
