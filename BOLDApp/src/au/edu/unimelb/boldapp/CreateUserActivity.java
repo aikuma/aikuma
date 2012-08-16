@@ -1,14 +1,15 @@
 package au.edu.unimelb.boldapp;
 
-import java.util.UUID;
 import java.io.StringWriter;
+import java.util.UUID;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.util.Log;
-import android.content.Intent;
+import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 
@@ -42,31 +43,39 @@ public class CreateUserActivity extends Activity {
 	 * @param	view	The create user button that was clicked.
 	 */
 	public void createUser(View view) {
-		//Get the username from the EditText view.
-		EditText editText = (EditText) findViewById(R.id.edit_message);
+		// Get the username from the EditText view.
+		EditText editText = (EditText) findViewById(R.id.edit_username);
 		String username = editText.getText().toString();
 
-		//Generate the uuid that is associated with the user
-		UUID uuid = UUID.randomUUID();
+		// Ensure a nonempty string has been entered
+		if (username.isEmpty()) {
+			Toast.makeText(this,
+					"Please enter a username", Toast.LENGTH_LONG).show();
+		} else {
+			// Generate the uuid that is associated with the user
+			UUID uuid = UUID.randomUUID();
 
-		//Create the JSON object
-		JSONObject obj = new JSONObject();
-		obj.put("name", username);
-		obj.put("uuid", uuid.toString());
+			// Create the JSON object
+			JSONObject obj = new JSONObject();
+			obj.put("name", username);
+			obj.put("uuid", uuid.toString());
 
-		//Write the JSON object the the file
-		StringWriter stringWriter = new StringWriter();
-		try {
-			obj.writeJSONString(stringWriter);
-		} catch (Exception e) {
-			Log.e("CaughtExceptions", e.getMessage());
+			// Write the JSON object the the file
+			StringWriter stringWriter = new StringWriter();
+			try {
+				obj.writeJSONString(stringWriter);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			String jsonText = stringWriter.toString();
+			FileIO.write("users/" +
+					uuid.toString() + "/metadata.json", jsonText);
+
+			// Return to the user selection activity.
+			Intent intent = new Intent(this, UserSelectionActivity.class);
+			startActivity(intent);
+			this.finish();
 		}
-		String jsonText = stringWriter.toString();
-		FileIO.write("users/" + uuid.toString() + "/metadata.json", jsonText);
-
-		Intent intent = new Intent(this, UserSelectionActivity.class);
-		startActivity(intent);
-		this.finish();
 	}
 
 	/**
