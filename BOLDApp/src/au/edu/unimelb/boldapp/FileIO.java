@@ -1,12 +1,12 @@
 package au.edu.unimelb.boldapp;
 
-import java.io.File;
 import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.util.Scanner;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.io.FileWriter;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.UUID;
 
 import android.os.Environment;
@@ -28,6 +28,16 @@ public abstract class FileIO {
 	static final String appRootPath = "bold/";
 
 	/**
+	 * The users directory path
+	 */
+	static final String usersPath = "users/";
+
+	/**
+	 * The recordings directory path
+	 */
+	static final String recordingsPath = "recordings/";
+
+	/**
 	 * Returns the absolute path to the application's data.
 	 *
 	 * @return A string representation of the absolute path to the
@@ -37,6 +47,26 @@ public abstract class FileIO {
 		File external = Environment.getExternalStorageDirectory();
 		String path = external.getAbsolutePath() + "/" + appRootPath;
 		return path;
+	}
+
+	/**
+	 * Returns the relative path to the application's users directory
+	 *
+	 * @return A string representation of the relative path to the
+	 * application's users directory
+	 */
+	public static String getUsersPath(){
+		return usersPath;
+	}
+
+	/**
+	 * Returns the relative path to the application's recordings directory
+	 *
+	 * @return A string representation of the relative path to the
+	 * application's recordings directory
+	 */
+	public static String getRecordingsPath(){
+		return recordingsPath;
 	}
 
 	/**
@@ -91,14 +121,15 @@ public abstract class FileIO {
 	 */
 	public static void loadUsers() {
 		// Get an array of all the UUIDs from the "users" directory
-		File dir = new File(getAppRootPath() + "users");
+		File dir = new File(getAppRootPath() + getUsersPath());
 		String[] userUuids = dir.list();
 
 		// Get the user data from the metadata.json files
 		User[] users = new User[userUuids.length];
 		JSONParser parser = new JSONParser();
 		for (int i=0; i < userUuids.length; i++) {
-			String jsonStr = read("users/" + userUuids[i] + "/metadata.json");
+			String jsonStr = read(getUsersPath()
+					+ userUuids[i] + "/metadata.json");
 			try {
 				Object obj = parser.parse(jsonStr);
 				JSONObject jsonObj = (JSONObject) obj;
@@ -122,7 +153,7 @@ public abstract class FileIO {
 	 */
 	 public static void loadRecordings() {
 	 	//Get an array of all the UUIDs from the "recordings" directory
-		File dir = new File(getAppRootPath() + "recordings");
+		File dir = new File(getAppRootPath() + getRecordingsPath());
 		JSONFilenameFilter fnf = new JSONFilenameFilter();
 		String[] recordingUuids = dir.list(fnf);
 		/*
@@ -135,7 +166,7 @@ public abstract class FileIO {
 		Recording[] recordings = new Recording[recordingUuids.length];
 		JSONParser parser = new JSONParser();
 		for (int i=0; i < recordingUuids.length; i++) {
-			String jsonStr = read("recordings/" + recordingUuids[i]);
+			String jsonStr = read(getRecordingsPath() + recordingUuids[i]);
 			try {
 				Object obj = parser.parse(jsonStr);
 				JSONObject jsonObj = (JSONObject) obj;

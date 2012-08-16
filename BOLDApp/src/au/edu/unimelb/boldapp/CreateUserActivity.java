@@ -68,7 +68,7 @@ public class CreateUserActivity extends Activity {
 				e.printStackTrace();
 			}
 			String jsonText = stringWriter.toString();
-			FileIO.write("users/" +
+			FileIO.write(FileIO.getUsersPath() +
 					uuid.toString() + "/metadata.json", jsonText);
 
 			this.finish();
@@ -76,7 +76,8 @@ public class CreateUserActivity extends Activity {
 	}
 
 	/**
-	 * Go back to the user selection activity.
+	 * When the back button is pressed.
+	 *
 	 * @param	view	the back button.
 	 */
 	public void goBack(View view) {
