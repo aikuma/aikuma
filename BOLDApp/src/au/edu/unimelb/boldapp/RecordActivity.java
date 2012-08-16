@@ -89,6 +89,7 @@ public class RecordActivity extends Activity {
 		Intent intent = new Intent(this, SaveActivity.class);
 		intent.putExtra("UUID", uuid);
 		startActivity(intent);
+		this.finish();
 	}
 
 	/**
