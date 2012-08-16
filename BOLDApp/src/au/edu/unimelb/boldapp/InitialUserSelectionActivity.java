@@ -1,24 +1,24 @@
 package au.edu.unimelb.boldapp;
 
 import android.app.ListActivity;
-import android.widget.ListView;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
-import android.os.Bundle;
-import android.view.View;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
 /**
  * Activity that allows for the changing of currentUser, and links to the
- * creation of new users.
+ * CreateUserActivity.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class InitialUserSelectionActivity extends ListActivity {
 	/**
-	 * Initialization when the activity starts.
+	 * Called when the activity is initially created.
 	 *
 	 * @param	savedInstanceState	Data the activity most recently supplied to
 	 * onSaveInstanceState(Bundle).
@@ -27,7 +27,18 @@ public class InitialUserSelectionActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.initial_user_selection);
+	}
 
+	/**
+	 * Called when the activity starts.
+	 */
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		// Load users into file and set the list array adapter. Doing this in
+		// this method ensures users that have just been created appear when
+		// the current user returns from the CreateUserActivity
 		FileIO.loadUsers();
 		ArrayAdapter adapter = new UserArrayAdapter(this, 
 				GlobalState.getUsers());
@@ -54,13 +65,12 @@ public class InitialUserSelectionActivity extends ListActivity {
 	}
 
 	/**
-	 * Changes to the CreateUserActivity
+	 * Starts the CreateUserActivity
 	 *
 	 * @param	view	The button that was clicked.
 	 */
 	public void createUser(View view) {
 		Intent intent = new Intent(this, CreateUserActivity.class);
 		startActivity(intent);
-		this.finish();
 	}
 }

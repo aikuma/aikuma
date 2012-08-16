@@ -23,7 +23,7 @@ import org.json.simple.JSONObject;
  */
 public class CreateUserActivity extends Activity {
 	/**
-	 * Initialization when the activity starts.
+	 * Called when the activity is starting.
 	 *
 	 * @param	savedInstanceState	Data the activity most recently supplied to
 	 * onSaveInstanceState(Bundle).
@@ -71,9 +71,6 @@ public class CreateUserActivity extends Activity {
 			FileIO.write("users/" +
 					uuid.toString() + "/metadata.json", jsonText);
 
-			// Return to the user selection activity.
-			Intent intent = new Intent(this, UserSelectionActivity.class);
-			startActivity(intent);
 			this.finish();
 		}
 	}
@@ -83,8 +80,6 @@ public class CreateUserActivity extends Activity {
 	 * @param	view	the back button.
 	 */
 	public void goBack(View view) {
-		Intent intent = new Intent(this, UserSelectionActivity.class);
-		startActivity(intent);
 		this.finish();
 	}
 
