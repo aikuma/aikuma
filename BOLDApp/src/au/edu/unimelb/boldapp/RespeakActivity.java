@@ -1,13 +1,13 @@
 package au.edu.unimelb.boldapp;
 
-import au.edu.unimelb.boldapp.audio.Respeaker;
-
 import java.util.UUID;
 import java.io.StringWriter;
 import java.util.Date;
 import java.text.DateFormat;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.view.View;
 import android.util.Log;
@@ -17,8 +17,7 @@ import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
+import au.edu.unimelb.boldapp.audio.Respeaker;
 
 /**
  * The activity that allows one to respeak audio.
@@ -79,7 +78,6 @@ public class RespeakActivity extends Activity {
 		Intent intent = getIntent();
 		UUID originalUUID = (UUID) intent.getExtras().get("recordingUUID");
 		this.original = GlobalState.getRecordingMap().get(originalUUID);
-		Log.i("durp", this.original.getName());
 		setContentView(R.layout.respeak);
 
 		startedRespeaking = false;
@@ -89,9 +87,10 @@ public class RespeakActivity extends Activity {
 		this.uuid = UUID.randomUUID();
 
 		respeaker.prepare(
-				"/mnt/sdcard/bold/recordings/" + originalUUID + ".wav",
-				//"/mnt/sdcard/bold/recordings/" + this.uuid + ".wav");
-				"/mnt/sdcard/bold/recordings/" + uuid.toString() + ".wav");
+				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
+				+ originalUUID.toString() + ".wav",
+				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
+				+ uuid.toString() + ".wav");
 
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
@@ -107,15 +106,23 @@ public class RespeakActivity extends Activity {
 		});
 	}
 
+	/**
+	 * Called when the activity goes completely out of view
+	 */
 	@Override
 	public void onStop() {
 		//recorder.stop();
 		super.onStop();
 	}
 
+	/**
+	 * Go back
+	 *
+	 * @param	view	The button that was pressed
+	 */
 	public void goBack(View view){
 		respeaker.stop();
-		FileIO.delete("recordings/" + uuid.toString() + ".wav");
+		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
 		RespeakActivity.this.finish();
 	}
 
@@ -143,10 +150,11 @@ public class RespeakActivity extends Activity {
 		try {
 			obj.writeJSONString(stringWriter);
 		} catch (Exception e) {
-			Log.e("CaughtExceptions", e.getMessage());
+			e.printStackTrace();
 		}
 		String jsonText = stringWriter.toString();
-		FileIO.write("recordings/" + uuid.toString() + ".json", jsonText);
+		FileIO.write(FileIO.getRecordingsPath() + uuid.toString() + ".json",
+				jsonText);
 		Toast.makeText(this,
 				"Respeaking of " + original.getName() + " saved",
 				Toast.LENGTH_LONG).show();

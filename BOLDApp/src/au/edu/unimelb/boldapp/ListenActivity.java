@@ -1,7 +1,5 @@
 package au.edu.unimelb.boldapp;
 
-import au.edu.unimelb.boldapp.audio.Player;
-
 import java.util.UUID;
 
 import android.app.Activity;
@@ -16,6 +14,14 @@ import android.widget.SeekBar;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 
+import au.edu.unimelb.boldapp.audio.Player;
+
+/**
+ * Activity that allows the user to listen to recordings
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class ListenActivity extends Activity
 		implements Runnable, SeekBar.OnSeekBarChangeListener {
 	/**
@@ -158,14 +164,12 @@ public class ListenActivity extends Activity
 				Thread.sleep(1000);
 				if (player == null) {
 					currentPosition = total;
-					Log.i("lammbock", "null");
 				} else {
 					currentPosition = player.getCurrentPosition();
 				}
 			} catch (InterruptedException e) {
 				return;
 			} catch (Exception e) {
-				Log.i("lammbock", "exception");
 				e.printStackTrace();
 				return;
 			}
@@ -173,7 +177,6 @@ public class ListenActivity extends Activity
 					(int)(((float)currentPosition/(float)total)*100));
 			seekBar.setProgress((int)(((float)currentPosition/(float)total)*100));
 		}
-		Log.i("lammbock", "afterposition: " + currentPosition);
 	}
 
 	@Override

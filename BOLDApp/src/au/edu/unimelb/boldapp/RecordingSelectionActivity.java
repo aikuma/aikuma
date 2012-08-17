@@ -8,6 +8,13 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+/**
+ * A ListActivity that presents users with recordings to choose from for both
+ * respeaking and listening activities
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com
+ */
 public class RecordingSelectionActivity extends ListActivity {
 
 	/**
@@ -16,7 +23,7 @@ public class RecordingSelectionActivity extends ListActivity {
 	private String nextActivityName;
 
 	/**
-	 * Initialization when the activity starts.
+	 * Called when the Activity is initially created.
 	 *
 	 * @param	savedInstanceState	Data the activity most recently supplied to
 	 * onSaveInstanceState(Bundle).
@@ -27,6 +34,14 @@ public class RecordingSelectionActivity extends ListActivity {
 		setContentView(R.layout.recording_selection);
 		Intent intent = getIntent();
 		nextActivityName = intent.getStringExtra("activity");
+	}
+
+	/**
+	 * Called when the activity is started
+	 */
+	@Override
+	public void onStart() {
+		super.onStart();
 		FileIO.loadRecordings();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this,
 				GlobalState.getRecordings());
