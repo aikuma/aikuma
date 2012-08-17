@@ -9,7 +9,8 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.util.Log;
 
-/** A writer that can handle PCM/WAV files.
+/**
+ * A writer that can handle PCM/WAV files.
  *
  * Process:
  *  1. It opens a file.
@@ -20,53 +21,59 @@ import android.util.Log;
  * Note: The file cannot be reopened.
  */
 public class PCMWriter {
-  
+
 	String fullFilename;
-	
-  /** 
-   * @param sampleRate    Eg. 1000
-   * @param channelConfig Eg. AudioFormat.CHANNEL_IN_MONO
-   * @param audioFormat   Eg. AudioFormat.ENCODING_PCM_16BIT
-   *
-   * @return an instance of a PCMWriter.
-   */
+	/**
+	 * @param	sampleRate		Eg. 1000
+	 * @param	channelConfig	Eg. AudioFormat.CHANNEL_IN_MONO
+	 * @param	audioFormat		Eg. AudioFormat.ENCODING_PCM_16BIT
+	 *
+	 * @return an instance of a PCMWriter.
+	 */
 	public static PCMWriter getInstance(int sampleRate, int channelConfig,
 			int audioFormat) {
 		return new PCMWriter(sampleRate, channelConfig, audioFormat);
 	}
 
-	/** The interval in which the recorded samples are output to the file.
-   *
-   *  Note: Used only in uncompressed mode.
+	/**
+	 * The interval in which the recorded samples are output to the file.
+	 *
+	 *  Note: Used only in uncompressed mode.
 	 */
 	private static final int TIMER_INTERVAL = 120;
 
-	/** File writer (only in uncompressed mode). */
+	/**
+	 * File writer (only in uncompressed mode).
+	 */
 	private RandomAccessFile randomAccessWriter;
 
-	/** Number of channels, sample rate, sample size(size in bits), buffer size,
-	 *  audio source, sample size (see AudioFormat).
+	/**
+	 * Number of channels, sample rate, sample size(size in bits), buffer size,
+	 * audio source, sample size (see AudioFormat).
 	 */
 	private short numberOfChannels;
 	private int sampleRate;
 	private short sampleSize;
 	private int bufferSize;
 
-	/** Number of frames written to file on each output (only in uncompressed
-	 *  mode)
+	/**
+	 * Number of frames written to file on each output (only in uncompressed
+	 * mode)
 	 */
 	private int framePeriod;
 
-	/** Number of bytes written to file after header (only in uncompressed mode)
-	 *  after stop() is called, this size is written to the header/data chunk in
-	 *  the wave file.
+	/**
+	 * Number of bytes written to file after header (only in uncompressed mode)
+	 * after stop() is called, this size is written to the header/data chunk in
+	 * the wave file.
 	 */
 	private int payloadSize = 0;
 
-	/** Write the given byte buffer to the file.
-   *  
-   *  Note: This method remembers the size of the buffer written so far.
-   */
+	/**
+	 * Write the given byte buffer to the file.
+	 *
+	 * Note: This method remembers the size of the buffer written so far.
+	 */
 	public void write(byte[] buffer) {
 		try {
 			// Write buffer to file.
@@ -90,7 +97,6 @@ public class PCMWriter {
 			short sample = buffer[i];
 
 			// TODO Use Java helpers?
-			//
 			byteBuffer[i * 2] = (byte) sample;
 			byteBuffer[i * 2 + 1] = (byte) (sample >>> 8);
 		}
@@ -99,13 +105,13 @@ public class PCMWriter {
 	}
 
 	/** Default constructor.
-   *
-   *  @param sampleRate    Eg. 1000
-   *  @param channelConfig Eg. AudioFormat.CHANNEL_IN_MONO
-   *  @param audioFormat   Eg. AudioFormat.ENCODING_PCM_16BIT
-   *
-   *  @return an instance of a PCMWriter.
-   */
+	 *
+	 *  @param sampleRate    Eg. 1000
+	 *  @param channelConfig Eg. AudioFormat.CHANNEL_IN_MONO
+	 *  @param audioFormat   Eg. AudioFormat.ENCODING_PCM_16BIT
+	 *
+	 *  @return an instance of a PCMWriter.
+	 */
 	public PCMWriter(int sampleRate, int channelConfig, int audioFormat) {
 		try {
 			// Convert the Android attributes to internal attributes.
@@ -160,10 +166,11 @@ public class PCMWriter {
 		}
 	}
 	
-  /** Tries to create a RandomAccessFile.
-   *
-   * @param fullFilename The full path of the file to write.
-   */
+	/**
+	 * Tries to create a RandomAccessFile.
+	 *
+	 * @param fullFilename The full path of the file to write.
+	 */
 	private void createRandomAccessFile(String fullFilename) {
 		try {
 			// Random access file.
@@ -218,7 +225,8 @@ public class PCMWriter {
 
 			// Number of channels, 1 = mono, 2 = stereo.
 			//
-			randomAccessWriter.writeShort(Short.reverseBytes(numberOfChannels));
+			randomAccessWriter.writeShort(
+					Short.reverseBytes(numberOfChannels));
 
 			// Sample rate.
 			//
@@ -231,8 +239,8 @@ public class PCMWriter {
 
 			// Block align = NumberOfChannels * BitsPerSample / 8.
 			//
-			randomAccessWriter.writeShort(Short
-					.reverseBytes((short) (numberOfChannels * sampleSize / 8)));
+			randomAccessWriter.writeShort(Short .reverseBytes(
+					(short) (numberOfChannels * sampleSize / 8)));
 
 			// Bits per sample.
 			//
@@ -248,8 +256,8 @@ public class PCMWriter {
 
 			// Clear the byte array.
 			//
-      // Note: Removed but here for inspiration.
-      //
+			// Note: Removed but here for inspiration.
+			//
 			// buffer = new byte[framePeriod * sampleSize / 8 *
 			// numberOfChannels];
 			//
@@ -264,15 +272,21 @@ public class PCMWriter {
 	}
 
 	/**
-	 * Finalizes the wave file:
-   *
-   *  1. Opens the file (if closed).
-   *  2. Writes the PCM sizes to the header.
-   *  3. Closes the file
+	 * Finalizes the wave file.
+	 *
+	 *  1. Opens the file (if closed).
+	 *  2. Writes the PCM sizes to the header.
+	 *  3. Closes the file
 	 */
 	public void close() {
+		//StackTraceElement[] stackTraceElement =
+		//		Thread.currentThread().getStackTrace();
+		f//or (int i=0; i < stackTraceElement.length; i++) {
+		//	Log.i("golb", stackTraceElement[i].toString());
+		//}
+
 		// This is only necessary as the randomAccessWriter
-    // might have been closed.
+		// might have been closed.
 		//
 		createRandomAccessFile(fullFilename);
 		
@@ -280,7 +294,8 @@ public class PCMWriter {
 			// Write size to RIFF header.
 			//
 			randomAccessWriter.seek(4);
-			randomAccessWriter.writeInt(Integer.reverseBytes(36 + payloadSize));
+			randomAccessWriter.writeInt(
+					Integer.reverseBytes(36 + payloadSize));
 
 			// Write size to Sub-chunk size header.
 			//
@@ -288,6 +303,7 @@ public class PCMWriter {
 			randomAccessWriter.writeInt(Integer.reverseBytes(payloadSize));
 
 			randomAccessWriter.close();
+			Log.i("golb", "penis");
 		} catch (IOException e) {
 			Log.e(PCMWriter.class.getName(),
 					"I/O exception occured while closing output file");

@@ -63,8 +63,8 @@ public class RecordActivity extends Activity {
 	 */
 	@Override
 	public void onStop() {
-		recorder.stop();
 		super.onStop();
+		recorder.stop();
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class RecordActivity extends Activity {
 	public void cancel(View view){
 		recorder.stop();
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
-		RecordActivity.this.finish();
+		this.finish();
 	}
 
 	/**
@@ -86,6 +86,7 @@ public class RecordActivity extends Activity {
 	 * @param	view	The button that was clicked.
 	 */
 	public void goToSaveActivity(View view){
+		recorder.stop();
 		Intent intent = new Intent(this, SaveActivity.class);
 		intent.putExtra("UUID", uuid);
 		startActivity(intent);
