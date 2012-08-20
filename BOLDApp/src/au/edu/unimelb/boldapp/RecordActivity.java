@@ -76,7 +76,9 @@ public class RecordActivity extends Activity {
 	 */
 	public void cancel(View view){
 		recorder.stop();
+		Log.i("roar", "gonnadelete");
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
+		Log.i("roar", "deleted");
 		this.finish();
 	}
 

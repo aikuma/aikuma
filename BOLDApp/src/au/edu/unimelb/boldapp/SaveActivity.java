@@ -82,11 +82,13 @@ public class SaveActivity extends Activity {
 	}
 
 	/**
-	 * Cancel the save activity.
+	 * Go back to the record Activity
 	 * @param	view	the button pressed.
 	 */
-	public void cancel(View view) {
+	/*
+	public void back(View view) {
 		this.finish();
 	}
+	*/
 
 }
