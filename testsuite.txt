@@ -1,0 +1,27 @@
+Because of the nature of BOLD, unit tests are quite limited in their
+ability to determine if the application functions as intended. In order to make
+it less likely that broken code goes undetected, I have opted to create this
+file that contains a "manual teste suite". The entire suite of tests need not
+be run each time code is committed, although it should be conducted
+when tagging snapshots as "stable".
+
+1. Ensure the navigation of activities is congruent with the design graph.
+I have drawn up a graph with nodes as activities and edges as the transition
+between them. (I'll eventually scan it but that's not desperate as I'll likely
+be the only one doing the testing for some time).
+
+The application should be navigated through, checking each node and edge is in
+line with what's on the handwritten graph to make sure things such as the
+activity lifecycle methods function as expected. This first test should be
+conducted simultaneously with the following tests and last the timespan of the
+testing. This is so that the application is tested in the context of the
+program state changing as it when all the application's functionality is used.
+(For instance, we want to ensure that the user list is actually updated when a
+new user is created and then returns to the UserSelectionActivity).
+
+Remember that one can always hit the offscreen back button (although the app is
+intended to make this unnecessary ) and the expected functionality of that
+should be considered in the graph. The users can also hit the home button so we
+need to deal with these cases at some point too.
+
+2.
