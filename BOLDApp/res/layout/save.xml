@@ -22,18 +22,17 @@
 	</RelativeLayout>
 	-->
 	<LinearLayout
-			android:orientation="horizontal"
+			android:orientation="vertical"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
 	>
 		<EditText android:id="@+id/edit_recording_name"
-			android:layout_weight="1"
-			android:layout_width="0dp"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:hint="@string/edit_recording_name" />
 		<Button
-			android:layout_width="wrap_content"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:text="@string/save_recording"
 			android:onClick="save"
