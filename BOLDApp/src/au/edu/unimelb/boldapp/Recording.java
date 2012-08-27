@@ -1,6 +1,7 @@
 package au.edu.unimelb.boldapp;
 
 import java.util.UUID;
+import java.util.Date;
 
 /**
  * Class that stores a recording's metadata information as in the JSON file.
@@ -25,12 +26,18 @@ public class Recording {
 	private String name;
 
 	/**
+	 * The date and time of creation
+	 */
+	private Date date;
+
+	/**
 	 * Default Constructor
 	 */
-	 public Recording(UUID uuid, User creator, String name) {
+	 public Recording(UUID uuid, User creator, String name /*, Date date*/) {
 	 	setUuid(uuid);
 		setCreator(creator);
 		setName(name);
+		//setDate(date);
 	 }
 
 	/**
@@ -74,4 +81,18 @@ public class Recording {
 	public String getName() {
 		return this.name;
 	}
+
+	/**
+	 * date mutator
+	 */
+	//public void setDate(Date date) {
+	//	this.date = date;
+	//}
+
+	/**
+	 * date accessor
+	 */
+	//public String getDate() {
+	//	return this.date;
+	//}
 }

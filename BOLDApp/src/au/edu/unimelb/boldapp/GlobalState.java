@@ -2,6 +2,7 @@ package au.edu.unimelb.boldapp;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.Arrays;
 
 import android.util.Log;
 
@@ -91,9 +92,20 @@ public abstract class GlobalState {
 	}
 	
 	/**
-	 * recordings accessor
+	 * default recordings accessor
 	 */
 	public static Recording[] getRecordings() {
+		return GlobalState.recordings;
+	}
+
+	/**
+	 * recordings accessor
+	 *
+	 * @param	sortBy	String with values either "alphabetical" or "date"
+	 * indicationg how the caller wants the recordings sorted.
+	 */
+	public static Recording[] getRecordings(String sortBy) {
+		Arrays.sort(GlobalState.recordings, new RecordingComparator(sortBy));
 		return GlobalState.recordings;
 	}
 

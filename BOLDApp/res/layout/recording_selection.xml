@@ -19,6 +19,26 @@
 			android:onClick="goBack"
 			android:layout_alignParentLeft="true"
 		/>
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true">
+			<Button
+				android:id="@+id/SortAlphabetical"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/sort_alphabetical"
+				android:onClick="sortAlphabetically"
+			/>
+			<Button
+				android:id="@+id/SortDate"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/sort_date"
+				android:onClick="sortDate"
+			/>
+		</LinearLayout>
 		<!--
 		<TextView
 			android:id="@+id/UserName"

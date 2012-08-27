@@ -6,4 +6,6 @@
 	<string name="edit_username">User Name</string>
 	<string name="edit_recording_name">Recording Name</string>
 	<string name="save_recording">Save</string>
+	<string name="sort_alphabetical">Alphabetical</string>
+	<string name="sort_date">Date</string>
 </resources>

@@ -47,7 +47,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	}
 
 	/**
-	 * Returns the respective vivew for an item in the list given a position.
+	 * Returns the respective view for an item in the list given a position.
 	 *
 	 * @param	position	The position of the recording in the array and
 	 * listView.

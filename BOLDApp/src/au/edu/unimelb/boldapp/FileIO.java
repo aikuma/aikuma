@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.FileWriter;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.UUID;
@@ -175,6 +176,7 @@ public abstract class FileIO {
 						GlobalState.getUserMap().get(UUID.fromString(
 								jsonObj.get("creatorUUID").toString())),
 						jsonObj.get("recording_name").toString());
+						//DateFormat.parse(jsonObj.get("date_time").toString()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

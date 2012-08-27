@@ -76,4 +76,26 @@ public class RecordingSelectionActivity extends ListActivity {
 	public void goBack(View view) {
 		this.finish();
 	}
+
+	/**
+	 * Sort recordings alphabetically
+	 *
+	 * @param	view	the button that was pressed.
+	 */
+	public void sortAlphabetically(View view) {
+		ArrayAdapter adapter = new RecordingArrayAdapter(this,
+				GlobalState.getRecordings("alphabetical"));
+		setListAdapter(adapter);
+	}
+
+	/**
+	 * Sort recordings by date of creation
+	 *
+	 * @param	view	the button that was pressed.
+	 */
+	public void sortDate(View view) {
+		ArrayAdapter adapter = new RecordingArrayAdapter(this,
+				GlobalState.getRecordings("date"));
+		setListAdapter(adapter);
+	}
 }

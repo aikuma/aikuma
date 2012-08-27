@@ -135,8 +135,8 @@ public class RespeakActivity extends Activity {
 		respeaker.stop();
 
 		//Get the date
-		String dateTime = DateFormat.getDateTimeInstance().format(
-				new Date());
+		//String dateTime = DateFormat.getDateTimeInstance().format(
+		//		new Date());
 
 		//Generate metadata file for the recording.
 		User currentUser = GlobalState.getCurrentUser();
@@ -145,7 +145,7 @@ public class RespeakActivity extends Activity {
 		obj.put("creatorUUID", currentUser.getUuid().toString());
 		obj.put("originalUUID", original.getUuid().toString());
 		obj.put("recording_name", "respeak of " + original.getName());
-		obj.put("date_time", dateTime);
+		//obj.put("date_time", dateTime);
 		StringWriter stringWriter = new StringWriter();
 		try {
 			obj.writeJSONString(stringWriter);

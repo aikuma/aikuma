@@ -59,8 +59,8 @@ public class SaveActivity extends Activity {
 		String recordingName = editText.getText().toString();
 
 		//Get the date
-		String dateTime = DateFormat.getDateTimeInstance().format(
-				new Date());
+		//String dateTime = DateFormat.getDateTimeInstance().format(
+		//		new Date());
 
 		//Generate metadata file for the recording.
 		User currentUser = GlobalState.getCurrentUser();
@@ -68,7 +68,7 @@ public class SaveActivity extends Activity {
 		obj.put("uuid", uuid.toString());
 		obj.put("creatorUUID", currentUser.getUuid().toString());
 		obj.put("recording_name", recordingName);
-		obj.put("date_time", dateTime);
+		//obj.put("date_time", dateTime);
 		StringWriter stringWriter = new StringWriter();
 		try {
 			obj.writeJSONString(stringWriter);
