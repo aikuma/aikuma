@@ -24,8 +24,8 @@ public class RecordingComparator implements Comparator<Recording> {
 		if (compareBy.equals("alphabetical")) {
 			this.compareBy = compareBy;
 		} else {
-			//this.compareBy = "date";
-			this.compareBy = "alphabetical";
+			this.compareBy = "date";
+			//this.compareBy = "alphabetical";
 		}
 	}
 
@@ -38,11 +38,11 @@ public class RecordingComparator implements Comparator<Recording> {
 	 * and > 0 if lhs is greater than rhs.
 	 */
 	public int compare(Recording lhs, Recording rhs) {
-		//if (compareBy.equals("alphabetical")) {
-		//	return lhs.getName().compareTo(rhs.getName());
-		//} else if (compareBy.equals("date")) {
-		//	return lhs.getDate().compare(rhs.getDate());
-		//}
-		return lhs.getName().compareTo(rhs.getName());
+		if (compareBy.equals("alphabetical")) {
+			return lhs.getName().compareTo(rhs.getName());
+		} else {
+			// Else compare by date
+			return lhs.getDate().compareTo(rhs.getDate());
+		}
 	}
 }

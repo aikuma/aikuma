@@ -3,7 +3,6 @@ package au.edu.unimelb.boldapp;
 import java.io.StringWriter;
 import java.util.UUID;
 import java.util.Date;
-import java.text.DateFormat;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -58,9 +57,8 @@ public class SaveActivity extends Activity {
 		EditText editText = (EditText) findViewById(R.id.edit_recording_name);
 		String recordingName = editText.getText().toString();
 
-		//Get the date
-		//String dateTime = DateFormat.getDateTimeInstance().format(
-		//		new Date());
+		//Get a standardized representation of the current date
+		String dateString = new StandardDateFormat().format(new Date());
 
 		//Generate metadata file for the recording.
 		User currentUser = GlobalState.getCurrentUser();
@@ -68,7 +66,7 @@ public class SaveActivity extends Activity {
 		obj.put("uuid", uuid.toString());
 		obj.put("creatorUUID", currentUser.getUuid().toString());
 		obj.put("recording_name", recordingName);
-		//obj.put("date_time", dateTime);
+		obj.put("date_string", dateString);
 		StringWriter stringWriter = new StringWriter();
 		try {
 			obj.writeJSONString(stringWriter);

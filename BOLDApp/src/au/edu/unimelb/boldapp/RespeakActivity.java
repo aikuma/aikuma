@@ -3,7 +3,6 @@ package au.edu.unimelb.boldapp;
 import java.util.UUID;
 import java.io.StringWriter;
 import java.util.Date;
-import java.text.DateFormat;
 
 import android.app.Activity;
 import android.media.MediaPlayer;
@@ -134,9 +133,8 @@ public class RespeakActivity extends Activity {
 	public void save(View view) {
 		respeaker.stop();
 
-		//Get the date
-		//String dateTime = DateFormat.getDateTimeInstance().format(
-		//		new Date());
+		//Get a standardized representation of the current date
+		String dateString = new StandardDateFormat().format(new Date());
 
 		//Generate metadata file for the recording.
 		User currentUser = GlobalState.getCurrentUser();
@@ -145,7 +143,7 @@ public class RespeakActivity extends Activity {
 		obj.put("creatorUUID", currentUser.getUuid().toString());
 		obj.put("originalUUID", original.getUuid().toString());
 		obj.put("recording_name", "respeak of " + original.getName());
-		//obj.put("date_time", dateTime);
+		obj.put("date_string", dateString);
 		StringWriter stringWriter = new StringWriter();
 		try {
 			obj.writeJSONString(stringWriter);

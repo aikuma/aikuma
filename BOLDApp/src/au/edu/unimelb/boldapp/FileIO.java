@@ -175,8 +175,9 @@ public abstract class FileIO {
 						UUID.fromString(jsonObj.get("uuid").toString()),
 						GlobalState.getUserMap().get(UUID.fromString(
 								jsonObj.get("creatorUUID").toString())),
-						jsonObj.get("recording_name").toString());
-						//DateFormat.parse(jsonObj.get("date_time").toString()));
+						jsonObj.get("recording_name").toString(),
+						new StandardDateFormat().parse(
+								jsonObj.get("date_string").toString()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

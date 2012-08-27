@@ -33,11 +33,11 @@ public class Recording {
 	/**
 	 * Default Constructor
 	 */
-	 public Recording(UUID uuid, User creator, String name /*, Date date*/) {
+	 public Recording(UUID uuid, User creator, String name , Date date) {
 	 	setUuid(uuid);
 		setCreator(creator);
 		setName(name);
-		//setDate(date);
+		setDate(date);
 	 }
 
 	/**
@@ -85,14 +85,14 @@ public class Recording {
 	/**
 	 * date mutator
 	 */
-	//public void setDate(Date date) {
-	//	this.date = date;
-	//}
+	public void setDate(Date date) {
+		this.date = date;
+	}
 
 	/**
 	 * date accessor
 	 */
-	//public String getDate() {
-	//	return this.date;
-	//}
+	public Date getDate() {
+		return this.date;
+	}
 }
