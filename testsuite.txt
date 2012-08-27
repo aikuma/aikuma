@@ -24,4 +24,58 @@ intended to make this unnecessary ) and the expected functionality of that
 should be considered in the graph. The users can also hit the home button so we
 need to deal with these cases at some point too.
 
-2.
+**TESTS**
+
+CreateUserActivity:
+1. Click "Create User" without entering a single character. Toast should
+request a username.
+2. Enter characters and then press "Create User". New user should be
+displayed in the UserSelection activity.
+
+MainActivity:
+1. Currently selected user's name should be visible in top left.
+
+RecordActivity:
+1. Press cancel, no new files should be in recording (currently broken).
+2. Press save without pressing the record button. 44 byte file should appear
+in recordings with corresponding JSON file filled with the fields
+"date_string", "recording_name", "creatorUUID", "uuid".
+3. Record a segment and press "save" without hitting pause. The file should
+play as expected.
+4. Record a segment, press pause and then "save". The file should play as
+expected.
+5. Record a segment with intermittent pauses and then save. The file should
+play as expected.
+6. Record "November Rain" and examine the recording to ensure it plays as
+expected.
+7. Record a segment, press cancel and ensure no files exist.
+8. Record a segment, press pause, then cancel and ensure no files exist.
+
+RecordingSelectionActivity:
+1.
+	- Ensure that the recordings directory has three files: "A", "B", and an
+	unnamed file. The unnamed file should appear as it's UUID, while the other
+	two appear with their respective names. 
+	- Press "alphabetical" and ensure that the list sorts as expected.
+	- Press "date" and ensure that the list sorts as expected.
+2. Generate 1000 files and test for lag.
+
+RespeakActivity:
+1. Press cancel, no new files should be in recording (currently broken).
+2. Take a short recording (only a couple seconds), and attempt to respeak after
+replay has ended.
+3. Start respeaking and say something (ensuring the replaying stops); pause the
+respeaking; resume; say something and ensure the replaying stops. Listen to the
+respeaking to ensure it is as expected.
+4. Hit the home button and make sure it pauses (currently broken)
+
+Listen Activity:
+1.
+-Choose an audio file.
+-Start playing
+-Skip around to various parts of the file.
+-Once the recording has finished playing, select a point in the recording, and
+press play and ensure it behaves as expected.
+-Press the home button during playing; resume the app; and ensure that it is
+auto paused with the button changing appropriately so that one can resume
+playing (currently broken).
