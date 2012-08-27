@@ -27,29 +27,34 @@ import au.edu.unimelb.boldapp.audio.Respeaker;
 public class RespeakActivity extends Activity {
 
 	/**
+	 * The prefix of the name of the recording
+	 */
+	protected String recordingNamePrefix;
+
+	/**
 	 * Indicates whether the respeaking has been started already
 	 */
-	private Boolean startedRespeaking;
+	protected Boolean startedRespeaking;
 
 	/**
 	 * Indicates whether audio is being recorded
 	 */
-	 private Boolean respeaking;
+	 protected Boolean respeaking;
 
 	/**
 	 * The recording that is being respoken
 	 */
-	private Recording original;
+	protected Recording original;
 
 	/**
 	 * The UUID of the respeaking;
 	 */
-	private UUID uuid;
+	protected UUID uuid;
 
 	/**
 	 * Instance of the respeaker class that offers methods to respeak
 	 */
-	private Respeaker respeaker;
+	protected Respeaker respeaker;
 
 	/**
 	 * Indicates whether audio is being recorded
@@ -72,6 +77,8 @@ public class RespeakActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		this.recordingNamePrefix = "Respeaking of ";
 
 		//Get the original from the intent
 		Intent intent = getIntent();
@@ -126,7 +133,7 @@ public class RespeakActivity extends Activity {
 	}
 
 	/**
-	 * Change to the activity that allows the user to save the wave file.
+	 * Save the respeaking to file
 	 *
 	 * @param	view	The button that was clicked.
 	 */
@@ -142,7 +149,8 @@ public class RespeakActivity extends Activity {
 		obj.put("uuid", uuid.toString());
 		obj.put("creatorUUID", currentUser.getUuid().toString());
 		obj.put("originalUUID", original.getUuid().toString());
-		obj.put("recording_name", "respeak of " + original.getName());
+		obj.put("recording_name", this.recordingNamePrefix +
+				original.getName());
 		obj.put("date_string", dateString);
 		StringWriter stringWriter = new StringWriter();
 		try {
@@ -154,7 +162,7 @@ public class RespeakActivity extends Activity {
 		FileIO.write(FileIO.getRecordingsPath() + uuid.toString() + ".json",
 				jsonText);
 		Toast.makeText(this,
-				"Respeaking of " + original.getName() + " saved",
+				this.recordingNamePrefix + original.getName() + " saved",
 				Toast.LENGTH_LONG).show();
 		this.finish();
 	}

@@ -45,5 +45,8 @@
 		<activity android:name="ListenActivity"
 				android:screenOrientation="portrait"
 				android:label="@string/app_name"/>
+		<activity android:name="TranslateActivity"
+				android:screenOrientation="portrait"
+				android:label="@string/app_name"/>
 	</application>
 </manifest> 

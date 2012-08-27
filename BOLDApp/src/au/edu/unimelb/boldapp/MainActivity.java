@@ -67,7 +67,6 @@ public class MainActivity extends Activity {
 	 * @param	view	The button that was clicked.
 	 */
 	public void goToRespeak(View view) {
-		//Intent intent = new Intent(this, RespeakActivity.class);
 		Intent intent = new Intent(this, RecordingSelectionActivity.class);
 		intent.putExtra("activity", "RespeakActivity");
 		startActivity(intent);
@@ -79,9 +78,19 @@ public class MainActivity extends Activity {
 	 * @param	view	The button that was clicked.
 	 */
 	public void goToListen(View view) {
-		//Intent intent = new Intent(this, RespeakActivity.class);
 		Intent intent = new Intent(this, RecordingSelectionActivity.class);
 		intent.putExtra("activity", "ListenActivity");
+		startActivity(intent);
+	}
+
+	/**
+	 * Load the activity that allows one to translate audio.
+	 *
+	 * @param	view	The button that was clicked.
+	 */
+	public void goToTranslate(View view) {
+		Intent intent = new Intent(this, RecordingSelectionActivity.class);
+		intent.putExtra("activity", "TranslateActivity");
 		startActivity(intent);
 	}
 }

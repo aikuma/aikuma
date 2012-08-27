@@ -63,6 +63,8 @@ public class RecordingSelectionActivity extends ListActivity {
 		Intent intent = new Intent(this, ListenActivity.class);
 		if (nextActivityName.equals("RespeakActivity")) {
 			intent = new Intent(this, RespeakActivity.class);
+		} else if (nextActivityName.equals("TranslateActivity")) {
+			intent = new Intent(this, TranslateActivity.class);
 		}
 		intent.putExtra("recordingUUID", recording.getUuid());
 		startActivity(intent);

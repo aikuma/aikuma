@@ -104,6 +104,7 @@
 				android:layout_weight="1"
 				android:scaleType="centerInside"
 				android:src="@drawable/main_translate"
+				android:onClick="goToTranslate"
 			/>
 		</LinearLayout>
 	</LinearLayout>
