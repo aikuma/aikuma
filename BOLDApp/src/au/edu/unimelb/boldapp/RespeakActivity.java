@@ -122,11 +122,11 @@ public class RespeakActivity extends Activity {
 	}
 
 	/**
-	 * Go back
+	 * Cancel 
 	 *
 	 * @param	view	The button that was pressed
 	 */
-	public void goBack(View view){
+	public void cancel(View view){
 		respeaker.stop();
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
 		RespeakActivity.this.finish();
