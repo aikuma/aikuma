@@ -2,6 +2,7 @@ package au.edu.unimelb.boldapp;
 
 import java.io.StringWriter;
 import java.util.UUID;
+import java.io.File;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -64,7 +65,7 @@ public class RecordActivity extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		recorder.stop();
+		pause(findViewById(R.id.Pause));
 	}
 
 	/**
@@ -79,6 +80,20 @@ public class RecordActivity extends Activity {
 		Log.i("roar", "gonnadelete");
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
 		Log.i("roar", "deleted");
+		Log.i("roar", FileIO.getRecordingsPath());
+		String[] stuff = new File(
+				FileIO.getAppRootPath() + FileIO.getRecordingsPath()).list();
+		for (int i=0; i < stuff.length; i++) {
+			Log.i("roar", "ok: " + stuff[i]);
+		}
+		Log.i("roar", "lol");
+		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
+		stuff = new File(
+				FileIO.getAppRootPath() + FileIO.getRecordingsPath()).list();
+		for (int i=0; i < stuff.length; i++) {
+			Log.i("roar", "ok: " + stuff[i]);
+		}
+		Log.i("roar", "lol2");
 		this.finish();
 	}
 

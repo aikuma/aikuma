@@ -172,6 +172,15 @@ public class PCMWriter {
 	 * @param fullFilename The full path of the file to write.
 	 */
 	private void createRandomAccessFile(String fullFilename) {
+		StackTraceElement[] stackTraceElement =
+				Thread.currentThread().getStackTrace();
+		//Log.i("roar", "11111111111111111111111111111111111111111111111111111");
+		//Log.i("roar", fullFilename);
+		//Log.i("roar", this.fullFilename);
+		for (int i=0; i < stackTraceElement.length; i++) {
+			Log.i("roar", stackTraceElement[i].toString());
+		}
+		Log.i("roar", "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
 		try {
 			// Random access file.
 			//
@@ -279,11 +288,13 @@ public class PCMWriter {
 	 *  3. Closes the file
 	 */
 	public void close() {
-		//StackTraceElement[] stackTraceElement =
-		//		Thread.currentThread().getStackTrace();
-		f//or (int i=0; i < stackTraceElement.length; i++) {
-		//	Log.i("golb", stackTraceElement[i].toString());
-		//}
+		StackTraceElement[] stackTraceElement =
+				Thread.currentThread().getStackTrace();
+		Log.i("roar", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+		for (int i=0; i < stackTraceElement.length; i++) {
+			//Log.i("roar", stackTraceElement[i].toString());
+		}
+		//Log.i("roar", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 
 		// This is only necessary as the randomAccessWriter
 		// might have been closed.
@@ -303,7 +314,7 @@ public class PCMWriter {
 			randomAccessWriter.writeInt(Integer.reverseBytes(payloadSize));
 
 			randomAccessWriter.close();
-			Log.i("golb", "penis");
+			Log.i("roar", "making header");
 		} catch (IOException e) {
 			Log.e(PCMWriter.class.getName(),
 					"I/O exception occured while closing output file");
