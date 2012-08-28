@@ -5,10 +5,13 @@ import java.util.UUID;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.simple.JSONObject;
@@ -22,6 +25,11 @@ import org.json.simple.JSONObject;
  *
  */
 public class CreateUserActivity extends Activity {
+
+	/**
+	 * The photo request code for taking a photo.
+	 */
+	static final int PHOTO_REQUEST_CODE = 0;
 	/**
 	 * Called when the activity is starting.
 	 *
@@ -82,6 +90,34 @@ public class CreateUserActivity extends Activity {
 	 */
 	public void goBack(View view) {
 		this.finish();
+	}
+
+	/**
+	 * Take users profile photo
+	 */
+	public void takePhoto(View view) {
+		dispatchTakePictureIntent(PHOTO_REQUEST_CODE);
+	}
+
+	private void dispatchTakePictureIntent(int actionCode) {
+		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		startActivityForResult(takePictureIntent, actionCode);
+	}
+
+	private void handleSmallCameraPhoto(Intent intent) {
+		Bundle extras = intent.getExtras();
+		Bitmap mImageBitmap = (Bitmap) extras.get("data");
+		ImageView userPhoto = (ImageView) findViewById(R.id.UserPhoto);
+		userPhoto.setImageBitmap(mImageBitmap);
+	}
+
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent data) {
+		if (requestCode == PHOTO_REQUEST_CODE) {
+			if (resultCode == RESULT_OK) {
+				handleSmallCameraPhoto(data);
+			}
+		}
 	}
 
 }
