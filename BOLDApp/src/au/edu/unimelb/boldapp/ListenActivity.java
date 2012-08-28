@@ -103,6 +103,7 @@ public class ListenActivity extends Activity
 		super.onStop();
 		this.seekBarThread.interrupt();
 		player.stop();
+		ListenActivity.this.finish();
 	}
 
 	/**
@@ -167,29 +168,36 @@ public class ListenActivity extends Activity
 				e.printStackTrace();
 				return;
 			}
-			seekBar.setProgress((int)(((float)currentPosition/(float)total)*100));
+			seekBar.setProgress(
+					(int)(((float)currentPosition/(float)total)*100));
 		}
 	}
 
+	/**
+	 * When the seekBar's progress is changed.
+	 */
 	@Override
 	public void onProgressChanged(
 			SeekBar seekBar, int progress, boolean fromUser) {
 		if (fromUser) {
-			Log.i("progress", " " +
-					(int)Math.round((((float)progress)/100)*player.getDuration()));
-			player.seekTo((int)Math.round((((float)progress)/100)*player.getDuration()));
+			player.seekTo((int)Math.round(
+					(((float)progress)/100)*player.getDuration()));
 		} else {
 			//Progress was changed programatically
 		}
 	}
 
+	/**
+	 * Obligated to implement this, but we need no functionality here.
+	 */
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		Log.i("progress", "start");
 	}
 
+	/**
+	 * Obligated to implement this, but we need no functionality here.
+	 */
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		Log.i("progress", "stop");
 	}
 }
