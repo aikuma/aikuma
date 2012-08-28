@@ -57,36 +57,41 @@ public class ListenActivity extends Activity
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		startedPlaying = false;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listen);
 
+		startedPlaying = false;
+
+		// Set the recording that is to be played.
 		Intent intent = getIntent();
 		UUID recordingUUID = (UUID) intent.getExtras().get("recordingUUID");
 		this.recording = GlobalState.getRecordingMap().get(recordingUUID);
 
+		// Set up the player
 		this.player = new Player();
-		player.prepare("mnt/sdcard/bold/recordings/" +
+		player.prepare(FileIO.getAppRootPath() + FileIO.getRecordingsPath() +
 				this.recording.getUuid().toString() + ".wav");
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
 		this.seekBar.setOnSeekBarChangeListener(this);
-		this.seekBarThread = new Thread(this);
+		//this.seekBarThread = new Thread(this);
 
+		// The code that is to be run when the player is complete.
 		player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _player) {
+				// Reset the play button
 				ImageButton button = (ImageButton) 
 						findViewById(R.id.Play);
+				button.setImageResource(R.drawable.button_play);
+				// Adjust relevant booleans
 				player.setPlaying(false);
 				startedPlaying = false;
-				button.setImageResource(R.drawable.button_play);
+				// Stop the seekBarThread and set the progress to max.
 				seekBarThread.interrupt();
 				seekBar.setProgress(seekBar.getMax());
 			}
 		});
-
-		Log.i("progress", "yo");
 
 	}
 
@@ -118,16 +123,17 @@ public class ListenActivity extends Activity
 	 */
 	public void play(View view) {
 		ImageButton button = (ImageButton) view;
-		//ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
-		//pauseButton.setVisibility(View.VISIBLE);
-		//playButton.setVisibility(View.INVISIBLE);
 		if (!player.isPlaying()) {
 			button.setImageResource(R.drawable.button_pause);
 			if (startedPlaying) {
 				player.resume();
 			} else {
 				player.play();
-				seekBar.setProgress(0);
+				// If the user hasn't changed the progress to some other
+				// unfinished point in the recording
+				if (seekBar.getProgress() == seekBar.getMax()) {
+					seekBar.setProgress(0);
+				}
 				this.seekBarThread = new Thread(this);
 				this.seekBarThread.start();
 				startedPlaying = true;
@@ -141,25 +147,13 @@ public class ListenActivity extends Activity
 	}
 
 	/**
-	 * When the pause button is pressed
-	 *
-	 * @param	view	The button that was pressed
+	 * The run function for the thread that updates the seekBar.
 	 */
-	 /*
-	public void pause(View view) {
-		ImageButton pauseButton = (ImageButton) view;
-		ImageButton playButton = (ImageButton) findViewById(R.id.Play);
-		playButton.setVisibility(View.VISIBLE);
-		pauseButton.setVisibility(View.INVISIBLE);
-		player.pause();
-	}
-	*/
-
 	@Override
 	public void run() {
 		int currentPosition = 0;
 		int total = player.getDuration();
-		while (/*player!=null && */currentPosition<total) {
+		while (currentPosition<total) {
 			try {
 				Thread.sleep(1000);
 				if (player == null) {
@@ -173,8 +167,6 @@ public class ListenActivity extends Activity
 				e.printStackTrace();
 				return;
 			}
-			Log.i("lammbock", seekBar.getMax() + " " +
-					(int)(((float)currentPosition/(float)total)*100));
 			seekBar.setProgress((int)(((float)currentPosition/(float)total)*100));
 		}
 	}

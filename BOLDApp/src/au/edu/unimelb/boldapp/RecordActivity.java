@@ -65,6 +65,7 @@ public class RecordActivity extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
+		//Pause the recording and adjust the buttons accordingly.
 		pause(findViewById(R.id.Pause));
 	}
 
@@ -77,23 +78,8 @@ public class RecordActivity extends Activity {
 	 */
 	public void cancel(View view){
 		recorder.stop();
-		Log.i("roar", "gonnadelete");
+		//Delete the file that was just created for the recording.
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
-		Log.i("roar", "deleted");
-		Log.i("roar", FileIO.getRecordingsPath());
-		String[] stuff = new File(
-				FileIO.getAppRootPath() + FileIO.getRecordingsPath()).list();
-		for (int i=0; i < stuff.length; i++) {
-			Log.i("roar", "ok: " + stuff[i]);
-		}
-		Log.i("roar", "lol");
-		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
-		stuff = new File(
-				FileIO.getAppRootPath() + FileIO.getRecordingsPath()).list();
-		for (int i=0; i < stuff.length; i++) {
-			Log.i("roar", "ok: " + stuff[i]);
-		}
-		Log.i("roar", "lol2");
 		this.finish();
 	}
 
