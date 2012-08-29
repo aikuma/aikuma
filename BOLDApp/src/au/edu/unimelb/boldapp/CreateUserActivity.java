@@ -1,12 +1,16 @@
 package au.edu.unimelb.boldapp;
 
+import java.io.File;
 import java.io.StringWriter;
 import java.util.UUID;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -27,9 +31,15 @@ import org.json.simple.JSONObject;
 public class CreateUserActivity extends Activity {
 
 	/**
-	 * The photo request code for taking a photo.
+	 * The UUID associated with the yet to be created user.
+	 */
+	private UUID uuid;
+
+	/**
+	 * The request code for taking a photo.
 	 */
 	static final int PHOTO_REQUEST_CODE = 0;
+
 	/**
 	 * Called when the activity is starting.
 	 *
@@ -40,6 +50,8 @@ public class CreateUserActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.create_user);
+		// Generate the uuid that is associated with the user
+		this.uuid = UUID.randomUUID();
 	}
 
 	/**
@@ -60,13 +72,11 @@ public class CreateUserActivity extends Activity {
 			Toast.makeText(this,
 					"Please enter a username", Toast.LENGTH_LONG).show();
 		} else {
-			// Generate the uuid that is associated with the user
-			UUID uuid = UUID.randomUUID();
 
 			// Create the JSON object
 			JSONObject obj = new JSONObject();
 			obj.put("name", username);
-			obj.put("uuid", uuid.toString());
+			obj.put("uuid", this.uuid.toString());
 
 			// Write the JSON object the the file
 			StringWriter stringWriter = new StringWriter();
@@ -80,6 +90,7 @@ public class CreateUserActivity extends Activity {
 					uuid.toString() + "/metadata.json", jsonText);
 
 			this.finish();
+
 		}
 	}
 
@@ -101,21 +112,32 @@ public class CreateUserActivity extends Activity {
 
 	private void dispatchTakePictureIntent(int actionCode) {
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+		String imageFilename = this.uuid.toString() + ".jpg";
+		try {
+			File image = new File(FileIO.getAppRootPath() +
+					FileIO.getImagesPath() + imageFilename);
+			takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+					Uri.fromFile(image));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		startActivityForResult(takePictureIntent, actionCode);
 	}
 
-	private void handleSmallCameraPhoto(Intent intent) {
-		Bundle extras = intent.getExtras();
-		Bitmap mImageBitmap = (Bitmap) extras.get("data");
+	private void handleSmallCameraPhoto() {
+		Bitmap mImageBitmap = BitmapFactory.decodeFile(FileIO.getAppRootPath()
+				+ FileIO.getImagesPath() + this.uuid.toString() + ".jpg");
 		ImageView userPhoto = (ImageView) findViewById(R.id.UserPhoto);
 		userPhoto.setImageBitmap(mImageBitmap);
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode,
-			Intent data) {
+			Intent _data) {
 		if (requestCode == PHOTO_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
-				handleSmallCameraPhoto(data);
+				handleSmallCameraPhoto();
 			}
 		}
 	}

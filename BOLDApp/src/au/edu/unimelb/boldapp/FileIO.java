@@ -24,6 +24,11 @@ import org.json.simple.parser.JSONParser;
  */
 public abstract class FileIO {
 	/**
+	 * The images directory path
+	 */
+	static final String imagesPath = "images/";
+
+	/**
 	 * The application's top level path in the external storage.
 	 */
 	static final String appRootPath = "bold/";
@@ -51,22 +56,41 @@ public abstract class FileIO {
 	}
 
 	/**
-	 * Returns the relative path to the application's users directory
+	 * Returns the relative path to the application's users directory and
+	 * ensures the directory exists.
 	 *
 	 * @return A string representation of the relative path to the
 	 * application's users directory
 	 */
 	public static String getUsersPath(){
+		File file = new File(getAppRootPath() + usersPath);
+		file.mkdirs();
 		return usersPath;
 	}
 
 	/**
-	 * Returns the relative path to the application's recordings directory
+	 * Returns the relative path to the application's images directory and
+	 * ensures the directory exists.
+	 *
+	 * @return A string representation of the relative path to the
+	 * application's images directory
+	 */
+	public static String getImagesPath(){
+		File file = new File(getAppRootPath() + imagesPath);
+		file.mkdirs();
+		return imagesPath;
+	}
+
+	/**
+	 * Returns the relative path to the application's recordings directory, and
+	 * ensures the directory exists.
 	 *
 	 * @return A string representation of the relative path to the
 	 * application's recordings directory
 	 */
 	public static String getRecordingsPath(){
+		File file = new File(getAppRootPath() + recordingsPath);
+		file.mkdirs();
 		return recordingsPath;
 	}
 
