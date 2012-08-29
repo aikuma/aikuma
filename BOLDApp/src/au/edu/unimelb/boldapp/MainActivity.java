@@ -3,8 +3,11 @@ package au.edu.unimelb.boldapp;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 /**
@@ -25,9 +28,6 @@ public class MainActivity extends Activity {
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		//TextView nameView = (TextView) findViewById(R.id.UserName);
-		//Log.i("gah", GlobalState.getCurrentUser().getName());
-		//nameView.setText(GlobalState.getCurrentUser().getName());
 	}
 
 	/**
@@ -38,6 +38,12 @@ public class MainActivity extends Activity {
 		super.onResume();
 		TextView nameView = (TextView) findViewById(R.id.UserName);
 		nameView.setText(GlobalState.getCurrentUser().getName());
+
+		ImageButton userSelection = (ImageButton) findViewById(R.id.UserIcon);
+		Bitmap userImage = BitmapFactory.decodeFile(FileIO.getAppRootPath()
+				+ FileIO.getImagesPath()
+				+ GlobalState.getCurrentUser().getUuid().toString() + ".jpg");
+		userSelection.setImageBitmap(userImage);
 	}
 
 

@@ -21,8 +21,9 @@ import android.widget.Toast;
 import org.json.simple.JSONObject;
 
 /**
- * Activity that offers the user the ability to enter text in a text box and
- * press a button that then subsequently creates a corresponding user.
+ * Activity that offers the user the ability to enter text in a text box, take
+ * a photo and press a button that then subsequently creates a corresponding
+ * user.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>

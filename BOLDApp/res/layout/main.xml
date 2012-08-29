@@ -4,7 +4,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 >
-	<RelativeLayout
+	<LinearLayout
 		android:id="@+id/Frame"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
@@ -21,17 +21,18 @@
 		-->
 		<TextView
 			android:id="@+id/UserName"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
 			android:scaleType="centerInside"
 			android:layout_alignParentLeft="true"
-			android:text="lol"
 			android:textSize="30sp"
 		/>
 		<ImageButton
 			android:id="@+id/UserIcon"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
 			android:scaleType="centerInside"
 			android:src="@drawable/unknown_user"
 			android:layout_alignParentRight="true"
@@ -47,7 +48,7 @@
 			android:textSize="20sp"
 		/>
 		-->
-	</RelativeLayout>
+	</LinearLayout>
 	<LinearLayout
 		android:id="@+id/MainOptions"
 		android:orientation="horizontal"
