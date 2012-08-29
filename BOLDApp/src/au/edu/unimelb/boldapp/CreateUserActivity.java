@@ -142,5 +142,4 @@ public class CreateUserActivity extends Activity {
 			}
 		}
 	}
-
 }

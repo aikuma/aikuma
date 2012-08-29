@@ -1,5 +1,7 @@
 package au.edu.unimelb.boldapp;
 
+import java.util.UUID;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -17,6 +19,8 @@ import android.widget.TextView;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class MainActivity extends Activity {
+
+	private UUID uuid;
 	/**
 	 * Called when the activity is initially created.
 	 *
@@ -39,11 +43,20 @@ public class MainActivity extends Activity {
 		TextView nameView = (TextView) findViewById(R.id.UserName);
 		nameView.setText(GlobalState.getCurrentUser().getName());
 
-		ImageButton userSelection = (ImageButton) findViewById(R.id.UserIcon);
-		Bitmap userImage = BitmapFactory.decodeFile(FileIO.getAppRootPath()
-				+ FileIO.getImagesPath()
-				+ GlobalState.getCurrentUser().getUuid().toString() + ".jpg");
-		userSelection.setImageBitmap(userImage);
+		if (GlobalState.getCurrentUser().getUuid() != this.uuid) {
+			this.uuid = GlobalState.getCurrentUser().getUuid();
+			ImageButton userSelection = (ImageButton) 
+					findViewById(R.id.UserIcon);
+			Bitmap userImage = BitmapFactory.decodeFile(FileIO.getAppRootPath()
+					+ FileIO.getImagesPath()
+					+ GlobalState.getCurrentUser().getUuid().toString() +
+							".jpg");
+			if (userImage != null) {
+				userSelection.setImageBitmap(userImage);
+			} else {
+				userSelection.setImageResource(R.drawable.unknown_user);
+			}
+		}
 	}
 
 
