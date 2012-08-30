@@ -45,6 +45,15 @@
 			android:text="@string/take_photo"
 			android:onClick="takePhoto"
 		/>
+		<!--
+		<ImageButton
+			android:id="@+id/Record"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:src="@drawable/button_record"
+			android:onClick="recordName"
+		/>
+		-->
 		<Button
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"

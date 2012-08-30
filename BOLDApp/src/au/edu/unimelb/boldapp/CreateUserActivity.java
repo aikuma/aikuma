@@ -106,11 +106,19 @@ public class CreateUserActivity extends Activity {
 
 	/**
 	 * Take users profile photo
+	 *
+	 * @param	view	the button that was pressed.
 	 */
 	public void takePhoto(View view) {
 		dispatchTakePictureIntent(PHOTO_REQUEST_CODE);
 	}
 
+	/**
+	 * Request the photo taking activity to begin
+	 *
+	 * @param	actionCode	the code that will be returned to
+	 * onActivityResult() on exit.
+	 */
 	private void dispatchTakePictureIntent(int actionCode) {
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -127,6 +135,9 @@ public class CreateUserActivity extends Activity {
 		startActivityForResult(takePictureIntent, actionCode);
 	}
 
+	/**
+	 * Display the photo just taken
+	 */
 	private void handleSmallCameraPhoto() {
 		Bitmap mImageBitmap = BitmapFactory.decodeFile(FileIO.getAppRootPath()
 				+ FileIO.getImagesPath() + this.uuid.toString() + ".jpg");
@@ -134,6 +145,9 @@ public class CreateUserActivity extends Activity {
 		userPhoto.setImageBitmap(mImageBitmap);
 	}
 
+	/**
+	 * Deal with the aftermath of the photo taking activity.
+	 */
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent _data) {
 		if (requestCode == PHOTO_REQUEST_CODE) {
@@ -142,4 +156,6 @@ public class CreateUserActivity extends Activity {
 			}
 		}
 	}
+
+
 }
