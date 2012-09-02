@@ -9,30 +9,30 @@ They are intentionally short/concise (we cannot avoid discussions, and I don't w
 
 August:
 
-  - Recording.
+  + Recording.
     Save a WAV file in a structure that is: Easy to maintain, easy to synchronise,
                                             easy to put together various views (lists)
                                             of the data.
     Basic metadata: Who recorded, time & date.
     
-  - Respeaking / Translating.
+  + Respeaking / Translating.
     Save a WAV file in a structure that is: Easy to maintain, easy to synchronise,
                                             easy to put together various views (lists)
                                             of the data.
-    Save a metadata file that contains a mapping of start samples, eg. r1->o1: 1034 -> 5688. (in a better format, of course)
+  - Save a metadata file that contains a mapping of start samples, eg. r1->o1: 1034 -> 5688. (in a better format, of course)
     
-  - File Structure (for Listening).
+  + File Structure (for Listening).
     Look again at the current file structure and think whether listening to a single recording and all its related respeakings/translations is possible. If not, redesign. Synchronisation should still be straightforward to do.
     
-  - Listening to recordings/respeakings.
+  + Listening to recordings/respeakings.
     Selecting/Sorting recordings: Grouped and sorted by 1. date/time and 2. username.
-    Selecting/Filtering a recording: A two step process – first select a user / date, then see a list of recordings.
+  - Selecting/Filtering a recording: A two step process – first select a user / date, then see a list of recordings.
 
 September:
 
-  - More User Details.
-    Recorded Name: Use the speech triggered respeaking recorder to record the name.
-    Picture: Picture can be previewed/retaken as many times as is necessary.
+  + More User Details.
+  - Recorded Name: Use the speech triggered respeaking recorder to record the name.
+  + Picture: Picture can be previewed/retaken as many times as is necessary.
   
   We now have a prototype that already could (should?) be released.
   
