@@ -30,13 +30,33 @@ import au.edu.unimelb.boldapp.audio.recognizers.AverageRecognizer;
  */
 public class Respeaker extends Recorder {
 
+	/**
+	 * Indicates whether the recording has finished playing
+	 */
+	private boolean finishedPlaying;
+
 	/** Player to play the original with. */
 	public Player player;
+
+	/**
+	 * finishedPlaying mutator
+	 */
+	 public void setFinishedPlaying(boolean finishedPlaying) {
+	 	this.finishedPlaying = finishedPlaying;
+	 }
+
+	/**
+	 * finishedPlaying accessor
+	 */
+	public boolean getFinishedPlaying() {
+		return this.finishedPlaying;
+	}
 
 	/** Default constructor. */
 	public Respeaker() {
 		super(new ThresholdSpeechAnalyzer(88, 3,
 				new AverageRecognizer(32, 32)));
+		setFinishedPlaying(false);
 		this.player = new Player();
 	}
   
@@ -102,7 +122,13 @@ public class Respeaker extends Recorder {
   @Override
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
 		if (justChanged) {
-			switchToPlay();
+			//If the recording has finished playing and we're just annotating
+			//at the end, then we're finished and can stop the respeaking.
+			if (getFinishedPlaying()) {
+				super.stop();
+			} else {
+				switchToPlay();
+			}
 		}
 	}
 }

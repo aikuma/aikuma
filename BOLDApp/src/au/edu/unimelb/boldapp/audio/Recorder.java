@@ -128,6 +128,22 @@ public class Recorder implements AudioHandler {
 		file.prepare(targetFilename);
 	}
 
+	public void shortlisten() {
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				listen();
+				try {
+					Thread.sleep(5000);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				//stop();
+			}
+		});
+		t.start();
+	}
+
 	/** Start listening. */
 	public void listen() {
 		// Simply reads and reads...
@@ -163,8 +179,8 @@ public class Recorder implements AudioHandler {
 	protected void read() {
 		// Start listening to the audio device.
 		listener.startRecording();
-    
-    // Wait until something is heard.
+
+		// Wait until something is heard.
 		while (listener.read(buffer, 0, buffer.length) > 0) {
 			// Hand in a copy of the buffer.
 			//

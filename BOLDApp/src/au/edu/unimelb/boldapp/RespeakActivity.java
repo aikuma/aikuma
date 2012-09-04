@@ -107,7 +107,9 @@ public class RespeakActivity extends Activity {
 						findViewById(R.id.Pause);
 				pauseButton.setVisibility(View.INVISIBLE);
 				respeakButton.setVisibility(View.INVISIBLE);
-				respeaker.stop();
+				//respeaker.stop();
+				respeaker.setFinishedPlaying(true);
+				respeaker.shortlisten();
 			}
 		});
 	}
