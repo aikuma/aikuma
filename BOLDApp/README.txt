@@ -1,6 +1,15 @@
 Installation
 ------------
 
+At the end of this you will have installed:
+- Android SDK 2.3.3 API 10
+- Necessary binaries (android, adb)
+
+You need:
+- Mac OSX / Linux
+- Command line
+
+Steps:
 - Download the SDK: http://developer.android.com/sdk/index.html
 - Command line: Move to tools to eg. /usr/local -> /usr/local/android-sdk-macosx
 - Command line: Run ./tools/android. Or /usr/local/android-sdk-macosx/tools/android
