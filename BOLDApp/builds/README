@@ -9,4 +9,4 @@ Installation
 ------------
 
 Run:
-adb install -r bin/BOLDApp-debug.apk
+adb install -r BOLDApp-debug.apk
