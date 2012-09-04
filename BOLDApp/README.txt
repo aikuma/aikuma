@@ -16,3 +16,8 @@ Installation
   - There is a faulty configuration line in build.xml? Remove that line entirely (Florian tried to avoid this solution, but this seems to be the way to go).
   - The phone refuses the app? Remove all traces of any old BOLD apps ("Uninstall Application").
   - Having trouble to start the app? Remove the "bold" directory on the SD card.
+  
+Tagging
+-------
+
+We use semantic versioning http://semver.org/ – but tag infrequently, or when absolutely needed. Reason: Nothing depends on this. The only reason people need to refer to this is when sending in bug reports. So, we update the version when releasing a new version.
