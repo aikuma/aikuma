@@ -47,8 +47,8 @@ public class MainActivity extends Activity {
 			this.uuid = GlobalState.getCurrentUser().getUuid();
 			ImageButton userSelection = (ImageButton) 
 					findViewById(R.id.UserIcon);
-			Bitmap userImage = BitmapFactory.decodeFile(FileIO.getAppRootPath()
-					+ FileIO.getImagesPath()
+			Bitmap userImage = ImageUtils.retrieveFromFile(
+					FileIO.getAppRootPath() + FileIO.getImagesPath()
 					+ GlobalState.getCurrentUser().getUuid().toString() +
 							".jpg");
 			if (userImage != null) {

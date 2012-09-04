@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -139,10 +141,13 @@ public class CreateUserActivity extends Activity {
 	 * Display the photo just taken
 	 */
 	private void handleSmallCameraPhoto() {
-		Bitmap mImageBitmap = BitmapFactory.decodeFile(FileIO.getAppRootPath()
-				+ FileIO.getImagesPath() + this.uuid.toString() + ".jpg");
+		String path = FileIO.getAppRootPath() + FileIO.getImagesPath() +
+				this.uuid.toString() + ".jpg";
+
+		Bitmap image = ImageUtils.retrieveFromFile(path);
+
 		ImageView userPhoto = (ImageView) findViewById(R.id.UserPhoto);
-		userPhoto.setImageBitmap(mImageBitmap);
+		userPhoto.setImageBitmap(image);
 	}
 
 	/**
