@@ -101,7 +101,9 @@ public class ListenActivity extends Activity
 	@Override
 	public void onStop() {
 		super.onStop();
-		this.seekBarThread.interrupt();
+		if (this.seekBarThread != null) {
+			this.seekBarThread.interrupt();
+		}
 		player.stop();
 		ListenActivity.this.finish();
 	}
@@ -113,7 +115,9 @@ public class ListenActivity extends Activity
 	 */
 	public void goBack(View view){
 		player.stop();
-		this.seekBarThread.interrupt();
+		if (this.seekBarThread != null) {
+			this.seekBarThread.interrupt();
+		}
 		ListenActivity.this.finish();
 	}
 

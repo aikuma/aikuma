@@ -13,7 +13,7 @@ import android.widget.ListView;
  * respeaking and listening activities
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
- * @author	Florian Hanke	<florian.hanke@gmail.com
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class RecordingSelectionActivity extends ListActivity {
 
