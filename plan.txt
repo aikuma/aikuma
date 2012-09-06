@@ -31,6 +31,7 @@ September:
 	*Get issue tracking sorted*
 	*Fix bug where it crashes when dealing with the old bold directory on
 	previously used phones*
+	*Redesign and reimplement recorder/respeaker
 
   + More User Details.
   + Picture: Picture can be previewed/retaken as many times as is necessary.

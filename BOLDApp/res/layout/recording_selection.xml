@@ -26,18 +26,30 @@
 			android:layout_alignParentRight="true">
 			<Button
 				android:id="@+id/SortAlphabetical"
-				android:layout_width="wrap_content"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/sort_alphabetical"
 				android:onClick="sortAlphabetically"
+				android:layout_weight="1"
 			/>
 			<Button
 				android:id="@+id/SortDate"
-				android:layout_width="wrap_content"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/sort_date"
 				android:onClick="sortDate"
+				android:layout_weight="1"
 			/>
+			<!--
+			<Button
+				android:id="@+id/sortUser"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/sort_user"
+				android:onClick="sortUser"
+				android:layout_weight="1"
+			/>
+			-->
 		</LinearLayout>
 		<!--
 		<TextView
