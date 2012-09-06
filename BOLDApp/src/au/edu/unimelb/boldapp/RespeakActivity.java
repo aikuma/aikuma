@@ -109,7 +109,7 @@ public class RespeakActivity extends Activity {
 				respeakButton.setVisibility(View.INVISIBLE);
 				//respeaker.stop();
 				respeaker.setFinishedPlaying(true);
-				respeaker.shortlisten();
+				respeaker.listen();
 			}
 		});
 	}

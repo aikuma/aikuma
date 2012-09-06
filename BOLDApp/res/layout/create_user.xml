@@ -46,11 +46,11 @@
 			android:onClick="takePhoto"
 		/>
 		<!--
-		<ImageButton
+		<Button
 			android:id="@+id/Record"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:src="@drawable/button_record"
+			android:text="@string/record_name"
 			android:onClick="recordName"
 		/>
 		-->

@@ -128,6 +128,7 @@ public class Recorder implements AudioHandler {
 		file.prepare(targetFilename);
 	}
 
+
 	public void shortlisten() {
 		Thread t = new Thread(new Runnable() {
 			@Override
@@ -138,7 +139,7 @@ public class Recorder implements AudioHandler {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				//stop();
+				stop();
 			}
 		});
 		t.start();
