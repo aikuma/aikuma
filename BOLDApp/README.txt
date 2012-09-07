@@ -25,6 +25,8 @@ Steps:
   - There is a faulty configuration line in build.xml? Remove that line entirely (Florian tried to avoid this solution, but this seems to be the way to go).
   - The phone refuses the app? Remove all traces of any old BOLD apps ("Uninstall Application").
   - Having trouble to start the app? Remove the "bold" directory on the SD card.
+  - On "Failure [INSTALL_FAILED_ALREADY_EXISTS]" or "Failure [INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES]" try to find the application. It is probably named "au.com.unimelb.boldapp". If you can't find it, just find anything with "boldapp" in the name.
+  - If all else fails, reboot the phone. It does not uninstall cleanly. A reboot cleans the state.
   
 Tagging
 -------
