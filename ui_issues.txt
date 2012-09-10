@@ -1,0 +1,55 @@
+UI Issues
+=========
+
+To discuss when we next meet to streamline the UI.
+
+
+S: I think that the file selection screen should show which section of
+the app we are in.
+O: As for the important navigation one, perhaps the best thing is for the user to be directed to the main screen after saving a respeaking and translation, so that they must explicitly decide on what activity to do next. 
+O: The title bar can be changed to say whether the user is selecting a recording for listening, respeaking or translating. I doubt this is particularly useful as I don't think people will really look at it and will still end up suffering from the same navigation issue that you did (although I can implement the changing title bar anyway. If we decide not to, I might just remove the title bar as it currently serves no purpose). I think it should be designed so that it's intuitively clear what screen the user is dealing with.
+S: It seems that for playing recordings, users would want to stay within
+the play section. In fact, playing without doing any contribution
+would probably be the dominant use of the app. Perhaps its a
+completely separate thing you do to enter the area where you do
+recordings?
+
+S: While recording, there should be a recording indicator on, and while
+pausing a recording, the indicator should be flashing (this is what
+I've seen on other recording devices)
+O: Some sort of flashing indicator to be more explicit when the app is recording may be helpful, although I'm not very sure how it should look.
+S: What is the substantive difference between respeaking and translation?
+The name of the resulting file?
+
+S: When I do a second respeaking or translation of the original, it
+should have a distinct filename from the first one.
+O: I'll make subsequent respeakings of a recording have distinct names. I guess I should just add a numerical suffix at the end of the name?
+S: Let's make it like common voice recorders, and find out what they do.
+My professional recorder has a steady red light for recording, and a
+flashing red light for record-pause.
+It is strange to press a record button (in respeaking and oral
+translation) and immediately here playback. Do we need a different
+looking button, which incorporates play and record somehow?
+
+S: Is it a good idea to require a filename from the user after a file
+has been recorded? (what if its not unique? what if the user can't
+operate the keyboard?)
+O: I also don't think it is a good idea to require a filename from the user. Just to be clear, the app currently doesn't need one (you can just hit save, and then the file's UUID is used as a name when displaying it in lists). I'm not sure how to make it more clear that the text field is optional without complicating things unnecessarily. Maybe the save button can just be bigger.
+S: ... but a simple app should be unambiguous. What if we don't have
+filenames at all? How about people labelling their work with icons
+somehow (to do with the genre). Needs discussion...
+
+S: I'd like the option of a recording that interleaves the original and
+the respeaking or translation (but is this alongside the existing
+file, and how do we avoid too much clutter?)
+O: I'll have to think about the implementation of interleaving the original and respeaking. It should be possible for the Listen activity to let the user choose between just playing the respeaking and replaying it interleaved with the original. We can probably just have an auxiliary file for the respeaking that describes which samples correspond to each other between the original and the respeaking, and then load both recordings into the listen activity, and then just stagger the playing of each one.
+
+S: I don't think we want to be able to translate translations, or
+respeak respeakings, but I'm not certain (since we may want to
+translate a respeaking, or possibly respeak a translation).
+O: I don't see any particularly compelling reason to restrict users from being able to translate translations or respeak respeakings.
+S: this is more an issue of the abstract model we are creating -- is
+there just a single pool of recordings, and each respeaking and
+translation just adds a new recording? or is there a workflow and
+we're putting things through a process, as happens with the SayMore
+software.
