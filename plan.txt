@@ -58,11 +58,13 @@ September:
     Test with multiple phones / automatically.
   
   We now have a networked prototype.
+  
+October:
+  
+  - UI overhaul – collect UI issues and discuss, streamlining the app.
     
   - Settings / Preferences
     Set file server (FTP) address.
-
-October:
 
   - Tool for looking at data on memory stick / laptop with FTP server?
     Does not necessarily need to use the same code as on the phone.
