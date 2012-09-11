@@ -1,4 +1,5 @@
-UI Issues =========
+UI Issues
+=========
 
 To discuss when we next meet to streamline the UI.
 
@@ -25,7 +26,8 @@ a recording, the indicator should be flashing (this is what I've seen on other
 recording devices) 
 O: Some sort of flashing indicator to be more explicit when
 the app is recording may be helpful, although I'm not very sure how it should
-look.  S: What is the substantive difference between respeaking and
+look.
+S: What is the substantive difference between respeaking and
 translation?  The name of the resulting file?
 
 S: When I do a second respeaking or translation of the original, it should have
