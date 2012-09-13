@@ -13,17 +13,24 @@
 		<activity android:name="MainActivity"
 				android:screenOrientation="portrait"
 				android:label="@string/app_name"
+				android:theme="@android:style/Theme.NoTitleBar"
 		>
 		</activity>
 		<activity android:name="RecordActivity"
 				android:screenOrientation="portrait"
-				android:label="@string/app_name"/>
+				android:label="@string/app_name"
+				android:theme="@android:style/Theme.NoTitleBar"
+		/>
 		<activity android:name="RespeakActivity"
 				android:screenOrientation="portrait"
-				android:label="@string/app_name"/>
+				android:label="@string/app_name"
+				android:theme="@android:style/Theme.NoTitleBar"
+		/>
 		<activity android:name="InitialUserSelectionActivity"
 				android:screenOrientation="portrait"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:theme="@android:style/Theme.NoTitleBar"
+				>
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -31,24 +38,31 @@
 		</activity>
 		<activity android:name="UserListActivity"
 				android:screenOrientation="portrait"
+				android:theme="@android:style/Theme.NoTitleBar"
 				android:label="@string/app_name"/>
 		<activity android:name="RecordingSelectionActivity"
 				android:screenOrientation="portrait"
+				android:theme="@android:style/Theme.NoTitleBar"
 				android:label="@string/app_name"/>
 		<activity android:name="CreateUserActivity"
 				android:screenOrientation="portrait"
+				android:theme="@android:style/Theme.NoTitleBar"
 				android:label="@string/app_name"/>
 		<activity android:name="SaveActivity"
 				android:screenOrientation="portrait"
+				android:theme="@android:style/Theme.NoTitleBar"
 				android:label="@string/app_name"/>
 		<activity android:name="UserSelectionActivity"
 				android:screenOrientation="portrait"
+				android:theme="@android:style/Theme.NoTitleBar"
 				android:label="@string/app_name"/>
 		<activity android:name="ListenActivity"
 				android:screenOrientation="portrait"
+				android:theme="@android:style/Theme.NoTitleBar"
 				android:label="@string/app_name"/>
 		<activity android:name="TranslateActivity"
 				android:screenOrientation="portrait"
+				android:theme="@android:style/Theme.NoTitleBar"
 				android:label="@string/app_name"/>
 	</application>
 </manifest> 
