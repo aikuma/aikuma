@@ -22,6 +22,18 @@ import android.util.Log;
  */
 public class PCMWriter {
 
+	/**
+	 * The current sample, which represents where in the recording we are.
+	 */
+	private long currentSample;
+
+	/**
+	 * currentSample accessor.
+	 */
+	public long getCurrentSample(){
+		return this.currentSample;
+	}
+
 	String fullFilename;
 	/**
 	 * @param	sampleRate		Eg. 1000
@@ -87,6 +99,15 @@ public class PCMWriter {
 			Log.e(PCMWriter.class.getName(),
 					"Error occured in updateListener, recording is aborted");
 		}
+
+		//Log.i("bufferlength", "buffer.length: " + buffer.length);
+		if (sampleSize == 16) {
+			this.currentSample += buffer.length / 2;
+		} else {
+			//Assume sample size is 8.
+			this.currentSample += buffer.length;
+		}
+		//Log.i("bufferlength", "currentSample: " + currentSample);
 	}
 
 	/** Write the given short buffer to the file. */
@@ -113,6 +134,7 @@ public class PCMWriter {
 	 *  @return an instance of a PCMWriter.
 	 */
 	public PCMWriter(int sampleRate, int channelConfig, int audioFormat) {
+		currentSample = 0;
 		try {
 			// Convert the Android attributes to internal attributes.
 			//
