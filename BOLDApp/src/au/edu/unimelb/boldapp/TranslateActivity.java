@@ -49,7 +49,9 @@ public class TranslateActivity extends RespeakActivity {
 				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
 				+ originalUUID.toString() + ".wav",
 				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
-				+ uuid.toString() + ".wav");
+				+ uuid.toString() + ".wav",
+				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
+				+ uuid.toString() + ".map");
 
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override

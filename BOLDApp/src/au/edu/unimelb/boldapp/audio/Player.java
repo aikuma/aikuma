@@ -14,6 +14,22 @@ import android.media.MediaPlayer;
 public class Player extends MediaPlayer{
 
 	/**
+	 * returns the sample rate of the file being played
+	 */
+	public int getSampleRate() {
+		return Constants.SAMPLE_RATE;
+	}
+
+	/**
+	 * Returns the current sample
+	 */
+	public long getCurrentSample() {
+		int milliseconds = getCurrentPosition();
+		double sample = milliseconds * (getSampleRate() / (float) 1000);
+		return (long) sample;
+	}
+
+	/**
 	 * Indicates whether the audio is currently being played
 	 */
 	private boolean playing = false;

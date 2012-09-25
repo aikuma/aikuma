@@ -69,13 +69,15 @@ public class Recorder implements AudioHandler {
 
 	/** Sets the file up for writing. */
 	protected void setUpFile() {
+		Log.i("samples", "samplerate: " + listener.getSampleRate());
 		file = PCMWriter.getInstance(listener.getSampleRate(),
 				listener.getChannelConfiguration(), listener.getAudioFormat());
   }
 
 	/** Waits for the listening device. */
 	public void waitForAudioRecord() {
-		listener = getListener(44100, AudioFormat.ENCODING_PCM_16BIT,
+		listener = getListener(Constants.SAMPLE_RATE,
+				AudioFormat.ENCODING_PCM_16BIT,
 				AudioFormat.CHANNEL_CONFIGURATION_MONO);
 		do {
 		} while (listener.getState() != AudioRecord.STATE_INITIALIZED);

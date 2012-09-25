@@ -96,7 +96,9 @@ public class RespeakActivity extends Activity {
 				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
 				+ originalUUID.toString() + ".wav",
 				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
-				+ uuid.toString() + ".wav");
+				+ uuid.toString() + ".wav",
+				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
+				+ uuid.toString() + ".map");
 
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
@@ -109,7 +111,7 @@ public class RespeakActivity extends Activity {
 				respeakButton.setVisibility(View.INVISIBLE);
 				//respeaker.stop();
 				respeaker.setFinishedPlaying(true);
-				respeaker.listen();
+				respeaker.listenAfterFinishedPlaying();
 			}
 		});
 	}
@@ -131,6 +133,7 @@ public class RespeakActivity extends Activity {
 	public void cancel(View view){
 		respeaker.stop();
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
+		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".map");
 		RespeakActivity.this.finish();
 	}
 
