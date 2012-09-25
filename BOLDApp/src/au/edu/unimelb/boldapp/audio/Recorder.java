@@ -1,6 +1,7 @@
 package au.edu.unimelb.boldapp.audio;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -24,6 +25,8 @@ import au.edu.unimelb.boldapp.audio.analyzers.SimpleAnalyzer;
  *  Note that stopping the recorder closes and finalizes the WAV file.
  */
 public class Recorder implements AudioHandler {
+
+	protected Thread t;
 
 	/** Recording buffer.
 	 *
@@ -130,28 +133,20 @@ public class Recorder implements AudioHandler {
 		file.prepare(targetFilename);
 	}
 
-
-	public void shortlisten() {
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				listen();
-				try {
-					Thread.sleep(5000);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				stop();
-			}
-		});
-		t.start();
-	}
-
 	/** Start listening. */
 	public void listen() {
+
+		// If there is already a thread listening then kill it and ensure it's
+		// dead before creating a new thread.
+		if (t != null) {
+			t.interrupt();
+			while (t.isAlive()) {
+			}
+		}
+
 		// Simply reads and reads...
 		//
-		Thread t = new Thread(new Runnable() {
+		t = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				read();
@@ -187,6 +182,9 @@ public class Recorder implements AudioHandler {
 		while (listener.read(buffer, 0, buffer.length) > 0) {
 			// Hand in a copy of the buffer.
 			//
+			if (Thread.interrupted()) {
+				return;
+			}
 			onBufferFull(Arrays.copyOf(buffer, buffer.length));
 		}
 	}

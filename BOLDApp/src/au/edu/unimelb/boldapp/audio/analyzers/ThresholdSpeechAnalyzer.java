@@ -2,6 +2,8 @@ package au.edu.unimelb.boldapp.audio.analyzers;
 
 import java.util.Arrays;
 
+import android.util.Log;
+
 import au.edu.unimelb.boldapp.audio.AudioHandler;
 import au.edu.unimelb.boldapp.audio.analyzers.Analyzer;
 import au.edu.unimelb.boldapp.audio.recognizers.Recognizer;
@@ -182,12 +184,12 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
    */
 	public void addToOnsetBuffer(short[] buffer) {
 		int offset = onsetBuffer.length;
-		
+
 		// Create a new buffer.
 		//
 		onsetBuffer = Arrays.copyOf(onsetBuffer, onsetBuffer.length
 				+ buffer.length);
-		
+
 		// Copy the buffer to avoid reference problems.
 		//
 		short[] copiedBuffer = Arrays.copyOf(buffer, buffer.length);
@@ -265,7 +267,7 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 		}
 	}
 
-	//** Mainly exposed for testing */
+	/** Mainly exposed for testing */
 	public short[] getOnsetBuffer() {
 		return onsetBuffer;
 	}
