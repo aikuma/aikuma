@@ -14,7 +14,8 @@ import android.widget.SeekBar;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 
-import au.edu.unimelb.boldapp.audio.Player;
+import au.edu.unimelb.boldapp.audio.PlayerInterface;
+import au.edu.unimelb.boldapp.audio.SimplePlayer;
 
 /**
  * Activity that allows the user to listen to recordings
@@ -27,7 +28,7 @@ public class ListenActivity extends Activity
 	/**
 	 * The player that is used
 	 */
-	private Player player;
+	private PlayerInterface player;
 
 	/**
 	 * The recording that is being played
@@ -68,13 +69,15 @@ public class ListenActivity extends Activity
 		this.recording = GlobalState.getRecordingMap().get(recordingUUID);
 
 		// Set up the player
-		this.player = new Player();
-		player.prepare(FileIO.getAppRootPath() + FileIO.getRecordingsPath() +
-				this.recording.getUuid().toString() + ".wav");
+		this.player = new SimplePlayer(FileIO.getAppRootPath() +
+				FileIO.getRecordingsPath() + 
+				this.recording.getUuid().toString() +
+				".wav");
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
 		this.seekBar.setOnSeekBarChangeListener(this);
 		//this.seekBarThread = new Thread(this);
+
 
 		// The code that is to be run when the player is complete.
 		player.setOnCompletionListener(new OnCompletionListener() {
@@ -85,7 +88,8 @@ public class ListenActivity extends Activity
 						findViewById(R.id.Play);
 				button.setImageResource(R.drawable.button_play);
 				// Adjust relevant booleans
-				player.setPlaying(false);
+				Log.i("playing", " " + player.isPlaying());
+				//////player.setPlaying(false);
 				startedPlaying = false;
 				// Stop the seekBarThread and set the progress to max.
 				seekBarThread.interrupt();
@@ -104,7 +108,7 @@ public class ListenActivity extends Activity
 		if (this.seekBarThread != null) {
 			this.seekBarThread.interrupt();
 		}
-		player.stop();
+		player.release();
 		ListenActivity.this.finish();
 	}
 
@@ -114,7 +118,7 @@ public class ListenActivity extends Activity
 	 * @param	view	The button that was clicked.
 	 */
 	public void goBack(View view){
-		player.stop();
+		player.release();
 		if (this.seekBarThread != null) {
 			this.seekBarThread.interrupt();
 		}
@@ -130,10 +134,8 @@ public class ListenActivity extends Activity
 		ImageButton button = (ImageButton) view;
 		if (!player.isPlaying()) {
 			button.setImageResource(R.drawable.button_pause);
-			if (startedPlaying) {
-				player.resume();
-			} else {
-				player.play();
+			player.start();
+			if (!startedPlaying) {
 				// If the user hasn't changed the progress to some other
 				// unfinished point in the recording
 				if (seekBar.getProgress() == seekBar.getMax()) {

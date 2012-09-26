@@ -1,0 +1,97 @@
+package au.edu.unimelb.boldapp.audio;
+
+import android.media.MediaPlayer.OnCompletionListener;
+
+/**
+ * Class that acts as a proxy to players of the original and respeaking in
+ * order to seamlessly play them interleaved
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
+public class InterleavedPlayer {
+
+	/**
+	 * The callback that will be run when the last recording has finished
+	 */
+	private MediaPlayer.OnCompletionListener listener;
+
+	/**
+	 * Indicates whether the audio is currently being played
+	 */
+	private boolean playing;
+
+	/**
+	 * Player of the original recording
+	 */
+	private Player original;
+	
+	/**
+	 * Player of the respoken recording
+	 */
+	private Player respeaking;
+
+	/**
+	 * Prepare the respective players
+	 */
+	public void prepare(String originalPath, String respeakingPath) {
+	}
+
+	/**
+	 * Default constructor
+	 */
+	public Player(){
+		this.playing = false;
+	}
+
+	/**
+	 * Register a callback to be invoked when the end of the last recoring has
+	 * been reached during playback.
+	 */
+	public void setOnCompletionListener(
+			MediaPlayer.OnCompletionListener listener) {
+		this.listener = listener;
+	}
+
+	/**
+	 * playing mutator
+	 *
+	 * @param	playing	whether the player is playing or not
+	 */
+	public void setPlaying(boolean playing){
+		this.playing = playing;
+	}
+
+	/**
+	 * Stops the interleaved player
+	 */
+	public void stop(){
+	}
+
+	/**
+	 * Playing accessor
+	 *
+	 * @return	value of playing
+	 */
+	public boolean isPlaying(){
+		return playing;
+	}
+
+	public void resume(){
+	}
+
+	public void play(){
+	}
+
+	public void pause(){
+	}
+
+	public int getCurrentPosition(){
+	}
+	
+	public int getDuration(){
+	}
+
+	public void seekTo(int msec){
+	}
+}
