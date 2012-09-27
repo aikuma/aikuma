@@ -1,8 +1,11 @@
 package au.edu.unimelb.boldapp.audio;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import android.media.MediaPlayer;
+
+import au.edu.unimelb.boldapp.FileIO;
 
 /**
  * A player that allows individual audio files to be played.
@@ -14,11 +17,12 @@ public class SimplePlayer extends MediaPlayer implements PlayerInterface {
 	/**
 	 * Standard constructor
 	 *
-	 * @param	filename	The name of the file to be played
+	 * @param	uuid	The uuid of the recording to be played
 	 */
-	public SimplePlayer(String filename) {
+	public SimplePlayer(UUID uuid) {
 		try {
-			setDataSource(filename);
+			setDataSource(FileIO.getAppRootPath() + FileIO.getRecordingsPath()
+					+ uuid.toString() + ".wav");
 			prepare();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -45,7 +49,7 @@ public class SimplePlayer extends MediaPlayer implements PlayerInterface {
 	 	int milliseconds = getCurrentPosition();
 		double sample = milliseconds * (getSampleRate() / (float) 1000);
 		return (long) sample;
-	 }
+	}
 
 
 	/**
@@ -62,4 +66,6 @@ public class SimplePlayer extends MediaPlayer implements PlayerInterface {
 		seekTo(targetPosition);
 	}
 
+	public void start(long samples) {
+	}
 }

@@ -16,6 +16,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 
 import au.edu.unimelb.boldapp.audio.PlayerInterface;
 import au.edu.unimelb.boldapp.audio.SimplePlayer;
+//import au.edu.unimelb.boldapp.audio.InterleavedPlayer;
 
 /**
  * Activity that allows the user to listen to recordings
@@ -36,7 +37,8 @@ public class ListenActivity extends Activity
 	private Recording recording;
 
 	/**
-	 * Indicates whether the recording is being played or not
+	 * Indicates whether the recording has begun playing or not; is reset to
+	 * false when playing is complete.
 	 */
 	private Boolean startedPlaying;
 
@@ -69,10 +71,10 @@ public class ListenActivity extends Activity
 		this.recording = GlobalState.getRecordingMap().get(recordingUUID);
 
 		// Set up the player
-		this.player = new SimplePlayer(FileIO.getAppRootPath() +
-				FileIO.getRecordingsPath() + 
-				this.recording.getUuid().toString() +
-				".wav");
+		this.player = new SimplePlayer(this.recording.getUuid());
+		//PlayerInterface test = new InterleavedPlayer(
+		//		UUID.fromString("e90cf7c7-a2bb-40a0-b7d1-8e67cc5f1e5c"),
+		//		UUID.fromString("9c11e147-5576-4c83-b5aa-92275257a554"));
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
 		this.seekBar.setOnSeekBarChangeListener(this);
@@ -88,8 +90,6 @@ public class ListenActivity extends Activity
 						findViewById(R.id.Play);
 				button.setImageResource(R.drawable.button_play);
 				// Adjust relevant booleans
-				Log.i("playing", " " + player.isPlaying());
-				//////player.setPlaying(false);
 				startedPlaying = false;
 				// Stop the seekBarThread and set the progress to max.
 				seekBarThread.interrupt();

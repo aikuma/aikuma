@@ -9,6 +9,14 @@ import android.media.MediaPlayer;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public interface PlayerInterface {
+
+	/**
+	 * Gets the current playback position.
+	 *
+	 * @return	the current position in milliseconds
+	 */
+	int getCurrentPosition();
+
 	/**
 	 * Returns the sample rate of the file being played, in Hz.
 	 *
@@ -33,10 +41,17 @@ public interface PlayerInterface {
 
 	void start();
 	void setOnCompletionListener(MediaPlayer.OnCompletionListener listener);
+	/**
+	 * Releases resources associated with this Player.
+	 */
 	void release();
 	void pause();
-	int getCurrentPosition();
 	int getDuration();
+	/**
+	 * Seeks to the specified time position
+	 *
+	 * @param	msec	the offset in milliseconds from the start to seek to.
+	 */
 	void seekTo(int msec);
 
 
