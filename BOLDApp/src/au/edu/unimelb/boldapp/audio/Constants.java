@@ -8,4 +8,5 @@ package au.edu.unimelb.boldapp.audio;
  */
 public abstract class Constants {
 	public static int SAMPLE_RATE = 44100;
+	public static int WAV_HEADER_SIZE = 44;
 }

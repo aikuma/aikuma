@@ -16,6 +16,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 
 import au.edu.unimelb.boldapp.audio.PlayerInterface;
 import au.edu.unimelb.boldapp.audio.SimplePlayer;
+import au.edu.unimelb.boldapp.audio.TestPlayer;
 //import au.edu.unimelb.boldapp.audio.InterleavedPlayer;
 
 /**
@@ -29,7 +30,7 @@ public class ListenActivity extends Activity
 	/**
 	 * The player that is used
 	 */
-	private PlayerInterface player;
+	private SimplePlayer player;
 
 	/**
 	 * The recording that is being played
@@ -75,6 +76,10 @@ public class ListenActivity extends Activity
 		//PlayerInterface test = new InterleavedPlayer(
 		//		UUID.fromString("e90cf7c7-a2bb-40a0-b7d1-8e67cc5f1e5c"),
 		//		UUID.fromString("9c11e147-5576-4c83-b5aa-92275257a554"));
+
+		TestPlayer testPlayer = new TestPlayer(this.recording.getUuid());
+		testPlayer.play(116000, 269000);
+		//testPlayer.play(0, 116000);
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
 		this.seekBar.setOnSeekBarChangeListener(this);

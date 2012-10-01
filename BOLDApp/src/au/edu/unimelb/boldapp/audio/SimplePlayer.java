@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import android.media.MediaPlayer;
+import android.util.Log;
 
 import au.edu.unimelb.boldapp.FileIO;
 
@@ -66,6 +67,9 @@ public class SimplePlayer extends MediaPlayer implements PlayerInterface {
 		seekTo(targetPosition);
 	}
 
-	public void start(long samples) {
+	public void start(int msec) {
+		while (getCurrentPosition() < msec) {
+			Log.i("qwerty", " " + getCurrentPosition());
+		}
 	}
 }
