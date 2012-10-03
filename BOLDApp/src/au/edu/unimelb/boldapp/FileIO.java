@@ -195,13 +195,19 @@ public abstract class FileIO {
 			try {
 				Object obj = parser.parse(jsonStr);
 				JSONObject jsonObj = (JSONObject) obj;
+				UUID originalUUID = null;
+				if (jsonObj.containsKey("originalUUID")) {
+					originalUUID = UUID.fromString(
+							jsonObj.get("originalUUID").toString());
+				}
 				recordings[i] = new Recording(
 						UUID.fromString(jsonObj.get("uuid").toString()),
 						GlobalState.getUserMap().get(UUID.fromString(
 								jsonObj.get("creatorUUID").toString())),
 						jsonObj.get("recording_name").toString(),
 						new StandardDateFormat().parse(
-								jsonObj.get("date_string").toString()));
+								jsonObj.get("date_string").toString()),
+						originalUUID);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

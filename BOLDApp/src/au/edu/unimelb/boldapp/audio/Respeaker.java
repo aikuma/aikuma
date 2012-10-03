@@ -142,11 +142,13 @@ public class Respeaker extends Recorder {
 		player.resume();
 		Log.i("samples", "playing\t\t" + player.getCurrentSample() + "," +
 				file.getCurrentSample());
+		/*
 		try {
 			writer.write(player.getCurrentSample()+",");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 
 	/** Switches the mode to record mode. */
@@ -160,7 +162,8 @@ public class Respeaker extends Recorder {
 			Log.i("samples", "audio\t\t" + player.getCurrentSample() + "," +
 					file.getCurrentSample());
 			try {
-				writer.write(file.getCurrentSample()+"\n");
+				writer.write(file.getCurrentSample() + "\n");
+				writer.write(player.getCurrentSample() + ",");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

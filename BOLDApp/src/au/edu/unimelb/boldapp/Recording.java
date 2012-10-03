@@ -31,13 +31,21 @@ public class Recording {
 	private Date date;
 
 	/**
+	 * The recording that this recording is a respeaking of (if applicable;
+	 * null otherwise)
+	 */
+	private UUID originalUuid;
+
+	/**
 	 * Default Constructor
 	 */
-	 public Recording(UUID uuid, User creator, String name , Date date) {
+	 public Recording(UUID uuid, User creator, String name, Date date, UUID
+			 originalUuid) {
 	 	setUuid(uuid);
 		setCreator(creator);
 		setName(name);
 		setDate(date);
+		setOriginalUuid(originalUuid);
 	 }
 
 	/**
@@ -45,6 +53,13 @@ public class Recording {
 	 */
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
+	}
+
+	/**
+	 * OriginalUUID mutator
+	 */
+	public void setOriginalUuid(UUID originalUuid) {
+		this.originalUuid = originalUuid;
 	}
 
 	/**
@@ -66,6 +81,13 @@ public class Recording {
 	 */
 	public UUID getUuid() {
 		return this.uuid;
+	}
+
+	/**
+	 * originalUUID accessor
+	 */
+	public UUID getOriginalUuid() {
+		return this.originalUuid;
 	}
 
 	/**

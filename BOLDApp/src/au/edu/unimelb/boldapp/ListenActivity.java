@@ -1,5 +1,7 @@
 package au.edu.unimelb.boldapp;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import android.app.Activity;
@@ -53,6 +55,9 @@ public class ListenActivity extends Activity
 	 */
 	private Thread seekBarThread;
 
+	private TestPlayer originalPlayer;
+	private TestPlayer respeakingPlayer;
+
 	/**
 	 * Initialization when the activity starts.
 	 *
@@ -77,9 +82,40 @@ public class ListenActivity extends Activity
 		//		UUID.fromString("e90cf7c7-a2bb-40a0-b7d1-8e67cc5f1e5c"),
 		//		UUID.fromString("9c11e147-5576-4c83-b5aa-92275257a554"));
 
-		TestPlayer testPlayer = new TestPlayer(this.recording.getUuid());
-		testPlayer.play(116000, 269000);
+		List<Integer> originalSegments = new ArrayList<Integer>();
+		originalSegments.add(0);
+		originalSegments.add(87318);
+		originalSegments.add(147646);
+		originalSegments.add(211106);
+		int i = 0;
+		Log.i("shizz", " " + originalSegments.get(i++));
+		Log.i("shizz", " " + originalSegments.get(i++));
+		Log.i("shizz", " " + originalSegments.get(i++));
+		Log.i("shizz", " " + originalSegments.get(i++));
+		List<Integer> respeakingSegments = new ArrayList<Integer>();
+		respeakingSegments.add(0);
+		respeakingSegments.add(116000);
+		respeakingSegments.add(240000);
+
+		originalPlayer = new
+				TestPlayer(this.recording.getOriginalUuid(), originalSegments);
+		respeakingPlayer = new TestPlayer(this.recording.getUuid(),
+				respeakingSegments);
+
+		originalPlayer.setOtherPlayer(respeakingPlayer);
+		respeakingPlayer.setOtherPlayer(originalPlayer);
+		originalPlayer.setOwner(this);
+		respeakingPlayer.setOwner(this);
+		originalPlayer.setPositionNotificationPeriod(10000);
+		respeakingPlayer.setPositionNotificationPeriod(10000);
+
+		originalPlayer.play();
+		respeakingPlayer.play();
+		respeakingPlayer.pause();
+		//testPlayer.play(0, 116000, null);
 		//testPlayer.play(0, 116000);
+
+		//Thread u = testPlayer.play(116000, 269000, t);
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
 		this.seekBar.setOnSeekBarChangeListener(this);
@@ -210,5 +246,10 @@ public class ListenActivity extends Activity
 	 */
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
+	}
+
+	public void swap() {
+		Log.i("blorg", "i'm here, playa");
+		respeakingPlayer.play();
 	}
 }
