@@ -57,6 +57,27 @@ public class ListenActivity extends Activity
 
 	private TestPlayer originalPlayer;
 	private TestPlayer respeakingPlayer;
+  
+  private class PlayingBoth implements Runnable {
+    public void run() {
+  		List<Integer> originalSegments = new ArrayList<Integer>();
+  		originalSegments.add(0);
+  		originalSegments.add(87318);
+  		originalSegments.add(147646);
+  		originalSegments.add(211106);
+  		List<Integer> respeakingSegments = new ArrayList<Integer>();
+  		respeakingSegments.add(0);
+  		respeakingSegments.add(116000);
+  		respeakingSegments.add(240000);
+      
+      for (int i = 1; i < originalSegments.size(); i++) {
+        int originalPosition = originalSegments.get(i);
+        originalPlayer.write(originalPosition - originalSegments.get(i-1));
+        int respeakingPosition = respeakingSegments.get(i);
+        respeakingPlayer.write(respeakingPosition - respeakingSegments.get(i-1));
+      }
+    }
+  }
 
 	/**
 	 * Initialization when the activity starts.
@@ -110,8 +131,13 @@ public class ListenActivity extends Activity
 		respeakingPlayer.setPositionNotificationPeriod(10000);
 
 		originalPlayer.play();
-		respeakingPlayer.play();
-		respeakingPlayer.pause();
+    respeakingPlayer.play();
+    
+    new Thread(new PlayingBoth()).start();
+    
+    // originalPlayer.play();
+    // respeakingPlayer.play();
+    // respeakingPlayer.pause();
 		//testPlayer.play(0, 116000, null);
 		//testPlayer.play(0, 116000);
 

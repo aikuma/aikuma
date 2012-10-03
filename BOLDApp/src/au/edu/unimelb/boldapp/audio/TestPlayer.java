@@ -47,43 +47,43 @@ public class TestPlayer extends AudioTrack {
 
 		//this.segments = segments;
 
-		segCount = 1;
-		setNotificationMarkerPosition(segments.get(segCount++));
-		Log.i("blorg", "first " + getNotificationMarkerPosition());
-		new Thread(new PlaySegment()).start();
-
-		setPlaybackPositionUpdateListener(new
-				AudioTrack.OnPlaybackPositionUpdateListener(){
-
-			@Override
-			public void onMarkerReached(AudioTrack _woeva) {
-				Log.i("blorg", " " + getNotificationMarkerPosition());
-				if (segCount < segments.size()) {
-					setNotificationMarkerPosition(segments.get(segCount++));
-				} else {
-					try {
-						if (getNotificationMarkerPosition() ==
-								((int)file.length()
-								- Constants.WAV_HEADER_SIZE) / 2) {
-							setNotificationMarkerPosition(0);
-						} else {
-							setNotificationMarkerPosition(((int)file.length() -
-									Constants.WAV_HEADER_SIZE) / 2);
-						}
-					} catch (Exception e) {
-					}
-				}
-				Log.i("blorg", "newmarker " + getNotificationMarkerPosition());
-				pause();
-				owner.swap();
-			}
-
-			@Override
-			public void onPeriodicNotification(AudioTrack _woeva) {
-				Log.i("blorg", " " + getPlaybackHeadPosition());
-			}
-
-		});
+    // segCount = 1;
+    // setNotificationMarkerPosition(segments.get(segCount++));
+    // Log.i("blorg", "first " + getNotificationMarkerPosition());
+    // new Thread(new PlaySegment()).start();
+    // 
+    // setPlaybackPositionUpdateListener(new
+    //     AudioTrack.OnPlaybackPositionUpdateListener(){
+    // 
+    //   @Override
+    //   public void onMarkerReached(AudioTrack _woeva) {
+    //     Log.i("blorg", " " + getNotificationMarkerPosition());
+    //     if (segCount < segments.size()) {
+    //       setNotificationMarkerPosition(segments.get(segCount++));
+    //     } else {
+    //       try {
+    //         if (getNotificationMarkerPosition() ==
+    //             ((int)file.length()
+    //             - Constants.WAV_HEADER_SIZE) / 2) {
+    //           setNotificationMarkerPosition(0);
+    //         } else {
+    //           setNotificationMarkerPosition(((int)file.length() -
+    //               Constants.WAV_HEADER_SIZE) / 2);
+    //         }
+    //       } catch (Exception e) {
+    //       }
+    //     }
+    //     Log.i("blorg", "newmarker " + getNotificationMarkerPosition());
+    //     pause();
+    //     owner.swap();
+    //   }
+    // 
+    //   @Override
+    //   public void onPeriodicNotification(AudioTrack _woeva) {
+    //     Log.i("blorg", " " + getPlaybackHeadPosition());
+    //   }
+    // 
+    // });
 
 	}
 
@@ -102,6 +102,28 @@ public class TestPlayer extends AudioTrack {
 		super.play();
 		//Log.i("blorg", "head pos " + getPlaybackHeadPosition());
 	}
+  
+  int lastPosition = Constants.WAV_HEADER_SIZE;
+  public void write(int size) {
+    int bytes = size*2;
+    
+		try {
+			// Go to where we were last time.
+      //
+      file.seek(lastPosition);
+      
+      // Update last position.
+      //
+      lastPosition += bytes;
+      
+      // Read size shorts
+			byte[] segment = new byte[bytes];
+			file.read(segment);
+			write(segment, 0, segment.length);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+  }
 
 	private class PlaySegment implements Runnable {
 
