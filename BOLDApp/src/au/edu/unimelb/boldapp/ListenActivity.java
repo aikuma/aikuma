@@ -70,13 +70,39 @@ public class ListenActivity extends Activity
   		respeakingSegments.add(116000);
   		respeakingSegments.add(240000);
       
-      for (int i = 1; i < originalSegments.size(); i++) {
-        int originalPosition = originalSegments.get(i);
+      for (int i = 1; i < respeakingSegments.size(); i++) {
+		int originalPosition = originalSegments.get(i);
         originalPlayer.write(originalPosition - originalSegments.get(i-1));
-        int respeakingPosition = respeakingSegments.get(i);
+        originalPlayer.play();
+		try {
+			Thread.sleep((originalPosition-originalSegments.get(i-1))*1000/44100);
+		}catch(Exception e){
+		}
+		originalPlayer.pause();
+		int respeakingPosition = respeakingSegments.get(i);
         respeakingPlayer.write(respeakingPosition - respeakingSegments.get(i-1));
-      }
+        respeakingPlayer.play();
+		try {
+			Thread.sleep((respeakingPosition-respeakingSegments.get(i-1))*1000/44100);
+		}catch(Exception e){
+		}
+		respeakingPlayer.pause();
+	  }
     }
+  }
+
+  private class TestPause implements Runnable {
+  	public void run() {
+		try {
+			Thread.sleep(1000);
+			originalPlayer.pause();
+			respeakingPlayer.pause();
+			Thread.sleep(100);
+			originalPlayer.play();
+			respeakingPlayer.play();
+		} catch (Exception e) {
+		}
+	}
   }
 
 	/**
@@ -130,10 +156,32 @@ public class ListenActivity extends Activity
 		originalPlayer.setPositionNotificationPeriod(10000);
 		respeakingPlayer.setPositionNotificationPeriod(10000);
 
-		originalPlayer.play();
-    respeakingPlayer.play();
+		//originalPlayer.play();
+    //respeakingPlayer.play();
     
     new Thread(new PlayingBoth()).start();
+
+	//new Thread(new TestPause()).start();
+
+//	try {
+//		Thread.sleep(500);
+//	} catch (Exception e) {
+//	}
+
+//	Log.i("sleepin", "pause");
+
+//	originalPlayer.pause();
+//	respeakingPlayer.pause();
+
+//	try {
+//		Thread.sleep(500);
+//	} catch (Exception e) {
+//	}
+//	Log.i("sleepin", "resume");
+
+//	originalPlayer.play();
+//	respeakingPlayer.play();
+
     
     // originalPlayer.play();
     // respeakingPlayer.play();

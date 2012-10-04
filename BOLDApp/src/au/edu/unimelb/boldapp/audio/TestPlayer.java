@@ -33,9 +33,9 @@ public class TestPlayer extends AudioTrack {
 	public TestPlayer(UUID uuid, final List<Integer> segments) {
 		super(AudioManager.STREAM_MUSIC, Constants.SAMPLE_RATE,
 				AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
-				getMinBufferSize(Constants.SAMPLE_RATE,
+				100*getMinBufferSize(Constants.SAMPLE_RATE,
 				AudioFormat.CHANNEL_OUT_MONO,
-			AudioFormat.ENCODING_PCM_16BIT), MODE_STREAM);
+			AudioFormat.ENCODING_PCM_16BIT), MODE_STATIC);
 		try {
 			file = new RandomAccessFile(FileIO.getAppRootPath() +
 					FileIO.getRecordingsPath() + uuid.toString() + ".wav",
