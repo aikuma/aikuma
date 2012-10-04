@@ -14,13 +14,14 @@ import au.edu.unimelb.boldapp.FileIO;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class SimplePlayer extends MediaPlayer implements PlayerInterface {
+public class SimplePlayer extends MarkedMediaPlayer {
 	/**
 	 * Standard constructor
 	 *
 	 * @param	uuid	The uuid of the recording to be played
 	 */
 	public SimplePlayer(UUID uuid) {
+		super();
 		try {
 			setDataSource(FileIO.getAppRootPath() + FileIO.getRecordingsPath()
 					+ uuid.toString() + ".wav");
@@ -67,9 +68,4 @@ public class SimplePlayer extends MediaPlayer implements PlayerInterface {
 		seekTo(targetPosition);
 	}
 
-	public void start(int msec) {
-		while (getCurrentPosition() < msec) {
-			Log.i("qwerty", " " + getCurrentPosition());
-		}
-	}
 }
