@@ -70,13 +70,13 @@ public class MarkedMediaPlayer extends MediaPlayer {
 
 		public void run() {
 			while (getCurrentPosition() < getDuration()) {
-				Log.i("asdf", " " + getCurrentPosition());
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					// Would be a programming error
 				}
 				if (getCurrentPosition() >= getNotificationMarkerPosition()) {
+					Log.i("gcp", " " + getCurrentPosition());
 					if(onMarkerReachedListener != null) {
 						onMarkerReachedListener.onMarkerReached(
 								MarkedMediaPlayer.this);
