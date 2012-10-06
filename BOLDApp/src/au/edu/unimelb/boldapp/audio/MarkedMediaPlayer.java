@@ -12,6 +12,12 @@ import android.media.MediaPlayer;
  * @author	Florian hanke	<florian.hanke@gmail.com>
  */
 public class MarkedMediaPlayer extends MediaPlayer {
+
+	/**
+	 * The thread that loops to check if markers have been reached.
+	 */
+	private Thread notificationMarkerLoop;
+
 	/**
 	 * The marker that determines when the playbackPositionUpdateListener gets
 	 * called.
@@ -73,7 +79,8 @@ public class MarkedMediaPlayer extends MediaPlayer {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					// Would be a programming error
+					// The player is being released so this thread should end.
+					return;
 				}
 				if (getCurrentPosition() >= getNotificationMarkerPosition()) {
 					if(onMarkerReachedListener != null) {
@@ -93,8 +100,20 @@ public class MarkedMediaPlayer extends MediaPlayer {
 		super();
 		setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 			public void onPrepared(MediaPlayer _) {
-				new Thread(new NotificationMarkerLoop()).start();
+				notificationMarkerLoop = new Thread(
+						new NotificationMarkerLoop(),
+						"NotificationMarkerLoop");
+				notificationMarkerLoop.start();
 			}
 		});
+	}
+
+	@Override
+	public void release() {
+		// Destroy the notificationMarkerLoop thread.
+		if (this.notificationMarkerLoop != null) {
+			this.notificationMarkerLoop.interrupt();
+		}
+		super.release();
 	}
 }

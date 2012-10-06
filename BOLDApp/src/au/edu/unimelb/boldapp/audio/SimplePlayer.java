@@ -14,7 +14,7 @@ import au.edu.unimelb.boldapp.FileIO;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class SimplePlayer extends MediaPlayer {
+public class SimplePlayer extends MarkedMediaPlayer {
 	/**
 	 * Standard constructor
 	 *
@@ -26,6 +26,7 @@ public class SimplePlayer extends MediaPlayer {
 			setDataSource(FileIO.getAppRootPath() + FileIO.getRecordingsPath()
 					+ uuid.toString() + ".wav");
 			prepare();
+			Log.i("threads", "prepared");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -68,32 +69,4 @@ public class SimplePlayer extends MediaPlayer {
 		seekTo(targetPosition);
 	}
 
-	/**
-	 * Play for a specific number of milliseconds.
-	 *
-	 * @param	milliseconds	The duration to play for in milliseconds.
-	 */
-	public void play(int msec) {
-		/*
-		setNotificationMarkerPosition(getCurrentPosition() + msec);
-		setOnMarkerReachedListener(new DefaultOnMarkerReachedListener());
-		start();
-		*/
-		int target = getCurrentPosition() + msec;
-		start();
-		while (getCurrentPosition() < target) {
-		}
-		pause();
-	}
-
-	/**
-	 * Contains the default callback that simple pauses the player when the
-	 * marker is reached.
-	 */
-	private class DefaultOnMarkerReachedListener extends
-			MarkedMediaPlayer.OnMarkerReachedListener{
-		public void onMarkerReached(MarkedMediaPlayer p) {
-			pause();
-		}
-	}
 }

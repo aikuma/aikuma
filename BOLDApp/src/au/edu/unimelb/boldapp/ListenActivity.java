@@ -77,7 +77,7 @@ public class ListenActivity extends Activity
 		this.player = new SimplePlayer(this.recording.getUuid());
 
 		InterleavedPlayer ip = new InterleavedPlayer(recordingUUID);
-		//ip.start();
+		ip.start();
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
 		this.seekBar.setOnSeekBarChangeListener(this);

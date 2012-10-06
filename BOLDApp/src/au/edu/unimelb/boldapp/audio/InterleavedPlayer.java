@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.Set;
 
 import android.util.Log;
 
@@ -100,9 +101,10 @@ public class InterleavedPlayer {
 
 		Log.i("yaw", " " + originalSegments);
 		Log.i("yaw", " " + respeakingSegments);
-
-		original.play(1980);
-		respeaking.play(2630);
-
 	}
+
+	public void start() {
+		original.start();
+	}
+
 }
