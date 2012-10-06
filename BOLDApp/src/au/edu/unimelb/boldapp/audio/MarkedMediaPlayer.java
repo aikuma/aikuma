@@ -83,6 +83,7 @@ public class MarkedMediaPlayer extends MediaPlayer {
 					return;
 				}
 				if (getCurrentPosition() >= getNotificationMarkerPosition()) {
+					Log.i("mark", "marker reached");
 					if(onMarkerReachedListener != null) {
 						onMarkerReachedListener.onMarkerReached(
 								MarkedMediaPlayer.this);
@@ -96,8 +97,9 @@ public class MarkedMediaPlayer extends MediaPlayer {
 	 * Standard constructor that starts a NotificationMarkerLoop once the
 	 * MarkedMediaPlayer is prepared.
 	 */
-	public MarkedMediaPlayer() {
+	public MarkedMediaPlayer(OnMarkerReachedListener onMarkerReachedListener) {
 		super();
+		setOnMarkerReachedListener(onMarkerReachedListener);
 		setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 			public void onPrepared(MediaPlayer _) {
 				notificationMarkerLoop = new Thread(
@@ -107,6 +109,17 @@ public class MarkedMediaPlayer extends MediaPlayer {
 			}
 		});
 	}
+
+	/**
+	 * Constructor for when the features of this MarkedMediaPlayer class will
+	 * not be used
+	 */
+	public MarkedMediaPlayer(){
+		//We don't set the listener, or register the NotificationMarkerLoop to
+		//be run
+		super();
+	}
+
 
 	@Override
 	public void release() {

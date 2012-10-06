@@ -26,6 +26,12 @@ import au.edu.unimelb.boldapp.FileIO;
 public class InterleavedPlayer {
 
 	/**
+	 * Counter for which segments to update the notificationMarkerPosition to
+	 * as the markers are reached.
+	 */
+	private int segCount;
+
+	/**
 	 * The Player for the original audio.
 	 */
 	private SimplePlayer original;
@@ -58,8 +64,10 @@ public class InterleavedPlayer {
 			JSONObject jsonObj = (JSONObject) obj;
 			UUID originalUUID = UUID.fromString(
 					jsonObj.get("originalUUID").toString());
-			original = new SimplePlayer(originalUUID);
-			respeaking = new SimplePlayer(respeakingUUID);
+			original = new SimplePlayer(originalUUID, new
+					OriginalMarkerReachedListener());
+			respeaking = new SimplePlayer(respeakingUUID, new
+					RespeakingMarkerReachedListener());
 		} catch (ParseException e) {
 			// Cannot interleave the respeaking.
 			e.printStackTrace();
@@ -101,10 +109,65 @@ public class InterleavedPlayer {
 
 		Log.i("yaw", " " + originalSegments);
 		Log.i("yaw", " " + respeakingSegments);
+
+		//new Thread(new Tellme()).start();
+
+		// Set the first markers.
+		segCount = 1;
+		original.setNotificationMarkerPosition(
+				originalSegments.get(segCount));
+		respeaking.setNotificationMarkerPosition(
+				respeakingSegments.get(segCount));
+		segCount++;
 	}
 
 	public void start() {
 		original.start();
 	}
 
+	private class OriginalMarkerReachedListener extends
+			MarkedMediaPlayer.OnMarkerReachedListener{
+		public void onMarkerReached(MarkedMediaPlayer p) {
+			Log.i("stuffff", " " + segCount + " " + originalSegments.size() + 
+			" " + respeakingSegments.size());
+			original.pause();
+			if (segCount == originalSegments.size()) {
+				if (respeakingSegments.size() < originalSegments.size()) {
+					return;
+				}
+			} else if (segCount == originalSegments.size()) {
+				return;
+			}
+			original.setNotificationMarkerPosition(
+					originalSegments.get(segCount));
+			respeaking.start();
+		}
+	}
+
+	private class RespeakingMarkerReachedListener extends
+			MarkedMediaPlayer.OnMarkerReachedListener{
+		public void onMarkerReached(MarkedMediaPlayer p) {
+			respeaking.pause();
+			respeaking.setNotificationMarkerPosition(
+					respeakingSegments.get(segCount));
+			segCount++;
+			original.start();
+		}
+	}
+
+	/*
+	private class Tellme implements Runnable {
+		public void run() {
+			while (true) {
+				Log.i("playing", " " + original.isPlaying() + " " +
+						respeaking.isPlaying());
+			}
+		}
+	}
+	*/
+
+	public void release() {
+		original.release();
+		respeaking.release();
+	}
 }

@@ -31,6 +31,28 @@ public class SimplePlayer extends MarkedMediaPlayer {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Constructor for use when the OnMarkerReachedListener will be
+	 * used
+	 *
+	 * @param	uuid	The uuid of the recording to be played
+	 * @param	onMarkerReachedListener	The callback that will be made when
+	 * set markers are reached.
+	 */
+	public SimplePlayer(UUID uuid, MarkedMediaPlayer.OnMarkerReachedListener
+			onMarkerReachedListener) {
+		super(onMarkerReachedListener);
+		try {
+			setDataSource(FileIO.getAppRootPath() + FileIO.getRecordingsPath()
+					+ uuid.toString() + ".wav");
+			prepare();
+			Log.i("threads", "prepared");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	
 	/**
 	 * Returns the sample rate of the file being played.
@@ -68,5 +90,4 @@ public class SimplePlayer extends MarkedMediaPlayer {
 		}
 		seekTo(targetPosition);
 	}
-
 }
