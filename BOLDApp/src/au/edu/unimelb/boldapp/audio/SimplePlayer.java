@@ -14,7 +14,8 @@ import au.edu.unimelb.boldapp.FileIO;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class SimplePlayer extends MarkedMediaPlayer {
+public class SimplePlayer extends MediaPlayer {
+
 	/**
 	 * Standard constructor
 	 *
@@ -67,5 +68,4 @@ public class SimplePlayer extends MarkedMediaPlayer {
 		}
 		seekTo(targetPosition);
 	}
-
 }
