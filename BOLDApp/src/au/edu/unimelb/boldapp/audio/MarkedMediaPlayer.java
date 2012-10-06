@@ -82,11 +82,16 @@ public class MarkedMediaPlayer extends MediaPlayer {
 					// The player is being released so this thread should end.
 					return;
 				}
-				if (getCurrentPosition() >= getNotificationMarkerPosition()) {
-					Log.i("mark", "marker reached");
-					if(onMarkerReachedListener != null) {
-						onMarkerReachedListener.onMarkerReached(
-								MarkedMediaPlayer.this);
+				// If the marker is at zero, it's trivially low and the
+				// callback shouldn't be called.
+				if (notificationMarkerPosition != 0) {
+					if (getCurrentPosition() >= 
+							getNotificationMarkerPosition()) {
+						Log.i("mark", "marker reached");
+						if(onMarkerReachedListener != null) {
+							onMarkerReachedListener.onMarkerReached(
+									MarkedMediaPlayer.this);
+						}
 					}
 				}
 			}

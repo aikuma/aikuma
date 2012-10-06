@@ -128,18 +128,15 @@ public class InterleavedPlayer {
 	private class OriginalMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener{
 		public void onMarkerReached(MarkedMediaPlayer p) {
-			Log.i("stuffff", " " + segCount + " " + originalSegments.size() + 
-			" " + respeakingSegments.size());
 			original.pause();
-			if (segCount == originalSegments.size()) {
-				if (respeakingSegments.size() < originalSegments.size()) {
-					return;
-				}
-			} else if (segCount == originalSegments.size()) {
+			try {
+				original.setNotificationMarkerPosition(
+						originalSegments.get(segCount));
+			} catch (IndexOutOfBoundsException e) {
+				// No more to play
+				original.setNotificationMarkerPosition(0);
 				return;
 			}
-			original.setNotificationMarkerPosition(
-					originalSegments.get(segCount));
 			respeaking.start();
 		}
 	}
@@ -148,8 +145,15 @@ public class InterleavedPlayer {
 			MarkedMediaPlayer.OnMarkerReachedListener{
 		public void onMarkerReached(MarkedMediaPlayer p) {
 			respeaking.pause();
-			respeaking.setNotificationMarkerPosition(
-					respeakingSegments.get(segCount));
+			try {
+				respeaking.setNotificationMarkerPosition(
+						respeakingSegments.get(segCount));
+			} catch (IndexOutOfBoundsException e) {
+				// No more to play set the notificationMarkerPosition to be
+				// greater than the duration.
+				respeaking.setNotificationMarkerPosition(0);
+				return;
+			}
 			segCount++;
 			original.start();
 		}
