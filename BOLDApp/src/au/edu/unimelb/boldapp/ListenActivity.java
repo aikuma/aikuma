@@ -32,7 +32,7 @@ public class ListenActivity extends Activity
 	/**
 	 * The player that is used
 	 */
-	private SimplePlayer player;
+	private InterleavedPlayer player;
 
 	/**
 	 * The recording that is being played
@@ -55,8 +55,6 @@ public class ListenActivity extends Activity
 	 */
 	private Thread seekBarThread;
 
-	InterleavedPlayer ip;
-
 	/**
 	 * Initialization when the activity starts.
 	 *
@@ -76,10 +74,7 @@ public class ListenActivity extends Activity
 		this.recording = GlobalState.getRecordingMap().get(recordingUUID);
 
 		// Set up the player
-		this.player = new SimplePlayer(this.recording.getUuid());
-
-		ip = new InterleavedPlayer(recordingUUID);
-		ip.start();
+		this.player = new InterleavedPlayer(this.recording.getUuid());
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
 		this.seekBar.setOnSeekBarChangeListener(this);
@@ -115,7 +110,6 @@ public class ListenActivity extends Activity
 		}
 		player.release();
 		ListenActivity.this.finish();
-		ip.release();
 	}
 
 	/**

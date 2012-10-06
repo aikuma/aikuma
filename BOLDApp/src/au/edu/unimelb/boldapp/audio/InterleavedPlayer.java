@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.Set;
 
+import android.media.MediaPlayer;
 import android.util.Log;
 
 import org.json.simple.JSONObject;
@@ -173,5 +174,55 @@ public class InterleavedPlayer {
 	public void release() {
 		original.release();
 		respeaking.release();
+	}
+
+	public void setOnCompletionListener(
+			MediaPlayer.OnCompletionListener listener) {
+		original.setOnCompletionListener(listener);
+		respeaking.setOnCompletionListener(listener);
+	}
+
+	public boolean isPlaying() {
+		return original.isPlaying() || respeaking.isPlaying();
+	}
+
+	public void pause() {
+		if (original.isPlaying()) {
+			original.pause();
+		} else {
+			respeaking.pause();
+		}
+	}
+
+	public void seekTo(int target) {
+		int total = 0;
+		int previous;
+		for (int i = 1; i < originalSegments.size(); i++) {
+			previous = total;
+			total += (originalSegments.get(i) - originalSegments.get(i-1));
+			if (total > target) {
+				original.seekTo(originalSegments.get(i-1) + target - previous);
+				respeaking.seekTo(respeakingSegments.get(i-1));
+				return;
+			}
+			previous = total;
+			total += (respeakingSegments.get(i) - respeakingSegments.get(i-1));
+			if (total > target) {
+				respeaking.seekTo(
+						respeakingSegments.get(i-1) + target - previous);
+				original.seekTo(originalSegments.get(i));
+				return;
+			}
+		}
+		original.seekTo(original.getDuration());
+		respeaking.seekTo(respeaking.getDuration());
+	}
+
+	public int getCurrentPosition() {
+		return original.getCurrentPosition() + respeaking.getCurrentPosition();
+	}
+
+	public int getDuration() {
+		return original.getDuration() + respeaking.getDuration();
 	}
 }
