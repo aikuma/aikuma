@@ -18,11 +18,8 @@ import android.media.MediaPlayer.OnCompletionListener;
 
 import au.edu.unimelb.boldapp.audio.PlayerInterface;
 import au.edu.unimelb.boldapp.audio.SimplePlayer;
-import au.edu.unimelb.boldapp.audio.TestPlayer;
 import au.edu.unimelb.boldapp.audio.MarkedMediaPlayer;
-//import au.edu.unimelb.boldapp.audio.OnMarkerReachedListener;
 import au.edu.unimelb.boldapp.audio.InterleavedPlayer;
-//import au.edu.unimelb.boldapp.audio.InterleavedPlayer;
 
 /**
  * Activity that allows the user to listen to recordings
@@ -58,59 +55,6 @@ public class ListenActivity extends Activity
 	 */
 	private Thread seekBarThread;
 
-	private TestPlayer originalPlayer;
-	private TestPlayer respeakingPlayer;
-  
-  private class PlayingBoth implements Runnable {
-    public void run() {
-  		List<Integer> originalSegments = new ArrayList<Integer>();
-  		originalSegments.add(0);
-  		originalSegments.add(87318);
-  		originalSegments.add(147646);
-  		originalSegments.add(211106);
-  		List<Integer> respeakingSegments = new ArrayList<Integer>();
-  		respeakingSegments.add(0);
-  		respeakingSegments.add(116000);
-  		respeakingSegments.add(240000);
-      
-      for (int i = 1; i < respeakingSegments.size(); i++) {
-		int originalPosition = originalSegments.get(i);
-        originalPlayer.write(originalPosition - originalSegments.get(i-1));
-        originalPlayer.play();
-		try {
-			Thread.sleep((originalPosition -
-			originalSegments.get(i-1))*1000/44100);
-		}catch(Exception e){
-		}
-		originalPlayer.pause();
-		int respeakingPosition = respeakingSegments.get(i);
-		respeakingPlayer.write(respeakingPosition -
-				respeakingSegments.get(i-1));
-        respeakingPlayer.play();
-		try {
-			Thread.sleep((respeakingPosition -
-					respeakingSegments.get(i-1))*1000/44100);
-		}catch(Exception e){
-		}
-		respeakingPlayer.pause();
-	  }
-    }
-  }
-
-  private class TestPause implements Runnable {
-  	public void run() {
-		try {
-			Thread.sleep(1000);
-			originalPlayer.pause();
-			respeakingPlayer.pause();
-			Thread.sleep(100);
-			originalPlayer.play();
-			respeakingPlayer.play();
-		} catch (Exception e) {
-		}
-	}
-  }
-
 	/**
 	 * Initialization when the activity starts.
 	 *
@@ -131,38 +75,9 @@ public class ListenActivity extends Activity
 
 		// Set up the player
 		this.player = new SimplePlayer(this.recording.getUuid());
-		//PlayerInterface test = new InterleavedPlayer(
-		//		UUID.fromString("e90cf7c7-a2bb-40a0-b7d1-8e67cc5f1e5c"),
-		//		UUID.fromString("9c11e147-5576-4c83-b5aa-92275257a554"));
 
-		List<Integer> originalSegments = new ArrayList<Integer>();
-		originalSegments.add(0);
-		originalSegments.add(87318);
-		originalSegments.add(147646);
-		originalSegments.add(211106);
-		int i = 0;
-		List<Integer> respeakingSegments = new ArrayList<Integer>();
-		respeakingSegments.add(0);
-		respeakingSegments.add(116000);
-		respeakingSegments.add(240000);
-
-
-		SimplePlayer p = new SimplePlayer(recordingUUID);
-		p.setNotificationMarkerPosition(2000);
-		p.setOnMarkerReachedListener(new
-				MarkedMediaPlayer.OnMarkerReachedListener() {
-			public void onMarkerReached(MarkedMediaPlayer p) {
-				Log.i("gcp", "markerreached");
-				p.pause();
-			}
-		});
-		p.start();
-
-
-		/*
 		InterleavedPlayer ip = new InterleavedPlayer(recordingUUID);
-		ip.start();
-		*/
+		//ip.start();
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
 		this.seekBar.setOnSeekBarChangeListener(this);
@@ -293,10 +208,5 @@ public class ListenActivity extends Activity
 	 */
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-	}
-
-	public void swap() {
-		Log.i("blorg", "i'm here, playa");
-		respeakingPlayer.play();
 	}
 }

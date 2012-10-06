@@ -16,14 +16,39 @@ import org.json.simple.parser.ParseException;
 
 import au.edu.unimelb.boldapp.FileIO;
 
+/**
+ * Offers functionality to play a respeaking interleaved with the original.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class InterleavedPlayer {
+
+	/**
+	 * The Player for the original audio.
+	 */
 	private SimplePlayer original;
+
+	/**
+	 * The Player for the respeaking audio.
+	 */
 	private SimplePlayer respeaking;
 
-	private List<Long> originalSegments;
-	private List<Long> respeakingSegments;
+	/**
+	 * A list of time values in milliseconds that correspond to segments in the
+	 * original audio.
+	 */
+	private List<Integer> originalSegments;
+
+	/**
+	 * A list of time values in milliseconds that correspond to segments in the
+	 * respeaking audio.
+	 */
+	private List<Integer> respeakingSegments;
 
 	public InterleavedPlayer(UUID respeakingUUID) {
+		
+		// Initialize the players
 		try {
 			JSONParser parser = new JSONParser();
 			String jsonStr = FileIO.read(FileIO.getRecordingsPath() +
@@ -32,11 +57,11 @@ public class InterleavedPlayer {
 			JSONObject jsonObj = (JSONObject) obj;
 			UUID originalUUID = UUID.fromString(
 					jsonObj.get("originalUUID").toString());
-			Log.i("yaw", " " + originalUUID);
 			original = new SimplePlayer(originalUUID);
 			respeaking = new SimplePlayer(respeakingUUID);
 		} catch (ParseException e) {
-			// Oh noes.
+			// Cannot interleave the respeaking.
+			e.printStackTrace();
 		}
 
 		// If the sample rates aren't the same, do something
@@ -44,8 +69,8 @@ public class InterleavedPlayer {
 			// What exactly, is yet to be decided.
 		}
 
-		originalSegments = new ArrayList<Long>();
-		respeakingSegments = new ArrayList<Long>();
+		originalSegments = new ArrayList<Integer>();
+		respeakingSegments = new ArrayList<Integer>();
 		// Reading the samples from the mapping file into a list of segments.
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(
@@ -55,10 +80,12 @@ public class InterleavedPlayer {
 			try {
 				while ((line = reader.readLine()) != null) {
 					String[] lineSplit = line.split(",");
-					originalSegments.add(Long.parseLong(lineSplit[0]));
+					originalSegments.add( Integer.parseInt(lineSplit[0]) *
+							1000/respeaking.getSampleRate());
 					// If there is a respeaking sample
 					if (lineSplit.length == 2) {
-						respeakingSegments.add(Long.parseLong(lineSplit[1]));
+						respeakingSegments.add( Integer.parseInt(lineSplit[1])
+								* 1000/respeaking.getSampleRate());
 					}
 				}
 			} catch (IOException e) {
@@ -68,67 +95,14 @@ public class InterleavedPlayer {
 			e.printStackTrace();
 		}
 
-		originalSegments.add((long)original.getDuration()*44100/1000);
-		respeakingSegments.add((long)respeaking.getDuration()*44100/1000);
+		originalSegments.add(original.getDuration());
+		respeakingSegments.add(respeaking.getDuration());
 
 		Log.i("yaw", " " + originalSegments);
 		Log.i("yaw", " " + respeakingSegments);
 
-		// Initialize notification markers
-		int msec = originalSegments.get(1).intValue()*1000/44100;
-		original.setNotificationMarkerPosition(msec);
-		msec = respeakingSegments.get(1).intValue()*1000/44100;
-		respeaking.setNotificationMarkerPosition(msec);
-		original.setOnMarkerReachedListener(new InterleavedMarkerListener());
-		respeaking.setOnMarkerReachedListener(new InterleavedMarkerListener());
-	}
+		original.play(1980);
+		respeaking.play(2630);
 
-	private class InterleavedMarkerListener extends
-			MarkedMediaPlayer.OnMarkerReachedListener {
-
-		private int segCount = 1;
-		private int count = 0;
-
-		public void onMarkerReached(MarkedMediaPlayer p) {
-			Log.i("marking", "mark" + count++);
-			// Pause the player
-			p.pause();
-
-			segCount++;
-
-			if (p == original) {
-				if (segCount >= originalSegments.size()) {
-					if (originalSegments.size() == respeakingSegments.size()) {
-						respeaking.start();
-					}
-				} else {
-					int msec =
-							originalSegments.get(segCount).intValue()*1000/44100;
-					p.setNotificationMarkerPosition(msec);
-					respeaking.start();
-				}
-			} else /* p == respeaking */ {
-				if (segCount >= respeakingSegments.size()) {
-					if (originalSegments.size() > respeakingSegments.size()) {
-						original.start();
-					}
-				} else {
-					int msec =
-							respeakingSegments.get(segCount).intValue()*1000/44100;
-					p.setNotificationMarkerPosition(msec);
-					original.start();
-				}
-			}
-		}
-	}
-
-	public void start() {
-		new Thread(new PlayingStuff()).start();
-	}
-
-	private class PlayingStuff implements Runnable {
-		public void run() {
-			original.start();
-		}
 	}
 }

@@ -76,7 +76,6 @@ public class MarkedMediaPlayer extends MediaPlayer {
 					// Would be a programming error
 				}
 				if (getCurrentPosition() >= getNotificationMarkerPosition()) {
-					Log.i("gcp", " " + getCurrentPosition());
 					if(onMarkerReachedListener != null) {
 						onMarkerReachedListener.onMarkerReached(
 								MarkedMediaPlayer.this);
