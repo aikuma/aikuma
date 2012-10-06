@@ -13,7 +13,7 @@ public interface PlayerInterface {
 	/**
 	 * Gets the current playback position.
 	 *
-	 * @return	the current position in milliseconds
+	 * @return	the current position in milliseconds.
 	 */
 	int getCurrentPosition();
 
@@ -33,26 +33,48 @@ public interface PlayerInterface {
 	long getCurrentSample();
 
 	/**
-	 * Checks whether the MediaPlayer is playing
+	 * Checks whether the MediaPlayer is playing.
 	 *
-	 * @return	true if currently playing, false otherwise
+	 * @return	true if currently playing, false otherwise.
 	 */
 	boolean isPlaying();
 
+	/**
+	 * Starts or resumes playback. If playback had previously been paused,
+	 * playback will resume from where it was paused. If playback had been
+	 * stopped, or never started before, playback will start at the beginning.
+	 */
 	void start();
+
+	/**
+	 * Register a callback to be invoked when the end of a media source has
+	 * been reached during playback.
+	 *
+	 * @param	listener	the callback that will be run.
+	 */
 	void setOnCompletionListener(MediaPlayer.OnCompletionListener listener);
+
 	/**
 	 * Releases resources associated with this Player.
 	 */
 	void release();
-	void pause();
-	int getDuration();
+
 	/**
-	 * Seeks to the specified time position
+	 * Pauses playback. Call start() to resume.
+	 */
+	void pause();
+
+	/**
+	 * Gets the duration of the file.
+	 *
+	 * @return	the duration of the file in milliseconds.
+	 */
+	int getDuration();
+
+	/**
+	 * Seeks to the specified time position.
 	 *
 	 * @param	msec	the offset in milliseconds from the start to seek to.
 	 */
 	void seekTo(int msec);
-
-
 }
