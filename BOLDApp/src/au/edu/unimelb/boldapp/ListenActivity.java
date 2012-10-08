@@ -77,7 +77,11 @@ public class ListenActivity extends Activity
 		if (this.recording.isOriginal()) {
 			this.player = new SimplePlayer(this.recording.getUuid());
 		} else {
-			this.player = new InterleavedPlayer(this.recording.getUuid());
+			if (intent.getBooleanExtra("interleavedChoice", true)) {
+				this.player = new InterleavedPlayer(this.recording.getUuid());
+			} else {
+				this.player = new SimplePlayer(this.recording.getUuid());
+			}
 		}
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);

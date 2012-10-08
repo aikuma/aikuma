@@ -11,4 +11,6 @@
 	<string name="sort_user">Filter by user</string>
 	<string name="take_photo">Take Photo</string>
 	<string name="record_name">Record name</string>
+	<string name="simple_respeak">Simple</string>
+	<string name="interleaved_respeak">Interleaved</string>
 </resources>
