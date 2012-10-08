@@ -66,6 +66,8 @@ public class MarkedMediaPlayer extends MediaPlayer {
 	public static abstract class OnMarkerReachedListener {
 		public abstract void onMarkerReached(MarkedMediaPlayer p);
 	}
+	
+	private static int count;
 
 	/**
 	 * Implements a run that polls the current position to check
@@ -89,6 +91,7 @@ public class MarkedMediaPlayer extends MediaPlayer {
 							getNotificationMarkerPosition()) {
 						Log.i("mark", "marker reached");
 						if(onMarkerReachedListener != null) {
+							Log.i("segCount", " " + count++);
 							onMarkerReachedListener.onMarkerReached(
 									MarkedMediaPlayer.this);
 						}

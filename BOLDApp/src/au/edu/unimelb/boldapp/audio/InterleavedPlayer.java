@@ -11,6 +11,7 @@ import java.util.Set;
 
 import android.media.MediaPlayer;
 import android.util.Log;
+import android.util.Pair;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -58,7 +59,41 @@ public class InterleavedPlayer implements PlayerInterface {
 	 */
 	private boolean toPlayOriginal;
 
+	/**
+	 * Will create a broken InterleavedPlayer; only useful for unit testing
+	 * methods
+	 */
+	public InterleavedPlayer(UUID respeakingUUID,
+			ArrayList<Integer> originalSegments,
+			ArrayList<Integer> respeakingSegments) {
+
+		this.originalSegments = originalSegments;
+		this.respeakingSegments = respeakingSegments;
+
+
+		//new Thread(new Tellme()).start();
+
+		toPlayOriginal = true;
+	}
+
 	public InterleavedPlayer(UUID respeakingUUID) {
+
+		this(respeakingUUID, new ArrayList<Integer>(), new
+		ArrayList<Integer>());
+		initializePlayers(respeakingUUID);
+		readSegments(respeakingUUID);
+
+		// Set the first markers.
+		segCount = 1;
+		original.setNotificationMarkerPosition(
+				originalSegments.get(segCount));
+		respeaking.setNotificationMarkerPosition(
+				respeakingSegments.get(segCount));
+		segCount++;
+
+	}
+
+	private void initializePlayers(UUID respeakingUUID) {
 		
 		// Initialize the players
 		try {
@@ -82,7 +117,9 @@ public class InterleavedPlayer implements PlayerInterface {
 		if (original.getSampleRate() != respeaking.getSampleRate()) {
 			// What exactly, is yet to be decided.
 		}
+	}
 
+	private void readSegments(UUID respeakingUUID) {
 		originalSegments = new ArrayList<Integer>();
 		respeakingSegments = new ArrayList<Integer>();
 		// Reading the samples from the mapping file into a list of segments.
@@ -112,20 +149,6 @@ public class InterleavedPlayer implements PlayerInterface {
 		originalSegments.add(original.getDuration());
 		respeakingSegments.add(respeaking.getDuration());
 
-		Log.i("yaw", " " + originalSegments);
-		Log.i("yaw", " " + respeakingSegments);
-
-		//new Thread(new Tellme()).start();
-
-		// Set the first markers.
-		segCount = 1;
-		original.setNotificationMarkerPosition(
-				originalSegments.get(segCount));
-		respeaking.setNotificationMarkerPosition(
-				respeakingSegments.get(segCount));
-		segCount++;
-
-		toPlayOriginal = true;
 	}
 
 	public int getSampleRate() {
@@ -152,6 +175,9 @@ public class InterleavedPlayer implements PlayerInterface {
 				original.setNotificationMarkerPosition(0);
 				return;
 			}
+			Log.i("segCount", "segCount before respeaking = " + segCount);
+			Log.i("segCount", "respeaking position = " + 
+					respeaking.getCurrentPosition());
 			respeaking.start();
 		}
 	}
@@ -170,6 +196,9 @@ public class InterleavedPlayer implements PlayerInterface {
 				return;
 			}
 			segCount++;
+			Log.i("segCount", "segCount before original = " + segCount);
+			Log.i("segCount", "original position = " + 
+				original.getCurrentPosition());
 			original.start();
 		}
 	}
@@ -209,35 +238,48 @@ public class InterleavedPlayer implements PlayerInterface {
 	}
 
 	public void seekTo(int target) {
-		Log.i("seek", "target: " + target);
+		List offsets = calculateOffsets(target);
+		// First element denotes whether the original is to play or not.
+		toPlayOriginal = offsets.get(0);
+		original.seekTo(offsets.get(0));
+		respeaking.seekTo(offsets.get(1));
+	}
+
+	public List calculateOffsets(int target) {
+		List result = new ArrayList();
 		int total = 0;
 		int previous;
 		int i;
 		for (i = 1; i < originalSegments.size(); i++) {
 			previous = total;
 			total += (originalSegments.get(i) - originalSegments.get(i-1));
+			this.segCount = i;
 			if (total > target) {
-				original.seekTo(originalSegments.get(i-1) + target - previous);
-				respeaking.seekTo(respeakingSegments.get(i-1));
-				toPlayOriginal = true;
-				this.segCount = i;
-				Log.i("seek", "playing original at segCount" + i);
-				return;
+				result.add(true);
+				result.add(originalSegments.get(i-1) +
+						target - previous);
+				result.add(respeakingSegments.get(i-1));
+				return result;
 			}
 			previous = total;
+			if (i >= respeakingSegments.size()) {
+				result.add(false);
+				result.add(originalSegments.get(i));
+				result.add(respeakingSegments.get(i-1));
+				return result;
+			}
 			total += (respeakingSegments.get(i) - respeakingSegments.get(i-1));
 			if (total > target) {
-				respeaking.seekTo(
-						respeakingSegments.get(i-1) + target - previous);
-				toPlayOriginal = false;
-				this.segCount = i;
-				Log.i("seek", "playing respeaking at segCount" + i);
-				return;
+				result.add(false);
+				result.add(originalSegments.get(i));
+				result.add(respeakingSegments.get(i-1) + target - previous);
+				return result;
 			}
 		}
-		original.seekTo(original.getDuration());
-		respeaking.seekTo(respeaking.getDuration());
-		this.segCount = i;
+		result.add(false);
+		result.add(null);
+		result.add(null);
+		return result;
 	}
 
 	public int getCurrentPosition() {

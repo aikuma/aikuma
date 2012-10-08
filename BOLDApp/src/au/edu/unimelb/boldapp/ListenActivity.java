@@ -175,6 +175,7 @@ public class ListenActivity extends Activity
 					currentPosition = total;
 				} else {
 					currentPosition = player.getCurrentPosition();
+					//Log.i("segCount", "current pos: " + currentPosition);
 				}
 			} catch (InterruptedException e) {
 				return;
