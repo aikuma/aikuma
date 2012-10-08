@@ -91,6 +91,14 @@ public class Recording {
 	}
 
 	/**
+	 * Tells us whether the audio is an original or a speaking/interpretation
+	 * @return	true if original; false otherwise.
+	 */
+	public boolean isOriginal() {
+		return (this.getOriginalUuid() == null);
+	}
+
+	/**
 	 * creator accessor
 	 */
 	public User getCreator() {

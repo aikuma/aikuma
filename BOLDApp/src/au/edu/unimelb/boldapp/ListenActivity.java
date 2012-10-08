@@ -32,7 +32,7 @@ public class ListenActivity extends Activity
 	/**
 	 * The player that is used
 	 */
-	private InterleavedPlayer player;
+	private PlayerInterface player;
 
 	/**
 	 * The recording that is being played
@@ -74,7 +74,11 @@ public class ListenActivity extends Activity
 		this.recording = GlobalState.getRecordingMap().get(recordingUUID);
 
 		// Set up the player
-		this.player = new InterleavedPlayer(this.recording.getUuid());
+		if (this.recording.isOriginal()) {
+			this.player = new SimplePlayer(this.recording.getUuid());
+		} else {
+			this.player = new InterleavedPlayer(this.recording.getUuid());
+		}
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
 		this.seekBar.setOnSeekBarChangeListener(this);

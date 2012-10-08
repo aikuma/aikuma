@@ -24,7 +24,7 @@ import au.edu.unimelb.boldapp.FileIO;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class InterleavedPlayer {
+public class InterleavedPlayer implements PlayerInterface {
 
 	/**
 	 * Counter for which segments to update the notificationMarkerPosition to
@@ -53,6 +53,10 @@ public class InterleavedPlayer {
 	 * respeaking audio.
 	 */
 	private List<Integer> respeakingSegments;
+
+	/**
+	 */
+	private boolean toPlayOriginal;
 
 	public InterleavedPlayer(UUID respeakingUUID) {
 		
@@ -120,10 +124,20 @@ public class InterleavedPlayer {
 		respeaking.setNotificationMarkerPosition(
 				respeakingSegments.get(segCount));
 		segCount++;
+
+		toPlayOriginal = true;
+	}
+
+	public int getSampleRate() {
+		return original.getSampleRate();
 	}
 
 	public void start() {
-		original.start();
+		if (toPlayOriginal) {
+			original.start();
+		} else {
+			respeaking.start();
+		}
 	}
 
 	private class OriginalMarkerReachedListener extends
@@ -195,14 +209,19 @@ public class InterleavedPlayer {
 	}
 
 	public void seekTo(int target) {
+		Log.i("seek", "target: " + target);
 		int total = 0;
 		int previous;
-		for (int i = 1; i < originalSegments.size(); i++) {
+		int i;
+		for (i = 1; i < originalSegments.size(); i++) {
 			previous = total;
 			total += (originalSegments.get(i) - originalSegments.get(i-1));
 			if (total > target) {
 				original.seekTo(originalSegments.get(i-1) + target - previous);
 				respeaking.seekTo(respeakingSegments.get(i-1));
+				toPlayOriginal = true;
+				this.segCount = i;
+				Log.i("seek", "playing original at segCount" + i);
 				return;
 			}
 			previous = total;
@@ -210,12 +229,15 @@ public class InterleavedPlayer {
 			if (total > target) {
 				respeaking.seekTo(
 						respeakingSegments.get(i-1) + target - previous);
-				original.seekTo(originalSegments.get(i));
+				toPlayOriginal = false;
+				this.segCount = i;
+				Log.i("seek", "playing respeaking at segCount" + i);
 				return;
 			}
 		}
 		original.seekTo(original.getDuration());
 		respeaking.seekTo(respeaking.getDuration());
+		this.segCount = i;
 	}
 
 	public int getCurrentPosition() {
