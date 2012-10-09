@@ -68,9 +68,15 @@ public class InterleavedPlayerTest {
 		assertEquals(new Integer(0), actuals.respeakingSeekTo);
 
 		// Now seek to the end
-		//actuals = player.calculateOffsets(100000);
-		//assertEquals(new Boolean(true), actuals.toPlayOriginal);
-		//assertEquals(new Integer(0), actuals.originalSeekTo);
-		//assertEquals(new Integer(0), actuals.respeakingSeekTo);
+		actuals = player.calculateOffsets(100000);
+		assertEquals(new Integer(1200), actuals.originalSeekTo);
+		assertEquals(new Integer(2100), actuals.respeakingSeekTo);
+
+		// Seek to the start
+		actuals = player.calculateOffsets(0);
+		assertEquals(new Integer(1), actuals.segCount);
+		assertEquals(new Boolean(true), actuals.toPlayOriginal);
+		assertEquals(new Integer(0), actuals.originalSeekTo);
+		assertEquals(new Integer(0), actuals.respeakingSeekTo);
 	}
 }

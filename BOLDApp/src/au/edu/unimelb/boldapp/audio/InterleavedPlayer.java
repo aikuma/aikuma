@@ -245,6 +245,11 @@ public class InterleavedPlayer implements PlayerInterface {
 		toPlayOriginal = results.toPlayOriginal;
 		original.seekTo(results.originalSeekTo);
 		respeaking.seekTo(results.respeakingSeekTo);
+
+		original.setNotificationMarkerPosition(
+				originalSegments.get(segCount));
+		respeaking.setNotificationMarkerPosition(
+				respeakingSegments.get(segCount));
 	}
 
 	/**
