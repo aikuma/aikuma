@@ -2,8 +2,8 @@
 %html
   %head
     %title Recordings
-    %link{ "rel" => "stylesheet", "href" => "/basic.css", "type" => "text/css" }
-    %link{ "rel" => "stylesheet", "href" => "/bold.css", "type" => "text/css" }
+    %link{ :rel => 'stylesheet', :href => '/basic.css', :type => 'text/css' }
+    %link{ :rel => 'stylesheet', :href => '/bold.css', :type => 'text/css' }
   %body
     %h1
       Recordings [
@@ -17,4 +17,7 @@
         %tr
           %td= recording.name
           %td= recording.creator.name
-          %td= recording.original_path
+          %td
+            %audio{ :controls => 'controls' }
+              %source{ :src => recording.path, :type => 'audio/wav' }
+              Your browser does not support the audio element.
