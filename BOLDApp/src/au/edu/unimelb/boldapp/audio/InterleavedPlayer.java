@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.Set;
+import java.util.Arrays;
 
 import android.media.MediaPlayer;
 import android.util.Log;
@@ -238,47 +239,60 @@ public class InterleavedPlayer implements PlayerInterface {
 	}
 
 	public void seekTo(int target) {
-		List offsets = calculateOffsets(target);
+		Result results = calculateOffsets(target);
 		// First element denotes whether the original is to play or not.
-		toPlayOriginal = offsets.get(0);
-		original.seekTo(offsets.get(0));
-		respeaking.seekTo(offsets.get(1));
+		segCount = results.segCount;
+		toPlayOriginal = results.toPlayOriginal;
+		original.seekTo(results.originalSeekTo);
+		respeaking.seekTo(results.respeakingSeekTo);
 	}
 
-	public List calculateOffsets(int target) {
-		List result = new ArrayList();
+	/**
+	 * Result of a call to calculateOffsets, to be unpacked by seekTo
+	 */
+	public static class Result {
+		public Integer segCount;
+		public Boolean toPlayOriginal;
+		public Integer originalSeekTo;
+		public Integer respeakingSeekTo;
+	}
+
+	public Result calculateOffsets(int target) {
+		Result result = new Result();
 		int total = 0;
 		int previous;
 		int i;
 		for (i = 1; i < originalSegments.size(); i++) {
 			previous = total;
 			total += (originalSegments.get(i) - originalSegments.get(i-1));
-			this.segCount = i;
+			//i will be segCount
+			result.segCount = i;
 			if (total > target) {
-				result.add(true);
-				result.add(originalSegments.get(i-1) +
-						target - previous);
-				result.add(respeakingSegments.get(i-1));
+				result.toPlayOriginal = true;
+				result.originalSeekTo = originalSegments.get(i-1) +
+						target - previous;
+				result.respeakingSeekTo = respeakingSegments.get(i-1);
 				return result;
 			}
 			previous = total;
 			if (i >= respeakingSegments.size()) {
-				result.add(false);
-				result.add(originalSegments.get(i));
-				result.add(respeakingSegments.get(i-1));
+				result.toPlayOriginal = false;
+				result.originalSeekTo = originalSegments.get(i);
+				result.respeakingSeekTo = respeakingSegments.get(i-1);
 				return result;
 			}
 			total += (respeakingSegments.get(i) - respeakingSegments.get(i-1));
 			if (total > target) {
-				result.add(false);
-				result.add(originalSegments.get(i));
-				result.add(respeakingSegments.get(i-1) + target - previous);
+				result.toPlayOriginal = false;
+				result.originalSeekTo = originalSegments.get(i);
+				result.respeakingSeekTo = respeakingSegments.get(i-1) + target - previous;
 				return result;
 			}
 		}
-		result.add(false);
-		result.add(null);
-		result.add(null);
+		result.segCount = originalSegments.size();
+		result.toPlayOriginal = true;
+		result.originalSeekTo = original.getDuration();
+		result.respeakingSeekTo = respeaking.getDuration();
 		return result;
 	}
 

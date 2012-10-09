@@ -40,16 +40,37 @@ public class InterleavedPlayerTest {
 	public void calculateOffsets() {
 		// player.expects :seekToOnPlayers, 1205, 600
 		// player.seekTo 1805
-		List actuals = player.calculateOffsets(1605);
-		assertEquals(new Integer(600), actuals.get(0));
-		assertEquals(new Integer(1005), actuals.get(1));
+		InterleavedPlayer.Result actuals = player.calculateOffsets(1605);
+		assertEquals(new Integer(600), actuals.originalSeekTo);
+		assertEquals(new Integer(1005), actuals.respeakingSeekTo);
 		
 		actuals = player.calculateOffsets(0);
-		assertEquals(new Integer(0), actuals.get(0));
-		assertEquals(new Integer(0), actuals.get(1));
+		assertEquals(new Integer(0), actuals.originalSeekTo);
+		assertEquals(new Integer(0), actuals.respeakingSeekTo);
 
 		actuals = player.calculateOffsets(3300);
-		assertEquals(new Integer(1200), actuals.get(0));
-		assertEquals(new Integer(2100), actuals.get(1));
+		assertEquals(new Integer(1200), actuals.originalSeekTo);
+		assertEquals(new Integer(2100), actuals.respeakingSeekTo);
+
+		actuals = player.calculateOffsets(10000000);
+		assertEquals(new Integer(1200), actuals.originalSeekTo);
+		assertEquals(new Integer(2100), actuals.respeakingSeekTo);
+
+	}
+
+	@Test
+	public void seekTo() {
+		// Seek to the start
+		InterleavedPlayer.Result actuals = player.calculateOffsets(0);
+		assertEquals(new Integer(1), actuals.segCount);
+		assertEquals(new Boolean(true), actuals.toPlayOriginal);
+		assertEquals(new Integer(0), actuals.originalSeekTo);
+		assertEquals(new Integer(0), actuals.respeakingSeekTo);
+
+		// Now seek to the end
+		//actuals = player.calculateOffsets(100000);
+		//assertEquals(new Boolean(true), actuals.toPlayOriginal);
+		//assertEquals(new Integer(0), actuals.originalSeekTo);
+		//assertEquals(new Integer(0), actuals.respeakingSeekTo);
 	}
 }
