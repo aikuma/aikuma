@@ -8,4 +8,10 @@ public class SimpleAnalyzer extends Analyzer {
 	public void analyze(AudioHandler handler, short[] buffer) {
 		handler.audioTriggered(buffer, false);
 	}
+
+	/**
+	 * Resets the analyzer to default values.
+	 */
+	public void reset() {
+	}
 }

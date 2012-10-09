@@ -271,5 +271,14 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 	public short[] getOnsetBuffer() {
 		return onsetBuffer;
 	}
+
+	/**
+	 * Resets this analyzer to defaults.
+	 */
+	public void reset() {
+		silenceTriggers = 0;
+		speechTriggers = 0;
+		speech = false;
+	}
   
 }

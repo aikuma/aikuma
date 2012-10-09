@@ -23,4 +23,9 @@ public abstract class Analyzer {
 	 *
 	 */
 	public abstract void analyze(AudioHandler handler, short[] buffer);
+
+	/**
+	 * Resets the analyzer to default values.
+	 */
+	public abstract void reset();
 }

@@ -119,6 +119,9 @@ public class Respeaker extends Recorder {
 	public void pause() {
 		super.pause();
 		player.pause();
+		// Reset the analyzer to default values so it doesn't assume speech on
+		// resuming.
+		analyzer.reset();
 	}
 
 	/** Resume playing. */
@@ -142,13 +145,6 @@ public class Respeaker extends Recorder {
 		player.resume();
 		Log.i("samples", "playing\t\t" + player.getCurrentSample() + "," +
 				file.getCurrentSample());
-		/*
-		try {
-			writer.write(player.getCurrentSample()+",");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		*/
 	}
 
 	/** Switches the mode to record mode. */
@@ -158,6 +154,7 @@ public class Respeaker extends Recorder {
 
 	@Override
 	public void audioTriggered(short[] buffer, boolean justChanged) {
+		Log.i("issue1", "audio triggered");
 		if (justChanged) {
 			Log.i("samples", "audio\t\t" + player.getCurrentSample() + "," +
 					file.getCurrentSample());
@@ -174,6 +171,7 @@ public class Respeaker extends Recorder {
 
 	@Override
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
+		Log.i("issue1", "silence triggered; justChanged " + justChanged);
 		if (justChanged) {
 			//Log.i("samples", "silence " + file.getCurrentSample());
 			//If the recording has finished playing and we're just annotating
