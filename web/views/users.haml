@@ -5,6 +5,7 @@
     %link{ :rel => 'stylesheet', :href => '/basic.css', :type => 'text/css' }
     %link{ :rel => 'stylesheet', :href => '/bold.css', :type => 'text/css' }
   %body
+    %a{ :href => "./recordings" } Recordings
     %h1
       Recordings grouped by user [
       = @path
@@ -16,7 +17,7 @@
       %h1{ :id => user.name }= user.name
       %table.table.table-striped.table-bordered.table-hover
         %th Name
-        %th Original
+        %th Recording
         - user.recordings.each do |recording|
           %tr
             %td= recording.name
