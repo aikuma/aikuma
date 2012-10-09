@@ -8,7 +8,7 @@ require_relative 'lib/users'
 
 # Shows the recordings grouped by users.
 #
-get %r{(?<path>[\/\w]+)\/users\/?$} do
+get %r{(?<path>.+)\/users\/?$} do
   @path = params[:path]
   
   @users = Users.new(@path).map_uuids do |uuid|
@@ -23,7 +23,7 @@ end
 
 # Shows all the recordings.
 #
-get %r{(?<path>[\/\w]+)\/recordings\/?$} do
+get %r{(?<path>.+)\/recordings\/?$} do
   @path = params[:path]
   
   @recordings = Recordings.new(@path).map_uuids do |uuid|
@@ -35,7 +35,7 @@ end
 
 # Returns a file if requested.
 #
-get %r{(?<path>[\/\w]+)\/recordings\/(?<uuid>[0-9a-f\-]+)\.\w+$} do
+get %r{(?<path>.+)\/recordings\/(?<uuid>[0-9a-f\-]+)\.\w+$} do
   recording = Recording.load_from params[:path], params[:uuid]
   
   send_file recording.path
