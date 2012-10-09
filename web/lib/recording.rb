@@ -1,5 +1,7 @@
 require 'json'
 
+require_relative 'creator'
+
 class Recording
   
   attr_reader :name, :creator, :original_path
@@ -16,7 +18,7 @@ class Recording
       properties = hash_from file.read
     end
     new properties['recording_name'],
-        properties['creatorUUID'],
+        Creator.load_from(path, properties['creatorUUID']),
         properties['originalUUID']
   end
   
