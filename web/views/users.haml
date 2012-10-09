@@ -14,10 +14,11 @@
       %a{ :href => "##{user.name}" }= user.name
       •
     - @users.each do |user|
-      %h1{ :id => user.name }= user.name
+      %h2{ :id => user.name }= user.name
       %table.table.table-striped.table-bordered.table-hover
         %th Name
         %th Recording
+        %th Recording UUID
         - user.recordings.each do |recording|
           %tr
             %td= recording.name
@@ -25,3 +26,5 @@
               %audio{ :controls => 'controls' }
                 %source{ :src => recording.path, :type => 'audio/wav' }
                 Your browser does not support the audio element.
+            %td
+              = recording.uuid

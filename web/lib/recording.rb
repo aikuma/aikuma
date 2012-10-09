@@ -4,10 +4,10 @@ require_relative 'user'
 
 class Recording
   
-  attr_reader :name, :user, :path
+  attr_reader :uuid, :name, :user, :path
   
-  def initialize name, user, path
-    @name, @user, @path = name, user, path
+  def initialize uuid, name, user, path
+    @uuid, @name, @user, @path = uuid, name, user, path
   end
   
   def self.load_from path, uuid
@@ -17,7 +17,8 @@ class Recording
     File.open File.join(base_path, "#{uuid}.json") do |file|
       properties = hash_from file.read
     end
-    new properties['recording_name'],
+    new uuid,
+        properties['recording_name'],
         User.load_from(path, properties['creatorUUID']),
         File.join(base_path, "#{properties['uuid']}.wav")
   end
