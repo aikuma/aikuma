@@ -11,12 +11,12 @@
       ]
     %table.table.table-striped.table-bordered.table-hover
       %th Name
-      %th Creator
+      %th User
       %th Original
       - @recordings.each do |recording|
         %tr
           %td= recording.name
-          %td= recording.creator.name
+          %td= recording.user.name
           %td
             %audio{ :controls => 'controls' }
               %source{ :src => recording.path, :type => 'audio/wav' }

@@ -13,4 +13,11 @@ class Recordings
     end
   end
   
+  def for user
+    recordings = map_uuids do |uuid|
+      Recording.load_from path, uuid
+    end
+    recordings.select { |recording| user.uuid == recording.user.uuid }
+  end
+  
 end

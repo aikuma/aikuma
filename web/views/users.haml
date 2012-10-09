@@ -1,0 +1,26 @@
+!!!
+%html
+  %head
+    %title Recordings grouped by user
+    %link{ :rel => 'stylesheet', :href => '/basic.css', :type => 'text/css' }
+    %link{ :rel => 'stylesheet', :href => '/bold.css', :type => 'text/css' }
+  %body
+    %h1
+      Recordings grouped by user [
+      = @path
+      ]
+    - @users.each do |user|
+      %a{ :href => "##{user.name}" }= user.name
+      •
+    - @users.each do |user|
+      %h1{ :id => user.name }= user.name
+      %table.table.table-striped.table-bordered.table-hover
+        %th Name
+        %th Original
+        - user.recordings.each do |recording|
+          %tr
+            %td= recording.name
+            %td
+              %audio{ :controls => 'controls' }
+                %source{ :src => recording.path, :type => 'audio/wav' }
+                Your browser does not support the audio element.

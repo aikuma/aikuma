@@ -1,9 +1,9 @@
-class Creator
+class User
   
-  attr_reader :name
+  attr_reader :uuid, :name, :recordings
   
-  def initialize name
-    @name = name
+  def initialize uuid, name
+    @uuid, @name = uuid, name
   end
   
   def self.load_from path, uuid
@@ -14,11 +14,15 @@ class Creator
       properties = hash_from file.read
     end
     
-    new properties['name']
+    new uuid, properties['name']
   end
   
   def self.hash_from json
     JSON.parse json
+  end
+  
+  def load_recordings path
+    @recordings = Recordings.new(path).for self
   end
   
 end
