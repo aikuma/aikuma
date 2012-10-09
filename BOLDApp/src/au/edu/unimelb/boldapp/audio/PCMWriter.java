@@ -100,14 +100,12 @@ public class PCMWriter {
 					"Error occured in updateListener, recording is aborted");
 		}
 
-		//Log.i("bufferlength", "buffer.length: " + buffer.length);
 		if (sampleSize == 16) {
 			this.currentSample += buffer.length / 2;
 		} else {
 			//Assume sample size is 8.
 			this.currentSample += buffer.length;
 		}
-		//Log.i("bufferlength", "currentSample: " + currentSample);
 	}
 
 	/** Write the given short buffer to the file. */

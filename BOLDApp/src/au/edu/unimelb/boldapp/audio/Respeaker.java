@@ -86,8 +86,6 @@ public class Respeaker extends Recorder {
 	public void listen() {
 		super.listen();
 		player.play();
-		Log.i("samples", "playing_l\t\t" + player.getCurrentSample() + "," +
-				file.getCurrentSample());
 		try {
 			writer.write(player.getCurrentSample()+",");
 		} catch (Exception e) {
@@ -143,8 +141,6 @@ public class Respeaker extends Recorder {
 	protected void switchToPlay() {
 		rewind(650);
 		player.resume();
-		Log.i("samples", "playing\t\t" + player.getCurrentSample() + "," +
-				file.getCurrentSample());
 	}
 
 	/** Switches the mode to record mode. */
@@ -154,10 +150,7 @@ public class Respeaker extends Recorder {
 
 	@Override
 	public void audioTriggered(short[] buffer, boolean justChanged) {
-		Log.i("issue1", "audio triggered");
 		if (justChanged) {
-			Log.i("samples", "audio\t\t" + player.getCurrentSample() + "," +
-					file.getCurrentSample());
 			try {
 				writer.write(file.getCurrentSample() + "\n");
 				writer.write(player.getCurrentSample() + ",");
@@ -171,13 +164,10 @@ public class Respeaker extends Recorder {
 
 	@Override
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
-		Log.i("issue1", "silence triggered; justChanged " + justChanged);
 		if (justChanged) {
-			//Log.i("samples", "silence " + file.getCurrentSample());
 			//If the recording has finished playing and we're just annotating
 			//at the end, then we're finished and can stop the respeaking.
 			if (getFinishedPlaying()) {
-				Log.i("samples", "finishedPlaying");
 				super.stop();
 				try {
 					writer.close();

@@ -72,7 +72,6 @@ public class Recorder implements AudioHandler {
 
 	/** Sets the file up for writing. */
 	protected void setUpFile() {
-		Log.i("samples", "samplerate: " + listener.getSampleRate());
 		file = PCMWriter.getInstance(listener.getSampleRate(),
 				listener.getChannelConfiguration(), listener.getAudioFormat());
   }
@@ -146,7 +145,6 @@ public class Recorder implements AudioHandler {
 
 		// Simply reads and reads...
 		//
-		Log.i("issue1", "new thread is happening");
 		t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -181,7 +179,6 @@ public class Recorder implements AudioHandler {
 
 		// Wait until something is heard.
 		while (listener.read(buffer, 0, buffer.length) > 0) {
-			//Log.i("issue1", "reading");
 			// Hand in a copy of the buffer.
 			//
 			if (Thread.interrupted()) {
@@ -189,7 +186,6 @@ public class Recorder implements AudioHandler {
 			}
 			onBufferFull(Arrays.copyOf(buffer, buffer.length));
 		}
-		Log.i("issue1", "ending");
 	}
 
 	/** As soon as enough data has been read, this method

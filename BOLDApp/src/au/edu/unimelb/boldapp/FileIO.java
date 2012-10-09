@@ -184,7 +184,6 @@ public abstract class FileIO {
 		/*
 		for (int i = 0; i < recordingUuids.length; i++) {
 			recordingUuids[i] = recordingUuids[i].replace(".json", "");
-			Log.i("yoyoyo", recordingUuids[i]);
 		}
 		*/
 
@@ -223,6 +222,5 @@ public abstract class FileIO {
 	 */
 	public static void delete(String fileName) {
 		File file = new File(getAppRootPath() + fileName);
-		Log.i("roar", "filedelete: " + file.delete());
 	}
 }

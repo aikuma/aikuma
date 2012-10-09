@@ -40,7 +40,6 @@ public class SaveActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		Intent intent = getIntent();
 		uuid = (UUID) intent.getExtras().get("UUID");
-		Log.i("yoyoyo", uuid.toString());
 		setContentView(R.layout.save);
 	}
 
