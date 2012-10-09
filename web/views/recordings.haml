@@ -1,0 +1,20 @@
+!!!
+%html
+  %head
+    %title Recordings
+    %link{ "rel" => "stylesheet", "href" => "/basic.css", "type" => "text/css" }
+    %link{ "rel" => "stylesheet", "href" => "/bold.css", "type" => "text/css" }
+  %body
+    %h1
+      Recordings [
+      = @path
+      ]
+    %table.table.table-striped.table-bordered.table-hover
+      %th Name
+      %th Creator
+      %th Original
+      - @recordings.each do |recording|
+        %tr
+          %td= recording.name
+          %td= recording.creator
+          %td= recording.original_path
