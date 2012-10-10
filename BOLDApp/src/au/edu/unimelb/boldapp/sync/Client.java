@@ -70,14 +70,23 @@ public class Client {
 		// Change to appropriate working directory
 		if (loggedIn) {
 			try {
+        // TODO Check what mkdir returns and remove cdServer...
+        //
 				apacheClient.makeDirectory(serverWorkingDir);
-				result = apacheClient.changeWorkingDirectory(serverWorkingDir);
+				result = cdServerWorkingDir();
 			} catch (IOException e ) {
 				return false;
 			}
 		}
 		return result;
 	}
+  
+	/**
+	 * Logout of a server.
+	 */
+  public boolean cdServerWorkingDir() {
+    return apacheClient.changeWorkingDirectory(serverWorkingDir);
+  }
 
 	/**
 	 * Logout of a server.
@@ -105,6 +114,7 @@ public class Client {
 	public void push() throws IOException {
 		File clientDir = new File(clientWorkingDir);
 		List<String> clientFilenames = Arrays.asList(clientDir.list());
+    cdServerWorkingDir();
 		List<String> serverFilenames =
 				Arrays.asList(apacheClient.listNames());
 		System.out.println("" + clientFilenames);
