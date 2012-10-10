@@ -6,6 +6,7 @@
 BOLDApp/tmp
 BOLDApp/bin
 BOLDApp/gen
+BOLDApp/tests/bold
 
 BOLDApp/mnt/sdcard/bold
 server/public/
