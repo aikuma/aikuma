@@ -2,8 +2,10 @@ package au.edu.unimelb.boldapp.sync;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.SocketException;
 
 import java.util.Arrays;
@@ -68,6 +70,7 @@ public class Client {
 		// Change to appropriate working directory
 		if (loggedIn) {
 			try {
+				apacheClient.makeDirectory(serverWorkingDir);
 				result = apacheClient.changeWorkingDirectory(serverWorkingDir);
 			} catch (IOException e ) {
 				return false;
@@ -76,7 +79,6 @@ public class Client {
 		return result;
 	}
 
-	
 	/**
 	 * Logout of a server.
 	 */
@@ -119,6 +121,7 @@ public class Client {
 						serverWorkingDir + "/" + filename, 
 						stream);
 				System.out.println("result " + result);
+				stream.close();
 			}
 		}
 
@@ -131,11 +134,29 @@ public class Client {
 
 	}
 
-	/*
-	public boolean serverDeleteAll() {
-		boolean result = apacheClient.deleteFile(
+	/**
+	 * Pull file from the server that are on the server but not on the client.
+	 */
+	public void pull() throws IOException {
+		File clientDir = new File(clientWorkingDir);
+		List<String> clientFilenames = Arrays.asList(clientDir.list());
+		List<String> serverFilenames =
+				Arrays.asList(apacheClient.listNames());
+		File file = null;
+		OutputStream stream = null;
+		Boolean result = null;
+		for (String filename : serverFilenames) {
+			if (!clientFilenames.contains(filename)) {
+				file = new File(clientDir + "/" + filename);
+				stream = new FileOutputStream(file);
+				result = apacheClient.retrieveFile(
+						serverWorkingDir + "/" + filename,
+						stream);
+				System.out.println("result " + result);
+				stream.close();
+			}
+		}
 	}
-	*/
 
 	/**
 	 * The Apache FTPClient used by this FTPClient.

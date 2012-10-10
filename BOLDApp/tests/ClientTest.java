@@ -16,18 +16,8 @@ public class ClientTest {
 	public void setUp() {
 		client = new Client();
 		client.setClientWorkingDir("tests/bold");
-		client.setServerWorkingDir("part0/share");
+		client.setServerWorkingDir("/part0/share/bold");
 
-		File boldDir = new File("tests/bold");
-		boldDir.mkdir();
-
-		try {
-			BufferedWriter out = new BufferedWriter(
-					new FileWriter("tests/bold/test_file"));
-			out.write("ok");
-			out.close();
-		} catch (Exception e) {
-		}
 	}
 
 	@Test
@@ -41,13 +31,41 @@ public class ClientTest {
 
 	@Test
 	public void pushPull() {
+
+		// Make the directory
+		File boldDir = new File("tests/bold");
+		boldDir.mkdir();
+
+		// Write files to the directory
+		try {
+			BufferedWriter out = new BufferedWriter(
+					new FileWriter("tests/bold/test_file"));
+			out.write("ok");
+			out.close();
+		} catch (Exception e) {
+		}
+
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
 
+		// Push files to server
 		try {
 			client.push();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		// Clear all the files in the directory
+		for (File file : boldDir.listFiles()) {
+			file.delete();
+		}
+
+		// Pull files from server
+		try {
+			client.pull();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		assertEquals(true, client.logout());
 
 	}
