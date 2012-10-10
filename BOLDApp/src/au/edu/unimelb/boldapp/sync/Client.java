@@ -11,7 +11,7 @@ import org.apache.commons.net.ftp.FTP;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class FTPClient {
+public class Client {
 
 	/**
 	 * The Apache FTPClient used by this FTPClient

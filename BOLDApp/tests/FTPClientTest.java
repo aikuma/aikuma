@@ -1,4 +1,4 @@
-import au.edu.unimelb.boldapp.sync.client;
+import au.edu.unimelb.boldapp.sync.Client;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,19 +6,19 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class FTPClientTest {
-	FTPClient client;
+	Client client;
 
 	@Before
 	public void setUp() {
-		client = new FTPClient();
+		client = new Client();
 	}
 
 	@Test
 	public void loginLogout() {
-		assertEquals(true, client.login("192.168.1.1", "admin", "boldbold");
-		assertEquals(true, client.logout();
+		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
+		assertEquals(true, client.logout());
 
-		assertEquals(false, client.login("192.168.1.1", "admin", "wrongpass");
-		assertEquals(false, client.logout();
+		assertEquals(false, client.login("192.168.1.1", "admin", "wrongpass"));
+		assertEquals(false, client.logout());
 	}
 }
