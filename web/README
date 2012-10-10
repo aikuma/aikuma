@@ -1,0 +1,15 @@
+README
+======
+
+Installation
+------------
+
+* Ruby 1.9
+* gem install sinatra haml
+
+Run
+---
+
+ruby web/app.rb
+open http://localhost:4567/Users/hanke/temp/boldapp/web/example/recordings
+(which is the local path to the recordings)

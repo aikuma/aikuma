@@ -15,3 +15,5 @@ server/public/
 **/.DS_Store
 
 local.properties
+
+/web/example
