@@ -70,8 +70,6 @@ public class Client {
 		// Change to appropriate working directory
 		if (loggedIn) {
 			try {
-        // TODO Check what mkdir returns and remove cdServer...
-        //
 				apacheClient.makeDirectory(serverWorkingDir);
 				result = cdServerWorkingDir();
 			} catch (IOException e ) {
@@ -80,13 +78,7 @@ public class Client {
 		}
 		return result;
 	}
-  
-	/**
-	 * Logout of a server.
-	 */
-  public boolean cdServerWorkingDir() {
-    return apacheClient.changeWorkingDirectory(serverWorkingDir);
-  }
+
 
 	/**
 	 * Logout of a server.
@@ -109,62 +101,90 @@ public class Client {
 	}
 
 	/**
-	 * Push files to server that are on the client but not the server.
+	 * Sync the client with the server.
+	 *
+	 * @return	true if completely successful; false otherwise.
 	 */
-	public void push() throws IOException {
+	public boolean sync() {
+		boolean pushResult = push();
+		boolean pullResult = pull();
+		return pushResult && pullResult;
+	}
+
+	/**
+	 * Push files to server that are on the client but not the server.
+	 *
+	 * @return	true if successful; false otherwise.
+	 */
+	public boolean push() {
 		File clientDir = new File(clientWorkingDir);
 		List<String> clientFilenames = Arrays.asList(clientDir.list());
-    cdServerWorkingDir();
-		List<String> serverFilenames =
-				Arrays.asList(apacheClient.listNames());
-		System.out.println("" + clientFilenames);
-		System.out.println("" + serverFilenames);
-		File file = null;
-		InputStream stream = null;
-		Boolean result = null;
-		for (String filename : clientFilenames) {
-			if (!serverFilenames.contains(filename)) {
-				System.out.println(filename + " not on the server.");
-				file = new File(clientDir + "/" + filename);
-				stream = new FileInputStream(file);
-				result = apacheClient.storeFile(
-						serverWorkingDir + "/" + filename, 
-						stream);
-				System.out.println("result " + result);
-				stream.close();
+		cdServerWorkingDir();
+		try {
+			List<String> serverFilenames =
+					Arrays.asList(apacheClient.listNames());
+			File file = null;
+			InputStream stream = null;
+			Boolean result = null;
+			for (String filename : clientFilenames) {
+				if (!serverFilenames.contains(filename)) {
+					file = new File(clientDir + "/" + filename);
+					stream = new FileInputStream(file);
+					result = apacheClient.storeFile(
+							serverWorkingDir + "/" + filename, 
+							stream);
+					System.out.println("result " + result);
+					stream.close();
+				}
 			}
+		} catch (IOException e) {
+			return false;
 		}
 
-		clientFilenames = Arrays.asList(clientDir.list());
-		serverFilenames =
-				Arrays.asList(apacheClient.listNames());
-
-		System.out.println("" + clientFilenames);
-		System.out.println("" + serverFilenames);
-
+		return true;
 	}
 
 	/**
 	 * Pull file from the server that are on the server but not on the client.
+	 *
+	 * @return	true if successful; false otherwise.
 	 */
-	public void pull() throws IOException {
+	public boolean pull() {
 		File clientDir = new File(clientWorkingDir);
 		List<String> clientFilenames = Arrays.asList(clientDir.list());
-		List<String> serverFilenames =
-				Arrays.asList(apacheClient.listNames());
-		File file = null;
-		OutputStream stream = null;
-		Boolean result = null;
-		for (String filename : serverFilenames) {
-			if (!clientFilenames.contains(filename)) {
-				file = new File(clientDir + "/" + filename);
-				stream = new FileOutputStream(file);
-				result = apacheClient.retrieveFile(
-						serverWorkingDir + "/" + filename,
-						stream);
-				System.out.println("result " + result);
-				stream.close();
+		cdServerWorkingDir();
+		try {
+			List<String> serverFilenames =
+					Arrays.asList(apacheClient.listNames());
+			File file = null;
+			OutputStream stream = null;
+			Boolean result = null;
+			for (String filename : serverFilenames) {
+				if (!clientFilenames.contains(filename)) {
+					file = new File(clientDir + "/" + filename);
+					stream = new FileOutputStream(file);
+					result = apacheClient.retrieveFile(
+							serverWorkingDir + "/" + filename,
+							stream);
+					stream.close();
+				}
 			}
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Change the working directory of the apache client.
+	 *
+	 * @return	true if successful; false otherwise.
+	 */
+	public boolean cdServerWorkingDir() {
+		try {
+			return apacheClient.changeWorkingDirectory(serverWorkingDir);
+		} catch (IOException e) {
+			return false;
 		}
 	}
 

@@ -7,6 +7,8 @@ import java.io.BufferedWriter;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.apache.commons.io.FileUtils;
+
 import static org.junit.Assert.assertEquals;
 
 public class ClientTest {
@@ -36,23 +38,16 @@ public class ClientTest {
 		File boldDir = new File("tests/bold");
 		boldDir.mkdir();
 
-		// Write files to the directory
+		File boldExampleDir = new File("tests/bold_example");
+
 		try {
-			BufferedWriter out = new BufferedWriter(
-					new FileWriter("tests/bold/test_file"));
-			out.write("ok");
-			out.close();
+			FileUtils.copyDirectory(boldExampleDir, boldDir);
 		} catch (Exception e) {
 		}
 
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
 
-		// Push files to server
-		try {
-			client.push();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		assertEquals(true, client.push());
 
 		// Clear all the files in the directory
 		for (File file : boldDir.listFiles()) {
@@ -60,11 +55,7 @@ public class ClientTest {
 		}
 
 		// Pull files from server
-		try {
-			client.pull();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		assertEquals(true, client.pull());
 
 		assertEquals(true, client.logout());
 
