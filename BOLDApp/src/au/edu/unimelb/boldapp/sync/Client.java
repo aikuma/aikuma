@@ -37,6 +37,18 @@ public class Client {
 	}
 
 	/**
+	 * Standard constructor
+	 */
+	public Client() {
+		apacheClient = new org.apache.commons.net.ftp.FTPClient();
+		try {
+			apacheClient.setFileType(FTP.BINARY_FILE_TYPE);
+		} catch (IOException e) {
+			// Do nothing
+		}
+	}
+
+	/**
 	 * Login to a server.
 	 *
 	 * @param	serverURI	The server URI.
@@ -46,9 +58,6 @@ public class Client {
 	 * @return	true if the login was successful; false otherwise.
 	 */
 	public boolean login(String serverURI, String username, String password) {
-		if (apacheClient == null) {
-			apacheClient = new org.apache.commons.net.ftp.FTPClient();
-		}
 		boolean result = false;
 		if (!apacheClient.isConnected()) {
 			try {
@@ -129,20 +138,54 @@ public class Client {
 			for (String filename : clientFilenames) {
 				if (!serverFilenames.contains(filename)) {
 					file = new File(clientDir + "/" + filename);
-					stream = new FileInputStream(file);
-					result = apacheClient.storeFile(
-							serverWorkingDir + "/" + filename, 
-							stream);
-					System.out.println("result " + result);
-					stream.close();
+					if (!file.isDirectory()) {
+						stream = new FileInputStream(file);
+						result = apacheClient.storeFile(
+								serverWorkingDir + "/" + filename, 
+								stream);
+						stream.close();
+						if (!result) {
+							return false;
+						}
+					}
 				}
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			return false;
 		}
 
 		return true;
 	}
+
+/*
+	public boolean pushDirectory(String directoryName) {
+		File file = null;
+		InputStream stream = null;
+		Boolean result = null;
+
+		File dir = new File(directoryName);
+		if (!dir.isDirectory()) {
+			return false;
+		}
+		List<String> clientFilenames = Arrays.asList(dir.list());
+		for (String filename : clientFilenames) {
+			if (!serverFilenames.contains(filename)) {
+				file = new File(clientDir + "/" + filename);
+				if (!file.isDirectory()) {
+					stream = new FileInputStream(file);
+					result = apacheClient.storeFile(
+							serverWorkingDir + "/" + filename,
+							stream);
+					stream.close();
+					if (!result) {
+						return false;
+					}
+				}
+			}
+		}
+	}
+*/
 
 	/**
 	 * Pull file from the server that are on the server but not on the client.
@@ -167,6 +210,9 @@ public class Client {
 							serverWorkingDir + "/" + filename,
 							stream);
 					stream.close();
+					if (!result) {
+						return false;
+					}
 				}
 			}
 		} catch (IOException e) {
