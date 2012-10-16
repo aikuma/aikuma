@@ -11,6 +11,7 @@ import android.view.View;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import au.edu.unimelb.boldapp.sync.Client;
 
@@ -124,9 +125,23 @@ public class MainActivity extends Activity {
 		Client client = new Client();
 		client.setClientBaseDir(FileIO.getAppRootPath());
 		client.setServerBaseDir("/part0/share/bold/");
+
+		/*
 		Log.i("sync", "-----");
 		Log.i("sync", " " + client.login("192.168.1.1", "admin", "admin"));
 		Log.i("sync", " " + client.sync());
 		Log.i("sync", " " + client.logout());
+		*/
+
+		if (!client.login("192.168.1.1", "admin", "admin")) {
+			Toast.makeText(this, "login failed.", Toast.LENGTH_LONG).show();
+		} else if (!client.sync()) {
+			Toast.makeText(this, "Sync failed.", Toast.LENGTH_LONG).show();
+		} else if (!client.logout()) {
+			Toast.makeText(this, "Logout failed.", Toast.LENGTH_LONG).show();
+		} else {
+			Toast.makeText(
+					this, "Syncing complete .", Toast.LENGTH_LONG).show();
+		}
 	}
 }
