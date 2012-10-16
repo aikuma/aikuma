@@ -3,6 +3,7 @@ import au.edu.unimelb.boldapp.sync.Client;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class ClientTest {
 */
 
 	@Test
-	public void recursivePush() {
+	public void recursivePushPull() {
 		// Make the directory
 		File boldDir = new File("tests/bold");
 		boldDir.mkdir();
@@ -77,25 +78,13 @@ public class ClientTest {
 		}
 
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
-		assertEquals(true, client.pushDirectory("users/"));
-		assertEquals(true, client.logout());
-	}
-
-/*
-	@Test
-	public void recursivePull() {
-		// Make the directory
-		File boldDir = new File("tests/bold");
-		boldDir.mkdir();
-
+		assertEquals(true, client.push());
 		// Clear all the files in the directory
 		for (File file : boldDir.listFiles()) {
 			file.delete();
 		}
-
-		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
-		assertEquals(true, client.pullDirectory("users/"));
+		System.out.println(" " + Arrays.asList(boldDir.listFiles()));
+		assertEquals(true, client.pull());
 		assertEquals(true, client.logout());
 	}
-*/
 }
