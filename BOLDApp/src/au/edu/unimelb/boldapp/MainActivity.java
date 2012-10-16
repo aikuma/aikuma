@@ -12,6 +12,8 @@ import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import au.edu.unimelb.boldapp.sync.Client;
+
 /**
  * The main menu activity that is first run when the application is started.
  *
@@ -111,5 +113,20 @@ public class MainActivity extends Activity {
 		Intent intent = new Intent(this, RecordingSelectionActivity.class);
 		intent.putExtra("activity", "TranslateActivity");
 		startActivity(intent);
+	}
+
+	/**
+	 * Synchronize phone with FTP server.
+	 *
+	 * @param	view	The button that was clicked.
+	 */
+	public void sync(View view) {
+		Client client = new Client();
+		client.setClientBaseDir(FileIO.getAppRootPath());
+		client.setServerBaseDir("/part0/share/bold/");
+		Log.i("sync", "-----");
+		Log.i("sync", " " + client.login("192.168.1.1", "admin", "admin"));
+		Log.i("sync", " " + client.sync());
+		Log.i("sync", " " + client.logout());
 	}
 }

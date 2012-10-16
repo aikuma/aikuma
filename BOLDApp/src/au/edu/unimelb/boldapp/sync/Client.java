@@ -11,6 +11,8 @@ import java.net.SocketException;
 import java.util.Arrays;
 import java.util.List;
 
+import android.util.Log;
+
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
@@ -64,8 +66,10 @@ public class Client {
 			try {
 				apacheClient.connect(serverURI);
 			} catch (SocketException e) {
+				Log.i("sync", "socketexception");
 				return false;
 			} catch (IOException e) {
+				Log.i("sync", "firstIOException");
 				return false;
 			}
 		}
@@ -74,6 +78,7 @@ public class Client {
 				result = apacheClient.login(username, password);
 				loggedIn = result;
 			} catch (IOException e) {
+				Log.i("sync", "secondIOException");
 				return false;
 			}
 		}
@@ -83,9 +88,11 @@ public class Client {
 				apacheClient.makeDirectory(serverBaseDir);
 				result = cdServerBaseDir();
 			} catch (IOException e ) {
+				Log.i("sync", "thirdIOException");
 				return false;
 			}
 		}
+		Log.i("sync", "final");
 		return result;
 	}
 

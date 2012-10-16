@@ -64,6 +64,7 @@ public class ClientTest {
 	}
 */
 
+/*
 	@Test
 	public void recursivePushPull() {
 		// Make the directory
@@ -85,6 +86,20 @@ public class ClientTest {
 		}
 		System.out.println(" " + Arrays.asList(boldDir.listFiles()));
 		assertEquals(true, client.pull());
+		assertEquals(true, client.logout());
+	}
+*/
+
+	@Test
+	public void sync() {
+		// Make the directory
+		File boldDir = new File("tests/bold");
+		boldDir.mkdir();
+
+		File boldExampleDir = new File("tests/bold_example");
+
+		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
+		assertEquals(true, client.sync());
 		assertEquals(true, client.logout());
 	}
 }
