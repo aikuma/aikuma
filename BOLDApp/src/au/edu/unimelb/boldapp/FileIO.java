@@ -222,5 +222,6 @@ public abstract class FileIO {
 	 */
 	public static void delete(String fileName) {
 		File file = new File(getAppRootPath() + fileName);
+		file.delete();
 	}
 }
