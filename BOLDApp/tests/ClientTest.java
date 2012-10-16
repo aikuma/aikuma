@@ -17,8 +17,8 @@ public class ClientTest {
 	@Before
 	public void setUp() {
 		client = new Client();
-		client.setClientWorkingDir("tests/bold");
-		client.setServerWorkingDir("/part0/share/bold");
+		client.setClientBaseDir("tests/bold/");
+		client.setServerBaseDir("/part0/share/bold/");
 
 	}
 
@@ -31,6 +31,7 @@ public class ClientTest {
 		assertEquals(false, client.logout());
 	}
 
+/*
 	@Test
 	public void pushPull() {
 
@@ -60,5 +61,41 @@ public class ClientTest {
 		assertEquals(true, client.logout());
 
 	}
+*/
 
+	@Test
+	public void recursivePush() {
+		// Make the directory
+		File boldDir = new File("tests/bold");
+		boldDir.mkdir();
+
+		File boldExampleDir = new File("tests/bold_example");
+
+		try {
+			FileUtils.copyDirectory(boldExampleDir, boldDir);
+		} catch (Exception e) {
+		}
+
+		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
+		assertEquals(true, client.pushDirectory("users/"));
+		assertEquals(true, client.logout());
+	}
+
+/*
+	@Test
+	public void recursivePull() {
+		// Make the directory
+		File boldDir = new File("tests/bold");
+		boldDir.mkdir();
+
+		// Clear all the files in the directory
+		for (File file : boldDir.listFiles()) {
+			file.delete();
+		}
+
+		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
+		assertEquals(true, client.pullDirectory("users/"));
+		assertEquals(true, client.logout());
+	}
+*/
 }

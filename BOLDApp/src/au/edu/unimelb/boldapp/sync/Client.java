@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 
 /**
@@ -25,15 +26,15 @@ public class Client {
 	/**
 	 * Set up the working directory for the client.
 	 */
-	public void setClientWorkingDir(String clientWorkingDir) {
-		this.clientWorkingDir = clientWorkingDir;
+	public void setClientBaseDir(String clientBaseDir) {
+		this.clientBaseDir = clientBaseDir;
 	}
 
 	/**
 	 * Set up the working directory for the server.
 	 */
-	public void setServerWorkingDir(String serverWorkingDir) {
-		this.serverWorkingDir = serverWorkingDir;
+	public void setServerBaseDir(String serverBaseDir) {
+		this.serverBaseDir = serverBaseDir;
 	}
 
 	/**
@@ -79,8 +80,8 @@ public class Client {
 		// Change to appropriate working directory
 		if (loggedIn) {
 			try {
-				apacheClient.makeDirectory(serverWorkingDir);
-				result = cdServerWorkingDir();
+				apacheClient.makeDirectory(serverBaseDir);
+				result = cdServerBaseDir();
 			} catch (IOException e ) {
 				return false;
 			}
@@ -126,9 +127,9 @@ public class Client {
 	 * @return	true if successful; false otherwise.
 	 */
 	public boolean push() {
-		File clientDir = new File(clientWorkingDir);
+		File clientDir = new File(clientBaseDir);
 		List<String> clientFilenames = Arrays.asList(clientDir.list());
-		cdServerWorkingDir();
+		cdServerBaseDir();
 		try {
 			List<String> serverFilenames =
 					Arrays.asList(apacheClient.listNames());
@@ -141,7 +142,7 @@ public class Client {
 					if (!file.isDirectory()) {
 						stream = new FileInputStream(file);
 						result = apacheClient.storeFile(
-								serverWorkingDir + "/" + filename, 
+								serverBaseDir + "/" + filename, 
 								stream);
 						stream.close();
 						if (!result) {
@@ -158,34 +159,129 @@ public class Client {
 		return true;
 	}
 
-/*
-	public boolean pushDirectory(String directoryName) {
-		File file = null;
-		InputStream stream = null;
-		Boolean result = null;
-
-		File dir = new File(directoryName);
-		if (!dir.isDirectory()) {
+	/**
+	 * Recursively push the directory
+	 *
+	 * @param	directoryPath	the relative path from the base directory
+	 */
+	public boolean pushDirectory(String directoryPath) {
+		// Get the specified client side directory.
+		File clientDir = new File(clientBaseDir + directoryPath);
+		if (!clientDir.isDirectory()) {
 			return false;
 		}
-		List<String> clientFilenames = Arrays.asList(dir.list());
-		for (String filename : clientFilenames) {
-			if (!serverFilenames.contains(filename)) {
+
+		// Attempt to make the directory on the server side and then change
+		// into it.
+		try {
+			apacheClient.makeDirectory(
+					serverBaseDir + directoryPath);
+			apacheClient.changeWorkingDirectory(
+					serverBaseDir + directoryPath);
+		} catch (IOException e) {
+			return false;
+		}
+
+		try {
+			List<String> clientFilenames = Arrays.asList(clientDir.list());
+			List<String> serverFilenames = Arrays.asList(
+					apacheClient.listNames());
+			File file = null;
+			InputStream stream = null;
+			Boolean result = null;
+			for (String filename : clientFilenames) {
 				file = new File(clientDir + "/" + filename);
 				if (!file.isDirectory()) {
-					stream = new FileInputStream(file);
-					result = apacheClient.storeFile(
-							serverWorkingDir + "/" + filename,
-							stream);
-					stream.close();
-					if (!result) {
-						return false;
+					if (!serverFilenames.contains(filename)) {
+						stream = new FileInputStream(file);
+						result = apacheClient.storeFile(
+								serverBaseDir + directoryPath + "/" + filename,
+								stream);
+						stream.close();
+						if (!result) {
+							return false;
+						}
+					}
+				} else {
+					apacheClient.makeDirectory(filename);
+					pushDirectory(directoryPath + filename);
+					apacheClient.changeWorkingDirectory(
+							serverBaseDir + directoryPath);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Recursively push the directory
+	 *
+	 * @param	directoryPath	the relative path from the base directory
+	 */
+	public boolean pullDirectory(String directoryPath) {
+
+		// Attempt to change to the directory on the server side.
+		try {
+			boolean result;
+			result = apacheClient.changeWorkingDirectory(
+					serverBaseDir + directoryPath);
+			if (!result) {
+				return false;
+			}
+		} catch (IOException e) {
+			return false;
+		}
+
+		File clientDir = new File(clientBaseDir + directoryPath);
+		clientDir.mkdirs();
+
+		try {
+			System.out.println(apacheClient.printWorkingDirectory());
+		} catch (Exception e) {
+		}
+
+		try {
+			List<String> clientFilenames = Arrays.asList(clientDir.list());
+			List<FTPFile> serverFiles = Arrays.asList(
+					apacheClient.listFiles());
+			File file = null;
+			OutputStream stream = null;
+			Boolean result = null;
+			for (FTPFile serverFile : serverFiles) {
+				System.out.println(serverFile.getName());
+				file = new File(
+						clientBaseDir + directoryPath + "/" +
+						serverFile.getName());
+				if (serverFile.isDirectory()) {
+					file.mkdirs();
+					pullDirectory(
+							directoryPath + "/" + serverFile.getName());
+				} else {
+					System.out.println(serverFile.getName());
+					if (!clientFilenames.contains(serverFile.getName())) {
+						stream = new FileOutputStream(file);
+						result = apacheClient.retrieveFile(
+								serverBaseDir + directoryPath + "/" +
+								serverFile.getName(),
+								stream);
+						stream.close();
+						if (!result) {
+							return false;
+						}
 					}
 				}
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
 		}
+
+		return true;
 	}
-*/
 
 	/**
 	 * Pull file from the server that are on the server but not on the client.
@@ -193,9 +289,9 @@ public class Client {
 	 * @return	true if successful; false otherwise.
 	 */
 	public boolean pull() {
-		File clientDir = new File(clientWorkingDir);
+		File clientDir = new File(clientBaseDir);
 		List<String> clientFilenames = Arrays.asList(clientDir.list());
-		cdServerWorkingDir();
+		cdServerBaseDir();
 		try {
 			List<String> serverFilenames =
 					Arrays.asList(apacheClient.listNames());
@@ -207,7 +303,7 @@ public class Client {
 					file = new File(clientDir + "/" + filename);
 					stream = new FileOutputStream(file);
 					result = apacheClient.retrieveFile(
-							serverWorkingDir + "/" + filename,
+							serverBaseDir + "/" + filename,
 							stream);
 					stream.close();
 					if (!result) {
@@ -226,9 +322,9 @@ public class Client {
 	 *
 	 * @return	true if successful; false otherwise.
 	 */
-	public boolean cdServerWorkingDir() {
+	public boolean cdServerBaseDir() {
 		try {
-			return apacheClient.changeWorkingDirectory(serverWorkingDir);
+			return apacheClient.changeWorkingDirectory(serverBaseDir);
 		} catch (IOException e) {
 			return false;
 		}
@@ -247,11 +343,11 @@ public class Client {
 	/**
 	 * The path to the client's working directory.
 	 */
-	private String clientWorkingDir;
+	private String clientBaseDir;
 
 	/**
 	 * The path to the working directory.
 	 */
-	private String serverWorkingDir;
+	private String serverBaseDir;
 
 }
