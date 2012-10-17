@@ -44,11 +44,6 @@ public class Client {
 	 */
 	public Client() {
 		apacheClient = new org.apache.commons.net.ftp.FTPClient();
-		try {
-			apacheClient.setFileType(FTP.BINARY_FILE_TYPE);
-		} catch (IOException e) {
-			// Do nothing
-		}
 	}
 
 	/**
@@ -82,13 +77,25 @@ public class Client {
 				return false;
 			}
 		}
+		try {
+			// This code cannot be run before logging in, although no
+			// documentation ever says that.
+			result = apacheClient.setFileType(FTP.BINARY_FILE_TYPE);
+			if (!result) {
+				Log.i("syn", "setFileType returned false");
+				return false;
+			}
+		} catch (IOException e) {
+			Log.i("sync", "thirdIOException");
+			return false;
+		}
 		// Change to appropriate working directory
 		if (loggedIn) {
 			try {
 				apacheClient.makeDirectory(serverBaseDir);
 				result = cdServerBaseDir();
 			} catch (IOException e ) {
-				Log.i("sync", "thirdIOException");
+				Log.i("sync", "fourthIOException");
 				return false;
 			}
 		}
