@@ -19,15 +19,31 @@
 			android:src="@drawable/back"
 		/>
 		-->
-		<TextView
-			android:id="@+id/UserName"
+		<LinearLayout
+			android:id="@+id/Frame"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
-			android:scaleType="centerInside"
 			android:layout_alignParentLeft="true"
-			android:textSize="30sp"
-		/>
+			android:orientation="vertical"
+		>
+			<TextView
+				android:id="@+id/UserName"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:scaleType="centerInside"
+				android:textSize="30sp"
+			/>
+			<Button
+				android:id="@+id/Sync"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:text="@string/sync"
+				android:onClick="sync"
+			/>
+		</LinearLayout>
 		<ImageButton
 			android:id="@+id/UserIcon"
 			android:layout_width="match_parent"

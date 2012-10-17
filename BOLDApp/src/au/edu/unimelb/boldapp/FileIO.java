@@ -220,7 +220,8 @@ public abstract class FileIO {
 	 *
 	 * @param	fileName	Name of the file to be deleted.
 	 */
-	public static void delete(String fileName) {
+	public static boolean delete(String fileName) {
 		File file = new File(getAppRootPath() + fileName);
+		return file.delete();
 	}
 }
