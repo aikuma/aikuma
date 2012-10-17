@@ -18,6 +18,16 @@
 			android:onClick="goBack"
 			android:layout_alignParentLeft="true"
 		/>
+		<ImageButton
+			android:id="@+id/CreateUser"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:src="@drawable/create_user"
+			android:onClick="createUser"
+			android:layout_alignParentRight="true"
+		/>
+		/>
 		<!--
 		<TextView
 			android:id="@+id/UserName"
@@ -54,12 +64,6 @@
 			android:onClick="recordName"
 		/>
 		-->
-		<Button
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/create_user"
-			android:onClick="createUser"
-		/>
 		<ImageView
 			android:id="@+id/UserPhoto"
 			android:layout_width="wrap_content"
