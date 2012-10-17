@@ -150,9 +150,6 @@ public class InterleavedPlayer implements PlayerInterface {
 		originalSegments.add(original.getDuration());
 		respeakingSegments.add(respeaking.getDuration());
 
-	Log.i("merging", " " + originalSegments.size());
-	Log.i("merging", " " + respeakingSegments.size());
-
 	}
 
 	public int getSampleRate() {
