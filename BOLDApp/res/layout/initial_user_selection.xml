@@ -37,6 +37,15 @@
 			android:layout_weight="1"
 	>
 		<Button
+			android:id="@+id/Sync"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:layout_alignParentRight="true"
+			android:text="@string/sync"
+			android:onClick="sync"
+		/>
+		<Button
 			android:id="@+id/UserIcon"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"

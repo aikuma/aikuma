@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import au.edu.unimelb.boldapp.sync.SyncForActivity;
+
 /**
  * Activity that allows for the changing of currentUser, and links to the
  * CreateUserActivity.
@@ -72,5 +74,9 @@ public class InitialUserSelectionActivity extends ListActivity {
 	public void createUser(View view) {
 		Intent intent = new Intent(this, CreateUserActivity.class);
 		startActivity(intent);
+	}
+
+	public void sync(View view) {
+		SyncForActivity.sync(this);
 	}
 }
