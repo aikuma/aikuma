@@ -14,8 +14,8 @@ import au.edu.unimelb.boldapp.FileIO;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class SimplePlayer extends MediaPlayer {
-
+public class SimplePlayer extends MarkedMediaPlayer 
+		implements PlayerInterface {
 	/**
 	 * Standard constructor
 	 *
@@ -27,10 +27,33 @@ public class SimplePlayer extends MediaPlayer {
 			setDataSource(FileIO.getAppRootPath() + FileIO.getRecordingsPath()
 					+ uuid.toString() + ".wav");
 			prepare();
+			Log.i("threads", "prepared");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Constructor for use when the OnMarkerReachedListener will be
+	 * used
+	 *
+	 * @param	uuid	The uuid of the recording to be played
+	 * @param	onMarkerReachedListener	The callback that will be made when
+	 * set markers are reached.
+	 */
+	public SimplePlayer(UUID uuid, MarkedMediaPlayer.OnMarkerReachedListener
+			onMarkerReachedListener) {
+		super(onMarkerReachedListener);
+		try {
+			setDataSource(FileIO.getAppRootPath() + FileIO.getRecordingsPath()
+					+ uuid.toString() + ".wav");
+			prepare();
+			Log.i("threads", "prepared");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	
 	/**
 	 * Returns the sample rate of the file being played.

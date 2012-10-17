@@ -24,13 +24,13 @@ public interface PlayerInterface {
 	 */
 	int getSampleRate();
 
-	/**
-	 * Returns the current sample; a pointer to the current location in the
-	 * audio file.
-	 *
-	 * @return	The current sample.
-	 */
-	long getCurrentSample();
+//	/**
+//	 * Returns the current sample; a pointer to the current location in the
+//	 * audio file.
+//	 *
+//	 * @return	The current sample.
+//	 */
+//	long getCurrentSample();
 
 	/**
 	 * Checks whether the MediaPlayer is playing.
