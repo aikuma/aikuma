@@ -9,6 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import android.os.Environment;
 import android.util.Log;
@@ -147,26 +150,27 @@ public abstract class FileIO {
 	public static void loadUsers() {
 		// Get an array of all the UUIDs from the "users" directory
 		File dir = new File(getAppRootPath() + getUsersPath());
-		String[] userUuids = dir.list();
+		List<String> userUuids = Arrays.asList(dir.list());
 
 		// Get the user data from the metadata.json files
-		User[] users = new User[userUuids.length];
+		List<User> users = new ArrayList<User>();
 		JSONParser parser = new JSONParser();
-		for (int i=0; i < userUuids.length; i++) {
+		for (String userUuid : userUuids) {
 			String jsonStr = read(getUsersPath()
-					+ userUuids[i] + "/metadata.json");
+					+ userUuid + "/metadata.json");
 			try {
 				Object obj = parser.parse(jsonStr);
 				JSONObject jsonObj = (JSONObject) obj;
-				users[i] = new User(
+				users.add( new User(
 						UUID.fromString(jsonObj.get("uuid").toString()),
-						jsonObj.get("name").toString());
+						jsonObj.get("name").toString()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
-		GlobalState.setUsers(users);
+		User[] usersArray = new User[users.size()];
+		GlobalState.setUsers(users.toArray(usersArray));
 	}
 
 
