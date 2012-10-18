@@ -122,6 +122,9 @@ public class MainActivity extends Activity {
 	 * @param	view	The button that was clicked.
 	 */
 	public void sync(View view) {
-		SyncForActivity.sync(this);
+		//SyncForActivity.sync(this);
+		Intent intent = new Intent(this, SyncActivity.class);
+		startActivity(intent);
+
 	}
 }

@@ -74,5 +74,9 @@
 				android:screenOrientation="portrait"
 				android:theme="@android:style/Theme.NoTitleBar"
 				android:label="@string/app_name"/>
+		<activity android:name="SyncActivity"
+				android:screenOrientation="portrait"
+				android:theme="@android:style/Theme.NoTitleBar"
+				android:label="@string/app_name"/>
 	</application>
 </manifest> 
