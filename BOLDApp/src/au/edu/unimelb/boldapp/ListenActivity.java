@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
+import android.view.View;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 
@@ -85,6 +86,11 @@ public class ListenActivity extends Activity
 
 		this.seekBar = (SeekBar) findViewById(R.id.SeekBar);
 		this.seekBar.setOnSeekBarChangeListener(this);
+		if (!this.recording.isOriginal()) {
+			if (intent.getBooleanExtra("interleavedChoice", true)) {
+				this.seekBar.setVisibility(View.INVISIBLE);
+			}
+		}
 		//this.seekBarThread = new Thread(this);
 
 
