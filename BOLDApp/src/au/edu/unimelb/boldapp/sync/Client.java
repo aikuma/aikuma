@@ -86,7 +86,7 @@ public class Client {
 				return false;
 			}
 		} catch (IOException e) {
-			Log.i("sync", "thirdIOException");
+			//Log.i("sync", "thirdIOException");
 			return false;
 		}
 		// Change to appropriate working directory
@@ -94,13 +94,14 @@ public class Client {
 			try {
 				apacheClient.makeDirectory(serverBaseDir);
 				result = cdServerBaseDir();
-				Log.i("sync", "cdServerBaseDir result: " + result);
+				//result = true;
+				//Log.i("sync", "cdServerBaseDir result: " + result);
 			} catch (IOException e ) {
 				Log.i("sync", "fourthIOException");
 				return false;
 			}
 		}
-		Log.i("sync", "final");
+		//Log.i("sync", "final");
 		return result;
 	}
 
@@ -185,20 +186,22 @@ public class Client {
 			Boolean result = null;
 			for (String filename : clientFilenames) {
 				file = new File(clientDir.getPath() + "/" + filename);
-				if (!file.isDirectory()) {
-					if (!serverFilenames.contains(filename)) {
-						result = pushFile(directoryPath, file);
+				if (!file.getName().endsWith(".inprogress")) {
+					if (!file.isDirectory()) {
+						if (!serverFilenames.contains(filename)) {
+							result = pushFile(directoryPath, file);
+							if (!result) {
+								return false;
+							}
+						}
+					} else {
+						apacheClient.makeDirectory(filename);
+						result = pushDirectory(directoryPath + "/" + filename);
+						apacheClient.changeWorkingDirectory(
+								serverBaseDir + directoryPath);
 						if (!result) {
 							return false;
 						}
-					}
-				} else {
-					apacheClient.makeDirectory(filename);
-					result = pushDirectory(directoryPath + "/" + filename);
-					apacheClient.changeWorkingDirectory(
-							serverBaseDir + directoryPath);
-					if (!result) {
-						return false;
 					}
 				}
 			}
@@ -221,9 +224,14 @@ public class Client {
 		try {
 			InputStream stream = new FileInputStream(file);
 			result = apacheClient.storeFile(
-					serverBaseDir + directoryPath + "/" + file.getName(),
+					serverBaseDir + directoryPath + "/" + file.getName() +
+							".inprogress",
 					stream);
 			stream.close();
+			apacheClient.rename(
+					serverBaseDir + directoryPath + "/" + file.getName() +
+							".inprogress",
+					serverBaseDir + directoryPath + "/" + file.getName());
 		} catch (IOException e) {
 			return false;
 		}
@@ -271,23 +279,25 @@ public class Client {
 				file = new File(
 						clientBaseDir + directoryPath + "/" +
 						serverFile.getName());
-				if (serverFile.isDirectory()) {
-					file.mkdirs();
-					result = pullDirectory(
-							directoryPath + "/" + serverFile.getName());
-					if (!result) {
-						return false;
-					}
-				} else {
-					if (!clientFilenames.contains(serverFile.getName())) {
-						stream = new FileOutputStream(file);
-						result = apacheClient.retrieveFile(
-								serverBaseDir + directoryPath + "/" +
-								serverFile.getName(),
-								stream);
-						stream.close();
+				if (!file.getName().endsWith(".inprogress")) {
+					if (serverFile.isDirectory()) {
+						file.mkdirs();
+						result = pullDirectory(
+								directoryPath + "/" + serverFile.getName());
 						if (!result) {
 							return false;
+						}
+					} else {
+						if (!clientFilenames.contains(serverFile.getName())) {
+							stream = new FileOutputStream(file);
+							result = apacheClient.retrieveFile(
+									serverBaseDir + directoryPath + "/" +
+									serverFile.getName(),
+									stream);
+							stream.close();
+							if (!result) {
+								return false;
+							}
 						}
 					}
 				}
@@ -308,13 +318,45 @@ public class Client {
 	 */
 	public boolean cdServerBaseDir() {
 		try {
-			Log.i("sync", "already in: " +
-					apacheClient.printWorkingDirectory());
 			return apacheClient.changeWorkingDirectory(serverBaseDir);
 		} catch (IOException e) {
 			return false;
 		}
 	}
+
+	/**
+	 * Finds the first writable directory on the server.
+	 *
+	 * @return	the first writable directory on the server.
+	 */
+/*
+	public String findServerBaseDir() {
+		return findWritableDir("/");
+	}
+	private String findWritableDir(String startPath) {
+		try {
+			apacheClient.changeWorkingDirectory(startPath);
+			List<FTPFile> directories;
+			String writable;
+			if (apacheClient.makeDirectory("bold") == false) {
+				directories = Arrays.asList(apacheClient.listDirectories());
+				for (FTPFile dir : directories) {
+					System.out.println(dir.getName());
+					System.out.println(startPath + dir.getName());
+					writable = findWritableDir(startPath + dir.getName());
+					if (writable != null) {
+						return writable;
+					}
+				}
+			} else {
+				return apacheClient.printWorkingDirectory();
+			}
+		} catch (IOException e) {
+			return null;
+		}
+		return null;
+	}
+*/
 
 	/**
 	 * The Apache FTPClient used by this FTPClient.
