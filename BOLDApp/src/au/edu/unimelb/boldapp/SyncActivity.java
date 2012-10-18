@@ -13,6 +13,11 @@ public class SyncActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
 
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
 		Client client = new Client();
 		client.setClientBaseDir(FileIO.getAppRootPath());
 		// Eventually want a method in Client to find it's own server base dir
