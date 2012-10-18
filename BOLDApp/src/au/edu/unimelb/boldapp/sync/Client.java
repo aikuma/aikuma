@@ -82,7 +82,7 @@ public class Client {
 			// documentation ever says that.
 			result = apacheClient.setFileType(FTP.BINARY_FILE_TYPE);
 			if (!result) {
-				Log.i("syn", "setFileType returned false");
+				Log.i("sync", "setFileType returned false");
 				return false;
 			}
 		} catch (IOException e) {
@@ -94,6 +94,7 @@ public class Client {
 			try {
 				apacheClient.makeDirectory(serverBaseDir);
 				result = cdServerBaseDir();
+				Log.i("sync", "cdServerBaseDir result: " + result);
 			} catch (IOException e ) {
 				Log.i("sync", "fourthIOException");
 				return false;
@@ -181,17 +182,12 @@ public class Client {
 			List<String> serverFilenames = Arrays.asList(
 					apacheClient.listNames());
 			File file = null;
-			InputStream stream = null;
 			Boolean result = null;
 			for (String filename : clientFilenames) {
-				file = new File(clientDir + "/" + filename);
+				file = new File(clientDir.getPath() + "/" + filename);
 				if (!file.isDirectory()) {
 					if (!serverFilenames.contains(filename)) {
-						stream = new FileInputStream(file);
-						result = apacheClient.storeFile(
-								serverBaseDir + directoryPath + "/" + filename,
-								stream);
-						stream.close();
+						result = pushFile(directoryPath, file);
 						if (!result) {
 							return false;
 						}
@@ -213,6 +209,34 @@ public class Client {
 
 		return true;
 	}
+
+	/**
+	 * Push an individual file to the server.
+	 *
+	 * @param	file	The file to be pushed.
+	 * @return	true if successful; false otherwise.
+	 */
+	public boolean pushFile(String directoryPath, File file) {
+		boolean result = false;
+		try {
+			InputStream stream = new FileInputStream(file);
+			result = apacheClient.storeFile(
+					serverBaseDir + directoryPath + "/" + file.getName(),
+					stream);
+			stream.close();
+		} catch (IOException e) {
+			return false;
+		}
+		return result;
+	}
+
+	/**
+	 * Pull an individual file from the server.
+	 *
+	 * @param	file	The file to be pulled.
+	 * @return	true if successful; false otherwise.
+	 */
+	//public boolean pullFile(String directoryPath, File file);
 
 	/**
 	 * Recursively pull the directory from the server.
@@ -284,6 +308,8 @@ public class Client {
 	 */
 	public boolean cdServerBaseDir() {
 		try {
+			Log.i("sync", "already in: " +
+					apacheClient.printWorkingDirectory());
 			return apacheClient.changeWorkingDirectory(serverBaseDir);
 		} catch (IOException e) {
 			return false;
