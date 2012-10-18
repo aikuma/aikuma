@@ -134,6 +134,8 @@ public class Client {
 	public boolean sync() {
 		boolean pushResult = push();
 		boolean pullResult = pull();
+		Log.i("zxcv", "pushResult: " + pushResult);
+		Log.i("zxcv", "pullResult: " + pullResult);
 		return pushResult && pullResult;
 	}
 
@@ -244,7 +246,28 @@ public class Client {
 	 * @param	file	The file to be pulled.
 	 * @return	true if successful; false otherwise.
 	 */
-	//public boolean pullFile(String directoryPath, File file);
+	public boolean pullFile(String directoryPath, File file) {
+		Log.i("zxcv", "pullFile: " + directoryPath + " " + file.getName());
+		boolean result = false;
+		try {
+			File inProgressFile = new File(file.getPath() + ".inprogress");
+					/*clientBaseDir + directoryPath + "/" + file.getName() +
+							".inprogress");*/
+			Log.i("zxcv", "inprogressfilename  " + inProgressFile.getPath());
+			OutputStream stream = new FileOutputStream(inProgressFile);
+			result = apacheClient.retrieveFile(
+					serverBaseDir + directoryPath + "/" +
+							file.getName(),
+					stream);
+			stream.close();
+			Log.i("zxcv", "blah: " + inProgressFile.getName() + " " + result);
+			inProgressFile.renameTo(file);
+		} catch (IOException e) {
+			Log.e("zxcv", "borg" , e);
+			return false;
+		}
+		return result;
+	}
 
 	/**
 	 * Recursively pull the directory from the server.
@@ -289,12 +312,7 @@ public class Client {
 						}
 					} else {
 						if (!clientFilenames.contains(serverFile.getName())) {
-							stream = new FileOutputStream(file);
-							result = apacheClient.retrieveFile(
-									serverBaseDir + directoryPath + "/" +
-									serverFile.getName(),
-									stream);
-							stream.close();
+							result = pullFile(directoryPath, file);
 							if (!result) {
 								return false;
 							}
