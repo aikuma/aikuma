@@ -78,5 +78,11 @@ public class InitialUserSelectionActivity extends ListActivity {
 
 	public void sync(View view) {
 		SyncForActivity.sync(this);
+
+		// Refresh list
+		FileIO.loadUsers();
+		ArrayAdapter adapter = new UserArrayAdapter(this,
+				GlobalState.getUsers());
+		setListAdapter(adapter);
 	}
 }
