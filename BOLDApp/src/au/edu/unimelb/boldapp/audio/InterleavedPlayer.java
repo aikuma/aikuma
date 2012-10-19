@@ -84,13 +84,30 @@ public class InterleavedPlayer implements PlayerInterface {
 		initializePlayers(respeakingUUID);
 		readSegments(respeakingUUID);
 
-		// Set the first markers.
-		segCount = 1;
-		original.setNotificationMarkerPosition(
-				originalSegments.get(segCount));
-		respeaking.setNotificationMarkerPosition(
-				respeakingSegments.get(segCount));
-		segCount++;
+		// Set the first notification markers.
+
+		// If the length of the segments list is only 1, then there was either
+		// no mapping file, or nothing was actually recorded for the respective
+		// recording. The one element in the list would be the duration as
+		// added in readSegments
+
+		if (originalSegments.size() == 1) {
+			original.setNotificationMarkerPosition(
+					originalSegments.get(0));
+			segCount = 1;
+		} else {
+			original.setNotificationMarkerPosition(
+					originalSegments.get(1));
+			segCount = 2;
+		}
+
+		if (respeakingSegments.size() == 1) {
+			respeaking.setNotificationMarkerPosition(
+					respeakingSegments.get(0));
+		} else {
+			respeaking.setNotificationMarkerPosition(
+					respeakingSegments.get(1));
+		}
 
 	}
 
@@ -149,6 +166,15 @@ public class InterleavedPlayer implements PlayerInterface {
 
 		originalSegments.add(original.getDuration());
 		respeakingSegments.add(respeaking.getDuration());
+
+			Log.i("issue2", "originalSegments: -------");
+		for (Integer segment : originalSegments) {
+			Log.i("issue2", "originalSegments: " + segment);
+		}
+			Log.i("issue2", "respeakingSegments: -------");
+		for (Integer segment : respeakingSegments) {
+			Log.i("issue2", "respeakingSegments: " + segment);
+		}
 
 	}
 
@@ -290,7 +316,8 @@ public class InterleavedPlayer implements PlayerInterface {
 			if (total > target) {
 				result.toPlayOriginal = false;
 				result.originalSeekTo = originalSegments.get(i);
-				result.respeakingSeekTo = respeakingSegments.get(i-1) + target - previous;
+				result.respeakingSeekTo = 
+						respeakingSegments.get(i-1) + target - previous;
 				return result;
 			}
 		}

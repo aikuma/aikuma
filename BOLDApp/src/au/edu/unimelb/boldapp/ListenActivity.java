@@ -105,7 +105,9 @@ public class ListenActivity extends Activity
 				// Adjust relevant booleans
 				startedPlaying = false;
 				// Stop the seekBarThread and set the progress to max.
-				seekBarThread.interrupt();
+				if (seekBarThread != null) {
+					seekBarThread.interrupt();
+				}
 				seekBar.setProgress(seekBar.getMax());
 			}
 		});
