@@ -135,6 +135,9 @@ public class RespeakActivity extends Activity {
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".map");
 		RespeakActivity.this.finish();
+		Intent intent = new Intent(this, RecordingSelectionActivity.class);
+		intent.putExtra("activity", "RespeakActivity");
+		startActivity(intent);
 	}
 
 	/**

@@ -63,8 +63,10 @@ public class RecordingSelectionActivity extends ListActivity {
 		Intent intent = new Intent(this, ListenActivity.class);
 		if (nextActivityName.equals("RespeakActivity")) {
 			intent = new Intent(this, RespeakActivity.class);
+			this.finish();
 		} else if (nextActivityName.equals("TranslateActivity")) {
 			intent = new Intent(this, TranslateActivity.class);
+			this.finish();
 		} else if (!recording.isOriginal()) {
 			// The activity is the Listen activity.  If the chosen recording is
 			// not an original, open activity that gives the user a choice

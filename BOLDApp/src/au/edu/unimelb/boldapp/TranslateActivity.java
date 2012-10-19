@@ -67,4 +67,19 @@ public class TranslateActivity extends RespeakActivity {
 		});
 	}
 
+	/**
+	 * Cancel 
+	 *
+	 * @param	view	The button that was pressed
+	 */
+	@Override
+	public void cancel(View view){
+		respeaker.stop();
+		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
+		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".map");
+		TranslateActivity.this.finish();
+		Intent intent = new Intent(this, RecordingSelectionActivity.class);
+		intent.putExtra("activity", "TranslateActivity");
+		startActivity(intent);
+	}
 }
