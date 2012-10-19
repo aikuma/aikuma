@@ -48,11 +48,12 @@ public class SyncActivity extends Activity {
 					Toast.makeText(SyncActivity.this, "Logout failed.",
 							Toast.LENGTH_LONG).show();
 					finish();
+				} else {
+					
+					Log.i("1234", "here");
+					Toast.makeText(SyncActivity.this, "Syncing Complete.",
+							Toast.LENGTH_LONG).show();
 				}
-				
-				Log.i("1234", "here");
-				Toast.makeText(SyncActivity.this, "Syncing Complete.",
-						Toast.LENGTH_LONG).show();
 
                 finish();
                 // start the home screen
