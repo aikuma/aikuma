@@ -58,9 +58,11 @@ public class SyncActivity extends Activity {
                 finish();
                 // start the home screen
 
+				/*
                 Intent intent = new Intent(SyncActivity.this,
 						InitialUserSelectionActivity.class);
                 SyncActivity.this.startActivity(intent);
+				*/
 
             }
 
