@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import au.edu.unimelb.boldapp.sync.SyncForActivity;
+import au.edu.unimelb.boldapp.sensors.ShakeDetector;
 
 /**
  * The main menu activity that is first run when the application is started.
@@ -24,6 +25,13 @@ import au.edu.unimelb.boldapp.sync.SyncForActivity;
 public class MainActivity extends Activity {
 
 	private UUID uuid;
+  protected ShakeDetector shakeDetector = new ShakeDetector(this) {
+    @Override
+    public void shaken(float acceleration) {
+      Toast.makeText(MainActivity.this, "Acceleration: " + acceleration, Toast.LENGTH_SHORT).show();
+    }
+  };
+  
 	/**
 	 * Called when the activity is initially created.
 	 *
@@ -35,6 +43,7 @@ public class MainActivity extends Activity {
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+    shakeDetector.start();
 	}
 
 	/**
