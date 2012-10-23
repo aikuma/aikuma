@@ -22,16 +22,16 @@ import android.util.FloatMath;
  */
 public class ShakeDetector {
   
-  private SensorManager sensorManager;
-  private float acceleration;        // acceleration relative to gravity
-  private float currentAcceleration; // current acceleration including gravity
-  private float lastAcceleration;    // last acceleration including gravity
+  protected SensorManager sensorManager;
+  protected float acceleration;        // acceleration relative to gravity
+  protected float currentAcceleration; // current acceleration including gravity
+  protected float lastAcceleration;    // last acceleration including gravity
   
   // the threshold which needs to be crossed for the shaken method to be called.
   //
-  private float threshold;
+  protected float threshold;
 
-  private final SensorEventListener sensorListener = new SensorEventListener() {
+  protected final SensorEventListener sensorListener = new SensorEventListener() {
     
     // 
     //
@@ -67,14 +67,14 @@ public class ShakeDetector {
   
   // Override this method to detect shake events.
   //
-  protected void shaken(float acceleration) {
+  public void shaken(float acceleration) {
     
   }
   
   // Start listening to shaking at the beginning
   // of an activity.
   //
-  protected void start() {
+  public void start() {
     sensorManager.registerListener(
       sensorListener,
       sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
@@ -86,7 +86,7 @@ public class ShakeDetector {
   //
   // Note: Do not forget to call this.
   //
-  protected void stop() {
+  public void stop() {
     sensorManager.unregisterListener(sensorListener);
   }
   
