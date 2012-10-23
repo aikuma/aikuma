@@ -1,6 +1,13 @@
 package au.edu.unimelb.boldapp.sensors;
 
-import android.util;
+import android.app.Activity;
+import android.hardware.Sensor;
+import android.hardware.SensorListener;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.content.Context;
+import android.util.FloatMath;
 
 /**
  * A simple ShakeDetector.
@@ -46,12 +53,12 @@ public class ShakeDetector {
     }
   };
   
-  public void ShakeDetector() {
-    this(2.0f);
+  public ShakeDetector(Activity activity) {
+    this(activity, 2.0f);
   }
   
-  public void ShakeDetector(float threshold) {
-    this.sensorManager       = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+  public ShakeDetector(Activity activity, float threshold) {
+    this.sensorManager       = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
     this.acceleration        = 0.0f;
     this.currentAcceleration = SensorManager.GRAVITY_EARTH;
     this.lastAcceleration    = SensorManager.GRAVITY_EARTH;
