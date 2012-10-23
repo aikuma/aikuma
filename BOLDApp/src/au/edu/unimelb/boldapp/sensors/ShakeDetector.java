@@ -30,6 +30,7 @@ public class ShakeDetector {
   // the threshold which needs to be crossed for the shaken method to be called.
   //
   protected float threshold;
+  protected boolean goneOver;
 
   protected final SensorEventListener sensorListener = new SensorEventListener() {
     
@@ -42,9 +43,13 @@ public class ShakeDetector {
       lastAcceleration = currentAcceleration;
       currentAcceleration = FloatMath.sqrt(x*x + y*y + z*z);
       float delta = currentAcceleration - lastAcceleration;
-      acceleration = acceleration * 0.9f + delta * 0.1f; // Filtering.
-      if (acceleration > threshold) {
+      acceleration = acceleration * 0.7f + delta * 0.3f; // Slight filtering.
+      if (!goneOver && acceleration >= threshold) {
         shaken(acceleration);
+        goneOver = true; // report only once
+      }
+      if (goneOver && acceleration < threshold) {
+        goneOver = false; // reset
       }
     }
 
@@ -54,7 +59,9 @@ public class ShakeDetector {
   };
   
   public ShakeDetector(Activity activity) {
-    this(activity, 2.0f);
+    // 4 equals a quick vigorous shake that does not trigger on picking it up.
+    //
+    this(activity, 4.0f);
   }
   
   public ShakeDetector(Activity activity, float threshold) {
@@ -62,7 +69,8 @@ public class ShakeDetector {
     this.acceleration        = 0.0f;
     this.currentAcceleration = SensorManager.GRAVITY_EARTH;
     this.lastAcceleration    = SensorManager.GRAVITY_EARTH;
-    this.threshold           = threshold;
+    
+    this.threshold = threshold;
   }
   
   // Override this method to detect shake events.
@@ -75,6 +83,7 @@ public class ShakeDetector {
   // of an activity.
   //
   public void start() {
+    this.goneOver = false;
     sensorManager.registerListener(
       sensorListener,
       sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
