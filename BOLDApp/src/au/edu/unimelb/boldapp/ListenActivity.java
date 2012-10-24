@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -21,7 +22,7 @@ import au.edu.unimelb.boldapp.audio.MarkedMediaPlayer;
 import au.edu.unimelb.boldapp.audio.InterleavedPlayer;
 
 import au.edu.unimelb.boldapp.sensors.ProximityDetector;
-import android.view.MotionEvent;
+import au.edu.unimelb.boldapp.sensors.ShakeDetector;
 
 /**
  * Activity that allows the user to listen to recordings
@@ -62,6 +63,11 @@ public class ListenActivity extends Activity
 	 * Proximity detector to start/stop.
 	 */
   protected ProximityDetector proximityDetector;
+  
+	/**
+	 * Shake detector to rewind.
+	 */
+  protected ShakeDetector shakeDetector;
 
 	/**
 	 * Initialization when the activity starts.
@@ -129,6 +135,7 @@ public class ListenActivity extends Activity
 	@Override
 	public void onResume() {
     super.onResume();
+    
     this.proximityDetector = new ProximityDetector(ListenActivity.this, 2.0f) {
       public void near(float distance) {
   			play(findViewById(R.id.Play));
@@ -138,6 +145,13 @@ public class ListenActivity extends Activity
       }
     };
 		this.proximityDetector.start();
+    
+    this.shakeDetector = new ShakeDetector(ListenActivity.this, 2.0f) {
+      public void shaken(float acceleration) {
+  			player.rewind(3000);
+      }
+    };
+		this.shakeDetector.start();
 	}
   
   /**
@@ -151,6 +165,7 @@ public class ListenActivity extends Activity
     }
     player.release();
     this.proximityDetector.stop();
+    this.shakeDetector.stop();
     ListenActivity.this.finish();
   }
   
@@ -190,10 +205,17 @@ public class ListenActivity extends Activity
 		} else {
 			button.setImageResource(R.drawable.button_play);
 			player.pause();
-			seekBar.setProgress((int)(((float)player.getCurrentPosition()/
-					(float)player.getDuration())*100));
+			updateProgress();
 		}
 	}
+  
+	/**
+	 * Updates the seek bar to the current progress.
+	 */
+  protected void updateProgress() {
+		seekBar.setProgress((int)(((float)player.getCurrentPosition()/
+				(float)player.getDuration())*100));
+  }
 
 	/**
 	 * The run function for the thread that updates the seekBar.
@@ -217,6 +239,13 @@ public class ListenActivity extends Activity
 				e.printStackTrace();
 				return;
 			}
+      
+      // TODO Replace with updateProgress() – do not use
+      // currentPosition, but always player.getCurrentPosition.
+      //
+      // TODO Why is player == null necessary above when
+      // player.getDuration is called before we reach it?
+      //
 			seekBar.setProgress(
 					(int)(((float)currentPosition/(float)total)*100));
 		}
@@ -232,7 +261,7 @@ public class ListenActivity extends Activity
 			player.seekTo((int)Math.round(
 					(((float)progress)/100)*player.getDuration()));
 		} else {
-			//Progress was changed programatically
+			//Progress was changed programmatically
 		}
 	}
   
