@@ -20,7 +20,7 @@ import android.util.FloatMath;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class ShakeDetector {
+public abstract class ShakeDetector {
   
   protected SensorManager sensorManager;
   protected float acceleration;        // acceleration relative to gravity
@@ -31,15 +31,24 @@ public class ShakeDetector {
   //
   protected float threshold;
   protected boolean goneOver;
+  
+  // Which axes to detect.
+  //
+  protected boolean detectX;
+  protected boolean detectY;
+  protected boolean detectZ;
 
   protected final SensorEventListener sensorListener = new SensorEventListener() {
     
-    // 
-    //
     public void onSensorChanged(SensorEvent sensorEvent) {
-      float x = sensorEvent.values[0];
-      float y = sensorEvent.values[1];
-      float z = sensorEvent.values[2];
+      float x = 0;
+      float y = 0;
+      float z = 0;
+      
+      if (detectX) { x = sensorEvent.values[0]; }
+      if (detectY) { y = sensorEvent.values[1]; }
+      if (detectZ) { z = sensorEvent.values[2]; }
+      
       lastAcceleration = currentAcceleration;
       currentAcceleration = FloatMath.sqrt(x*x + y*y + z*z);
       float delta = currentAcceleration - lastAcceleration;
@@ -65,19 +74,31 @@ public class ShakeDetector {
   }
   
   public ShakeDetector(Activity activity, float threshold) {
+    this(activity, threshold, true, true, true);
+  }
+  
+  public ShakeDetector(
+    Activity activity,
+    float threshold,
+    boolean detectX,
+    boolean detectY,
+    boolean detectZ
+  ) {
     this.sensorManager       = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
     this.acceleration        = 0.0f;
     this.currentAcceleration = SensorManager.GRAVITY_EARTH;
     this.lastAcceleration    = SensorManager.GRAVITY_EARTH;
+    
+    this.detectX = detectX;
+    this.detectY = detectY;
+    this.detectZ = detectZ;
     
     this.threshold = threshold;
   }
   
   // Override this method to detect shake events.
   //
-  public void shaken(float acceleration) {
-    
-  }
+  public abstract void shaken(float acceleration);
   
   // Start listening to shaking at the beginning
   // of an activity.

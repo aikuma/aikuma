@@ -11,6 +11,7 @@ import android.view.View;
 import android.util.Log;
 
 import au.edu.unimelb.boldapp.audio.Respeaker;
+import au.edu.unimelb.boldapp.sensors.ShakeDetector;
 
 /**
  * The activity that allows one to translate audio
@@ -19,6 +20,7 @@ import au.edu.unimelb.boldapp.audio.Respeaker;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class TranslateActivity extends RespeakActivity {
+  
 	/**
 	 * Called when the activity starts.
 	 *
@@ -26,6 +28,8 @@ public class TranslateActivity extends RespeakActivity {
 	 * metadata file that includes the name and UUID of the user who made the
 	 * recording.
 	 *
+   * TODO There is a lot of duplicate code here and in the superclass.
+   *
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,21 @@ public class TranslateActivity extends RespeakActivity {
 				respeaker.stop();
 			}
 		});
+    
+    /**
+     * Note: Currently we're only installing the ShakeDetector
+     * in the TranslateActivity.
+     *
+     * We do not detect when somebody picks the phone up.
+     *
+     */
+    shakeDetector = new ShakeDetector(this, 3.3f, true, true, false) {
+       @Override
+       public void shaken(float acceleration) {
+         respeaker.rewind(500);
+       }
+     };
+    shakeDetector.start();
 	}
 
 	/**

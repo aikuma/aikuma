@@ -22,8 +22,6 @@ import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 
-import au.edu.unimelb.boldapp.sensors.ShakeDetector;
-
 /**
  * Activity that offers the user the ability to enter text in a text box, take
  * a photo and press a button that then subsequently creates a corresponding
@@ -40,13 +38,11 @@ public class CreateUserActivity extends Activity {
 	 */
 	private UUID uuid;
   
-  protected ShakeDetector shakeDetector;
-
-	/**
+  /**
 	 * The request code for taking a photo.
 	 */
 	static final int PHOTO_REQUEST_CODE = 0;
-
+  
 	/**
 	 * Called when the activity is starting.
 	 *
@@ -59,15 +55,6 @@ public class CreateUserActivity extends Activity {
 		setContentView(R.layout.create_user);
 		// Generate the uuid that is associated with the user
 		this.uuid = UUID.randomUUID();
-    
-    Toast.makeText(this, "Shake it like you crazy!", Toast.LENGTH_LONG).show();
-    shakeDetector = new ShakeDetector(this) {
-       @Override
-       public void shaken(float acceleration) {
-         Toast.makeText(CreateUserActivity.this, "YES: " + acceleration, Toast.LENGTH_SHORT).show();
-       }
-     };
-    shakeDetector.start();
 	}
 
 	/**

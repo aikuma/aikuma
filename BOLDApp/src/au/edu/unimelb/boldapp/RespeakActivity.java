@@ -17,6 +17,7 @@ import android.widget.Toast;
 import org.json.simple.JSONObject;
 
 import au.edu.unimelb.boldapp.audio.Respeaker;
+import au.edu.unimelb.boldapp.sensors.ShakeDetector;
 
 /**
  * The activity that allows one to respeak audio.
@@ -39,7 +40,7 @@ public class RespeakActivity extends Activity {
 	/**
 	 * Indicates whether audio is being recorded
 	 */
-	 protected Boolean respeaking;
+	protected Boolean respeaking;
 
 	/**
 	 * The recording that is being respoken
@@ -55,6 +56,11 @@ public class RespeakActivity extends Activity {
 	 * Instance of the respeaker class that offers methods to respeak
 	 */
 	protected Respeaker respeaker;
+  
+	/**
+	 * ShakeDetector used to rewind.
+	 */
+  protected ShakeDetector shakeDetector;
 
 	/**
 	 * Indicates whether audio is being recorded
@@ -123,6 +129,7 @@ public class RespeakActivity extends Activity {
 	public void onStop() {
 		//recorder.stop();
 		super.onStop();
+    shakeDetector.stop();
 	}
 
 	/**
