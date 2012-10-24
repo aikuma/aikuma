@@ -11,7 +11,6 @@ import android.view.View;
 import android.util.Log;
 
 import au.edu.unimelb.boldapp.audio.Respeaker;
-import au.edu.unimelb.boldapp.sensors.ShakeDetector;
 
 /**
  * The activity that allows one to translate audio
@@ -69,21 +68,6 @@ public class TranslateActivity extends RespeakActivity {
 				respeaker.stop();
 			}
 		});
-    
-    /**
-     * Note: Currently we're only installing the ShakeDetector
-     * in the TranslateActivity.
-     *
-     * We do not detect when somebody picks the phone up.
-     *
-     */
-    shakeDetector = new ShakeDetector(this, 3.3f, true, true, false) {
-       @Override
-       public void shaken(float acceleration) {
-         respeaker.rewind(500);
-       }
-     };
-    shakeDetector.start();
 	}
 
 	/**
