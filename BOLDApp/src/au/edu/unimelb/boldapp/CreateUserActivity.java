@@ -32,7 +32,7 @@ import org.json.simple.JSONObject;
  *
  */
 public class CreateUserActivity extends Activity {
-
+  
 	/**
 	 * The UUID associated with the yet to be created user.
 	 */
@@ -93,7 +93,6 @@ public class CreateUserActivity extends Activity {
 					uuid.toString() + "/metadata.json", jsonText);
 
 			this.finish();
-
 		}
 	}
 
