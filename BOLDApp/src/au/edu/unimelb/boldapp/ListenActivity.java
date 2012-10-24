@@ -20,6 +20,9 @@ import au.edu.unimelb.boldapp.audio.SimplePlayer;
 import au.edu.unimelb.boldapp.audio.MarkedMediaPlayer;
 import au.edu.unimelb.boldapp.audio.InterleavedPlayer;
 
+import au.edu.unimelb.boldapp.sensors.ProximityDetector;
+import android.view.MotionEvent;
+
 /**
  * Activity that allows the user to listen to recordings
  *
@@ -54,6 +57,11 @@ public class ListenActivity extends Activity
 	 * Thread to deal with updating of progress bar.
 	 */
 	private Thread seekBarThread;
+  
+	/**
+	 * Proximity detector to start/stop.
+	 */
+  protected ProximityDetector proximityDetector;
 
 	/**
 	 * Initialization when the activity starts.
@@ -111,22 +119,41 @@ public class ListenActivity extends Activity
 				seekBar.setProgress(seekBar.getMax());
 			}
 		});
-
 	}
-
-	/**
-	 * When the activity is stopped
+  
+  /**
+	 * When the activity is resumed.
+   *
+   * TODO Refactor as soon as the play method is refactored.
 	 */
 	@Override
-	public void onStop() {
-		super.onStop();
-		if (this.seekBarThread != null) {
-			this.seekBarThread.interrupt();
-		}
-		player.release();
-		ListenActivity.this.finish();
+	public void onResume() {
+    super.onResume();
+    this.proximityDetector = new ProximityDetector(ListenActivity.this, 2.0f) {
+      public void near(float distance) {
+  			play(findViewById(R.id.Play));
+      }
+      public void far(float distance) {
+  			play(findViewById(R.id.Play));
+      }
+    };
+		this.proximityDetector.start();
 	}
-
+  
+  /**
+   * When the activity is stopped.
+   */
+  @Override
+  public void onStop() {
+    super.onStop();
+    if (this.seekBarThread != null) {
+            this.seekBarThread.interrupt();
+    }
+    player.release();
+    this.proximityDetector.stop();
+    ListenActivity.this.finish();
+  }
+  
 	/**
 	 * When the back button is pressed
 	 *
@@ -208,6 +235,19 @@ public class ListenActivity extends Activity
 			//Progress was changed programatically
 		}
 	}
+  
+  /**
+   * If it is close to the ear, any touch event will
+   * be ignored.
+   */
+  @Override
+  public boolean dispatchTouchEvent(MotionEvent event) {
+    if (proximityDetector.isNear()) {
+      return false;
+    } else {
+      return super.dispatchTouchEvent(event);
+    }
+  }
 
 	/**
 	 * Obligated to implement this, but we need no functionality here.
