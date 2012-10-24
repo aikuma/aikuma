@@ -77,4 +77,11 @@ public interface PlayerInterface {
 	 * @param	msec	the offset in milliseconds from the start to seek to.
 	 */
 	void seekTo(int msec);
+  
+	/**
+   * Rewinds the player a number of miliseconds. 
+   *
+   * @param	msec	the amount of milliseconds to rewind.
+   */
+	public void rewind(int msec);
 }
