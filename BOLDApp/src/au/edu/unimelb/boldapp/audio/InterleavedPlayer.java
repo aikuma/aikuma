@@ -335,4 +335,7 @@ public class InterleavedPlayer implements PlayerInterface {
 	public int getDuration() {
 		return original.getDuration() + respeaking.getDuration();
 	}
+
+	public void rewind(int msec) {
+	}
 }
