@@ -138,10 +138,10 @@ public class ListenActivity extends Activity
     
     this.proximityDetector = new ProximityDetector(ListenActivity.this, 2.0f) {
       public void near(float distance) {
-  			play(findViewById(R.id.Play));
+  			play();
       }
       public void far(float distance) {
-  			play(findViewById(R.id.Play));
+  			pause();
       }
     };
 		this.proximityDetector.start();
@@ -183,29 +183,44 @@ public class ListenActivity extends Activity
 	}
 
 	/**
+	 * Play the audio
+	 */
+	public void play() {
+		ImageButton button = (ImageButton) findViewById(R.id.Play);
+		button.setImageResource(R.drawable.button_pause);
+		player.start();
+		if (!startedPlaying) {
+			// If the user hasn't changed the progress to some other
+			// unfinished point in the recording
+			if (seekBar.getProgress() == seekBar.getMax()) {
+				seekBar.setProgress(0);
+			}
+			this.seekBarThread = new Thread(this);
+			this.seekBarThread.start();
+			startedPlaying = true;
+		}
+	}
+
+	/**
+	 * Pause the audio
+	 */
+	public void pause() {
+		ImageButton button = (ImageButton) findViewById(R.id.Play);
+		button.setImageResource(R.drawable.button_play);
+		player.pause();
+		updateProgress();
+	}
+
+	/**
 	 * When the play button is pressed.
 	 *
 	 * @param	view	The button that was pressed
 	 */
 	public void play(View view) {
-		ImageButton button = (ImageButton) view;
 		if (!player.isPlaying()) {
-			button.setImageResource(R.drawable.button_pause);
-			player.start();
-			if (!startedPlaying) {
-				// If the user hasn't changed the progress to some other
-				// unfinished point in the recording
-				if (seekBar.getProgress() == seekBar.getMax()) {
-					seekBar.setProgress(0);
-				}
-				this.seekBarThread = new Thread(this);
-				this.seekBarThread.start();
-				startedPlaying = true;
-			}
+			play();
 		} else {
-			button.setImageResource(R.drawable.button_play);
-			player.pause();
-			updateProgress();
+			pause();
 		}
 	}
   
