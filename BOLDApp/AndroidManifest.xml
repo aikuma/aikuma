@@ -62,7 +62,7 @@
 				android:screenOrientation="portrait"
 				android:theme="@android:style/Theme.NoTitleBar"
 				android:label="@string/app_name"/>
-		<activity android:name="TranslateActivity"
+		<activity android:name="InterpretActivity"
 				android:screenOrientation="portrait"
 				android:theme="@android:style/Theme.NoTitleBar"
 				android:label="@string/app_name"/>

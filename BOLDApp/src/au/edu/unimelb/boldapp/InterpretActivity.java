@@ -18,7 +18,7 @@ import au.edu.unimelb.boldapp.audio.Respeaker;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class TranslateActivity extends RespeakActivity {
+public class InterpretActivity extends RespeakActivity {
   
 	/**
 	 * Called when the activity starts.
@@ -34,7 +34,7 @@ public class TranslateActivity extends RespeakActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		this.recordingNamePrefix = "Translation of ";
+		this.recordingNamePrefix = "Interpretation of ";
 
 		//Get the original from the intent
 		Intent intent = getIntent();
@@ -80,9 +80,9 @@ public class TranslateActivity extends RespeakActivity {
 		respeaker.stop();
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".map");
-		TranslateActivity.this.finish();
+		InterpretActivity.this.finish();
 		Intent intent = new Intent(this, RecordingSelectionActivity.class);
-		intent.putExtra("activity", "TranslateActivity");
+		intent.putExtra("activity", "InterpretActivity");
 		startActivity(intent);
 	}
 }

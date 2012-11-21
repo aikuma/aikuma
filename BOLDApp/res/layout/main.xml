@@ -115,13 +115,13 @@
 				android:onClick="goToListen"
 			/>
 			<ImageButton
-				android:id="@+id/goToTranslate"
+				android:id="@+id/goToInterpret"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_weight="1"
 				android:scaleType="centerInside"
-				android:src="@drawable/main_translate"
-				android:onClick="goToTranslate"
+				android:src="@drawable/main_interpret"
+				android:onClick="goToInterpret"
 			/>
 		</LinearLayout>
 	</LinearLayout>
