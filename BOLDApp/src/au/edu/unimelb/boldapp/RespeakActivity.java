@@ -140,10 +140,10 @@ public class RespeakActivity extends Activity {
 		this.proximityDetector =
 				new ProximityDetector( RespeakActivity.this, 2.0f) {
 					public void near(float distance) {
-						respeak();
+							respeak();
 					}
 					public void far(float distance) {
-						pause();
+							pause();
 					}
 				};
 		this.proximityDetector.start();
@@ -213,16 +213,18 @@ public class RespeakActivity extends Activity {
 	 * @param	button	The button that was clicked
 	 */
 	public void respeak() {
-		ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
-		respeaking = true;
-		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
-		pauseButton.setVisibility(View.VISIBLE);
-		respeakButton.setVisibility(View.INVISIBLE);
-		if (startedRespeaking) {
-			respeaker.resume();
-		} else {
-			startedRespeaking = true;
-			respeaker.listen();
+		if (!respeaker.getFinishedPlaying()) {
+			ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
+			respeaking = true;
+			ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
+			pauseButton.setVisibility(View.VISIBLE);
+			respeakButton.setVisibility(View.INVISIBLE);
+			if (startedRespeaking) {
+				respeaker.resume();
+			} else {
+				startedRespeaking = true;
+				respeaker.listen();
+			}
 		}
 	}
 
@@ -232,12 +234,14 @@ public class RespeakActivity extends Activity {
 	 * @param	button	The pause button that was clicked.
 	 */
 	 public void pause() {
-	 	ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
-		respeaking = false;
-		ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
-		respeakButton.setVisibility(View.VISIBLE);
-		pauseButton.setVisibility(View.INVISIBLE);
-		respeaker.pause();
+		if (!respeaker.getFinishedPlaying()) {
+			ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
+			respeaking = false;
+			ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
+			respeakButton.setVisibility(View.VISIBLE);
+			pauseButton.setVisibility(View.INVISIBLE);
+			respeaker.pause();
+		}
 	 }
 
 	/**
