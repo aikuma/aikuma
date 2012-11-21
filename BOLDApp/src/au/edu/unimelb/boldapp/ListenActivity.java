@@ -216,7 +216,7 @@ public class ListenActivity extends Activity
 	 *
 	 * @param	view	The button that was pressed
 	 */
-	public void play(View view) {
+	public void handlePlayButton(View view) {
 		if (!player.isPlaying()) {
 			play();
 		} else {

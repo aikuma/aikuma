@@ -34,7 +34,7 @@
 				android:layout_weight="0.5"
 				android:scaleType="centerInside"
 				android:src="@drawable/button_play"
-				android:onClick="play"
+				android:onClick="handlePlayButton"
 			/>
 			<SeekBar
 				style="@android:style/Widget.ProgressBar.Horizontal"
