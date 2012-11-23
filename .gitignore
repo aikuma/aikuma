@@ -6,8 +6,6 @@
 BOLDApp/tmp
 BOLDApp/bin
 BOLDApp/gen
-BOLDApp/tests/bold
-BOLDApp/tests/bold_example
 
 BOLDApp/mnt/sdcard/bold
 server/public/
@@ -18,3 +16,7 @@ server/public/
 local.properties
 
 /web/example
+
+BOLDApp/tests/bin
+BOLDApp/tests/gen
+BOLDApp/tests/local.properties
