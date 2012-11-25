@@ -14,16 +14,19 @@ import android.media.ExifInterface;
 public class ImageUtils {
 
 	/**
-	 * Shrinks the photo to a reasonable size
+	 * Resizes the photo to the specified scale.
+	 *
+	 * @param	original	The original image
+	 * @param	scale	the scale that should be applied to the original (0.5
+	 * results in an image 50% the size of the original)
+	 	
 	 */
 	public static Bitmap resizeBitmap(
-			Bitmap original, float newHeight, int newWidth) {
+			Bitmap original, float scale) {
 		int width = original.getWidth();
 		int height = original.getHeight();
-		float scaleWidth = ((float) newWidth) / width;
-		float scaleHeight = ((float) newHeight / height);
 		Matrix matrix = new Matrix();
-		matrix.postScale(scaleWidth, scaleHeight);
+		matrix.postScale(scale, scale);
 		Bitmap resized = Bitmap.createBitmap(
 				original, 0, 0, width, height, matrix, false);
 		return resized;

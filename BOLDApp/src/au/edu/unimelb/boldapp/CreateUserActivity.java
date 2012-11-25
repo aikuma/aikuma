@@ -145,7 +145,7 @@ public class CreateUserActivity extends Activity {
 				this.uuid.toString() + ".jpg";
 
 		Bitmap image = ImageUtils.retrieveFromFile(path);
-		Bitmap small = ImageUtils.resizeBitmap(image, 100, 100);
+		Bitmap small = ImageUtils.resizeBitmap(image, 0.05f);
 		try { 
 			FileOutputStream out = new FileOutputStream(
 					FileIO.getAppRootPath() + FileIO.getImagesPath() + 
