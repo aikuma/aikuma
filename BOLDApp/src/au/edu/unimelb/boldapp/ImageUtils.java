@@ -12,6 +12,23 @@ import android.media.ExifInterface;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class ImageUtils {
+
+	/**
+	 * Shrinks the photo to a reasonable size
+	 */
+	public static Bitmap resizeBitmap(
+			Bitmap original, float newHeight, int newWidth) {
+		int width = original.getWidth();
+		int height = original.getHeight();
+		float scaleWidth = ((float) newWidth) / width;
+		float scaleHeight = ((float) newHeight / height);
+		Matrix matrix = new Matrix();
+		matrix.postScale(scaleWidth, scaleHeight);
+		Bitmap resized = Bitmap.createBitmap(
+				original, 0, 0, width, height, matrix, false);
+		return resized;
+	}
+
 	/**
 	 * Method that retrieves image from file and returns a corresponding bitmap
 	 * (rotates the file according to the EXIF orientation tag, if applicable).

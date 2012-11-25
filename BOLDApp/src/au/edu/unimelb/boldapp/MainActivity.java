@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
 			Bitmap userImage = ImageUtils.retrieveFromFile(
 					FileIO.getAppRootPath() + FileIO.getImagesPath()
 					+ GlobalState.getCurrentUser().getUuid().toString() +
-							".jpg");
+							".small.jpg");
 			if (userImage != null) {
 				userSelection.setImageBitmap(userImage);
 			} else {

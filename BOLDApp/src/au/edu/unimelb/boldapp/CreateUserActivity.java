@@ -1,6 +1,7 @@
 package au.edu.unimelb.boldapp;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.StringWriter;
 import java.util.UUID;
 
@@ -144,6 +145,15 @@ public class CreateUserActivity extends Activity {
 				this.uuid.toString() + ".jpg";
 
 		Bitmap image = ImageUtils.retrieveFromFile(path);
+		Bitmap small = ImageUtils.resizeBitmap(image, 100, 100);
+		try { 
+			FileOutputStream out = new FileOutputStream(
+					FileIO.getAppRootPath() + FileIO.getImagesPath() + 
+					this.uuid.toString() + ".small.jpg");
+			small.compress(Bitmap.CompressFormat.JPEG, 100, out);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		ImageView userPhoto = (ImageView) findViewById(R.id.UserPhoto);
 		userPhoto.setImageBitmap(image);
