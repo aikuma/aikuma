@@ -1,3 +1,3 @@
 #!/bin/bash
 
-ant emma debug install test
+ant debug install test

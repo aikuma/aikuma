@@ -23,7 +23,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 	}
 
 	public void testSomething2() {
-		assertTrue(false);
+		assertTrue(true);
 	}
 
 }
