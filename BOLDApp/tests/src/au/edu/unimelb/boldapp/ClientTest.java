@@ -2,10 +2,13 @@ package au.edu.unimelb.boldapp;
 
 import au.edu.unimelb.boldapp.sync.Client;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.Arrays;
+
+import android.util.Log;
 
 import org.apache.commons.io.FileUtils;
 
@@ -17,16 +20,11 @@ public class ClientTest extends TestCase {
 	@Override
 	public void setUp() {
 		client = new Client();
-		client.setClientBaseDir("tests/bold/");
-		client.setServerBaseDir("/part0/share/bold/");
+		client.setClientBaseDir("/mnt/sdcard/bold_copy");
+		client.setServerBaseDir("/part0/share/bold_copy/");
 	}
 
 	public void testLoginLogout() {
-		System.out.println("LOLLLLLL");
-		assertTrue(false);
-		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
-		assertEquals(true, client.logout());
-
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
 		assertEquals(true, client.logout());
 
@@ -35,33 +33,42 @@ public class ClientTest extends TestCase {
 	}
 
 	public void testPushPull() {
-
 		// Make the directory
-		File boldDir = new File("tests/bold");
-		boldDir.mkdir();
+		File boldCopyDir = new File("/mnt/sdcard/bold_copy");
 
-		/*
-		File boldExampleDir = new File("bold_example");
+		// Clear all the files in the directory
+		try {
+			FileUtils.deleteDirectory(boldCopyDir);
+		} catch (IOException e) {
+			assertTrue(false);
+		}
+		boldCopyDir.mkdirs();
+
+		File boldDir = new File("/mnt/sdcard/bold");
 
 		try {
-			FileUtils.copyDirectory(boldExampleDir, boldDir);
+			FileUtils.copyDirectory(boldDir, boldCopyDir);
 		} catch (Exception e) {
+			assertTrue(false);
 		}
 
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
 
+		Log.i("donkey", "ok");
 		assertEquals(true, client.push());
 
 		// Clear all the files in the directory
-		for (File file : boldDir.listFiles()) {
-			file.delete();
+		try {
+			FileUtils.deleteDirectory(boldCopyDir);
+		} catch (IOException e) {
+			assertTrue(false);
 		}
+		boldCopyDir.mkdirs();
 
 		// Pull files from server
 		assertEquals(true, client.pull());
 
 		assertEquals(true, client.logout());
-		*/
 
 	}
 
