@@ -34,13 +34,13 @@ public class ClientTest extends TestCase {
 
 	public void testDeleteDirectory() {
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
-		//assertEquals(true, client.pushDirectory("okidoke"));
+		assertTrue(client.pushDirectory("okidoke"));
 		assertTrue(client.deleteServerDir("okidoke"));
 		assertEquals(true, client.logout());
 	}
 
-	/*
 	public void testPushPull() {
+		client.deleteServerDir("bold_copy");
 		// Make the directory
 		File boldCopyDir = new File("/mnt/sdcard/bold_copy");
 
@@ -54,6 +54,7 @@ public class ClientTest extends TestCase {
 
 		File boldDir = new File("/mnt/sdcard/bold");
 
+		// Copy bold data to bold_copy
 		try {
 			FileUtils.copyDirectory(boldDir, boldCopyDir);
 		} catch (Exception e) {
@@ -62,8 +63,7 @@ public class ClientTest extends TestCase {
 
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
 
-		Log.i("donkey", "ok");
-		assertEquals(true, client.push());
+		assertEquals(true, client.pushDirectory("bold_copy"));
 
 		// Clear all the files in the directory
 		try {
@@ -74,12 +74,11 @@ public class ClientTest extends TestCase {
 		boldCopyDir.mkdirs();
 
 		// Pull files from server
-		assertEquals(true, client.pull());
+		assertEquals(true, client.pullDirectory("bold_copy"));
 
 		assertEquals(true, client.logout());
 
 	}
-	*/
 
 /*
 	@Test
