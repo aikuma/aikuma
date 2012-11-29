@@ -24,6 +24,7 @@ public class ClientTest extends TestCase {
 		client.setServerBaseDir("/part0/share/");
 	}
 
+	/*
 	public void testLoginLogout() {
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
 		assertEquals(true, client.logout());
@@ -31,16 +32,19 @@ public class ClientTest extends TestCase {
 		assertEquals(false, client.login("192.168.1.1", "admin", "wrongpass"));
 		assertEquals(false, client.logout());
 	}
+	*/
 
+	/*
 	public void testDeleteDirectory() {
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
 		assertTrue(client.pushDirectory("okidoke"));
 		assertTrue(client.deleteServerDir("okidoke"));
 		assertEquals(true, client.logout());
 	}
+	*/
 
+	/*
 	public void testPushPull() {
-		client.deleteServerDir("bold_copy");
 		// Make the directory
 		File boldCopyDir = new File("/mnt/sdcard/bold_copy");
 
@@ -76,8 +80,18 @@ public class ClientTest extends TestCase {
 		// Pull files from server
 		assertEquals(true, client.pullDirectory("bold_copy"));
 
+		client.deleteServerDir("bold_copy");
+
 		assertEquals(true, client.logout());
 
+	}
+	*/
+
+	public void testFindServerBaseDir() {
+		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
+		client.deleteServerDir("bold");
+		Log.i("ftp", "answer: " + client.findServerBaseDir());
+		assertEquals(true, client.logout());
 	}
 
 /*

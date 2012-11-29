@@ -408,13 +408,17 @@ public class Client {
 	 *
 	 * @return	the first writable directory on the server.
 	 */
-/*
+
 	public String findServerBaseDir() {
 		return findWritableDir("/");
 	}
+
 	private String findWritableDir(String startPath) {
+		Log.i("ftp", "startPath: " + startPath);
 		try {
-			apacheClient.changeWorkingDirectory(startPath);
+			if (!apacheClient.changeWorkingDirectory(startPath)) {
+				return null;
+			}
 			List<FTPFile> directories;
 			String writable;
 			if (apacheClient.makeDirectory("bold") == false) {
@@ -422,7 +426,7 @@ public class Client {
 				for (FTPFile dir : directories) {
 					System.out.println(dir.getName());
 					System.out.println(startPath + dir.getName());
-					writable = findWritableDir(startPath + dir.getName());
+					writable = findWritableDir(startPath + dir.getName() + "/");
 					if (writable != null) {
 						return writable;
 					}
@@ -435,7 +439,6 @@ public class Client {
 		}
 		return null;
 	}
-*/
 
 	/**
 	 * The Apache FTPClient used by this FTPClient.
