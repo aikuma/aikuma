@@ -1,10 +1,15 @@
 package au.edu.unimelb.boldapp;
 
+import java.io.StringWriter;
+
 import android.util.Log;
 import android.content.Intent;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
+
+import org.json.simple.JSONObject;
 
 import au.edu.unimelb.boldapp.sync.Client;
 
@@ -30,8 +35,34 @@ public class SyncActivity extends Activity {
 	 * @param	view	the sync button.
 	 */
 	public void sync(View view) {
-		Intent intent = new Intent(this, SyncSplashActivity.class);
-		startActivity(intent);
+		// Get the information from the edit views and add to the intent
+		EditText editText = (EditText) findViewById(R.id.edit_ip);
+		String routerIPAddress = editText.getText().toString();
+		editText = (EditText) findViewById(R.id.edit_router_username);
+		String routerUsername = editText.getText().toString();
+		editText = (EditText) findViewById(R.id.edit_password);
+		String routerPassword = editText.getText().toString();
+
+		JSONObject obj = new JSONObject();
+		obj.put("ipaddress", routerIPAddress);
+		obj.put("username", routerUsername);
+		obj.put("password", routerPassword);
+
+		StringWriter stringWriter = new StringWriter();
+		try {
+			obj.writeJSONString(stringWriter);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		String jsonText = stringWriter.toString();
+		Log.i("ftp", FileIO.getAppRootPath() + "router.json");
+		if (!FileIO.write("router.json", jsonText)) {
+			Log.i("ftp", "not working");
+		} else {
+			Intent intent = new Intent(this, SyncSplashActivity.class);
+			startActivity(intent);
+		}
 	}
 
 }

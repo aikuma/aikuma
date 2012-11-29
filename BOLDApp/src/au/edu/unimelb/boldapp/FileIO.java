@@ -104,8 +104,10 @@ public abstract class FileIO {
 	 * @param filePath The filename, including parent paths within the bold
 	 * dir.
 	 * @param data The data that is to be written to the file.
+	 *
+	 * @return	true if successful; false otherwise.
 	 */
-	public static void write(String filePath, String data) {
+	public static boolean write(String filePath, String data) {
 		try {
 			String absPath = getAppRootPath() + filePath;
 			File file = new File(absPath);
@@ -115,8 +117,9 @@ public abstract class FileIO {
 			bos.flush();
 			bos.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 	/**
