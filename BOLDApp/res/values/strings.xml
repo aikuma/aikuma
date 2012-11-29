@@ -14,4 +14,7 @@
 	<string name="simple_respeak">Simple</string>
 	<string name="interleaved_respeak">Interleaved</string>
 	<string name="sync">Sync</string>
+	<string name="edit_ip">Router IP address</string>
+	<string name="edit_router_username">Router user name</string>
+	<string name="edit_password">Password</string>
 </resources>
