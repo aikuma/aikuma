@@ -176,6 +176,7 @@ public class Client {
 					serverBaseDir + directoryPath);
 			apacheClient.changeWorkingDirectory(
 					serverBaseDir + directoryPath);
+			Log.i("ftp", "pwd1: " + apacheClient.printWorkingDirectory());
 		} catch (IOException e) {
 			return false;
 		}
@@ -338,6 +339,66 @@ public class Client {
 		try {
 			return apacheClient.changeWorkingDirectory(serverBaseDir);
 		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	//public boolean deleteFileAbsolute(String filePath) {
+	//	String originalWorkingDir = apacheClient.printWorkingDirectory();
+	//	String splitPath = filePath.split("/");
+	//	String parentPath = 
+	//}
+
+	public boolean deleteServerDir(String dirPath) {
+		String[] dirPathSplit = dirPath.split("/");
+		String dirName = dirPathSplit[dirPathSplit.length - 1];
+		Log.i("ftp", "dirName: " + dirName);
+		try {
+			try {
+				if (dirPath.startsWith("/")) {
+					if(!apacheClient.changeWorkingDirectory(dirPath)) {
+						return false;
+					};
+				} else {
+					if (!apacheClient.changeWorkingDirectory(
+							serverBaseDir + dirPath)) {
+						Log.i("ftp", "returned false: " + serverBaseDir + dirPath);
+						return false;
+					}
+				}
+			} catch (IOException e) {
+				Log.i("ftp", "IOException");
+				return false;
+			}
+			List<FTPFile> serverFiles = Arrays.asList(
+					apacheClient.listFiles());
+			Log.i("ftp", "list size: " + serverFiles.size());
+			if (serverFiles.size() == 0) {
+				apacheClient.changeToParentDirectory();
+				Log.i("ftp", "pwdroger: " + apacheClient.printWorkingDirectory());
+				return apacheClient.removeDirectory(dirName);
+			} else {
+				for (FTPFile file : serverFiles) {
+					Log.i("ftp", "pwdunder: " +
+							apacheClient.printWorkingDirectory());
+					Log.i("ftp", "filename: " + file.getName());
+					if (!file.isDirectory()) {
+						Log.i("ftp", "wat");
+						apacheClient.deleteFile(file.getName());
+					} else {
+						Log.i("ftp", "delete: " +
+								apacheClient.printWorkingDirectory() + "/" +
+								file.getName());
+						deleteServerDir(apacheClient.printWorkingDirectory() +
+						"/" + file.getName());
+					}
+				}
+				apacheClient.changeToParentDirectory();
+				Log.i("ftp", "pwd: " + apacheClient.printWorkingDirectory());
+				return apacheClient.removeDirectory(dirName);
+			}
+		} catch (IOException e) {
+			Log.e("ftp", "exception: ", e);
 			return false;
 		}
 	}

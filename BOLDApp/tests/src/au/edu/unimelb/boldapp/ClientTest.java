@@ -20,8 +20,8 @@ public class ClientTest extends TestCase {
 	@Override
 	public void setUp() {
 		client = new Client();
-		client.setClientBaseDir("/mnt/sdcard/bold_copy");
-		client.setServerBaseDir("/part0/share/bold_copy/");
+		client.setClientBaseDir("/mnt/sdcard/");
+		client.setServerBaseDir("/part0/share/");
 	}
 
 	public void testLoginLogout() {
@@ -32,6 +32,14 @@ public class ClientTest extends TestCase {
 		assertEquals(false, client.logout());
 	}
 
+	public void testDeleteDirectory() {
+		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
+		//assertEquals(true, client.pushDirectory("okidoke"));
+		assertTrue(client.deleteServerDir("okidoke"));
+		assertEquals(true, client.logout());
+	}
+
+	/*
 	public void testPushPull() {
 		// Make the directory
 		File boldCopyDir = new File("/mnt/sdcard/bold_copy");
@@ -71,6 +79,7 @@ public class ClientTest extends TestCase {
 		assertEquals(true, client.logout());
 
 	}
+	*/
 
 /*
 	@Test
