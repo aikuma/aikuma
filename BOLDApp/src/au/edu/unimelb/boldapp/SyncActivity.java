@@ -8,8 +8,10 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import au.edu.unimelb.boldapp.sync.Client;
 
@@ -18,6 +20,28 @@ public class SyncActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.sync);
+	}
+
+	public void onResume() {
+		super.onResume();
+
+		// Load previously set router info.
+		JSONParser parser = new JSONParser();
+		String jsonStr = FileIO.read("router.json");
+		try {
+			Object obj = parser.parse(jsonStr);
+			JSONObject jsonObj = (JSONObject) obj;
+			String routerIPAddress = jsonObj.get("ipaddress").toString();
+			String routerUsername = jsonObj.get("username").toString();
+			String routerPassword = jsonObj.get("password").toString();
+
+			EditText editText = (EditText) findViewById(R.id.edit_ip);
+			editText.setText(routerIPAddress);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
 	}
 
 	/**
@@ -57,7 +81,10 @@ public class SyncActivity extends Activity {
 
 		String jsonText = stringWriter.toString();
 		Log.i("ftp", FileIO.getAppRootPath() + "router.json");
-		if (!FileIO.write("router.json", jsonText)) {
+		if (routerIPAddress.equals("")) {
+			Toast.makeText(this, "Please enter a router IP address",
+					Toast.LENGTH_LONG).show();
+		} else if (!FileIO.write("router.json", jsonText)) {
 			Log.i("ftp", "not working");
 		} else {
 			Intent intent = new Intent(this, SyncSplashActivity.class);

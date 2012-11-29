@@ -11,6 +11,9 @@ import au.edu.unimelb.boldapp.sync.Client;
 
 import au.edu.unimelb.boldapp.FileIO;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 public class SyncSplashActivity extends Activity {
 
     public void onCreate(Bundle savedInstanceState) {
@@ -25,44 +28,57 @@ public class SyncSplashActivity extends Activity {
 
             @Override
             public void run() {
-				Log.i("1234", "here0");
-				Client client = new Client();
-				client.setClientBaseDir(FileIO.getAppRootPath());
-				// Eventually want a method in Client to find it's own server
-				// base dir by recursively searching for a writable directory.
-				client.setServerBaseDir("/part0/share/bold/");
+				// Load previously set router info.
+				JSONParser parser = new JSONParser();
+				String jsonStr = FileIO.read("router.json");
+				try {
+					Object obj = parser.parse(jsonStr);
+					JSONObject jsonObj = (JSONObject) obj;
+					String routerIPAddress = jsonObj.get("ipaddress").toString();
+					String routerUsername = jsonObj.get("username").toString();
+					String routerPassword = jsonObj.get("password").toString();
 
-				Log.i("1234", "here1");
-				if (!client.login("192.168.1.1", "admin", "admin")) {
-					Log.i("1234", "here2");
-					Toast.makeText(SyncSplashActivity.this, "login failed.",
-							Toast.LENGTH_LONG).show();
+					Log.i("1234", "here0");
+					Client client = new Client();
+					client.setClientBaseDir(FileIO.getAppRootPath());
+					// Eventually want a method in Client to find it's own server
+					// base dir by recursively searching for a writable directory.
+					client.setServerBaseDir("/part0/share/bold/");
+
+					Log.i("1234", "here1");
+					if (!client.login(routerIPAddress, routerUsername,
+							routerPassword)) {
+						Log.i("1234", "here2");
+						Toast.makeText(SyncSplashActivity.this, "login failed.",
+								Toast.LENGTH_LONG).show();
+						finish();
+					} else if (!client.sync()) {
+						Log.i("1234", "here3");
+						Toast.makeText(SyncSplashActivity.this, "Sync failed.",
+								Toast.LENGTH_LONG).show();
+						finish();
+					} else if (!client.logout()) {
+						Log.i("1234", "here4");
+						Toast.makeText(SyncSplashActivity.this, "Logout failed.",
+								Toast.LENGTH_LONG).show();
+						finish();
+					} else {
+						
+						Log.i("1234", "here");
+						Toast.makeText(SyncSplashActivity.this, "Syncing Complete.",
+								Toast.LENGTH_LONG).show();
+					}
+
 					finish();
-				} else if (!client.sync()) {
-					Log.i("1234", "here3");
-					Toast.makeText(SyncSplashActivity.this, "Sync failed.",
-							Toast.LENGTH_LONG).show();
-					finish();
-				} else if (!client.logout()) {
-					Log.i("1234", "here4");
-					Toast.makeText(SyncSplashActivity.this, "Logout failed.",
-							Toast.LENGTH_LONG).show();
-					finish();
-				} else {
-					
-					Log.i("1234", "here");
-					Toast.makeText(SyncSplashActivity.this, "Syncing Complete.",
-							Toast.LENGTH_LONG).show();
+					// start the home screen
+
+					/*
+					Intent intent = new Intent(SyncSplashActivity.this,
+							InitialUserSelectionActivity.class);
+					SyncSplashActivity.this.startActivity(intent);
+					*/
+				} catch (Exception e) {
 				}
-
-                finish();
-                // start the home screen
-
-				/*
-                Intent intent = new Intent(SyncSplashActivity.this,
-						InitialUserSelectionActivity.class);
-                SyncSplashActivity.this.startActivity(intent);
-				*/
 
             }
 
