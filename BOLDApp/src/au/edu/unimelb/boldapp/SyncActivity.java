@@ -37,6 +37,10 @@ public class SyncActivity extends Activity {
 
 			EditText editText = (EditText) findViewById(R.id.edit_ip);
 			editText.setText(routerIPAddress);
+			editText = (EditText) findViewById(R.id.edit_router_username);
+			editText.setText(routerUsername);
+			editText = (EditText) findViewById(R.id.edit_password);
+			editText.setText(routerPassword);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
