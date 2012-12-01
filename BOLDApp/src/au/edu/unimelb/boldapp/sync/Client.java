@@ -10,6 +10,7 @@ import java.net.SocketException;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import android.util.Log;
 
@@ -189,9 +190,10 @@ public class Client {
 		// into it.
 		try {
 			apacheClient.makeDirectory(
-					serverBaseDir + directoryPath);
+					serverBaseDir + "/" + directoryPath);
 			apacheClient.changeWorkingDirectory(
-					serverBaseDir + directoryPath);
+					serverBaseDir + "/" + directoryPath);
+			Log.i("ftp", "now in " + serverBaseDir + "/" + directoryPath);
 			Log.i("ftp", "pwd1: " + apacheClient.printWorkingDirectory());
 		} catch (IOException e) {
 			return false;
@@ -365,6 +367,11 @@ public class Client {
 	//	String parentPath = 
 	//}
 
+	/**
+	 * Recursively deletes a directory on the server
+	 *
+	 * @param	dirPath	The path to the directory (absolute or relative)
+	 **/
 	public boolean deleteServerDir(String dirPath) {
 		String[] dirPathSplit = dirPath.split("/");
 		String dirName = dirPathSplit[dirPathSplit.length - 1];
@@ -427,39 +434,44 @@ public class Client {
 
 	public String findServerBaseDir() {
 		String dir = findWritableDir("/");
+		Log.i("ftp", "findServerBaseDir returning: " + dir);
 		return dir;
 	}
 
+	/**
+	 * Find the first writable directory under the specified path. Note that it
+	 * uses a depth-first approach to determine what is "first writable".
+	 *
+	 * @param	startPath	The directory to start from
+	 */
 	private String findWritableDir(String startPath) {
 		try {
 			if (!apacheClient.changeWorkingDirectory(startPath)) {
-				Log.i("ftp", "null");
 				return null;
 			}
-			List<FTPFile> directories;
-			String writable;
-			if (apacheClient.makeDirectory(BOLD_DIR) == false) {
-				if (!apacheClient.changeWorkingDirectory(BOLD_DIR)) {
-					directories = Arrays.asList(apacheClient.listDirectories());
-					for (FTPFile dir : directories) {
-						System.out.println(dir.getName());
-						System.out.println(startPath + dir.getName());
-						writable = findWritableDir(startPath + dir.getName() + "/");
-						if (writable != null) {
-							Log.i("ftp", "zeroth return");
-							return writable;
-						}
-					}
-				} else {
-					Log.i("ftp", "first return");
-					return apacheClient.printWorkingDirectory();
-				}
+
+			// Try to create a directory. If we succeed, we know that this
+			// directory is writable.
+			String unlikelyDir = UUID.randomUUID().toString();
+			if (apacheClient.makeDirectory(unlikelyDir)) {
+				apacheClient.removeDirectory(unlikelyDir);
+				return apacheClient.printWorkingDirectory();
 			} else {
-				Log.i("ftp", "second return");
-				return apacheClient.printWorkingDirectory() + "/" + BOLD_DIR;
+				List<FTPFile> directories = 
+						Arrays.asList(apacheClient.listDirectories());
+				String writablePath;
+				for (FTPFile dir : directories) {
+					if (startPath.endsWith("/")) {
+						writablePath = findWritableDir(startPath + dir.getName());
+					} else {
+						writablePath = findWritableDir(startPath + "/" + dir.getName());
+					}
+					if (writablePath != null) {
+						return writablePath;
+					}
+				}
 			}
 		} catch (IOException e) {
-			Log.e("ftp", "IOException ", e);
 			return null;
 		}
 		return null;

@@ -24,24 +24,22 @@ public class ClientTest extends TestCase {
 		//client.setServerBaseDir("/part0/share/");
 	}
 
-	/*
 	public void testLoginLogout() {
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
+		// Test that the finding of base server Dir works for our test router.
+		assertEquals("/part0/share", client.getServerBaseDir());
 		assertEquals(true, client.logout());
 
 		assertEquals(false, client.login("192.168.1.1", "admin", "wrongpass"));
 		assertEquals(false, client.logout());
 	}
-	*/
 
-	/*
 	public void testDeleteDirectory() {
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
 		assertTrue(client.pushDirectory("okidoke"));
 		assertTrue(client.deleteServerDir("okidoke"));
 		assertEquals(true, client.logout());
 	}
-	*/
 
 	/*
 	public void testPushPull() {
@@ -87,6 +85,7 @@ public class ClientTest extends TestCase {
 	}
 	*/
 
+	/*
 	public void testFindServerBaseDir() {
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
 		// The login should set the server base dir correctly, check this.
@@ -97,6 +96,7 @@ public class ClientTest extends TestCase {
 		assertEquals("/part0/share/bold", client.findServerBaseDir());
 		assertEquals(true, client.logout());
 	}
+	*/
 
 /*
 	@Test
