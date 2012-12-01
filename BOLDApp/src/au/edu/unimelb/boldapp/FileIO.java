@@ -1,10 +1,15 @@
 package au.edu.unimelb.boldapp;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -18,6 +23,10 @@ import android.util.Log;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import org.apache.commons.io.FileUtils;
+
+import com.google.common.base.Charsets;
 
 /**
  * Abstract class that offers various File IO related methods.
@@ -47,106 +56,93 @@ public abstract class FileIO {
 	static final String recordingsPath = "recordings/";
 
 	/**
-	 * Returns the absolute path to the application's data.
+	 * Returns the path to the application's data.
 	 *
-	 * @return A string representation of the absolute path to the
-	 * application's data
+	 * @return	the applications base directory (the "bold" directory)
 	 */
 	public static File getAppRootPath(){
-		File external = Environment.getExternalStorageDirectory();
-		String path = external.getAbsolutePath() + "/" + appRootPath;
-		return new File(external, appRootPath);
+		File path = new File(Environment.getExternalStorageDirectory(),
+				appRootPath);
+		path.mkdirs();
+		return path;
 	}
 
 	/**
-	 * Returns the relative path to the application's users directory and
-	 * ensures the directory exists.
+	 * Returns the path to the BOLD app's user directory.
 	 *
-	 * @return A string representation of the relative path to the
-	 * application's users directory
 	 */
-	public static String getUsersPath(){
-		File file = new File(getAppRootPath() + usersPath);
-		file.mkdirs();
-		return usersPath;
+	public static File getUsersPath(){
+		File path = new File(getAppRootPath(), usersPath);
+		path.mkdirs();
+		return path;
 	}
 
 	/**
-	 * Returns the relative path to the application's images directory and
-	 * ensures the directory exists.
+	 * Returns the path to the BOLD app's images directory.
 	 *
-	 * @return A string representation of the relative path to the
-	 * application's images directory
+	 * @return The path to the images directory
 	 */
-	public static String getImagesPath(){
-		File file = new File(getAppRootPath() + imagesPath);
-		file.mkdirs();
-		return imagesPath;
+	public static File getImagesPath(){
+		File path = new File(getAppRootPath(), imagesPath);
+		path.mkdirs();
+		return path;
 	}
 
 	/**
-	 * Returns the relative path to the application's recordings directory, and
-	 * ensures the directory exists.
+	 * Returns the path to the BOLD app's recordings directory.
 	 *
-	 * @return A string representation of the relative path to the
-	 * application's recordings directory
+	 * @return The path to the recordings directory
 	 */
-	public static String getRecordingsPath(){
-		File file = new File(getAppRootPath() + recordingsPath);
-		file.mkdirs();
-		return recordingsPath;
+	public static File getRecordingsPath(){
+		File path = new File(getAppRootPath(), recordingsPath);
+		path.mkdirs();
+		return path;
 	}
 
 	/**
-	 * Takes a file path and some data and writes the data into the file in the
-	 * bold directory in external storage.
+	 * Takes a file path (relative to the bold directory) and some data and
+	 * writes the data into the file in the bold directory in external storage.
 	 *
-	 * @param filePath The filename, including parent paths within the bold
-	 * dir.
-	 * @param data The data that is to be written to the file.
+	 * @param	path	The path to the file in which the data is to be
+	 * written.
+	 * @param	data	The data that is to be written to the file.
+	 *
+	 * @return	true if successful; false otherwise.
 	 */
-	public static void write(String filePath, String data) {
+	
+	public static boolean write(String path, String data) {
+		File file = new File(getAppRootPath(), path);
 		try {
-			String absPath = getAppRootPath() + filePath;
-			File file = new File(absPath);
-			file.getParentFile().mkdirs();
-			BufferedWriter bos = new BufferedWriter(new FileWriter(absPath));
-			bos.write(data);
-			bos.flush();
-			bos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
+			FileUtils.writeStringToFile(file, data, Charsets.UTF_8);
+		} catch (IOException e) {
+			return false;
 		}
+		return true;
 	}
 
 	/**
-	 * Takes a file path relative to the bold directory in external storage and
+	 * Takes a file path (relative to the bold directory) and
 	 * returns a string containing the file's contents.
 	 *
 	 * @param	filePath	The filename, including parent paths within the
 	 * bold dir.
-	 * @return	A string containing the file's contents.
+	 * @return	A string containing the file's contents; null if something went
+	 * wrong.
 	 */
-	public static String read(String filePath) {
-		String path = getAppRootPath() + filePath;
-		StringBuilder text = new StringBuilder();
-		String newLine = System.getProperty("line.separator");
+	public static String read(String path) {
+		File file = new File(getAppRootPath(), path);
 		try {
-			Scanner scanner = new Scanner(new FileInputStream(path));
-			while (scanner.hasNextLine()){
-				text.append(scanner.nextLine() + newLine);
-			}
-			scanner.close();
-		} catch (Exception e) {
-			e.printStackTrace();
+			return FileUtils.readFileToString(file, Charsets.UTF_8);
+		} catch (IOException e) {
+			return null;
 		}
-		return text.toString();
 	}
 
 	/**
 	 * Method to load all the users from the users directory into an array of
 	 * User objects in GlobalState.
 	 */
+	/*
 	public static void loadUsers() {
 		// Get an array of all the UUIDs from the "users" directory
 		File dir = new File(getAppRootPath() + getUsersPath());
@@ -172,6 +168,7 @@ public abstract class FileIO {
 		User[] usersArray = new User[users.size()];
 		GlobalState.setUsers(users.toArray(usersArray));
 	}
+	*/
 
 
 	/**
@@ -180,16 +177,12 @@ public abstract class FileIO {
 	 *
 	 * @return An array of all the recordings as Recording objects.
 	 */
+	 /*
 	 public static void loadRecordings() {
 	 	//Get an array of all the UUIDs from the "recordings" directory
 		File dir = new File(getAppRootPath() + getRecordingsPath());
 		JSONFilenameFilter fnf = new JSONFilenameFilter();
 		String[] recordingUuids = dir.list(fnf);
-		/*
-		for (int i = 0; i < recordingUuids.length; i++) {
-			recordingUuids[i] = recordingUuids[i].replace(".json", "");
-		}
-		*/
 
 		Recording[] recordings = new Recording[recordingUuids.length];
 		JSONParser parser = new JSONParser();
@@ -218,6 +211,7 @@ public abstract class FileIO {
 
 		GlobalState.setRecordings(recordings);
 	 }
+	 */
 
 	/**
 	 * Delete the filename supplied as an argument
