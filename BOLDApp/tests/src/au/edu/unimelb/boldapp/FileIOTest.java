@@ -31,11 +31,11 @@ public class FileIOTest extends TestCase {
 
 	public void testWriteRead1() {
 		assertTrue(FileIO.write("testdir/test1/test1", "hallo"));
-		assertEquals("hallo", FileIO.read("testdir/test1/test1"));
+		assertEquals("hallo", FileIO.read("/mnt/sdcard/bold/testdir/test1/test1"));
 	}
 
 	public void testWriteRead2() {
-		assertTrue(FileIO.write("testdir/test1/", "okies"));
+		assertTrue(FileIO.write("/mnt/sdcard/bold/testdir/test1/", "okies"));
 		assertEquals("okies", FileIO.read("testdir/test1/"));
 	}
 

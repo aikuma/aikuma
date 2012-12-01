@@ -100,8 +100,9 @@ public abstract class FileIO {
 	}
 
 	/**
-	 * Takes a file path (relative to the bold directory) and some data and
-	 * writes the data into the file in the bold directory in external storage.
+	 * Takes a file path (relative to the bold directory or absolute ) and some
+	 * data and writes the data into the file in the bold directory in external
+	 * storage.
 	 *
 	 * @param	path	The path to the file in which the data is to be
 	 * written.
@@ -111,7 +112,14 @@ public abstract class FileIO {
 	 */
 	
 	public static boolean write(String path, String data) {
-		File file = new File(getAppRootPath(), path);
+		File file;
+		// If the path is absolute, use that path, otherwise make it relative
+		// to the bold directory.
+		if (path.startsWith("/")) {
+			file = new File(path);
+		} else {
+			file = new File(getAppRootPath(), path);
+		}
 		try {
 			FileUtils.writeStringToFile(file, data, Charsets.UTF_8);
 		} catch (IOException e) {
@@ -121,7 +129,7 @@ public abstract class FileIO {
 	}
 
 	/**
-	 * Takes a file path (relative to the bold directory) and some data and
+	 * Takes an absolute file path, some data and
 	 * writes the data into the file in the bold directory in external storage.
 	 *
 	 * @param	path	The path to the file in which the data is to be
@@ -150,7 +158,14 @@ public abstract class FileIO {
 	 * wrong.
 	 */
 	public static String read(String path) {
-		File file = new File(getAppRootPath(), path);
+		File file;
+		// If the path is absolute, use that path, otherwise make it relative
+		// to the bold directory.
+		if (path.startsWith("/")) {
+			file = new File(path);
+		} else {
+			file = new File(getAppRootPath(), path);
+		}
 		try {
 			return FileUtils.readFileToString(file, Charsets.UTF_8);
 		} catch (IOException e) {
