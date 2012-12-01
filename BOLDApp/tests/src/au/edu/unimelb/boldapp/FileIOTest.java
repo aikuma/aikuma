@@ -29,14 +29,14 @@ public class FileIOTest extends TestCase {
 				FileIO.getRecordingsPath());
 	}
 
-	public void testWriteRead() {
-		assertTrue(FileIO.write("testdir/another/lol", "hallo"));
-		assertEquals("hallo", FileIO.read("testdir/another/lol"));
+	public void testWriteRead1() {
+		assertTrue(FileIO.write("testdir/test1/test1", "hallo"));
+		assertEquals("hallo", FileIO.read("testdir/test1/test1"));
 	}
 
 	public void testWriteRead2() {
-		assertTrue(FileIO.write("testdir/whattt/", "okies"));
-		assertEquals("okies", FileIO.read("testdir/whattt"));
+		assertTrue(FileIO.write("testdir/test1/", "okies"));
+		assertEquals("okies", FileIO.read("testdir/test1/"));
 	}
 
 	public void testWriteRead3() {
@@ -49,6 +49,17 @@ public class FileIOTest extends TestCase {
 		assertTrue(!"once upon\n a time\n"
 				.equals(FileIO.read("testdir/test4")));
 	}
+
+	public void testWriteRead5() {
+		assertTrue(FileIO.write(
+				new File(FileIO.getAppRootPath(), "testdir/test1/test1"),
+				"hallo"));
+		assertEquals("hallo", FileIO.read(
+				new File(FileIO.getAppRootPath(), "testdir/test1/test1")));
+	}
+
+	//public void testLoadUsers() {
+	//}
 
 	@Override
 	public void tearDown() throws Exception {

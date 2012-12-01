@@ -121,11 +121,31 @@ public abstract class FileIO {
 	}
 
 	/**
+	 * Takes a file path (relative to the bold directory) and some data and
+	 * writes the data into the file in the bold directory in external storage.
+	 *
+	 * @param	path	The path to the file in which the data is to be
+	 * written.
+	 * @param	data	The data that is to be written to the file.
+	 *
+	 * @return	true if successful; false otherwise.
+	 */
+
+	public static boolean write(File path, String data) {
+		try {
+			FileUtils.writeStringToFile(path, data, Charsets.UTF_8);
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Takes a file path (relative to the bold directory) and
 	 * returns a string containing the file's contents.
 	 *
-	 * @param	filePath	The filename, including parent paths within the
-	 * bold dir.
+	 * @param	path	The path to the file in which the data lies.
+	 *
 	 * @return	A string containing the file's contents; null if something went
 	 * wrong.
 	 */
@@ -136,24 +156,39 @@ public abstract class FileIO {
 		} catch (IOException e) {
 			return null;
 		}
+	} 
+
+	/**
+	 * Takes a file path (relative to the bold directory) and
+	 * returns a string containing the file's contents.
+	 *
+	 * @param	path	The path to the file in which the data lies.
+	 *
+	 * @return	A string containing the file's contents; null if something went
+	 * wrong.
+	 */
+	public static String read(File path) {
+		try {
+			return FileUtils.readFileToString(path, Charsets.UTF_8);
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	/**
 	 * Method to load all the users from the users directory into an array of
 	 * User objects in GlobalState.
 	 */
-	/*
 	public static void loadUsers() {
 		// Get an array of all the UUIDs from the "users" directory
-		File dir = new File(getAppRootPath() + getUsersPath());
-		List<String> userUuids = Arrays.asList(dir.list());
+		List<String> userUUIDs = Arrays.asList(getUsersPath().list());
 
 		// Get the user data from the metadata.json files
 		List<User> users = new ArrayList<User>();
 		JSONParser parser = new JSONParser();
-		for (String userUuid : userUuids) {
-			String jsonStr = read(getUsersPath()
-					+ userUuid + "/metadata.json");
+		for (String userUUID : userUUIDs) {
+			String jsonStr = read(
+					new File(getUsersPath(), userUUID + "/metadata.json"));
 			try {
 				Object obj = parser.parse(jsonStr);
 				JSONObject jsonObj = (JSONObject) obj;
@@ -168,7 +203,6 @@ public abstract class FileIO {
 		User[] usersArray = new User[users.size()];
 		GlobalState.setUsers(users.toArray(usersArray));
 	}
-	*/
 
 
 	/**
