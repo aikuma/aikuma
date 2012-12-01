@@ -181,8 +181,14 @@ public class Client {
 	 */
 	public boolean pushDirectory(String directoryPath) {
 		// Get the specified client side directory.
-		File clientDir = new File(clientBaseDir + directoryPath);
+		File clientDir;
+		if (clientBaseDir.endsWith("/")) {
+			clientDir = new File(clientBaseDir + directoryPath);
+		} else {
+			clientDir = new File(clientBaseDir + "/" + directoryPath);
+		}
 		if (!clientDir.isDirectory()) {
+			Log.i("ftp", "1");
 			return false;
 		}
 
@@ -196,6 +202,7 @@ public class Client {
 			Log.i("ftp", "now in " + serverBaseDir + "/" + directoryPath);
 			Log.i("ftp", "pwd1: " + apacheClient.printWorkingDirectory());
 		} catch (IOException e) {
+			Log.i("ftp", "2");
 			return false;
 		}
 
@@ -212,6 +219,8 @@ public class Client {
 						if (!serverFilenames.contains(filename)) {
 							result = pushFile(directoryPath, file);
 							if (!result) {
+								Log.i("ftp", "3: " + directoryPath + ", " +
+								file);
 								return false;
 							}
 						}
@@ -219,8 +228,9 @@ public class Client {
 						apacheClient.makeDirectory(filename);
 						result = pushDirectory(directoryPath + "/" + filename);
 						apacheClient.changeWorkingDirectory(
-								serverBaseDir + directoryPath);
+								serverBaseDir + "/" + directoryPath);
 						if (!result) {
+							Log.i("ftp", "4");
 							return false;
 						}
 					}
@@ -228,6 +238,7 @@ public class Client {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			Log.i("ftp", "5");
 			return false;
 		}
 
@@ -237,6 +248,7 @@ public class Client {
 	/**
 	 * Push an individual file to the server.
 	 *
+	 * @param	directoryPath	Server side directory to push the file to.
 	 * @param	file	The file to be pushed.
 	 * @return	true if successful; false otherwise.
 	 */
@@ -245,15 +257,16 @@ public class Client {
 		try {
 			InputStream stream = new FileInputStream(file);
 			result = apacheClient.storeFile(
-					serverBaseDir + directoryPath + "/" + file.getName() +
+					serverBaseDir + "/" + directoryPath + "/" + file.getName() +
 							".inprogress",
 					stream);
 			stream.close();
 			apacheClient.rename(
-					serverBaseDir + directoryPath + "/" + file.getName() +
+					serverBaseDir + "/" + directoryPath + "/" + file.getName() +
 							".inprogress",
-					serverBaseDir + directoryPath + "/" + file.getName());
+					serverBaseDir + "/" + directoryPath + "/" + file.getName());
 		} catch (IOException e) {
+			Log.e("ftp", "exception for 3", e);
 			return false;
 		}
 		return result;
@@ -275,7 +288,7 @@ public class Client {
 			Log.i("zxcv", "inprogressfilename  " + inProgressFile.getPath());
 			OutputStream stream = new FileOutputStream(inProgressFile);
 			result = apacheClient.retrieveFile(
-					serverBaseDir + directoryPath + "/" +
+					serverBaseDir + "/" + directoryPath + "/" +
 							file.getName(),
 					stream);
 			stream.close();
@@ -299,7 +312,7 @@ public class Client {
 		try {
 			boolean result;
 			result = apacheClient.changeWorkingDirectory(
-					serverBaseDir + directoryPath);
+					serverBaseDir + "/" + directoryPath);
 			if (!result) {
 				return false;
 			}
@@ -375,7 +388,6 @@ public class Client {
 	public boolean deleteServerDir(String dirPath) {
 		String[] dirPathSplit = dirPath.split("/");
 		String dirName = dirPathSplit[dirPathSplit.length - 1];
-		Log.i("ftp", "dirName: " + dirName);
 		try {
 			try {
 				if (dirPath.startsWith("/")) {
@@ -384,44 +396,31 @@ public class Client {
 					};
 				} else {
 					if (!apacheClient.changeWorkingDirectory(
-							serverBaseDir + dirPath)) {
-						Log.i("ftp", "returned false: " + serverBaseDir + dirPath);
+							serverBaseDir + "/" +  dirPath)) {
 						return false;
 					}
 				}
 			} catch (IOException e) {
-				Log.i("ftp", "IOException");
 				return false;
 			}
 			List<FTPFile> serverFiles = Arrays.asList(
 					apacheClient.listFiles());
-			Log.i("ftp", "list size: " + serverFiles.size());
 			if (serverFiles.size() == 0) {
 				apacheClient.changeToParentDirectory();
-				Log.i("ftp", "pwdroger: " + apacheClient.printWorkingDirectory());
 				return apacheClient.removeDirectory(dirName);
 			} else {
 				for (FTPFile file : serverFiles) {
-					Log.i("ftp", "pwdunder: " +
-							apacheClient.printWorkingDirectory());
-					Log.i("ftp", "filename: " + file.getName());
 					if (!file.isDirectory()) {
-						Log.i("ftp", "wat");
 						apacheClient.deleteFile(file.getName());
 					} else {
-						Log.i("ftp", "delete: " +
-								apacheClient.printWorkingDirectory() + "/" +
-								file.getName());
 						deleteServerDir(apacheClient.printWorkingDirectory() +
 						"/" + file.getName());
 					}
 				}
 				apacheClient.changeToParentDirectory();
-				Log.i("ftp", "pwd: " + apacheClient.printWorkingDirectory());
 				return apacheClient.removeDirectory(dirName);
 			}
 		} catch (IOException e) {
-			Log.e("ftp", "exception: ", e);
 			return false;
 		}
 	}
@@ -457,15 +456,19 @@ public class Client {
 				apacheClient.removeDirectory(unlikelyDir);
 				return apacheClient.printWorkingDirectory();
 			} else {
+
 				List<FTPFile> directories = 
 						Arrays.asList(apacheClient.listDirectories());
 				String writablePath;
 				for (FTPFile dir : directories) {
+
+					// Act robustly in the face of different directory notation
 					if (startPath.endsWith("/")) {
 						writablePath = findWritableDir(startPath + dir.getName());
 					} else {
 						writablePath = findWritableDir(startPath + "/" + dir.getName());
 					}
+
 					if (writablePath != null) {
 						return writablePath;
 					}
