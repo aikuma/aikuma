@@ -89,8 +89,12 @@ public class ClientTest extends TestCase {
 
 	public void testFindServerBaseDir() {
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
-		//Log.i("ftp", "answer: " + client.findServerBaseDir());
+		// The login should set the server base dir correctly, check this.
 		assertEquals("/part0/share/bold", client.getServerBaseDir());
+		// Delete the directory and check that the method will find the right
+		// one still.
+		client.deleteServerDir("/part0/share/bold");
+		assertEquals("/part0/share/bold", client.findServerBaseDir());
 		assertEquals(true, client.logout());
 	}
 
