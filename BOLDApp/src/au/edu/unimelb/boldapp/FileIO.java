@@ -52,10 +52,10 @@ public abstract class FileIO {
 	 * @return A string representation of the absolute path to the
 	 * application's data
 	 */
-	public static String getAppRootPath(){
+	public static File getAppRootPath(){
 		File external = Environment.getExternalStorageDirectory();
 		String path = external.getAbsolutePath() + "/" + appRootPath;
-		return path;
+		return new File(external, appRootPath);
 	}
 
 	/**
