@@ -25,6 +25,8 @@ import org.apache.commons.net.ftp.FTPConnectionClosedException;
  */
 public class Client {
 
+	private static final String BOLD_DIR = "bold";
+
 	/**
 	 * Set up the working directory for the client.
 	 */
@@ -35,8 +37,15 @@ public class Client {
 	/**
 	 * Set up the working directory for the server.
 	 */
-	public void setServerBaseDir(String serverBaseDir) {
+	private void setServerBaseDir(String serverBaseDir) {
 		this.serverBaseDir = serverBaseDir;
+	}
+
+	/**
+	 * Get the working directory for the server.
+	 */
+	public String getServerBaseDir() {
+		return this.serverBaseDir;
 	}
 
 	/**
@@ -91,15 +100,22 @@ public class Client {
 		}
 		// Change to appropriate working directory
 		if (loggedIn) {
-			try {
-				apacheClient.makeDirectory(serverBaseDir);
-				result = cdServerBaseDir();
+			//try {
+				String serverBaseDir = findServerBaseDir();
+				Log.i("ftp", "serverBaseDir " + serverBaseDir);
+				if (serverBaseDir == null) {
+					logout();
+					return false;
+				} else {
+					setServerBaseDir(findServerBaseDir());
+					result = cdServerBaseDir();
+				}
 				//result = true;
 				//Log.i("sync", "cdServerBaseDir result: " + result);
-			} catch (IOException e ) {
-				Log.i("sync", "fourthIOException");
-				return false;
-			}
+			//} catch (IOException e ) {
+			//	Log.i("sync", "fourthIOException");
+			//	return false;
+			//}
 		}
 		//Log.i("sync", "final");
 		return result;
@@ -410,31 +426,40 @@ public class Client {
 	 */
 
 	public String findServerBaseDir() {
-		return findWritableDir("/");
+		String dir = findWritableDir("/");
+		return dir;
 	}
 
 	private String findWritableDir(String startPath) {
-		Log.i("ftp", "startPath: " + startPath);
 		try {
 			if (!apacheClient.changeWorkingDirectory(startPath)) {
+				Log.i("ftp", "null");
 				return null;
 			}
 			List<FTPFile> directories;
 			String writable;
-			if (apacheClient.makeDirectory("bold") == false) {
-				directories = Arrays.asList(apacheClient.listDirectories());
-				for (FTPFile dir : directories) {
-					System.out.println(dir.getName());
-					System.out.println(startPath + dir.getName());
-					writable = findWritableDir(startPath + dir.getName() + "/");
-					if (writable != null) {
-						return writable;
+			if (apacheClient.makeDirectory(BOLD_DIR) == false) {
+				if (!apacheClient.changeWorkingDirectory(BOLD_DIR)) {
+					directories = Arrays.asList(apacheClient.listDirectories());
+					for (FTPFile dir : directories) {
+						System.out.println(dir.getName());
+						System.out.println(startPath + dir.getName());
+						writable = findWritableDir(startPath + dir.getName() + "/");
+						if (writable != null) {
+							Log.i("ftp", "zeroth return");
+							return writable;
+						}
 					}
+				} else {
+					Log.i("ftp", "first return");
+					return apacheClient.printWorkingDirectory();
 				}
 			} else {
-				return apacheClient.printWorkingDirectory();
+				Log.i("ftp", "second return");
+				return apacheClient.printWorkingDirectory() + "/" + BOLD_DIR;
 			}
 		} catch (IOException e) {
+			Log.e("ftp", "IOException ", e);
 			return null;
 		}
 		return null;

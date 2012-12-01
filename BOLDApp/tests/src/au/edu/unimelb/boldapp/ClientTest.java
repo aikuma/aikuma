@@ -21,7 +21,7 @@ public class ClientTest extends TestCase {
 	public void setUp() {
 		client = new Client();
 		client.setClientBaseDir("/mnt/sdcard/");
-		client.setServerBaseDir("/part0/share/");
+		//client.setServerBaseDir("/part0/share/");
 	}
 
 	/*
@@ -89,8 +89,8 @@ public class ClientTest extends TestCase {
 
 	public void testFindServerBaseDir() {
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
-		client.deleteServerDir("bold");
-		Log.i("ftp", "answer: " + client.findServerBaseDir());
+		//Log.i("ftp", "answer: " + client.findServerBaseDir());
+		assertEquals("/part0/share/bold", client.getServerBaseDir());
 		assertEquals(true, client.logout());
 	}
 

@@ -43,9 +43,12 @@ public class SyncSplashActivity extends Activity {
 					client.setClientBaseDir(FileIO.getAppRootPath());
 					// Eventually want a method in Client to find it's own server
 					// base dir by recursively searching for a writable directory.
-					client.setServerBaseDir("/part0/share/bold/");
+					//client.setServerBaseDir("/part0/share/bold/");
+					Log.i("ftp", "ok");
+					//client.setServerBaseDir(client.findServerBaseDir());
+					Log.i("ftp", "now");
 
-					Log.i("1234", "here1");
+					Log.i("ftp", "here1");
 					if (!client.login(routerIPAddress, routerUsername,
 							routerPassword)) {
 						Log.i("1234", "here2");
