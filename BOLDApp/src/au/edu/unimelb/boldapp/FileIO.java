@@ -23,6 +23,7 @@ import android.util.Log;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import org.apache.commons.io.FileUtils;
 
@@ -194,7 +195,7 @@ public abstract class FileIO {
 	 * Method to load all the users from the users directory into an array of
 	 * User objects in GlobalState.
 	 */
-	public static void loadUsers() {
+	public static List<User> loadUsers() {
 		// Get an array of all the UUIDs from the "users" directory
 		List<String> userUUIDs = Arrays.asList(getUsersPath().list());
 
@@ -210,13 +211,15 @@ public abstract class FileIO {
 				users.add( new User(
 						UUID.fromString(jsonObj.get("uuid").toString()),
 						jsonObj.get("name").toString()));
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (ParseException e) {
+				return null;
 			}
 		}
 
-		User[] usersArray = new User[users.size()];
-		GlobalState.setUsers(users.toArray(usersArray));
+		//User[] usersArray = new User[users.size()];
+		//GlobalState.setUsers(users.toArray(usersArray));
+
+		return users;
 	}
 
 

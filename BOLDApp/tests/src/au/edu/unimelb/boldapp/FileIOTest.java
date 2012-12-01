@@ -58,8 +58,9 @@ public class FileIOTest extends TestCase {
 				new File(FileIO.getAppRootPath(), "testdir/test1/test1")));
 	}
 
-	//public void testLoadUsers() {
-	//}
+	public void testLoadUsers() {
+		assertTrue(FileIO.loadUsers() != null);
+	}
 
 	@Override
 	public void tearDown() throws Exception {
