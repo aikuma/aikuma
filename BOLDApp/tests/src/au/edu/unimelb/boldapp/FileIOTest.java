@@ -60,7 +60,7 @@ public class FileIOTest extends TestCase {
 				new File(FileIO.getAppRootPath(), "testdir/test1/test1")));
 	}
 
-	public void testWriteAndReadUsers() {
+	public void testWriteAndReadUsers() throws Exception {
 		// Writes two users, and then reads them back.
 
 		User user = new User(UUID.randomUUID(), "Test User");
@@ -74,6 +74,12 @@ public class FileIOTest extends TestCase {
 		assertEquals(user.getUUID(), users.get(1).getUUID());
 		assertEquals(user2.getName(), users.get(0).getName());
 		assertEquals(user2.getUUID(), users.get(0).getUUID());
+
+		// Cleanup these test user directories.
+		FileUtils.deleteDirectory(new File(FileIO.getUsersPath(),
+				user.getUUID().toString()));
+		FileUtils.deleteDirectory(new File(FileIO.getUsersPath(),
+				user2.getUUID().toString()));
 	}
 
 	public void testReadUsers() {
