@@ -1,8 +1,9 @@
 package au.edu.unimelb.boldapp;
 
-import java.util.UUID;
+import java.io.File;
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.UUID;
 
 import android.app.Activity;
 import android.media.MediaPlayer;
@@ -93,12 +94,12 @@ public class RespeakActivity extends Activity {
 		this.uuid = UUID.randomUUID();
 
 		respeaker.prepare(
-				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
-				+ originalUUID.toString() + ".wav",
-				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
-				+ uuid.toString() + ".wav",
-				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
-				+ uuid.toString() + ".map");
+				new File(FileIO.getRecordingsPath(), originalUUID.toString() +
+				".wav").toString(),
+				new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".wav").toString(),
+				new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".map").toString());
 
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override

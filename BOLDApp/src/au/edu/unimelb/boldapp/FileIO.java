@@ -292,6 +292,106 @@ public abstract class FileIO {
 
 	}
 
+	/**
+	 */
+	public static boolean writeRecordingMeta(Recording recording) {
+		JSONObject obj = new JSONObject();
+		obj.put("uuid", recording.getUUID().toString());
+		obj.put("creatorUUID", recording.getCreatorUUID().toString());
+		obj.put("recording_name", recording.getName());
+		obj.put("date_string", new StandardDateFormat().format(recording.getDate()));
+		//obj.put("uuid", recording.getUUID().toString());
+		//obj.put("creator_uuid", recording.getCreatorUUID().toString());
+		//obj.put("name", recording.getName());
+		//obj.put("date", new StandardDateFormat().format(recording.getDate()));
+		if (recording.getOriginalUUID() != null) {
+			obj.put("originalUUID", recording.getOriginalUUID().toString());
+		}
+		StringWriter stringWriter = new StringWriter();
+		try {
+			obj.writeJSONString(stringWriter);
+		} catch (IOException e) {
+			return false;
+		}
+		String jsonText = stringWriter.toString();
+		return FileIO.write(new File(FileIO.getRecordingsPath(),
+				recording.getUUID() + ".json"), jsonText);
+
+	}
+
+	/**
+	 * Reads the recordings from file.
+	 *
+	 * @return	recordings	A list of all the recordings in the bold directory;
+	 * null if something went wrong.
+	 */
+	public static List<Recording> readRecordingsMeta() {
+		// Get an array of all the UUIDs from the "users" directory
+		JSONFilenameFilter fnf = new JSONFilenameFilter();
+		List<String> recordingFilenames =
+				Arrays.asList(getRecordingsPath().list(fnf));
+
+		// Get the user data from the metadata.json files
+		List<Recording> recordings = new ArrayList<Recording>();
+		JSONParser parser = new JSONParser();
+		for (String recordingFilename : recordingFilenames) {
+			String jsonStr = read(
+					new File(getRecordingsPath(), recordingFilename));
+			Log.i("FileIO", new File(getRecordingsPath(), recordingFilename)
+					.toString());
+			Log.i("FileIO", " " + jsonStr);
+
+			try {
+				Object obj = parser.parse(jsonStr);
+				JSONObject jsonObj = (JSONObject) obj;
+				if (jsonObj == null) {
+					Log.i("FileIO", "blabla");
+				}
+				Log.i("FileIO", " " + UUID.fromString(jsonObj.get("uuid").toString()));
+				Log.i("FileIO", " " + UUID.fromString(jsonObj.get("creatorUUID").toString()));
+				Log.i("FileIO", " " + new StandardDateFormat().parse(
+						jsonObj.get("date_string").toString()));
+				Log.i("FileIO", " " +
+						jsonObj.get("recording_name").toString());
+				UUID originalUUID;
+				if (jsonObj.containsKey("originalUUID")) {
+					originalUUID = UUID.fromString(
+							jsonObj.get("originalUUID").toString());
+				} else {
+					originalUUID = null;
+				}
+				Recording ok =  new Recording(
+						UUID.fromString(jsonObj.get("uuid").toString()),
+						UUID.fromString(jsonObj.get("creatorUUID").toString()),
+						jsonObj.get("recording_name").toString(),
+						new StandardDateFormat().parse(
+								jsonObj.get("date_string").toString()),
+						originalUUID);
+
+						//UUID.fromString(jsonObj.get("uuid").toString()),
+						//UUID.fromString(jsonObj.get("creator_uuid").toString()),
+						//jsonObj.get("name").toString(),
+						//new StandardDateFormat().parse(
+						//		jsonObj.get("date").toString()));
+
+				recordings.add(ok);
+						//UUID.fromString(
+						//		jsonObj.get("original_uuid").toString())));
+			} catch (ParseException e) {
+				Log.e("FileIO", "somethang at " + recordingFilename, e);
+				return null;
+			} catch (java.text.ParseException e) {
+				Log.i("FileIO", "somethang2");
+				return null;
+			}
+		}
+
+		//User[] usersArray = new User[users.size()];
+		//GlobalState.setUsers(users.toArray(usersArray));
+
+		return recordings;
+	 }
+
 
 	/**
 	 * Method to load all the recordings from the recordings directory into an

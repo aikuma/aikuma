@@ -115,4 +115,11 @@ public abstract class GlobalState {
 	public static HashMap<UUID, Recording> getRecordingMap() {
 		return GlobalState.recordingMap;
 	}
+
+	/**
+	 * Loads the users from the bold directory.
+	 */
+	public static boolean loadUser() {
+		return false;
+	}
 }

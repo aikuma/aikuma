@@ -18,7 +18,7 @@ public class Recording {
 	/**
 	 * UUID of the user who created the recording.
 	 */
-	private User creator;
+	private UUID creatorUUID;
 
 	/**
 	 * The name of the recording
@@ -39,13 +39,23 @@ public class Recording {
 	/**
 	 * Default Constructor
 	 */
-	 public Recording(UUID uuid, User creator, String name, Date date, UUID
+	 public Recording(UUID uuid, UUID creatorUUID, String name, Date date, UUID
 			 originalUuid) {
 	 	setUuid(uuid);
-		setCreator(creator);
+		setCreatorUUID(creatorUUID);
 		setName(name);
 		setDate(date);
 		setOriginalUuid(originalUuid);
+	 }
+
+	/**
+	 * Default Constructor
+	 */
+	 public Recording(UUID uuid, UUID creatorUUID, String name, Date date) {
+	 	setUuid(uuid);
+		setCreatorUUID(creatorUUID);
+		setName(name);
+		setDate(date);
 	 }
 
 	/**
@@ -65,8 +75,8 @@ public class Recording {
 	/**
 	 * creator mutator
 	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
+	public void setCreatorUUID(UUID creatorUUID) {
+		this.creatorUUID = creatorUUID;
 	}
 
 	/**
@@ -84,9 +94,23 @@ public class Recording {
 	}
 
 	/**
+	 * uuid accessor
+	 */
+	public UUID getUUID() {
+		return this.uuid;
+	}
+
+	/**
 	 * originalUUID accessor
 	 */
 	public UUID getOriginalUuid() {
+		return this.originalUuid;
+	}
+
+	/**
+	 * originalUUID accessor
+	 */
+	public UUID getOriginalUUID() {
 		return this.originalUuid;
 	}
 
@@ -101,8 +125,8 @@ public class Recording {
 	/**
 	 * creator accessor
 	 */
-	public User getCreator() {
-		return this.creator;
+	public UUID getCreatorUUID() {
+		return this.creatorUUID;
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package au.edu.unimelb.boldapp;
 
 import java.io.File;
+import java.util.Date;
 import java.util.UUID;
 import java.util.List;
 
@@ -69,6 +70,8 @@ public class FileIOTest extends TestCase {
 		User user2 = new User(UUID.randomUUID(), "Test Üser 2");
 		assertTrue(FileIO.writeUser(user2));
 
+		// NOTE: ASSUMING readUsers() RETURNS THE LIST IN REVERSE CHRONOLOGICAL
+		// ORDER
 		List<User> users = FileIO.readUsers();
 		assertEquals(user.getName(), users.get(1).getName());
 		assertEquals(user.getUUID(), users.get(1).getUUID());
@@ -82,12 +85,46 @@ public class FileIOTest extends TestCase {
 				user2.getUUID().toString()));
 	}
 
-	public void testReadUsers() {
-		assertTrue(FileIO.readUsers() != null);
+	public void testWriteAndReadRecordingMeta() {
+
+		Recording recording = new Recording(
+				UUID.randomUUID(), UUID.randomUUID(), "Test",
+				new Date());
+
+		Recording recording2 = new Recording(
+				UUID.randomUUID(), UUID.randomUUID(), "Test",
+				new Date(), UUID.randomUUID());
+
+		assertTrue(FileIO.writeRecordingMeta(recording));
+		assertTrue(FileIO.writeRecordingMeta(recording2));
+
+		List<Recording> recordings = FileIO.readRecordingsMeta();
+		Log.i("FileIO", " " + recordings.size());
+
+		assertEquals(recording.getUUID(), recordings.get(1).getUUID());
+		assertEquals(recording.getCreatorUUID(),
+				recordings.get(1).getCreatorUUID());
+		assertEquals(recording.getName(), recordings.get(1).getName());
+		assertEquals(recording.getDate(), recordings.get(1).getDate());
+		assertEquals(null, recordings.get(1).getOriginalUUID());
+
+		assertEquals(recording2.getUUID(), recordings.get(0).getUUID());
+		assertEquals(recording2.getCreatorUUID(), recordings.get(0).getCreatorUUID());
+		assertEquals(recording2.getName(), recordings.get(0).getName());
+		assertEquals(recording2.getDate(), recordings.get(0).getDate());
+		assertEquals(recording2.getOriginalUUID(),
+				recordings.get(0).getOriginalUUID());
+
+		// Do some cleanup
+		assertTrue(new File(FileIO.getRecordingsPath(),
+				recording.getUUID() + ".json").delete());
+		assertTrue(new File(FileIO.getRecordingsPath(),
+				recording2.getUUID() + ".json").delete());
 	}
 
 	@Override
 	public void tearDown() throws Exception {
+
 		FileUtils.deleteDirectory(new File(FileIO.getAppRootPath(),
 				"testdir"));
 	}
