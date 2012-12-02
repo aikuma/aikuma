@@ -32,31 +32,31 @@ public class FileIOTest extends TestCase {
 				FileIO.getRecordingsPath());
 	}
 
-	public void testWriteRead1() {
-		assertTrue(FileIO.write("testdir/test1/test1", "hallo"));
+	public void testWriteRead1() throws Exception {
+		FileIO.write("testdir/test1/test1", "hallo");
 		assertEquals("hallo", FileIO.read("/mnt/sdcard/bold/testdir/test1/test1"));
 	}
 
-	public void testWriteRead2() {
-		assertTrue(FileIO.write("/mnt/sdcard/bold/testdir/test1/", "okies"));
+	public void testWriteRead2() throws Exception {
+		FileIO.write("/mnt/sdcard/bold/testdir/test1/", "okies");
 		assertEquals("okies", FileIO.read("testdir/test1/"));
 	}
 
-	public void testWriteRead3() {
-		assertTrue(FileIO.write("testdir/test3", "once upon\n a time\n"));
+	public void testWriteRead3() throws Exception {
+		FileIO.write("testdir/test3", "once upon\n a time\n");
 		assertEquals("once upon\n a time\n", FileIO.read("testdir/test3"));
 	}
 
-	public void testWriteRead4() {
-		assertTrue(FileIO.write("testdir/test4", "once upon\n a time"));
+	public void testWriteRead4() throws Exception {
+		FileIO.write("testdir/test4", "once upon\n a time");
 		assertTrue(!"once upon\n a time\n"
 				.equals(FileIO.read("testdir/test4")));
 	}
 
-	public void testWriteRead5() {
-		assertTrue(FileIO.write(
+	public void testWriteRead5() throws Exception {
+		FileIO.write(
 				new File(FileIO.getAppRootPath(), "testdir/test1/test1"),
-				"hallo"));
+				"hallo");
 		assertEquals("hallo", FileIO.read(
 				new File(FileIO.getAppRootPath(), "testdir/test1/test1")));
 	}
@@ -65,10 +65,10 @@ public class FileIOTest extends TestCase {
 		// Writes two users, and then reads them back.
 
 		User user = new User(UUID.randomUUID(), "Test User");
-		assertTrue(FileIO.writeUser(user));
+		FileIO.writeUser(user);
 
 		User user2 = new User(UUID.randomUUID(), "Test Üser 2");
-		assertTrue(FileIO.writeUser(user2));
+		FileIO.writeUser(user2);
 
 		// NOTE: ASSUMING readUsers() RETURNS THE LIST IN REVERSE CHRONOLOGICAL
 		// ORDER
@@ -85,7 +85,7 @@ public class FileIOTest extends TestCase {
 				user2.getUUID().toString()));
 	}
 
-	public void testWriteAndReadRecordingMeta() {
+	public void testWriteAndReadRecordingMeta() throws Exception {
 
 		Recording recording = new Recording(
 				UUID.randomUUID(), UUID.randomUUID(), "Test",
@@ -95,8 +95,8 @@ public class FileIOTest extends TestCase {
 				UUID.randomUUID(), UUID.randomUUID(), "Test",
 				new Date(), UUID.randomUUID());
 
-		assertTrue(FileIO.writeRecordingMeta(recording));
-		assertTrue(FileIO.writeRecordingMeta(recording2));
+		FileIO.writeRecordingMeta(recording);
+		FileIO.writeRecordingMeta(recording2);
 
 		List<Recording> recordings = FileIO.readRecordingsMeta();
 		Log.i("FileIO", " " + recordings.size());

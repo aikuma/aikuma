@@ -1,6 +1,5 @@
 package au.edu.unimelb.boldapp;
 
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -73,6 +72,7 @@ public abstract class FileIO {
 	/**
 	 * Returns the path to the BOLD app's user directory.
 	 *
+	 * @return	the path to the users directory (absolute).
 	 */
 	public static File getUsersPath(){
 		File path = new File(getAppRootPath(), usersPath);
@@ -83,7 +83,7 @@ public abstract class FileIO {
 	/**
 	 * Returns the path to the BOLD app's images directory.
 	 *
-	 * @return The path to the images directory
+	 * @return The path to the images directory (absolute).
 	 */
 	public static File getImagesPath(){
 		File path = new File(getAppRootPath(), imagesPath);
@@ -94,7 +94,7 @@ public abstract class FileIO {
 	/**
 	 * Returns the path to the BOLD app's recordings directory.
 	 *
-	 * @return The path to the recordings directory
+	 * @return The path to the recordings directory (absolute).
 	 */
 	public static File getRecordingsPath(){
 		File path = new File(getAppRootPath(), recordingsPath);
@@ -111,10 +111,9 @@ public abstract class FileIO {
 	 * written.
 	 * @param	data	The data that is to be written to the file.
 	 *
-	 * @return	true if successful; false otherwise.
 	 */
 	
-	public static boolean write(String path, String data) {
+	public static void write(String path, String data) throws IOException {
 		File file;
 		// If the path is absolute, use that path, otherwise make it relative
 		// to the bold directory.
@@ -123,12 +122,7 @@ public abstract class FileIO {
 		} else {
 			file = new File(getAppRootPath(), path);
 		}
-		try {
-			FileUtils.writeStringToFile(file, data, Charsets.UTF_8);
-		} catch (IOException e) {
-			return false;
-		}
-		return true;
+		FileUtils.writeStringToFile(file, data, Charsets.UTF_8);
 	}
 
 	/**
@@ -139,16 +133,10 @@ public abstract class FileIO {
 	 * written.
 	 * @param	data	The data that is to be written to the file.
 	 *
-	 * @return	true if successful; false otherwise.
 	 */
 
-	public static boolean write(File path, String data) {
-		try {
-			FileUtils.writeStringToFile(path, data, Charsets.UTF_8);
-		} catch (IOException e) {
-			return false;
-		}
-		return true;
+	public static void write(File path, String data) throws IOException {
+		FileUtils.writeStringToFile(path, data, Charsets.UTF_8);
 	}
 
 	/**
@@ -157,10 +145,9 @@ public abstract class FileIO {
 	 *
 	 * @param	path	The path to the file in which the data lies.
 	 *
-	 * @return	A string containing the file's contents; null if something went
-	 * wrong.
+	 * @return	A string containing the file's contents;
 	 */
-	public static String read(String path) {
+	public static String read(String path) throws IOException {
 		File file;
 		// If the path is absolute, use that path, otherwise make it relative
 		// to the bold directory.
@@ -169,11 +156,8 @@ public abstract class FileIO {
 		} else {
 			file = new File(getAppRootPath(), path);
 		}
-		try {
-			return FileUtils.readFileToString(file, Charsets.UTF_8);
-		} catch (IOException e) {
-			return null;
-		}
+
+		return FileUtils.readFileToString(file, Charsets.UTF_8);
 	} 
 
 	/**
@@ -182,15 +166,10 @@ public abstract class FileIO {
 	 *
 	 * @param	path	The path to the file in which the data lies.
 	 *
-	 * @return	A string containing the file's contents; null if something went
-	 * wrong.
+	 * @return	A string containing the file's contents;
 	 */
-	public static String read(File path) {
-		try {
-			return FileUtils.readFileToString(path, Charsets.UTF_8);
-		} catch (IOException e) {
-			return null;
-		}
+	public static String read(File path) throws IOException {
+		return FileUtils.readFileToString(path, Charsets.UTF_8);
 	}
 
 	/**
@@ -199,24 +178,19 @@ public abstract class FileIO {
 	 * @param	username	The name of the user.
 	 * @param	uuid	The users associated UUID.
 	 *
-	 * @return	true if successful; false otherwise
 	 */
-	public static boolean writeUser(String name, UUID uuid) {
+	public static void writeUser(String name, UUID uuid) throws IOException {
 
-		// Creat the JSON object
+		// Create the JSON object
 		JSONObject obj = new JSONObject();
 		obj.put("name", name);
 		obj.put("uuid", uuid.toString());
 
 		// Write the JSON object to file.
 		StringWriter stringWriter = new StringWriter();
-		try {
-			obj.writeJSONString(stringWriter);
-		} catch (IOException e) {
-			return false;
-		}
+		obj.writeJSONString(stringWriter);
 		String jsonText = stringWriter.toString();
-		return write(new File(getUsersPath(), uuid.toString() + "/metadata.json"),
+		write(new File(getUsersPath(), uuid.toString() + "/metadata.json"),
 				jsonText);
 
 	}
@@ -226,17 +200,18 @@ public abstract class FileIO {
 	 *
 	 * @param	user	The user to be written.
 	 *
-	 * @return	true if successful; false otherwise
 	 */
-	public static boolean writeUser(User user) {
-		return writeUser(user.getName(), user.getUUID());
+	public static void writeUser(User user) throws IOException {
+		writeUser(user.getName(), user.getUUID());
 	}
 
 	/**
 	 * Method to load all the users from the users directory into an array of
 	 * User objects in GlobalState.
+	 *
+	 * @return	a list of users in the directory.
 	 */
-	public static List<User> readUsers() {
+	public static List<User> readUsers() throws IOException, ParseException {
 		// Get an array of all the UUIDs from the "users" directory
 		List<String> userUUIDs = Arrays.asList(getUsersPath().list());
 
@@ -246,15 +221,11 @@ public abstract class FileIO {
 		for (String userUUID : userUUIDs) {
 			String jsonStr = read(
 					new File(getUsersPath(), userUUID + "/metadata.json"));
-			try {
-				Object obj = parser.parse(jsonStr);
-				JSONObject jsonObj = (JSONObject) obj;
-				users.add( new User(
-						UUID.fromString(jsonObj.get("uuid").toString()),
-						jsonObj.get("name").toString()));
-			} catch (ParseException e) {
-				return null;
-			}
+			Object obj = parser.parse(jsonStr);
+			JSONObject jsonObj = (JSONObject) obj;
+			users.add( new User(
+					UUID.fromString(jsonObj.get("uuid").toString()),
+					jsonObj.get("name").toString()));
 		}
 
 		//User[] usersArray = new User[users.size()];
@@ -264,7 +235,7 @@ public abstract class FileIO {
 	}
 
 	/**
-	 * Method to load all the users from the users directory into an array of
+	 * DEPRECATED: Method to load all the users from the users directory into an array of
 	 * User objects in GlobalState.
 	 */
 	public static void loadUsers() {
@@ -275,15 +246,18 @@ public abstract class FileIO {
 		List<User> users = new ArrayList<User>();
 		JSONParser parser = new JSONParser();
 		for (String userUUID : userUUIDs) {
-			String jsonStr = read(
-					new File(getUsersPath(), userUUID + "/metadata.json"));
 			try {
-				Object obj = parser.parse(jsonStr);
-				JSONObject jsonObj = (JSONObject) obj;
-				users.add( new User(
-						UUID.fromString(jsonObj.get("uuid").toString()),
-						jsonObj.get("name").toString()));
-			} catch (ParseException e) {
+				String jsonStr = read(
+						new File(getUsersPath(), userUUID + "/metadata.json"));
+				try {
+					Object obj = parser.parse(jsonStr);
+					JSONObject jsonObj = (JSONObject) obj;
+					users.add( new User(
+							UUID.fromString(jsonObj.get("uuid").toString()),
+							jsonObj.get("name").toString()));
+				} catch (ParseException e) {
+				}
+			} catch (IOException e) {
 			}
 		}
 
@@ -293,30 +267,25 @@ public abstract class FileIO {
 	}
 
 	/**
+	 * Writes the metadata of a recording to file.
+	 *
+	 * @param	recording	The recording metadata to be written to file.
 	 */
-	public static boolean writeRecordingMeta(Recording recording) {
+	public static void writeRecordingMeta(Recording recording) 
+			throws IOException {
 		JSONObject obj = new JSONObject();
 		obj.put("uuid", recording.getUUID().toString());
 		obj.put("creatorUUID", recording.getCreatorUUID().toString());
 		obj.put("recording_name", recording.getName());
 		obj.put("date_string", new StandardDateFormat().format(recording.getDate()));
-		//obj.put("uuid", recording.getUUID().toString());
-		//obj.put("creator_uuid", recording.getCreatorUUID().toString());
-		//obj.put("name", recording.getName());
-		//obj.put("date", new StandardDateFormat().format(recording.getDate()));
 		if (recording.getOriginalUUID() != null) {
 			obj.put("originalUUID", recording.getOriginalUUID().toString());
 		}
 		StringWriter stringWriter = new StringWriter();
-		try {
-			obj.writeJSONString(stringWriter);
-		} catch (IOException e) {
-			return false;
-		}
+		obj.writeJSONString(stringWriter);
 		String jsonText = stringWriter.toString();
-		return FileIO.write(new File(FileIO.getRecordingsPath(),
+		FileIO.write(new File(FileIO.getRecordingsPath(),
 				recording.getUUID() + ".json"), jsonText);
-
 	}
 
 	/**
@@ -325,7 +294,9 @@ public abstract class FileIO {
 	 * @return	recordings	A list of all the recordings in the bold directory;
 	 * null if something went wrong.
 	 */
-	public static List<Recording> readRecordingsMeta() {
+	public static List<Recording> readRecordingsMeta()
+			throws IOException, java.text.ParseException,
+			org.json.simple.parser.ParseException {
 		// Get an array of all the UUIDs from the "users" directory
 		JSONFilenameFilter fnf = new JSONFilenameFilter();
 		List<String> recordingFilenames =
@@ -337,106 +308,30 @@ public abstract class FileIO {
 		for (String recordingFilename : recordingFilenames) {
 			String jsonStr = read(
 					new File(getRecordingsPath(), recordingFilename));
-			Log.i("FileIO", new File(getRecordingsPath(), recordingFilename)
-					.toString());
-			Log.i("FileIO", " " + jsonStr);
-
-			try {
-				Object obj = parser.parse(jsonStr);
-				JSONObject jsonObj = (JSONObject) obj;
-				if (jsonObj == null) {
-					Log.i("FileIO", "blabla");
-				}
-				Log.i("FileIO", " " + UUID.fromString(jsonObj.get("uuid").toString()));
-				Log.i("FileIO", " " + UUID.fromString(jsonObj.get("creatorUUID").toString()));
-				Log.i("FileIO", " " + new StandardDateFormat().parse(
-						jsonObj.get("date_string").toString()));
-				Log.i("FileIO", " " +
-						jsonObj.get("recording_name").toString());
-				UUID originalUUID;
-				if (jsonObj.containsKey("originalUUID")) {
-					originalUUID = UUID.fromString(
-							jsonObj.get("originalUUID").toString());
-				} else {
-					originalUUID = null;
-				}
-				Recording ok =  new Recording(
-						UUID.fromString(jsonObj.get("uuid").toString()),
-						UUID.fromString(jsonObj.get("creatorUUID").toString()),
-						jsonObj.get("recording_name").toString(),
-						new StandardDateFormat().parse(
-								jsonObj.get("date_string").toString()),
-						originalUUID);
-
-						//UUID.fromString(jsonObj.get("uuid").toString()),
-						//UUID.fromString(jsonObj.get("creator_uuid").toString()),
-						//jsonObj.get("name").toString(),
-						//new StandardDateFormat().parse(
-						//		jsonObj.get("date").toString()));
-
-				recordings.add(ok);
-						//UUID.fromString(
-						//		jsonObj.get("original_uuid").toString())));
-			} catch (ParseException e) {
-				Log.e("FileIO", "somethang at " + recordingFilename, e);
-				return null;
-			} catch (java.text.ParseException e) {
-				Log.i("FileIO", "somethang2");
-				return null;
+			Object obj = parser.parse(jsonStr);
+			JSONObject jsonObj = (JSONObject) obj;
+			UUID originalUUID;
+			if (jsonObj.containsKey("originalUUID")) {
+				originalUUID = UUID.fromString(
+						jsonObj.get("originalUUID").toString());
+			} else {
+				originalUUID = null;
 			}
-		}
 
-		//User[] usersArray = new User[users.size()];
-		//GlobalState.setUsers(users.toArray(usersArray));
+			recordings.add(new Recording(
+					UUID.fromString(jsonObj.get("uuid").toString()),
+					UUID.fromString(jsonObj.get("creatorUUID").toString()),
+					jsonObj.get("recording_name").toString(),
+					new StandardDateFormat().parse(
+							jsonObj.get("date_string").toString()),
+					originalUUID));
+		}
 
 		return recordings;
 	 }
 
-
 	/**
-	 * Method to load all the recordings from the recordings directory into an
-	 * array of Recording objects.
-	 *
-	 * @return An array of all the recordings as Recording objects.
-	 */
-	 /*
-	 public static void loadRecordings() {
-	 	//Get an array of all the UUIDs from the "recordings" directory
-		File dir = new File(getAppRootPath() + getRecordingsPath());
-		JSONFilenameFilter fnf = new JSONFilenameFilter();
-		String[] recordingUuids = dir.list(fnf);
-
-		Recording[] recordings = new Recording[recordingUuids.length];
-		JSONParser parser = new JSONParser();
-		for (int i=0; i < recordingUuids.length; i++) {
-			String jsonStr = read(getRecordingsPath() + recordingUuids[i]);
-			try {
-				Object obj = parser.parse(jsonStr);
-				JSONObject jsonObj = (JSONObject) obj;
-				UUID originalUUID = null;
-				if (jsonObj.containsKey("originalUUID")) {
-					originalUUID = UUID.fromString(
-							jsonObj.get("originalUUID").toString());
-				}
-				recordings[i] = new Recording(
-						UUID.fromString(jsonObj.get("uuid").toString()),
-						GlobalState.getUserMap().get(UUID.fromString(
-								jsonObj.get("creatorUUID").toString())),
-						jsonObj.get("recording_name").toString(),
-						new StandardDateFormat().parse(
-								jsonObj.get("date_string").toString()),
-						originalUUID);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		GlobalState.setRecordings(recordings);
-	 }
-	 */
-
-	/**
-	 * Delete the filename supplied as an argument
+	 * DEPRECATED: Delete the filename supplied as an argument
 	 *
 	 * @param	fileName	Name of the file to be deleted.
 	 */
