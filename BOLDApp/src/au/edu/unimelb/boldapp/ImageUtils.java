@@ -1,5 +1,7 @@
 package au.edu.unimelb.boldapp;
 
+import java.io.File;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -73,5 +75,16 @@ public class ImageUtils {
 		}
 
 		return image;
+	}
+
+	/**
+	 * Method that retrieves image from file and returns a corresponding bitmap
+	 * (rotates the file according to the EXIF orientation tag, if applicable).
+	 *
+	 * @param	path	The absolute path of the image file.
+	 * @return	The image as a bitmap
+	 */
+	public static Bitmap retrieveFromFile(File path) {
+		return retrieveFromFile(path.toString());
 	}
 }

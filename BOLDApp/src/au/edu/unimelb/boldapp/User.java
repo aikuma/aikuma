@@ -50,6 +50,14 @@ public class User {
 	public UUID getUuid() {
 		return this.uuid;
 	}
+
+	/**
+	 * uuid accessor
+	 */
+	public UUID getUUID() {
+		return this.uuid;
+	}
+
 	/**
 	 * name accessor
 	 */

@@ -77,21 +77,11 @@ public class CreateUserActivity extends Activity {
 					"Please enter a username", Toast.LENGTH_LONG).show();
 		} else {
 
-			// Create the JSON object
-			JSONObject obj = new JSONObject();
-			obj.put("name", username);
-			obj.put("uuid", this.uuid.toString());
-
-			// Write the JSON object the the file
-			StringWriter stringWriter = new StringWriter();
-			try {
-				obj.writeJSONString(stringWriter);
-			} catch (Exception e) {
-				e.printStackTrace();
+			boolean success = FileIO.writeUser(username, this.uuid);
+			if (!success) {
+				Toast.makeText(this,
+						"Writing user data failed.", Toast.LENGTH_LONG).show();
 			}
-			String jsonText = stringWriter.toString();
-			FileIO.write(FileIO.getUsersPath() +
-					uuid.toString() + "/metadata.json", jsonText);
 
 			this.finish();
 		}
@@ -126,8 +116,7 @@ public class CreateUserActivity extends Activity {
 
 		String imageFilename = this.uuid.toString() + ".jpg";
 		try {
-			File image = new File(FileIO.getAppRootPath() +
-					FileIO.getImagesPath() + imageFilename);
+			File image = new File(FileIO.getImagesPath(), imageFilename);
 			takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
 					Uri.fromFile(image));
 		} catch (Exception e) {
@@ -141,15 +130,15 @@ public class CreateUserActivity extends Activity {
 	 * Display the photo just taken
 	 */
 	private void handleSmallCameraPhoto() {
-		String path = FileIO.getAppRootPath() + FileIO.getImagesPath() +
-				this.uuid.toString() + ".jpg";
+		File path = new File(
+				FileIO.getImagesPath(), this.uuid.toString() + ".jpg");
 
 		Bitmap image = ImageUtils.retrieveFromFile(path);
 		Bitmap small = ImageUtils.resizeBitmap(image, 0.05f);
 		try { 
 			FileOutputStream out = new FileOutputStream(
-					FileIO.getAppRootPath() + FileIO.getImagesPath() + 
-					this.uuid.toString() + ".small.jpg");
+					new File(FileIO.getImagesPath(),
+					this.uuid.toString() + ".small.jpg"));
 			small.compress(Bitmap.CompressFormat.JPEG, 100, out);
 		} catch (Exception e) {
 			e.printStackTrace();

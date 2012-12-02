@@ -1,5 +1,6 @@
 package au.edu.unimelb.boldapp;
 
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -192,10 +194,49 @@ public abstract class FileIO {
 	}
 
 	/**
+	 * Store user information to file
+	 *
+	 * @param	username	The name of the user.
+	 * @param	uuid	The users associated UUID.
+	 *
+	 * @return	true if successful; false otherwise
+	 */
+	public static boolean writeUser(String name, UUID uuid) {
+
+		// Creat the JSON object
+		JSONObject obj = new JSONObject();
+		obj.put("name", name);
+		obj.put("uuid", uuid.toString());
+
+		// Write the JSON object to file.
+		StringWriter stringWriter = new StringWriter();
+		try {
+			obj.writeJSONString(stringWriter);
+		} catch (IOException e) {
+			return false;
+		}
+		String jsonText = stringWriter.toString();
+		return write(new File(getUsersPath(), uuid.toString() + "/metadata.json"),
+				jsonText);
+
+	}
+
+	/**
+	 * Store user information to file
+	 *
+	 * @param	user	The user to be written.
+	 *
+	 * @return	true if successful; false otherwise
+	 */
+	public static boolean writeUser(User user) {
+		return writeUser(user.getName(), user.getUUID());
+	}
+
+	/**
 	 * Method to load all the users from the users directory into an array of
 	 * User objects in GlobalState.
 	 */
-	public static List<User> loadUsers() {
+	public static List<User> readUsers() {
 		// Get an array of all the UUIDs from the "users" directory
 		List<String> userUUIDs = Arrays.asList(getUsersPath().list());
 
@@ -220,6 +261,35 @@ public abstract class FileIO {
 		//GlobalState.setUsers(users.toArray(usersArray));
 
 		return users;
+	}
+
+	/**
+	 * Method to load all the users from the users directory into an array of
+	 * User objects in GlobalState.
+	 */
+	public static void loadUsers() {
+		// Get an array of all the UUIDs from the "users" directory
+		List<String> userUUIDs = Arrays.asList(getUsersPath().list());
+
+		// Get the user data from the metadata.json files
+		List<User> users = new ArrayList<User>();
+		JSONParser parser = new JSONParser();
+		for (String userUUID : userUUIDs) {
+			String jsonStr = read(
+					new File(getUsersPath(), userUUID + "/metadata.json"));
+			try {
+				Object obj = parser.parse(jsonStr);
+				JSONObject jsonObj = (JSONObject) obj;
+				users.add( new User(
+						UUID.fromString(jsonObj.get("uuid").toString()),
+						jsonObj.get("name").toString()));
+			} catch (ParseException e) {
+			}
+		}
+
+		User[] usersArray = new User[users.size()];
+		GlobalState.setUsers(users.toArray(usersArray));
+
 	}
 
 

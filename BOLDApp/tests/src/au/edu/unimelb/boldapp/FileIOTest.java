@@ -1,6 +1,8 @@
 package au.edu.unimelb.boldapp;
 
 import java.io.File;
+import java.util.UUID;
+import java.util.List;
 
 import android.util.Log;
 
@@ -58,8 +60,24 @@ public class FileIOTest extends TestCase {
 				new File(FileIO.getAppRootPath(), "testdir/test1/test1")));
 	}
 
-	public void testLoadUsers() {
-		assertTrue(FileIO.loadUsers() != null);
+	public void testWriteAndReadUsers() {
+		// Writes two users, and then reads them back.
+
+		User user = new User(UUID.randomUUID(), "Test User");
+		assertTrue(FileIO.writeUser(user));
+
+		User user2 = new User(UUID.randomUUID(), "Test Üser 2");
+		assertTrue(FileIO.writeUser(user2));
+
+		List<User> users = FileIO.readUsers();
+		assertEquals(user.getName(), users.get(1).getName());
+		assertEquals(user.getUUID(), users.get(1).getUUID());
+		assertEquals(user2.getName(), users.get(0).getName());
+		assertEquals(user2.getUUID(), users.get(0).getUUID());
+	}
+
+	public void testReadUsers() {
+		assertTrue(FileIO.readUsers() != null);
 	}
 
 	@Override
