@@ -135,6 +135,11 @@ public abstract class GlobalState {
 	 * Loads the users from the bold directory.
 	 */
 	public static boolean loadRecordings() {
-		return false;
+		try {
+			setRecordings(FileIO.readRecordingsMeta());
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
 	}
 }
