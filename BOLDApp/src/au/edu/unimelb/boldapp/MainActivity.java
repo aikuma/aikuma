@@ -1,5 +1,6 @@
 package au.edu.unimelb.boldapp;
 
+import java.io.File;
 import java.util.UUID;
 
 import android.app.Activity;
@@ -52,9 +53,9 @@ public class MainActivity extends Activity {
 			ImageButton userSelection = (ImageButton) 
 					findViewById(R.id.UserIcon);
 			Bitmap userImage = ImageUtils.retrieveFromFile(
-					FileIO.getAppRootPath() + FileIO.getImagesPath()
-					+ GlobalState.getCurrentUser().getUuid().toString() +
-							".small.jpg");
+					new File(FileIO.getImagesPath(),
+					GlobalState.getCurrentUser().getUuid().toString() +
+							".small.jpg"));
 			if (userImage != null) {
 				userSelection.setImageBitmap(userImage);
 			} else {

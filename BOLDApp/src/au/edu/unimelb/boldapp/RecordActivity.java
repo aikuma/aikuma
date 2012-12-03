@@ -55,8 +55,8 @@ public class RecordActivity extends Activity {
 		this.uuid = UUID.randomUUID();
 
 		//Prepare the recorder
-		recorder.prepare(FileIO.getAppRootPath() + FileIO.getRecordingsPath() +
-				uuid.toString() + ".wav");
+		recorder.prepare(new File(FileIO.getRecordingsPath(),
+				uuid.toString() + ".wav").toString());
 	}
 
 	/**

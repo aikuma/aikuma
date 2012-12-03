@@ -2,6 +2,7 @@ package au.edu.unimelb.boldapp;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.UUID;
 
@@ -77,8 +78,9 @@ public class CreateUserActivity extends Activity {
 					"Please enter a username", Toast.LENGTH_LONG).show();
 		} else {
 
-			boolean success = FileIO.writeUser(username, this.uuid);
-			if (!success) {
+			try {
+				FileIO.writeUser(username, this.uuid);
+			} catch (IOException e) {
 				Toast.makeText(this,
 						"Writing user data failed.", Toast.LENGTH_LONG).show();
 			}
