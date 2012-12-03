@@ -1,8 +1,10 @@
 package au.edu.unimelb.boldapp;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.Arrays;
+import java.util.List;
 
 import android.util.Log;
 
@@ -119,7 +121,20 @@ public abstract class GlobalState {
 	/**
 	 * Loads the users from the bold directory.
 	 */
-	public static boolean loadUser() {
+	public static boolean loadUsers() {
+		try {
+			List<User> users = FileIO.readUsers();
+			setUsers(users.toArray(new User[0]));
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Loads the users from the bold directory.
+	 */
+	public static boolean loadRecordings() {
 		return false;
 	}
 }

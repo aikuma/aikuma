@@ -42,7 +42,7 @@ public class RecordingSelectionActivity extends ListActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		FileIO.loadRecordings();
+		GlobalState.loadRecordings();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this,
 				GlobalState.getRecordings());
 		setListAdapter(adapter);

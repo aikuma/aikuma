@@ -211,7 +211,7 @@ public abstract class FileIO {
 	 *
 	 * @return	a list of users in the directory.
 	 */
-	public static List<User> readUsers() throws IOException, ParseException {
+	public static List<User> readUsers() throws IOException {
 		// Get an array of all the UUIDs from the "users" directory
 		List<String> userUUIDs = Arrays.asList(getUsersPath().list());
 
@@ -219,13 +219,17 @@ public abstract class FileIO {
 		List<User> users = new ArrayList<User>();
 		JSONParser parser = new JSONParser();
 		for (String userUUID : userUUIDs) {
-			String jsonStr = read(
-					new File(getUsersPath(), userUUID + "/metadata.json"));
-			Object obj = parser.parse(jsonStr);
-			JSONObject jsonObj = (JSONObject) obj;
-			users.add( new User(
-					UUID.fromString(jsonObj.get("uuid").toString()),
-					jsonObj.get("name").toString()));
+			try {
+				String jsonStr = read(
+						new File(getUsersPath(), userUUID + "/metadata.json"));
+				Object obj = parser.parse(jsonStr);
+				JSONObject jsonObj = (JSONObject) obj;
+				users.add( new User(
+						UUID.fromString(jsonObj.get("uuid").toString()),
+						jsonObj.get("name").toString()));
+			} catch (org.json.simple.parser.ParseException e) {
+				throw new IOException(e);
+			}
 		}
 
 		//User[] usersArray = new User[users.size()];
@@ -295,8 +299,7 @@ public abstract class FileIO {
 	 * null if something went wrong.
 	 */
 	public static List<Recording> readRecordingsMeta()
-			throws IOException, java.text.ParseException,
-			org.json.simple.parser.ParseException {
+			throws IOException {
 		// Get an array of all the UUIDs from the "users" directory
 		JSONFilenameFilter fnf = new JSONFilenameFilter();
 		List<String> recordingFilenames =
@@ -306,25 +309,31 @@ public abstract class FileIO {
 		List<Recording> recordings = new ArrayList<Recording>();
 		JSONParser parser = new JSONParser();
 		for (String recordingFilename : recordingFilenames) {
-			String jsonStr = read(
-					new File(getRecordingsPath(), recordingFilename));
-			Object obj = parser.parse(jsonStr);
-			JSONObject jsonObj = (JSONObject) obj;
-			UUID originalUUID;
-			if (jsonObj.containsKey("originalUUID")) {
-				originalUUID = UUID.fromString(
-						jsonObj.get("originalUUID").toString());
-			} else {
-				originalUUID = null;
-			}
+			try {
+				String jsonStr = read(
+						new File(getRecordingsPath(), recordingFilename));
+					Object obj = parser.parse(jsonStr);
+				JSONObject jsonObj = (JSONObject) obj;
+				UUID originalUUID;
+				if (jsonObj.containsKey("originalUUID")) {
+					originalUUID = UUID.fromString(
+							jsonObj.get("originalUUID").toString());
+				} else {
+					originalUUID = null;
+				}
 
-			recordings.add(new Recording(
-					UUID.fromString(jsonObj.get("uuid").toString()),
-					UUID.fromString(jsonObj.get("creatorUUID").toString()),
-					jsonObj.get("recording_name").toString(),
-					new StandardDateFormat().parse(
-							jsonObj.get("date_string").toString()),
-					originalUUID));
+				recordings.add(new Recording(
+						UUID.fromString(jsonObj.get("uuid").toString()),
+						UUID.fromString(jsonObj.get("creatorUUID").toString()),
+						jsonObj.get("recording_name").toString(),
+						new StandardDateFormat().parse(
+								jsonObj.get("date_string").toString()),
+						originalUUID));
+			} catch (org.json.simple.parser.ParseException e) {
+				throw new IOException(e);
+			} catch (java.text.ParseException e) {
+				throw new IOException(e);
+			}
 		}
 
 		return recordings;
