@@ -239,38 +239,6 @@ public abstract class FileIO {
 	}
 
 	/**
-	 * DEPRECATED: Method to load all the users from the users directory into an array of
-	 * User objects in GlobalState.
-	 */
-	public static void loadUsers() {
-		// Get an array of all the UUIDs from the "users" directory
-		List<String> userUUIDs = Arrays.asList(getUsersPath().list());
-
-		// Get the user data from the metadata.json files
-		List<User> users = new ArrayList<User>();
-		JSONParser parser = new JSONParser();
-		for (String userUUID : userUUIDs) {
-			try {
-				String jsonStr = read(
-						new File(getUsersPath(), userUUID + "/metadata.json"));
-				try {
-					Object obj = parser.parse(jsonStr);
-					JSONObject jsonObj = (JSONObject) obj;
-					users.add( new User(
-							UUID.fromString(jsonObj.get("uuid").toString()),
-							jsonObj.get("name").toString()));
-				} catch (ParseException e) {
-				}
-			} catch (IOException e) {
-			}
-		}
-
-		User[] usersArray = new User[users.size()];
-		GlobalState.setUsers(users.toArray(usersArray));
-
-	}
-
-	/**
 	 * Writes the metadata of a recording to file.
 	 *
 	 * @param	recording	The recording metadata to be written to file.

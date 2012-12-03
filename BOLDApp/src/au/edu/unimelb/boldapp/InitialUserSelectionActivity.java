@@ -41,9 +41,9 @@ public class InitialUserSelectionActivity extends ListActivity {
 		// Load users into file and set the list array adapter. Doing this in
 		// this method ensures users that have just been created appear when
 		// the current user returns from the CreateUserActivity
-		FileIO.loadUsers();
-		ArrayAdapter adapter = new UserArrayAdapter(this, 
-				GlobalState.getUsers());
+		GlobalState.loadUsers();
+		ArrayAdapter adapter = new UserArrayAdapter(this,
+				GlobalState.getUsers().toArray(new User[0]));
 		setListAdapter(adapter);
 	}
 

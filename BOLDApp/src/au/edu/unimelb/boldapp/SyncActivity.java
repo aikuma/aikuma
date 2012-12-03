@@ -27,7 +27,7 @@ public class SyncActivity extends Activity {
             public void run() {
 				Log.i("1234", "here0");
 				Client client = new Client();
-				client.setClientBaseDir(FileIO.getAppRootPath());
+				client.setClientBaseDir(FileIO.getAppRootPath().toString());
 				// Eventually want a method in Client to find it's own server
 				// base dir by recursively searching for a writable directory.
 				client.setServerBaseDir("/part0/share/bold/");

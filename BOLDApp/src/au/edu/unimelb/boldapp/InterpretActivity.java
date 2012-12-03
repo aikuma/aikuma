@@ -1,5 +1,6 @@
 package au.edu.unimelb.boldapp;
 
+import java.io.File;
 import java.util.UUID;
 
 import android.os.Bundle;
@@ -49,12 +50,12 @@ public class InterpretActivity extends RespeakActivity {
 		this.uuid = UUID.randomUUID();
 
 		respeaker.prepare(
-				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
-				+ originalUUID.toString() + ".wav",
-				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
-				+ uuid.toString() + ".wav",
-				FileIO.getAppRootPath() + FileIO.getRecordingsPath()
-				+ uuid.toString() + ".map");
+				new File(FileIO.getRecordingsPath(),
+						originalUUID.toString() + ".wav").toString(),
+				new File(FileIO.getRecordingsPath(),
+						uuid.toString() + ".wav").toString(),
+				new File(FileIO.getRecordingsPath(),
+						uuid.toString() + ".map").toString());
 
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override

@@ -44,7 +44,7 @@ public class RecordingSelectionActivity extends ListActivity {
 		super.onStart();
 		GlobalState.loadRecordings();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this,
-				GlobalState.getRecordings());
+				GlobalState.getRecordings().toArray(new Recording[0]));
 		setListAdapter(adapter);
 	}
 
@@ -93,7 +93,8 @@ public class RecordingSelectionActivity extends ListActivity {
 	 */
 	public void sortAlphabetically(View view) {
 		ArrayAdapter adapter = new RecordingArrayAdapter(this,
-				GlobalState.getRecordings("alphabetical"));
+				GlobalState.getRecordings("alphabetical").toArray(new
+				Recording[0]));
 		setListAdapter(adapter);
 	}
 
@@ -104,7 +105,7 @@ public class RecordingSelectionActivity extends ListActivity {
 	 */
 	public void sortDate(View view) {
 		ArrayAdapter adapter = new RecordingArrayAdapter(this,
-				GlobalState.getRecordings("date"));
+				GlobalState.getRecordings("date").toArray(new Recording[0]));
 		setListAdapter(adapter);
 	}
 }
