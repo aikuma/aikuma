@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import android.util.Log;
@@ -22,9 +23,9 @@ public abstract class GlobalState {
 	private static User currentUser;
 
 	/**
-	 * An array of all the users.
+	 * A list of all the users.
 	 */
-	private static User[] users;
+	private static List<User> users;
 
 	/**
 	 * A map from UUIDs to users.
@@ -32,9 +33,9 @@ public abstract class GlobalState {
 	private static HashMap<UUID, User> userMap;
 
 	/**
-	 * An array of all the recordings.
+	 * A list of all the recordings.
 	 */
-	private static Recording[] recordings;
+	private static List<Recording> recordings;
 
 	/**
 	 * A map from UUIDs to recordings.
@@ -58,18 +59,18 @@ public abstract class GlobalState {
 	/**
 	 * users accessor
 	 */
-	public static User[] getUsers() {
+	public static List<User> getUsers() {
 		return GlobalState.users;
 	}
 	
 	/**
 	 * users mutator; creates a userMap while setting users.
 	 */
-	public static void setUsers(User[] users) {
+	public static void setUsers(List<User> users) {
 		GlobalState.users = users;
 		HashMap<UUID, User> userMap = new HashMap();
-		for (int i=0; i < users.length; i++) {
-			userMap.put(users[i].getUuid(), users[i]);
+		for (User user : users) {
+			userMap.put(user.getUUID(), user);
 		}
 		GlobalState.userMap = userMap;
 	}
@@ -84,19 +85,19 @@ public abstract class GlobalState {
 	/**
 	 * recordings mutator
 	 */
-	public static void setRecordings(Recording[] recordings) {
+	public static void setRecordings(List<Recording> recordings) {
 		GlobalState.recordings = recordings;
 		HashMap<UUID, Recording> recordingMap = new HashMap();
-		for (int i=0; i < recordings.length; i++) {
-			recordingMap.put(recordings[i].getUuid(), recordings[i]);
+		for (Recording recording : recordings) {
+			recordingMap.put(recording.getUUID(), recording);
 		}
 		GlobalState.recordingMap = recordingMap;
 	}
-	
+
 	/**
 	 * default recordings accessor
 	 */
-	public static Recording[] getRecordings() {
+	public static List<Recording> getRecordings() {
 		return GlobalState.recordings;
 	}
 
@@ -106,8 +107,8 @@ public abstract class GlobalState {
 	 * @param	sortBy	String with values either "alphabetical" or "date"
 	 * indicationg how the caller wants the recordings sorted.
 	 */
-	public static Recording[] getRecordings(String sortBy) {
-		Arrays.sort(GlobalState.recordings, new RecordingComparator(sortBy));
+	public static List<Recording> getRecordings(String sortBy) {
+		java.util.Collections.sort(GlobalState.recordings, new RecordingComparator(sortBy));
 		return GlobalState.recordings;
 	}
 
@@ -123,8 +124,7 @@ public abstract class GlobalState {
 	 */
 	public static boolean loadUsers() {
 		try {
-			List<User> users = FileIO.readUsers();
-			setUsers(users.toArray(new User[0]));
+			setUsers(FileIO.readUsers());
 		} catch (IOException e) {
 			return false;
 		}
