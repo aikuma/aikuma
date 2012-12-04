@@ -1,5 +1,6 @@
 package au.edu.unimelb.boldapp.audio;
 
+import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
@@ -116,16 +117,21 @@ public class InterleavedPlayer implements PlayerInterface {
 		// Initialize the players
 		try {
 			JSONParser parser = new JSONParser();
-			String jsonStr = FileIO.read(FileIO.getRecordingsPath() +
-					respeakingUUID + ".json");
-			Object obj = parser.parse(jsonStr);
-			JSONObject jsonObj = (JSONObject) obj;
-			UUID originalUUID = UUID.fromString(
-					jsonObj.get("originalUUID").toString());
-			original = new SimplePlayer(originalUUID, new
-					OriginalMarkerReachedListener());
-			respeaking = new SimplePlayer(respeakingUUID, new
-					RespeakingMarkerReachedListener());
+			// Why is this still here? All JSON stuff in FileIO, please.
+			try {
+				String jsonStr = FileIO.read(new File(FileIO.getRecordingsPath(),
+						respeakingUUID + ".json").toString());
+				Object obj = parser.parse(jsonStr);
+				JSONObject jsonObj = (JSONObject) obj;
+				UUID originalUUID = UUID.fromString(
+						jsonObj.get("originalUUID").toString());
+				original = new SimplePlayer(originalUUID, new
+						OriginalMarkerReachedListener());
+				respeaking = new SimplePlayer(respeakingUUID, new
+						RespeakingMarkerReachedListener());
+			} catch (IOException e) {
+				// Why is this still here? All JSON stuff in FileIO, please.
+			}
 		} catch (ParseException e) {
 			// Cannot interleave the respeaking.
 			e.printStackTrace();
@@ -143,8 +149,8 @@ public class InterleavedPlayer implements PlayerInterface {
 		// Reading the samples from the mapping file into a list of segments.
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(
-					FileIO.getAppRootPath() + FileIO.getRecordingsPath() +
-					respeakingUUID.toString() + ".map"));
+					new File(FileIO.getRecordingsPath(),
+					respeakingUUID.toString() + ".map")));
 			String line;
 			try {
 				while ((line = reader.readLine()) != null) {

@@ -1,5 +1,6 @@
 package au.edu.unimelb.boldapp;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.UUID;
 import java.util.Date;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.util.Log;
 import android.content.Intent;
+import android.widget.Toast;
 
 
 import org.json.simple.JSONObject;
@@ -56,26 +58,21 @@ public class SaveActivity extends Activity {
 		EditText editText = (EditText) findViewById(R.id.edit_recording_name);
 		String recordingName = editText.getText().toString();
 
-		//Get a standardized representation of the current date
-		String dateString = new StandardDateFormat().format(new Date());
-
-		//Generate metadata file for the recording.
 		User currentUser = GlobalState.getCurrentUser();
-		JSONObject obj = new JSONObject();
-		obj.put("uuid", uuid.toString());
-		obj.put("creatorUUID", currentUser.getUuid().toString());
-		obj.put("recording_name", recordingName);
-		obj.put("date_string", dateString);
-		StringWriter stringWriter = new StringWriter();
-		try {
-			obj.writeJSONString(stringWriter);
-		} catch (Exception e) {
-			Log.e("CaughtExceptions", e.getMessage());
-		}
-		String jsonText = stringWriter.toString();
-		FileIO.write("recordings/" + uuid.toString() + ".json", jsonText);
-		this.finish();
+		Recording recording = new Recording(uuid, currentUser.getUUID(),
+				recordingName, new Date());
 
+		try {
+			FileIO.writeRecordingMeta(recording);
+			Toast.makeText(this, recordingName + " saved",
+					Toast.LENGTH_LONG).show();
+			this.finish();
+		} catch (IOException e) {
+			Toast.makeText(this, "Failed writing " + recordingName,
+					Toast.LENGTH_LONG).show();
+		}
+
+		this.finish();
 	}
 
 	/**

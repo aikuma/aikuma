@@ -1,5 +1,6 @@
 package au.edu.unimelb.boldapp.audio;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -24,8 +25,8 @@ public class SimplePlayer extends MarkedMediaPlayer
 	public SimplePlayer(UUID uuid) {
 		super();
 		try {
-			setDataSource(FileIO.getAppRootPath() + FileIO.getRecordingsPath()
-					+ uuid.toString() + ".wav");
+			setDataSource(new File(FileIO.getRecordingsPath(),
+					uuid.toString() + ".wav").toString());
 			prepare();
 			Log.i("threads", "prepared");
 		} catch (IOException e) {
@@ -45,8 +46,8 @@ public class SimplePlayer extends MarkedMediaPlayer
 			onMarkerReachedListener) {
 		super(onMarkerReachedListener);
 		try {
-			setDataSource(FileIO.getAppRootPath() + FileIO.getRecordingsPath()
-					+ uuid.toString() + ".wav");
+			setDataSource(new File(FileIO.getRecordingsPath(),
+					uuid.toString() + ".wav").toString());
 			prepare();
 			Log.i("threads", "prepared");
 		} catch (IOException e) {

@@ -1,6 +1,7 @@
 package au.edu.unimelb.boldapp;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.UUID;
@@ -149,30 +150,23 @@ public class RespeakActivity extends Activity {
 	public void save(View view) {
 		respeaker.stop();
 
-		//Get a standardized representation of the current date
-		String dateString = new StandardDateFormat().format(new Date());
-
 		//Generate metadata file for the recording.
 		User currentUser = GlobalState.getCurrentUser();
-		JSONObject obj = new JSONObject();
-		obj.put("uuid", uuid.toString());
-		obj.put("creatorUUID", currentUser.getUuid().toString());
-		obj.put("originalUUID", original.getUuid().toString());
-		obj.put("recording_name", this.recordingNamePrefix +
-				original.getName());
-		obj.put("date_string", dateString);
-		StringWriter stringWriter = new StringWriter();
+		Recording respeaking = new Recording( uuid, currentUser.getUUID(), 
+				this.recordingNamePrefix + original.getName(), new Date(),
+				original.getUUID());
+
 		try {
-			obj.writeJSONString(stringWriter);
-		} catch (Exception e) {
-			e.printStackTrace();
+			FileIO.writeRecordingMeta(respeaking);
+			Toast.makeText(this,
+					this.recordingNamePrefix + original.getName() + " saved",
+					Toast.LENGTH_LONG).show();
+			this.finish();
+		} catch (IOException e) {
+			Toast.makeText(this, "Failed writing " + 
+					this.recordingNamePrefix + original.getName(),
+					Toast.LENGTH_LONG).show();
 		}
-		String jsonText = stringWriter.toString();
-		FileIO.write(FileIO.getRecordingsPath() + uuid.toString() + ".json",
-				jsonText);
-		Toast.makeText(this,
-				this.recordingNamePrefix + original.getName() + " saved",
-				Toast.LENGTH_LONG).show();
 		this.finish();
 	}
 
