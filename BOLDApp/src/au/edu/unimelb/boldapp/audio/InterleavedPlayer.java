@@ -15,10 +15,6 @@ import android.media.MediaPlayer;
 import android.util.Log;
 import android.util.Pair;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import au.edu.unimelb.boldapp.FileIO;
 import au.edu.unimelb.boldapp.Recording;
 

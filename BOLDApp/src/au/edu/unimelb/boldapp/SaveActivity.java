@@ -13,9 +13,6 @@ import android.util.Log;
 import android.content.Intent;
 import android.widget.Toast;
 
-
-import org.json.simple.JSONObject;
-
 /**
  * Activity that offers the user the ability to enter text in a text box and
  * press a button that then subsequently creates a corresponding user.
@@ -48,8 +45,7 @@ public class SaveActivity extends Activity {
 	/**
 	 * Creates a new user with the name specified in the EditText view.
 	 *
-	 * The user is given a UUID and a JSON metadata file containing the users
-	 * name is put in users/<uuid>/
+	 * The user is given a UUID and the user data is written to file.
 	 *
 	 * @param	view	The create user button that was clicked.
 	 */

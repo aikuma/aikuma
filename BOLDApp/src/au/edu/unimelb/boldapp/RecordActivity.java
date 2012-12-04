@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
-import org.json.simple.JSONObject;
-
 import au.edu.unimelb.boldapp.audio.Recorder;
 
 /**

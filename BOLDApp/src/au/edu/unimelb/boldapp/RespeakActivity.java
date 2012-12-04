@@ -1,5 +1,4 @@
-package au.edu.unimelb.boldapp;
-
+package au.edu.unimelb.boldapp; 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -15,8 +14,6 @@ import android.util.Log;
 import android.content.Intent;
 import android.widget.ImageButton;
 import android.widget.Toast;
-
-import org.json.simple.JSONObject;
 
 import au.edu.unimelb.boldapp.audio.Respeaker;
 

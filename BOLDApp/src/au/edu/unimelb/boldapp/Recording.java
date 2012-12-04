@@ -4,7 +4,7 @@ import java.util.UUID;
 import java.util.Date;
 
 /**
- * Class that stores a recording's metadata information as in the JSON file.
+ * Class that stores a recording's metadata information.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
