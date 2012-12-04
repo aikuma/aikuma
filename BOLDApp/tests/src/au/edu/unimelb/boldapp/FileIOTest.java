@@ -85,7 +85,28 @@ public class FileIOTest extends TestCase {
 				user2.getUUID().toString()));
 	}
 
-	public void testWriteAndReadRecordingMeta() throws Exception {
+	public void testWriteAndReadRecording() throws Exception {
+		Recording recording = new Recording(
+				UUID.randomUUID(), UUID.randomUUID(), "Testy",
+				new Date());
+
+		FileIO.writeRecording(recording);
+
+		Recording readRecording = FileIO.readRecording(recording.getUUID());
+
+		assertEquals(recording.getUUID(), recording.getUUID());
+		assertEquals(recording.getCreatorUUID(),
+				recording.getCreatorUUID());
+		assertEquals(recording.getName(), recording.getName());
+		assertEquals(recording.getDate(), recording.getDate());
+		assertEquals(recording.getOriginalUUID(), recording.getOriginalUUID());
+
+		// Do some cleanup
+		assertTrue(new File(FileIO.getRecordingsPath(),
+				recording.getUUID() + ".json").delete());
+	}
+
+	public void testWriteAndReadRecording2() throws Exception {
 
 		Recording recording = new Recording(
 				UUID.randomUUID(), UUID.randomUUID(), "Test",
@@ -95,10 +116,10 @@ public class FileIOTest extends TestCase {
 				UUID.randomUUID(), UUID.randomUUID(), "Test",
 				new Date(), UUID.randomUUID());
 
-		FileIO.writeRecordingMeta(recording);
-		FileIO.writeRecordingMeta(recording2);
+		FileIO.writeRecording(recording);
+		FileIO.writeRecording(recording2);
 
-		List<Recording> recordings = FileIO.readRecordingsMeta();
+		List<Recording> recordings = FileIO.readRecordings();
 		Log.i("FileIO", " " + recordings.size());
 
 		assertEquals(recording.getUUID(), recordings.get(1).getUUID());

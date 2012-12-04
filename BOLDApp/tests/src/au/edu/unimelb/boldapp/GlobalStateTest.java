@@ -80,7 +80,7 @@ public class GlobalStateTest extends TestCase {
 	public void testLoadRecordings() throws Exception {
 		Recording testRecording = new Recording(UUID.randomUUID(), UUID.randomUUID(),
 				"test recording", new Date(), UUID.randomUUID());
-		FileIO.writeRecordingMeta(testRecording);
+		FileIO.writeRecording(testRecording);
 		GlobalState.loadRecordings();
 		List<Recording> recordings = GlobalState.getRecordings();
 		boolean inTheList = false;

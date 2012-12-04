@@ -136,7 +136,7 @@ public abstract class GlobalState {
 	 */
 	public static boolean loadRecordings() {
 		try {
-			setRecordings(FileIO.readRecordingsMeta());
+			setRecordings(FileIO.readRecordings());
 		} catch (IOException e) {
 			return false;
 		}

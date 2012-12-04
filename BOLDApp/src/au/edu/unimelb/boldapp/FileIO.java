@@ -243,7 +243,7 @@ public abstract class FileIO {
 	 *
 	 * @param	recording	The recording metadata to be written to file.
 	 */
-	public static void writeRecordingMeta(Recording recording) 
+	public static void writeRecording(Recording recording) 
 			throws IOException {
 		JSONObject obj = new JSONObject();
 		obj.put("uuid", recording.getUUID().toString());
@@ -260,14 +260,45 @@ public abstract class FileIO {
 				recording.getUUID() + ".json"), jsonText);
 	}
 
+	public static Recording readRecording(File path) throws IOException {
+		String jsonStr = FileIO.read(path);
+		JSONParser parser = new JSONParser();
+		try {
+			Object obj = parser.parse(jsonStr);
+			JSONObject jsonObj = (JSONObject) obj;
+			UUID originalUUID;
+			if (jsonObj.containsKey("originalUUID")) {
+				originalUUID = UUID.fromString(
+						jsonObj.get("originalUUID").toString());
+			} else {
+				originalUUID = null;
+			}
+			return new Recording(
+					UUID.fromString(jsonObj.get("uuid").toString()),
+					UUID.fromString(jsonObj.get("creatorUUID").toString()),
+					jsonObj.get("recording_name").toString(),
+					new StandardDateFormat().parse(
+							jsonObj.get("date_string").toString()),
+					originalUUID);
+		} catch (org.json.simple.parser.ParseException e) {
+			throw new IOException(e);
+		} catch (java.text.ParseException e) {
+			throw new IOException(e);
+		}
+	}
+
+	public static Recording readRecording(UUID uuid) throws IOException {
+		return readRecording(new File(FileIO.getRecordingsPath(),
+				uuid.toString() + ".json"));
+	}
+
 	/**
 	 * Reads the recordings from file.
 	 *
 	 * @return	recordings	A list of all the recordings in the bold directory;
 	 * null if something went wrong.
 	 */
-	public static List<Recording> readRecordingsMeta()
-			throws IOException {
+	public static List<Recording> readRecordings() throws IOException {
 		// Get an array of all the UUIDs from the "users" directory
 		JSONFilenameFilter fnf = new JSONFilenameFilter();
 		List<String> recordingFilenames =
@@ -275,37 +306,13 @@ public abstract class FileIO {
 
 		// Get the user data from the metadata.json files
 		List<Recording> recordings = new ArrayList<Recording>();
-		JSONParser parser = new JSONParser();
 		for (String recordingFilename : recordingFilenames) {
-			try {
-				String jsonStr = read(
-						new File(getRecordingsPath(), recordingFilename));
-					Object obj = parser.parse(jsonStr);
-				JSONObject jsonObj = (JSONObject) obj;
-				UUID originalUUID;
-				if (jsonObj.containsKey("originalUUID")) {
-					originalUUID = UUID.fromString(
-							jsonObj.get("originalUUID").toString());
-				} else {
-					originalUUID = null;
-				}
-
-				recordings.add(new Recording(
-						UUID.fromString(jsonObj.get("uuid").toString()),
-						UUID.fromString(jsonObj.get("creatorUUID").toString()),
-						jsonObj.get("recording_name").toString(),
-						new StandardDateFormat().parse(
-								jsonObj.get("date_string").toString()),
-						originalUUID));
-			} catch (org.json.simple.parser.ParseException e) {
-				throw new IOException(e);
-			} catch (java.text.ParseException e) {
-				throw new IOException(e);
-			}
+			recordings.add(readRecording(new File(FileIO.getRecordingsPath(),
+					recordingFilename)));
 		}
 
 		return recordings;
-	 }
+	}
 
 	/**
 	 * DEPRECATED: Delete the filename supplied as an argument

@@ -20,6 +20,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import au.edu.unimelb.boldapp.FileIO;
+import au.edu.unimelb.boldapp.Recording;
 
 /**
  * Offers functionality to play a respeaking interleaved with the original.
@@ -113,34 +114,24 @@ public class InterleavedPlayer implements PlayerInterface {
 	}
 
 	private void initializePlayers(UUID respeakingUUID) {
-		
-		// Initialize the players
+
 		try {
-			JSONParser parser = new JSONParser();
-			// Why is this still here? All JSON stuff in FileIO, please.
-			try {
-				String jsonStr = FileIO.read(new File(FileIO.getRecordingsPath(),
-						respeakingUUID + ".json").toString());
-				Object obj = parser.parse(jsonStr);
-				JSONObject jsonObj = (JSONObject) obj;
-				UUID originalUUID = UUID.fromString(
-						jsonObj.get("originalUUID").toString());
-				original = new SimplePlayer(originalUUID, new
-						OriginalMarkerReachedListener());
-				respeaking = new SimplePlayer(respeakingUUID, new
-						RespeakingMarkerReachedListener());
-			} catch (IOException e) {
-				// Why is this still here? All JSON stuff in FileIO, please.
+			Recording respeakingMeta = FileIO.readRecording(respeakingUUID);
+			UUID originalUUID = respeakingMeta.getOriginalUUID();
+
+			original = new SimplePlayer(originalUUID, new
+					OriginalMarkerReachedListener());
+			respeaking = new SimplePlayer(respeakingUUID, new
+					RespeakingMarkerReachedListener());
+
+			// If the sample rates aren't the same, do something
+			if (original.getSampleRate() != respeaking.getSampleRate()) {
+				// What exactly, is yet to be decided.
 			}
-		} catch (ParseException e) {
-			// Cannot interleave the respeaking.
-			e.printStackTrace();
+		} catch (IOException e) {
+			// What would one do? Something bad has happened.
 		}
 
-		// If the sample rates aren't the same, do something
-		if (original.getSampleRate() != respeaking.getSampleRate()) {
-			// What exactly, is yet to be decided.
-		}
 	}
 
 	private void readSegments(UUID respeakingUUID) {

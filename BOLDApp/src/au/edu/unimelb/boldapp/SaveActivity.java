@@ -63,7 +63,7 @@ public class SaveActivity extends Activity {
 				recordingName, new Date());
 
 		try {
-			FileIO.writeRecordingMeta(recording);
+			FileIO.writeRecording(recording);
 			Toast.makeText(this, recordingName + " saved",
 					Toast.LENGTH_LONG).show();
 			this.finish();

@@ -157,7 +157,7 @@ public class RespeakActivity extends Activity {
 				original.getUUID());
 
 		try {
-			FileIO.writeRecordingMeta(respeaking);
+			FileIO.writeRecording(respeaking);
 			Toast.makeText(this,
 					this.recordingNamePrefix + original.getName() + " saved",
 					Toast.LENGTH_LONG).show();
