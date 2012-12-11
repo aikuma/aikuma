@@ -1,73 +1,105 @@
 package au.edu.unimelb.boldapp;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+
 import android.util.Log;
+import android.content.Intent;
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.content.Intent;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import au.edu.unimelb.boldapp.sync.Client;
 
-import au.edu.unimelb.boldapp.FileIO;
-
 public class SyncActivity extends Activity {
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.sync);
+	}
 
-        setContentView(R.layout.sync_screen);
+	public void onResume() {
+		super.onResume();
 
-        Handler handler = new Handler();
+		// Load previously set router info.
+		JSONParser parser = new JSONParser();
+		try {
+			String jsonStr = FileIO.read(new File(FileIO.getAppRootPath(),
+					"router.json"));
+			Object obj = parser.parse(jsonStr);
+			JSONObject jsonObj = (JSONObject) obj;
+			String routerIPAddress = jsonObj.get("ipaddress").toString();
+			String routerUsername = jsonObj.get("username").toString();
+			String routerPassword = jsonObj.get("password").toString();
 
-        // run a thread after 2 seconds to start the home screen
-        handler.postDelayed(new Runnable() {
+			EditText editText = (EditText) findViewById(R.id.edit_ip);
+			editText.setText(routerIPAddress);
+			editText = (EditText) findViewById(R.id.edit_router_username);
+			editText.setText(routerUsername);
+			editText = (EditText) findViewById(R.id.edit_password);
+			editText.setText(routerPassword);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            @Override
-            public void run() {
-				Log.i("1234", "here0");
-				Client client = new Client();
-				client.setClientBaseDir(FileIO.getAppRootPath().toString());
-				// Eventually want a method in Client to find it's own server
-				// base dir by recursively searching for a writable directory.
-				client.setServerBaseDir("/part0/share/bold/");
 
-				Log.i("1234", "here1");
-				if (!client.login("192.168.1.1", "admin", "admin")) {
-					Log.i("1234", "here2");
-					Toast.makeText(SyncActivity.this, "login failed.",
-							Toast.LENGTH_LONG).show();
-					finish();
-				} else if (!client.sync()) {
-					Log.i("1234", "here3");
-					Toast.makeText(SyncActivity.this, "Sync failed.",
-							Toast.LENGTH_LONG).show();
-					finish();
-				} else if (!client.logout()) {
-					Log.i("1234", "here4");
-					Toast.makeText(SyncActivity.this, "Logout failed.",
-							Toast.LENGTH_LONG).show();
-					finish();
-				} else {
-					
-					Log.i("1234", "here");
-					Toast.makeText(SyncActivity.this, "Syncing Complete.",
-							Toast.LENGTH_LONG).show();
-				}
+	}
 
-                finish();
-                // start the home screen
+	/**
+	 * When the back button is pressed.
+	 *
+	 * @param	view	the back button.
+	 */
+	public void goBack(View view) {
+		this.finish();
+	}
 
-				/*
-                Intent intent = new Intent(SyncActivity.this,
-						InitialUserSelectionActivity.class);
-                SyncActivity.this.startActivity(intent);
-				*/
+	/**
+	 * When the sync button is pressed, sync with the splash screen.
+	 *
+	 * @param	view	the sync button.
+	 */
+	public void sync(View view) {
+		// Get the information from the edit views and add to the intent
+		EditText editText = (EditText) findViewById(R.id.edit_ip);
+		String routerIPAddress = editText.getText().toString();
+		editText = (EditText) findViewById(R.id.edit_router_username);
+		String routerUsername = editText.getText().toString();
+		editText = (EditText) findViewById(R.id.edit_password);
+		String routerPassword = editText.getText().toString();
 
-            }
+		JSONObject obj = new JSONObject();
+		obj.put("ipaddress", routerIPAddress);
+		obj.put("username", routerUsername);
+		obj.put("password", routerPassword);
 
-        }, 50); // time in milliseconds (1 second = 1000 milliseconds) until the run() method will be called
+		StringWriter stringWriter = new StringWriter();
+		try {
+			obj.writeJSONString(stringWriter);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    }
+		String jsonText = stringWriter.toString();
+		Log.i("ftp", FileIO.getAppRootPath() + "router.json");
+		if (routerIPAddress.equals("")) {
+			Toast.makeText(this, "Please enter a router IP address",
+					Toast.LENGTH_LONG).show();
+		} else {
+			try {
+				FileIO.write(new File(FileIO.getAppRootPath(), "router.json"), jsonText);
+			} catch (IOException e) {
+				//Something bad happened.
+			}
+			Intent intent = new Intent(this, SyncSplashActivity.class);
+			startActivity(intent);
+		}
+	}
 
 }

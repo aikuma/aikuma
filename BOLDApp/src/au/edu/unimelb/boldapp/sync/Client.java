@@ -10,6 +10,7 @@ import java.net.SocketException;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import android.util.Log;
 
@@ -25,6 +26,8 @@ import org.apache.commons.net.ftp.FTPConnectionClosedException;
  */
 public class Client {
 
+	private static final String BOLD_DIR = "bold";
+
 	/**
 	 * Set up the working directory for the client.
 	 */
@@ -35,8 +38,15 @@ public class Client {
 	/**
 	 * Set up the working directory for the server.
 	 */
-	public void setServerBaseDir(String serverBaseDir) {
+	private void setServerBaseDir(String serverBaseDir) {
 		this.serverBaseDir = serverBaseDir;
+	}
+
+	/**
+	 * Get the working directory for the server.
+	 */
+	public String getServerBaseDir() {
+		return this.serverBaseDir;
 	}
 
 	/**
@@ -91,15 +101,22 @@ public class Client {
 		}
 		// Change to appropriate working directory
 		if (loggedIn) {
-			try {
-				apacheClient.makeDirectory(serverBaseDir);
-				result = cdServerBaseDir();
+			//try {
+				String serverBaseDir = findServerBaseDir();
+				Log.i("ftp", "serverBaseDir " + serverBaseDir);
+				if (serverBaseDir == null) {
+					logout();
+					return false;
+				} else {
+					setServerBaseDir(findServerBaseDir());
+					result = cdServerBaseDir();
+				}
 				//result = true;
 				//Log.i("sync", "cdServerBaseDir result: " + result);
-			} catch (IOException e ) {
-				Log.i("sync", "fourthIOException");
-				return false;
-			}
+			//} catch (IOException e ) {
+			//	Log.i("sync", "fourthIOException");
+			//	return false;
+			//}
 		}
 		//Log.i("sync", "final");
 		return result;
@@ -164,8 +181,14 @@ public class Client {
 	 */
 	public boolean pushDirectory(String directoryPath) {
 		// Get the specified client side directory.
-		File clientDir = new File(clientBaseDir + directoryPath);
+		File clientDir;
+		if (clientBaseDir.endsWith("/")) {
+			clientDir = new File(clientBaseDir + directoryPath);
+		} else {
+			clientDir = new File(clientBaseDir + "/" + directoryPath);
+		}
 		if (!clientDir.isDirectory()) {
+			Log.i("ftp", "1");
 			return false;
 		}
 
@@ -173,10 +196,13 @@ public class Client {
 		// into it.
 		try {
 			apacheClient.makeDirectory(
-					serverBaseDir + directoryPath);
+					serverBaseDir + "/" + directoryPath);
 			apacheClient.changeWorkingDirectory(
-					serverBaseDir + directoryPath);
+					serverBaseDir + "/" + directoryPath);
+			Log.i("ftp", "now in " + serverBaseDir + "/" + directoryPath);
+			Log.i("ftp", "pwd1: " + apacheClient.printWorkingDirectory());
 		} catch (IOException e) {
+			Log.i("ftp", "2");
 			return false;
 		}
 
@@ -193,6 +219,8 @@ public class Client {
 						if (!serverFilenames.contains(filename)) {
 							result = pushFile(directoryPath, file);
 							if (!result) {
+								Log.i("ftp", "3: " + directoryPath + ", " +
+								file);
 								return false;
 							}
 						}
@@ -200,8 +228,9 @@ public class Client {
 						apacheClient.makeDirectory(filename);
 						result = pushDirectory(directoryPath + "/" + filename);
 						apacheClient.changeWorkingDirectory(
-								serverBaseDir + directoryPath);
+								serverBaseDir + "/" + directoryPath);
 						if (!result) {
+							Log.i("ftp", "4");
 							return false;
 						}
 					}
@@ -209,6 +238,7 @@ public class Client {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			Log.i("ftp", "5");
 			return false;
 		}
 
@@ -218,6 +248,7 @@ public class Client {
 	/**
 	 * Push an individual file to the server.
 	 *
+	 * @param	directoryPath	Server side directory to push the file to.
 	 * @param	file	The file to be pushed.
 	 * @return	true if successful; false otherwise.
 	 */
@@ -226,15 +257,16 @@ public class Client {
 		try {
 			InputStream stream = new FileInputStream(file);
 			result = apacheClient.storeFile(
-					serverBaseDir + directoryPath + "/" + file.getName() +
+					serverBaseDir + "/" + directoryPath + "/" + file.getName() +
 							".inprogress",
 					stream);
 			stream.close();
 			apacheClient.rename(
-					serverBaseDir + directoryPath + "/" + file.getName() +
+					serverBaseDir + "/" + directoryPath + "/" + file.getName() +
 							".inprogress",
-					serverBaseDir + directoryPath + "/" + file.getName());
+					serverBaseDir + "/" + directoryPath + "/" + file.getName());
 		} catch (IOException e) {
+			Log.e("ftp", "exception for 3", e);
 			return false;
 		}
 		return result;
@@ -256,7 +288,7 @@ public class Client {
 			Log.i("zxcv", "inprogressfilename  " + inProgressFile.getPath());
 			OutputStream stream = new FileOutputStream(inProgressFile);
 			result = apacheClient.retrieveFile(
-					serverBaseDir + directoryPath + "/" +
+					serverBaseDir + "/" + directoryPath + "/" +
 							file.getName(),
 					stream);
 			stream.close();
@@ -280,7 +312,7 @@ public class Client {
 		try {
 			boolean result;
 			result = apacheClient.changeWorkingDirectory(
-					serverBaseDir + directoryPath);
+					serverBaseDir + "/" + directoryPath);
 			if (!result) {
 				return false;
 			}
@@ -342,39 +374,111 @@ public class Client {
 		}
 	}
 
+	//public boolean deleteFileAbsolute(String filePath) {
+	//	String originalWorkingDir = apacheClient.printWorkingDirectory();
+	//	String splitPath = filePath.split("/");
+	//	String parentPath = 
+	//}
+
+	/**
+	 * Recursively deletes a directory on the server
+	 *
+	 * @param	dirPath	The path to the directory (absolute or relative)
+	 **/
+	public boolean deleteServerDir(String dirPath) {
+		String[] dirPathSplit = dirPath.split("/");
+		String dirName = dirPathSplit[dirPathSplit.length - 1];
+		try {
+			try {
+				if (dirPath.startsWith("/")) {
+					if(!apacheClient.changeWorkingDirectory(dirPath)) {
+						return false;
+					};
+				} else {
+					if (!apacheClient.changeWorkingDirectory(
+							serverBaseDir + "/" +  dirPath)) {
+						return false;
+					}
+				}
+			} catch (IOException e) {
+				return false;
+			}
+			List<FTPFile> serverFiles = Arrays.asList(
+					apacheClient.listFiles());
+			if (serverFiles.size() == 0) {
+				apacheClient.changeToParentDirectory();
+				return apacheClient.removeDirectory(dirName);
+			} else {
+				for (FTPFile file : serverFiles) {
+					if (!file.isDirectory()) {
+						apacheClient.deleteFile(file.getName());
+					} else {
+						deleteServerDir(apacheClient.printWorkingDirectory() +
+						"/" + file.getName());
+					}
+				}
+				apacheClient.changeToParentDirectory();
+				return apacheClient.removeDirectory(dirName);
+			}
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
 	/**
 	 * Finds the first writable directory on the server.
 	 *
 	 * @return	the first writable directory on the server.
 	 */
-/*
+
 	public String findServerBaseDir() {
-		return findWritableDir("/");
+		String dir = findWritableDir("/");
+		Log.i("ftp", "findServerBaseDir returning: " + dir);
+		return dir;
 	}
+
+	/**
+	 * Find the first writable directory under the specified path. Note that it
+	 * uses a depth-first approach to determine what is "first writable".
+	 *
+	 * @param	startPath	The directory to start from
+	 */
 	private String findWritableDir(String startPath) {
 		try {
-			apacheClient.changeWorkingDirectory(startPath);
-			List<FTPFile> directories;
-			String writable;
-			if (apacheClient.makeDirectory("bold") == false) {
-				directories = Arrays.asList(apacheClient.listDirectories());
+			if (!apacheClient.changeWorkingDirectory(startPath)) {
+				return null;
+			}
+
+			// Try to create a directory. If we succeed, we know that this
+			// directory is writable.
+			String unlikelyDir = UUID.randomUUID().toString();
+			if (apacheClient.makeDirectory(unlikelyDir)) {
+				apacheClient.removeDirectory(unlikelyDir);
+				return apacheClient.printWorkingDirectory();
+			} else {
+
+				List<FTPFile> directories = 
+						Arrays.asList(apacheClient.listDirectories());
+				String writablePath;
 				for (FTPFile dir : directories) {
-					System.out.println(dir.getName());
-					System.out.println(startPath + dir.getName());
-					writable = findWritableDir(startPath + dir.getName());
-					if (writable != null) {
-						return writable;
+
+					// Act robustly in the face of different directory notation
+					if (startPath.endsWith("/")) {
+						writablePath = findWritableDir(startPath + dir.getName());
+					} else {
+						writablePath = findWritableDir(startPath + "/" + dir.getName());
+					}
+
+					if (writablePath != null) {
+						return writablePath;
 					}
 				}
-			} else {
-				return apacheClient.printWorkingDirectory();
 			}
 		} catch (IOException e) {
 			return null;
 		}
 		return null;
 	}
-*/
 
 	/**
 	 * The Apache FTPClient used by this FTPClient.
