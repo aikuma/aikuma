@@ -113,8 +113,8 @@ public class MainActivity extends Activity {
 	 * @param	view	The button that was clicked.
 	 */
 	public void goToInterpret(View view) {
-		Intent intent = new Intent(this, RecordingSelectionActivity.class);
-		intent.putExtra("activity", "InterpretActivity");
+		Intent intent = new Intent(this, FilterList.class);
+		//intent.putExtra("activity", "InterpretActivity");
 		startActivity(intent);
 	}
 
