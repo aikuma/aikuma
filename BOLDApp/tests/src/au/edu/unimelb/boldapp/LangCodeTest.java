@@ -17,7 +17,6 @@ import org.apache.commons.io.IOUtils;
 public class LangCodeTest extends AndroidTestCase {
 
 	public void testLoadSerializeTimes() throws Exception {
-		Log.i("lct", "000");
 		long startTime = System.nanoTime();
 		Map map =
 				FileIO.initialLoadLangCodes(
@@ -47,16 +46,13 @@ public class LangCodeTest extends AndroidTestCase {
 		Log.i("duration", "reading time: " + (endTime - startTime)/1000000000.0);
 		assertEquals(map, newMap);
 
-		Log.i("lct", "2");
 	}
 
 	public void testLoadSerialize() throws Exception {
-		Log.i("lct", "0000");
 		assertEquals(null, GlobalState.getLangCodeMap());
 		FileIO.loadLangCodes(
 				getContext().getResources().openRawResource(R.raw.iso_639_3));
 		Thread.sleep(6000);
 		assertTrue(GlobalState.getLangCodeMap() != null);
-		Log.i("lct", "3");
 	}
 }

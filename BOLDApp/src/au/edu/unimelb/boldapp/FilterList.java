@@ -40,10 +40,15 @@ public class FilterList extends ListActivity {
 			filterText.addTextChangedListener(filterTextWatcher);
 			//Log.i("sick", " " + new ArrayList<String>(langCodeMap.values()).size() + 
 			//		new ArrayList<String>(new HashSet<String>(langCodeMap.values())).size());
-			List<String> l = new ArrayList<String>(langCodeMap.keySet());
+			List<String> names = new ArrayList<String>(langCodeMap.keySet());
+			List<String> codes = new ArrayList<String>(langCodeMap.values());
+			List<String> namesAndCodes = new ArrayList<String>();
+			for (int i = 0; i < names.size(); i++) {
+				namesAndCodes.add(names.get(i) + " (" + codes.get(i) + ")");
+			}
 			adapter = new ArrayAdapter<String>(this,
 					android.R.layout.simple_list_item_1,
-					l);
+					namesAndCodes);
 			setListAdapter(adapter);
 		//} catch (IOException e) {
 			//Toast something here
