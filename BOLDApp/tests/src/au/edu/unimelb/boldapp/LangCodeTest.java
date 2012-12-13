@@ -1,6 +1,6 @@
 package au.edu.unimelb.boldapp;
 
-import android.test.ActivityInstrumentationTestCase2;
+import android.test.AndroidTestCase;
 import android.util.Log;
 import com.google.common.base.Charsets;
 import java.io.File;
@@ -14,24 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 
-public class LangCodeTest extends ActivityInstrumentationTestCase2<FilterList> {
+public class LangCodeTest extends AndroidTestCase {
 
-	private FilterList mActivity;
-
-	public LangCodeTest() {
-		super("au.edu.unimelb.boldapp", FilterList.class);
-	}
-
-	@Override
-	protected void setUp() throws Exception {
-		mActivity = getActivity();
-	}
-
-	public void testLoadSerialize() throws Exception {
+	public void testLoadSerializeTimes() throws Exception {
+		Log.i("lct", "000");
 		long startTime = System.nanoTime();
 		Map map =
-				FileIO.loadLangCodes(
-				mActivity.getResources().openRawResource(R.raw.iso_639_3));
+				FileIO.initialLoadLangCodes(
+				getContext().getResources().openRawResource(R.raw.iso_639_3));
 		long endTime = System.nanoTime();
 		Log.i("duration", "first loading time: " + (endTime -
 				startTime)/1000000000.0);
@@ -56,6 +46,17 @@ public class LangCodeTest extends ActivityInstrumentationTestCase2<FilterList> {
 		endTime = System.nanoTime();
 		Log.i("duration", "reading time: " + (endTime - startTime)/1000000000.0);
 		assertEquals(map, newMap);
+
+		Log.i("lct", "2");
 	}
 
+	public void testLoadSerialize() throws Exception {
+		Log.i("lct", "0000");
+		assertEquals(null, GlobalState.getLangCodeMap());
+		FileIO.loadLangCodes(
+				getContext().getResources().openRawResource(R.raw.iso_639_3));
+		Thread.sleep(6000);
+		assertTrue(GlobalState.getLangCodeMap() != null);
+		Log.i("lct", "3");
+	}
 }
