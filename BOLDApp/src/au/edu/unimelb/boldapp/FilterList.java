@@ -44,7 +44,7 @@ public class FilterList extends ListActivity {
 			List<String> codes = new ArrayList<String>(langCodeMap.values());
 			List<String> namesAndCodes = new ArrayList<String>();
 			for (int i = 0; i < names.size(); i++) {
-				namesAndCodes.add(names.get(i) + " (" + codes.get(i) + ")");
+				namesAndCodes.add(names.get(i) + " : "  + codes.get(i) + " ");
 			}
 			adapter = new ArrayAdapter<String>(this,
 					android.R.layout.simple_list_item_1,
