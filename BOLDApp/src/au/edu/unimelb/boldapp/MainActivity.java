@@ -113,7 +113,7 @@ public class MainActivity extends Activity {
 	 * @param	view	The button that was clicked.
 	 */
 	public void goToInterpret(View view) {
-		Intent intent = new Intent(this, FilterList.class);
+		Intent intent = new Intent(this, LanguageFilterList.class);
 		//intent.putExtra("activity", "InterpretActivity");
 		startActivity(intent);
 	}
