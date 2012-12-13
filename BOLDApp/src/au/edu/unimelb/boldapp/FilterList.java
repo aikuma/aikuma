@@ -29,10 +29,13 @@ public class FilterList extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.filter_list);
 		List list = new ArrayList<String>();
-		try {
-			InputStream langCodeStream = getResources().openRawResource(
-					R.raw.iso_639_3);
-			langCodeMap = FileIO.loadLangCodes(langCodeStream);
+		//try {
+			//InputStream langCodeStream = getResources().openRawResource(
+			//		R.raw.iso_639_3);
+			//langCodeMap = FileIO.loadLangCodes(langCodeStream);
+			do { 
+				langCodeMap = GlobalState.getLangCodeMap();
+			} while (langCodeMap == null);
 			filterText = (EditText) findViewById(R.id.search_box);
 			filterText.addTextChangedListener(filterTextWatcher);
 			//Log.i("sick", " " + new ArrayList<String>(langCodeMap.values()).size() + 
@@ -42,9 +45,9 @@ public class FilterList extends ListActivity {
 					android.R.layout.simple_list_item_1,
 					l);
 			setListAdapter(adapter);
-		} catch (IOException e) {
+		//} catch (IOException e) {
 			//Toast something here
-		}
+		//}
 		//list.add("once");
 		//list.add("upon");
 		//list.add("a");

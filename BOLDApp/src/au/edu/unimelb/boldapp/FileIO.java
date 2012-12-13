@@ -7,12 +7,15 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -329,7 +332,7 @@ public abstract class FileIO {
 	 * @param	is	an input stream from the original text file.
 	 * @return	a map from language names to their corresponding codes.
 	 */
-	public static Map loadLangCodes(InputStream is) throws IOException {
+	public static Map initialLoadLangCodes(InputStream is) throws IOException {
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(is, writer, Charsets.UTF_8);
 		String inputString = writer.toString();
@@ -340,5 +343,32 @@ public abstract class FileIO {
 			map.put(elements[6].trim(), elements[0].trim());
 		}
 		return map;
+	}
+
+	public static void loadLangCodes(final InputStream is) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					File mapFile = new File(FileIO.getAppRootPath(),
+					"lang_codes");
+					if (mapFile.exists()) {
+						FileInputStream fis = new FileInputStream(mapFile);
+						ObjectInputStream ois = new ObjectInputStream(fis);
+						GlobalState.setLangCodeMap((Map) ois.readObject());
+					} else {
+						Map langCodeMap = initialLoadLangCodes(is);
+						GlobalState.setLangCodeMap(langCodeMap);
+						FileOutputStream fos = new FileOutputStream(mapFile);
+						ObjectOutputStream oos = new ObjectOutputStream(fos);
+						oos.writeObject(langCodeMap);
+					}
+				} catch (IOException e) {
+					//This is bad, not sure what to do here.
+				} catch (ClassNotFoundException e) {
+					//This is bad, not sure what to do here.
+				}
+			}
+		}).start();
 	}
 }

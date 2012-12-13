@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import java.io.IOException;
 
 import au.edu.unimelb.boldapp.sync.SyncForActivity;
 
@@ -45,6 +46,8 @@ public class InitialUserSelectionActivity extends ListActivity {
 		ArrayAdapter adapter = new UserArrayAdapter(this,
 				GlobalState.getUsers().toArray(new User[0]));
 		setListAdapter(adapter);
+
+		FileIO.loadLangCodes(getResources().openRawResource(R.raw.iso_639_3));
 	}
 
 	/**

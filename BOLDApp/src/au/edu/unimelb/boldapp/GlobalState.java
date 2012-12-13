@@ -1,13 +1,13 @@
 package au.edu.unimelb.boldapp;
 
+import android.util.Log;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import android.util.Log;
+import java.util.Map;
 
 /**
  * Class to contain our (minimal number of) global variables.
@@ -141,5 +141,24 @@ public abstract class GlobalState {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * The mapping from language names to codes.
+	 */
+	private static Map langCodeMap;
+
+	/**
+	 * langCodeMap accesor
+	 */
+	public static Map getLangCodeMap() {
+		return langCodeMap;
+	}
+
+	/**
+	 * langCodeMap mutator
+	 */
+	public static void setLangCodeMap(Map langCodeMap) {
+		GlobalState.langCodeMap = langCodeMap;
 	}
 }
