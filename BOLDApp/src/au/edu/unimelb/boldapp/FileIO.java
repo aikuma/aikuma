@@ -345,6 +345,16 @@ public abstract class FileIO {
 		return map;
 	}
 
+	// Perhaps this method should be in GlobalState.
+	/**
+	 * Loads the ISO 639-3 language codes. First
+	 * checks to see if a file exists containing a serialized copy of the
+	 * map for faster loading. If it doesn't exist, it loads the map from the
+	 * text file and creates the file with a serialized version.
+	 *
+	 * @param	is	an input stream from the original text file.
+	 * @return	a map from language names to their corresponding codes.
+	 */
 	public static void loadLangCodes(final InputStream is) {
 		new Thread(new Runnable() {
 			@Override
@@ -364,9 +374,9 @@ public abstract class FileIO {
 						oos.writeObject(langCodeMap);
 					}
 				} catch (IOException e) {
-					//This is bad, not sure what to do here.
+					//This is bad.
 				} catch (ClassNotFoundException e) {
-					//This is bad, not sure what to do here.
+					//This is bad.
 				}
 			}
 		}).start();
