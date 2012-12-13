@@ -24,45 +24,15 @@ public class FilterList extends ListActivity {
 	private ArrayAdapter<String> adapter = null;
 	private Map langCodeMap;
 
-	/**
-	 * Loads the language codes from the text file resource and makes a mapping
-	 * from language code to language name.
-	 */
-	public void loadLangCodes() throws IOException {
-		/*
-		InputStream is = getResources().openRawResource(R.raw.iso_639_3);
-		StringWriter writer = new StringWriter();
-		String inputString = writer.toString();
-		langCodeMap = new HashMap<String,String>();
-		String[] lines = inputString.split("\n");
-		for (String line : lines) {
-			String[] elements = line.split("(?=\t)");
-			Log.i("langcodes", line);
-			Log.i("langcodes", " " + elements[0] + " " + elements[6]);
-			langCodeMap.put(elements[0].trim(), elements[6].trim());
-		}
-		*/
-		InputStream is = getResources().openRawResource(
-				R.raw.iso_639_3);
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(is, writer, Charsets.UTF_8);
-		String inputString = writer.toString();
-		Map<String,String> map = new HashMap<String,String>();
-		String[] lines = inputString.split("\n");
-		for (String line : lines) {
-			String[] elements = line.split("(?=\t)");
-			map.put(elements[6].trim(), elements[0].trim());
-		}
-		langCodeMap = map;
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.filter_list);
 		List list = new ArrayList<String>();
 		try {
-			loadLangCodes();
+			InputStream langCodeStream = getResources().openRawResource(
+					R.raw.iso_639_3);
+			langCodeMap = FileIO.loadLangCodes(langCodeStream);
 			filterText = (EditText) findViewById(R.id.search_box);
 			filterText.addTextChangedListener(filterTextWatcher);
 			//Log.i("sick", " " + new ArrayList<String>(langCodeMap.values()).size() + 

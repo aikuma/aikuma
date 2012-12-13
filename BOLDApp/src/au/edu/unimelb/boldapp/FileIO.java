@@ -1,5 +1,8 @@
 package au.edu.unimelb.boldapp;
 
+import android.os.Environment;
+import android.util.Log;
+import com.google.common.base.Charsets;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -8,6 +11,7 @@ import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -18,17 +22,12 @@ import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import android.os.Environment;
-import android.util.Log;
-
+import java.util.Map;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import org.apache.commons.io.FileUtils;
-
-import com.google.common.base.Charsets;
 
 /**
  * Abstract class that offers various File IO related methods.
@@ -322,5 +321,24 @@ public abstract class FileIO {
 	public static boolean delete(String fileName) {
 		File file = new File(getAppRootPath() + fileName);
 		return file.delete();
+	}
+
+	/**
+	 * Loads the ISO 639-3 language codes from the original text file.
+	 *
+	 * @param	is	an input stream from the original text file.
+	 * @return	a map from language names to their corresponding codes.
+	 */
+	public static Map loadLangCodes(InputStream is) throws IOException {
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(is, writer, Charsets.UTF_8);
+		String inputString = writer.toString();
+		Map<String,String> map = new HashMap<String,String>();
+		String[] lines = inputString.split("\n");
+		for (String line : lines) {
+			String[] elements = line.split("(?=\t)");
+			map.put(elements[6].trim(), elements[0].trim());
+		}
+		return map;
 	}
 }
