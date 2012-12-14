@@ -155,7 +155,7 @@ public abstract class GlobalState {
 	private static Map langCodeMap;
 
 	/**
-	 * langCodeMap accesor
+	 * langCodeMap accesor. Ensures that langCodeMap is not null.
 	 */
 	public static Map getLangCodeMap(Resources resources) {
 		if (langCodeMap == null) {
@@ -176,9 +176,14 @@ public abstract class GlobalState {
 		GlobalState.langCodeMap = langCodeMap;
 	}
 
-	//Should be private.
 	private static Thread loadLangCodesThread;
 
+	/**
+	 * loads the language code map
+	 *
+	 * @param	resources	resources so that the langCodes can be retrieved
+	 * from the text file if necessary.
+	 */
 	public static void loadLangCodeMap(final Resources resources) {
 		GlobalState.loadLangCodesThread = new Thread(new Runnable() {
 			@Override

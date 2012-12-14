@@ -47,7 +47,7 @@ public class InitialUserSelectionActivity extends ListActivity {
 				GlobalState.getUsers().toArray(new User[0]));
 		setListAdapter(adapter);
 
-		//FileIO.loadLangCodes(getResources().openRawResource(R.raw.iso_639_3));
+		GlobalState.loadLangCodeMap(getResources());
 	}
 
 	/**

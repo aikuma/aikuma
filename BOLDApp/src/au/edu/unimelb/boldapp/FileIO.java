@@ -330,7 +330,8 @@ public abstract class FileIO {
 	/**
 	 * Loads the ISO 639-3 language codes from the original text file.
 	 *
-	 * @param	is	an input stream from the original text file.
+	 * @param	resources	resources so that the iso 639-3 text file can be
+	 * retrieved.
 	 * @return	a map from language names to their corresponding codes.
 	 */
 	public static Map readLangCodes(Resources resources) throws IOException {

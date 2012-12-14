@@ -29,9 +29,7 @@ public class LanguageFilterList extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.filter_list);
 		List list = new ArrayList<String>();
-		do { 
-			langCodeMap = GlobalState.getLangCodeMap();
-		} while (langCodeMap == null);
+		langCodeMap = GlobalState.getLangCodeMap(getResources());
 		filterText = (EditText) findViewById(R.id.search_box);
 		filterText.addTextChangedListener(filterTextWatcher);
 		//Log.i("sick", " " + new ArrayList<String>(langCodeMap.values()).size() + 
