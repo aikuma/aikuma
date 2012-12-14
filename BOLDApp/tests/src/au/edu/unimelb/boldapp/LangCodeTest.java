@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 
 public class LangCodeTest extends AndroidTestCase {
 
+	/*
 	public void testLoadSerializeTimes() throws Exception {
 		long startTime = System.nanoTime();
 		Map map =
@@ -54,5 +55,27 @@ public class LangCodeTest extends AndroidTestCase {
 				getContext().getResources().openRawResource(R.raw.iso_639_3));
 		Thread.sleep(6000);
 		assertTrue(GlobalState.getLangCodeMap() != null);
+	}
+	*/
+
+	public void testReadLangCodes() throws Exception {
+		Map map = FileIO.readLangCodes(getContext().getResources());
+		assertEquals("usa", map.get("Usarufa"));
+		assertEquals("gah", map.get("Alekano"));
+	}
+
+	public void testLoadLangCodeMap() {
+		GlobalState.setLangCodeMap(null);
+		Map map = GlobalState.getLangCodeMap(getContext().getResources());
+		assertEquals("usa", map.get("Usarufa"));
+		assertEquals("gah", map.get("Alekano"));
+	}
+
+	public void testLoadLangCodeMap2() {
+		GlobalState.setLangCodeMap(null);
+		Map map = GlobalState.getLangCodeMap(getContext().getResources());
+		map = GlobalState.getLangCodeMap(getContext().getResources());
+		assertEquals("usa", map.get("Usarufa"));
+		assertEquals("gah", map.get("Alekano"));
 	}
 }

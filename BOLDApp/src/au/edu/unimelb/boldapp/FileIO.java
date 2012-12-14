@@ -1,5 +1,6 @@
 package au.edu.unimelb.boldapp;
 
+import android.content.res.Resources;
 import android.os.Environment;
 import android.util.Log;
 import com.google.common.base.Charsets;
@@ -332,7 +333,9 @@ public abstract class FileIO {
 	 * @param	is	an input stream from the original text file.
 	 * @return	a map from language names to their corresponding codes.
 	 */
-	public static Map initialLoadLangCodes(InputStream is) throws IOException {
+	public static Map readLangCodes(Resources resources) throws IOException {
+		InputStream is =
+				resources.openRawResource(R.raw.iso_639_3);
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(is, writer, Charsets.UTF_8);
 		String inputString = writer.toString();
@@ -343,42 +346,5 @@ public abstract class FileIO {
 			map.put(elements[6].trim(), elements[0].trim());
 		}
 		return map;
-	}
-
-	// Perhaps this method should be in GlobalState.
-	/**
-	 * Loads the ISO 639-3 language codes. First
-	 * checks to see if a file exists containing a serialized copy of the
-	 * map for faster loading. If it doesn't exist, it loads the map from the
-	 * text file and creates the file with a serialized version.
-	 *
-	 * @param	is	an input stream from the original text file.
-	 * @return	a map from language names to their corresponding codes.
-	 */
-	public static void loadLangCodes(final InputStream is) {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					File mapFile = new File(FileIO.getAppRootPath(),
-					"lang_codes");
-					if (mapFile.exists()) {
-						FileInputStream fis = new FileInputStream(mapFile);
-						ObjectInputStream ois = new ObjectInputStream(fis);
-						GlobalState.setLangCodeMap((Map) ois.readObject());
-					} else {
-						Map langCodeMap = initialLoadLangCodes(is);
-						GlobalState.setLangCodeMap(langCodeMap);
-						FileOutputStream fos = new FileOutputStream(mapFile);
-						ObjectOutputStream oos = new ObjectOutputStream(fos);
-						oos.writeObject(langCodeMap);
-					}
-				} catch (IOException e) {
-					//This is bad.
-				} catch (ClassNotFoundException e) {
-					//This is bad.
-				}
-			}
-		}).start();
 	}
 }

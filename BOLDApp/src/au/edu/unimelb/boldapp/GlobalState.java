@@ -1,6 +1,12 @@
 package au.edu.unimelb.boldapp;
 
+import android.content.res.Resources;
 import android.util.Log;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
@@ -151,7 +157,15 @@ public abstract class GlobalState {
 	/**
 	 * langCodeMap accesor
 	 */
-	public static Map getLangCodeMap() {
+	public static Map getLangCodeMap(Resources resources) {
+		if (langCodeMap == null) {
+			if (GlobalState.loadLangCodesThread == null ||
+					!GlobalState.loadLangCodesThread.isAlive()) {
+				loadLangCodeMap(resources);
+			}
+			while (langCodeMap == null) {
+			}
+		}
 		return langCodeMap;
 	}
 
@@ -160,5 +174,37 @@ public abstract class GlobalState {
 	 */
 	public static void setLangCodeMap(Map langCodeMap) {
 		GlobalState.langCodeMap = langCodeMap;
+	}
+
+	//Should be private.
+	private static Thread loadLangCodesThread;
+
+	public static void loadLangCodeMap(final Resources resources) {
+		GlobalState.loadLangCodesThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					File mapFile = 
+							new File(FileIO.getAppRootPath(), "lang_codes");
+					if (mapFile.exists()) {
+						FileInputStream fis = new FileInputStream(mapFile);
+						ObjectInputStream ois = new ObjectInputStream(fis);
+						GlobalState.setLangCodeMap((Map) ois.readObject());
+					} else {
+						Map langCodeMap =
+								FileIO.readLangCodes(resources);
+						GlobalState.setLangCodeMap(langCodeMap);
+						FileOutputStream fos = new FileOutputStream(mapFile);
+						ObjectOutputStream oos = new ObjectOutputStream(fos);
+						oos.writeObject(langCodeMap);
+					}
+				} catch (IOException e) {
+					//This is bad.
+				} catch (ClassNotFoundException e) {
+					//This is bad.
+				}
+			}
+		});
+		GlobalState.loadLangCodesThread.start();
 	}
 }
