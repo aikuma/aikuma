@@ -24,8 +24,9 @@ import org.apache.commons.io.IOUtils;
 public class LanguageFilterList extends ListActivity {
 
 	private EditText filterText = null;
-	private ArrayAdapter<String> adapter = null;
+	private ArrayAdapter<Language> adapter = null;
 	private Map langCodeMap = null;
+	private List<String> names = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -37,22 +38,23 @@ public class LanguageFilterList extends ListActivity {
 		filterText.addTextChangedListener(filterTextWatcher);
 		//Log.i("sick", " " + new ArrayList<String>(langCodeMap.values()).size() + 
 		//		new ArrayList<String>(new HashSet<String>(langCodeMap.values())).size());
-		List<String> names = new ArrayList<String>(langCodeMap.keySet());
+		names = new ArrayList<String>(langCodeMap.keySet());
 		List<String> codes = new ArrayList<String>(langCodeMap.values());
-		List<String> namesAndCodes = new ArrayList<String>();
+		List<Language> languages = new ArrayList<Language>();
 		for (int i = 0; i < names.size(); i++) {
-			namesAndCodes.add(names.get(i) + " : "  + codes.get(i) + " ");
+			languages.add(new Language(names.get(i), codes.get(i)));
 		}
-		adapter = new ArrayAdapter<String>(this,
+		adapter = new ArrayAdapter<Language>(this,
 				android.R.layout.simple_list_item_1,
-				namesAndCodes);
+				languages);
 		setListAdapter(adapter);
 	}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(this, SaveActivity.class);
-		intent.putExtra("languageString", (String)l.getItemAtPosition(position));
+		intent.putExtra("language", (Language)l.getItemAtPosition(position));
+		Log.i("positions", position + " " + names.get(position) );
 		setResult(RESULT_OK, intent);
 		this.finish();
 	}

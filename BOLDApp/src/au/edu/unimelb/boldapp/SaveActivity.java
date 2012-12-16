@@ -62,7 +62,7 @@ public class SaveActivity extends Activity {
 			if (resultCode == RESULT_OK) {
 				Button languageButton = (Button)
 						findViewById(R.id.language_button);
-				languageButton.setText(intent.getStringExtra("languageString"));
+				languageButton.setText(intent.getParcelableExtra("language").toString());
 				Log.i("selectLanguage", " " + resultCode);
 			}
 		}
