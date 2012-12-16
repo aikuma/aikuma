@@ -1,12 +1,15 @@
 package au.edu.unimelb.boldapp;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import com.google.common.base.Charsets;
 import java.io.InputStream;
 import java.io.IOException;
@@ -44,6 +47,14 @@ public class LanguageFilterList extends ListActivity {
 				android.R.layout.simple_list_item_1,
 				namesAndCodes);
 		setListAdapter(adapter);
+	}
+
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		Intent intent = new Intent(this, SaveActivity.class);
+		intent.putExtra("languageString", (String)l.getItemAtPosition(position));
+		setResult(RESULT_OK, intent);
+		this.finish();
 	}
 
 	private TextWatcher filterTextWatcher = new TextWatcher() {

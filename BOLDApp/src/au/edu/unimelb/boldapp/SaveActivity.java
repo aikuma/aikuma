@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.util.Log;
 import android.content.Intent;
+import android.widget.Button;
 import android.widget.Toast;
 
 /**
@@ -22,6 +23,8 @@ import android.widget.Toast;
  *
  */
 public class SaveActivity extends Activity {
+
+	static final int SELECT_LANGUAGE = 0;
 
 	/**
 	 * UUID of the file being saved.
@@ -40,6 +43,29 @@ public class SaveActivity extends Activity {
 		Intent intent = getIntent();
 		uuid = (UUID) intent.getExtras().get("UUID");
 		setContentView(R.layout.save);
+	}
+
+	/**
+	 * Takes the user to the language filter to choose the language
+	 */
+	public void goToLanguageFilter(View view) {
+		Intent intent = new Intent(this, LanguageFilterList.class);
+		startActivityForResult(intent, SELECT_LANGUAGE);
+	}
+
+	/**
+	 *
+	 */
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent intent) {
+		if (requestCode == SELECT_LANGUAGE) {
+			if (resultCode == RESULT_OK) {
+				Button languageButton = (Button)
+						findViewById(R.id.language_button);
+				languageButton.setText(intent.getStringExtra("languageString"));
+				Log.i("selectLanguage", " " + resultCode);
+			}
+		}
 	}
 
 	/**
