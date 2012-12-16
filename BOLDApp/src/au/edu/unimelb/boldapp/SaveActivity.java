@@ -27,6 +27,11 @@ public class SaveActivity extends Activity {
 	static final int SELECT_LANGUAGE = 0;
 
 	/**
+	 * The language to save the recording as
+	 */
+	private Language language;
+
+	/**
 	 * UUID of the file being saved.
 	 */
 	private UUID uuid;
@@ -60,9 +65,10 @@ public class SaveActivity extends Activity {
 			Intent intent) {
 		if (requestCode == SELECT_LANGUAGE) {
 			if (resultCode == RESULT_OK) {
+				language = intent.getParcelableExtra("language");
 				Button languageButton = (Button)
 						findViewById(R.id.language_button);
-				languageButton.setText(intent.getParcelableExtra("language").toString());
+				languageButton.setText(language.toString());
 				Log.i("selectLanguage", " " + resultCode);
 			}
 		}
@@ -82,7 +88,7 @@ public class SaveActivity extends Activity {
 
 		User currentUser = GlobalState.getCurrentUser();
 		Recording recording = new Recording(uuid, currentUser.getUUID(),
-				recordingName, new Date());
+				recordingName, new Date(), language);
 
 		try {
 			FileIO.writeRecording(recording);

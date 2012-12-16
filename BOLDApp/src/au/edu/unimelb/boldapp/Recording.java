@@ -37,25 +37,59 @@ public class Recording {
 	private UUID originalUuid;
 
 	/**
+	 * The language of the recording
+	 */
+	private Language language;
+
+	public void setLanguage(Language language) {
+		this.language = language;
+	}
+
+	public Language getLanguage() {
+		return this.language;
+	}
+
+	/**
 	 * Default Constructor
 	 */
-	 public Recording(UUID uuid, UUID creatorUUID, String name, Date date, UUID
-			 originalUuid) {
+	 public Recording(UUID uuid, UUID creatorUUID, String name, Date date,
+			Language language, UUID originalUuid) {
 	 	setUuid(uuid);
 		setCreatorUUID(creatorUUID);
 		setName(name);
 		setDate(date);
+		setLanguage(language);
+		setOriginalUuid(originalUuid);
+	 }
+
+	public Recording(UUID uuid, UUID creatorUUID, String name, Date date,
+			UUID originalUuid) {
+		setUuid(uuid);
+		setCreatorUUID(creatorUUID);
+		setName(name);
+		setDate(date);
+		setLanguage(language);
 		setOriginalUuid(originalUuid);
 	 }
 
 	/**
 	 * Default Constructor
 	 */
-	 public Recording(UUID uuid, UUID creatorUUID, String name, Date date) {
-	 	setUuid(uuid);
+	public Recording(UUID uuid, UUID creatorUUID, String name, Date date,
+			Language language) {
+		setUuid(uuid);
 		setCreatorUUID(creatorUUID);
 		setName(name);
 		setDate(date);
+		setLanguage(language);
+	}
+
+	public Recording(UUID uuid, UUID creatorUUID, String name, Date date) {
+		setUuid(uuid);
+		setCreatorUUID(creatorUUID);
+		setName(name);
+		setDate(date);
+		setLanguage(language);
 	 }
 
 	/**

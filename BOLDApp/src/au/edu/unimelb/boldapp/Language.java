@@ -5,33 +5,33 @@ import android.os.Parcel;
 
 public class Language implements Parcelable {
 
-	private String primaryName;
+	private String name;
 	private String code;
 	private String listName;
 
-	public void setPrimaryName(String primaryName) {
-		this.primaryName = primaryName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void setCode(String code) {
 		this.code = code;
 	}
 
-	public String getPrimaryName() {
-		return this.primaryName;
+	public String getName() {
+		return this.name;
 	}
 
 	public String getCode() {
 		return this.code;
 	}
 
-	public Language(String primaryName, String code) {
-		setPrimaryName(primaryName);
+	public Language(String name, String code) {
+		setName(name);
 		setCode(code);
 	}
 
 	public String toString() {
-		return getPrimaryName() + " : " + getCode();
+		return getName() + " : " + getCode();
 	}
 
 	public int describeContents() {
@@ -39,7 +39,7 @@ public class Language implements Parcelable {
 	}
 
 	public void writeToParcel(Parcel out, int flags) {
-		out.writeString(getPrimaryName());
+		out.writeString(getName());
 		out.writeString(getCode());
 	}
 
@@ -55,7 +55,7 @@ public class Language implements Parcelable {
 	};
 
 	public Language(Parcel in) {
-		setPrimaryName(in.readString());
+		setName(in.readString());
 		setCode(in.readString());
 	}
 

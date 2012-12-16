@@ -253,6 +253,9 @@ public abstract class FileIO {
 		obj.put("creatorUUID", recording.getCreatorUUID().toString());
 		obj.put("recording_name", recording.getName());
 		obj.put("date_string", new StandardDateFormat().format(recording.getDate()));
+		Log.i("lol", " " + recording.getLanguage());
+		obj.put("languageName", recording.getLanguage().getName());
+		obj.put("languageCode", recording.getLanguage().getCode());
 		if (recording.getOriginalUUID() != null) {
 			obj.put("originalUUID", recording.getOriginalUUID().toString());
 		}
@@ -282,6 +285,8 @@ public abstract class FileIO {
 					jsonObj.get("recording_name").toString(),
 					new StandardDateFormat().parse(
 							jsonObj.get("date_string").toString()),
+					new Language((String)jsonObj.get("LanguageName"),
+							(String)jsonObj.get("languageCode")),
 					originalUUID);
 		} catch (org.json.simple.parser.ParseException e) {
 			throw new IOException(e);
