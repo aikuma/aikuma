@@ -31,6 +31,12 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:hint="@string/edit_recording_name" />
+		<!--
+		<EditText android:id="@+id/edit_recording_name"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			/>
+		-->
 		<Button
 			android:id="@+id/language_button"
 			android:layout_width="match_parent"

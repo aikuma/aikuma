@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.util.Log;
 import android.content.Intent;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -37,6 +38,12 @@ public class SaveActivity extends Activity {
 	private UUID uuid;
 
 	/**
+	 * The UUID of the original audio if the file to be saved is a respeaking;
+	 * null if the file to be save isn't a respeaking.
+	 */
+	private UUID originalUUID;
+
+	/**
 	 * Initializes when the activity is started.
 	 *
 	 * @param	savedInstanceState	Bundle containing data most recently
@@ -45,7 +52,19 @@ public class SaveActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.save);
 		Intent intent = getIntent();
+		if (intent.getExtras().containsKey("originalUUID")) {
+			originalUUID = (UUID) intent.getExtras().get("originalUUID");
+			String originalName = intent.getStringExtra("originalName");
+			EditText recordingNameEditText = (EditText)
+					findViewById(R.id.edit_recording_name);
+			Log.i("issue1", recordingNameEditText + " ");
+			Log.i("issue1", originalName + " ");
+			recordingNameEditText.setText(
+					"Respeaking of " + originalName,
+					TextView.BufferType.EDITABLE);
+		}
 		uuid = (UUID) intent.getExtras().get("UUID");
 		setContentView(R.layout.save);
 	}
@@ -87,8 +106,14 @@ public class SaveActivity extends Activity {
 		String recordingName = editText.getText().toString();
 
 		User currentUser = GlobalState.getCurrentUser();
-		Recording recording = new Recording(uuid, currentUser.getUUID(),
-				recordingName, new Date(), language);
+		Recording recording;
+		if (originalUUID == null) {
+			recording = new Recording(uuid, currentUser.getUUID(),
+					recordingName, new Date(), language);
+		} else {
+			recording = new Recording(uuid, currentUser.getUUID(),
+					recordingName, new Date(), language, originalUUID);
+		}
 
 		try {
 			FileIO.writeRecording(recording);

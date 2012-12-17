@@ -144,6 +144,7 @@ public class RespeakActivity extends Activity {
 	 *
 	 * @param	view	The button that was clicked.
 	 */
+	 /*
 	public void save(View view) {
 		respeaker.stop();
 
@@ -164,6 +165,17 @@ public class RespeakActivity extends Activity {
 					this.recordingNamePrefix + original.getName(),
 					Toast.LENGTH_LONG).show();
 		}
+		this.finish();
+	}
+	*/
+
+	public void goToSaveActivity(View view) {
+		respeaker.stop();
+		Intent intent = new Intent(this, SaveActivity.class);
+		intent.putExtra("UUID", uuid);
+		intent.putExtra("originalUUID", original.getUUID());
+		intent.putExtra("originalName", original.getName());
+		startActivity(intent);
 		this.finish();
 	}
 

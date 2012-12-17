@@ -254,8 +254,8 @@ public abstract class FileIO {
 		obj.put("recording_name", recording.getName());
 		obj.put("date_string", new StandardDateFormat().format(recording.getDate()));
 		Log.i("lol", " " + recording.getLanguage());
-		obj.put("languageName", recording.getLanguage().getName());
-		obj.put("languageCode", recording.getLanguage().getCode());
+		obj.put("language_name", recording.getLanguage().getName());
+		obj.put("language_code", recording.getLanguage().getCode());
 		if (recording.getOriginalUUID() != null) {
 			obj.put("originalUUID", recording.getOriginalUUID().toString());
 		}
@@ -273,11 +273,19 @@ public abstract class FileIO {
 			Object obj = parser.parse(jsonStr);
 			JSONObject jsonObj = (JSONObject) obj;
 			UUID originalUUID;
+			Language language;
 			if (jsonObj.containsKey("originalUUID")) {
 				originalUUID = UUID.fromString(
 						jsonObj.get("originalUUID").toString());
 			} else {
 				originalUUID = null;
+			}
+			if (jsonObj.containsKey("language_name") &&
+					jsonObj.containsKey("language_code")) {
+				language = new Language((String)jsonObj.get("Language_name"),
+							(String)jsonObj.get("language_code"));
+			} else {
+				language = null;
 			}
 			return new Recording(
 					UUID.fromString(jsonObj.get("uuid").toString()),
@@ -285,8 +293,7 @@ public abstract class FileIO {
 					jsonObj.get("recording_name").toString(),
 					new StandardDateFormat().parse(
 							jsonObj.get("date_string").toString()),
-					new Language((String)jsonObj.get("LanguageName"),
-							(String)jsonObj.get("languageCode")),
+					language,
 					originalUUID);
 		} catch (org.json.simple.parser.ParseException e) {
 			throw new IOException(e);
