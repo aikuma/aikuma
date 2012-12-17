@@ -53,7 +53,7 @@ public class SaveActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.save);
-		setLanguageButton(new Language("English", "eng"));
+		setLanguage(new Language("English", "eng"));
 		Intent intent = getIntent();
 		if (intent.getExtras().containsKey("originalUUID")) {
 			originalUUID = (UUID) intent.getExtras().get("originalUUID");
@@ -77,10 +77,11 @@ public class SaveActivity extends Activity {
 		startActivityForResult(intent, SELECT_LANGUAGE);
 	}
 
-	private void setLanguageButton(Language language) {
+	private void setLanguage(Language language) {
 		Button languageButton = (Button)
 				findViewById(R.id.language_button);
 		languageButton.setText(language.toString());
+		this.language = language;
 	}
 
 	/**
@@ -91,7 +92,7 @@ public class SaveActivity extends Activity {
 		if (requestCode == SELECT_LANGUAGE) {
 			if (resultCode == RESULT_OK) {
 				language = intent.getParcelableExtra("language");
-				setLanguageButton(language);
+				setLanguage(language);
 				Log.i("selectLanguage", " " + resultCode);
 			}
 		}
