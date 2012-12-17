@@ -35,14 +35,6 @@
 				android:scaleType="centerInside"
 				android:textSize="30sp"
 			/>
-			<Button
-				android:id="@+id/Sync"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:text="@string/sync"
-				android:onClick="syncActivity"
-			/>
 		</LinearLayout>
 		<ImageButton
 			android:id="@+id/UserIcon"
@@ -114,6 +106,15 @@
 				android:src="@drawable/main_listen"
 				android:onClick="goToListen"
 			/>
+			<Button
+				android:id="@+id/Sync"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:text="@string/sync"
+				android:onClick="syncActivity"
+			/>
+			<!--
 			<ImageButton
 				android:id="@+id/goToInterpret"
 				android:layout_width="match_parent"
@@ -123,6 +124,7 @@
 				android:src="@drawable/main_interpret"
 				android:onClick="goToInterpret"
 			/>
+			-->
 		</LinearLayout>
 	</LinearLayout>
 </LinearLayout>
