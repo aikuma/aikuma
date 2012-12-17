@@ -52,7 +52,8 @@ public class LanguageFilterList extends ListActivity {
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		Intent intent = new Intent(this, SaveActivity.class);
+		//Intent intent = new Intent(this, SaveActivity.class);
+		Intent intent = new Intent();
 		intent.putExtra("language", (Language)l.getItemAtPosition(position));
 		Log.i("positions", position + " " + names.get(position) );
 		setResult(RESULT_OK, intent);
