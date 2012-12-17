@@ -50,6 +50,12 @@
 			android:layout_height="wrap_content"
 			android:hint="@string/edit_username" />
 		<Button
+			android:id="@+id/language_button"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:onClick="goToLanguageFilter"
+		/>
+		<Button
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:text="@string/take_photo"

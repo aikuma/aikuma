@@ -25,6 +25,9 @@ import android.widget.Toast;
  */
 public class SaveActivity extends Activity {
 
+	/**
+	 * Constant to represent the request code for the LanguageFilterList calls.
+	 */
 	static final int SELECT_LANGUAGE = 0;
 
 	/**
@@ -91,8 +94,7 @@ public class SaveActivity extends Activity {
 			Intent intent) {
 		if (requestCode == SELECT_LANGUAGE) {
 			if (resultCode == RESULT_OK) {
-				language = intent.getParcelableExtra("language");
-				setLanguage(language);
+				setLanguage((Language) intent.getParcelableExtra("language"));
 				Log.i("selectLanguage", " " + resultCode);
 			}
 		}

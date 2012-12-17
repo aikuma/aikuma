@@ -1,11 +1,5 @@
 package au.edu.unimelb.boldapp;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.UUID;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,9 +12,17 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Activity that offers the user the ability to enter text in a text box, take
@@ -32,6 +34,16 @@ import android.widget.Toast;
  *
  */
 public class CreateUserActivity extends Activity {
+
+	/** 
+	 * The language represented on the select language button.
+	 */
+	private Language language;
+
+	/**
+	 * Constant to represent the request code for the LanguageFilterList calls.
+	 */
+	static final int SELECT_LANGUAGE = 0;
   
 	/**
 	 * The UUID associated with the yet to be created user.
@@ -41,7 +53,7 @@ public class CreateUserActivity extends Activity {
   /**
 	 * The request code for taking a photo.
 	 */
-	static final int PHOTO_REQUEST_CODE = 0;
+	static final int PHOTO_REQUEST_CODE = 1;
   
 	/**
 	 * Called when the activity is starting.
@@ -55,6 +67,7 @@ public class CreateUserActivity extends Activity {
 		setContentView(R.layout.create_user);
 		// Generate the uuid that is associated with the user
 		this.uuid = UUID.randomUUID();
+		setLanguage(new Language("English", "eng"));
 	}
 
 	/**
@@ -69,6 +82,11 @@ public class CreateUserActivity extends Activity {
 		EditText editText = (EditText) findViewById(R.id.edit_username);
 		String username = editText.getText().toString();
 
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(this.language);
+
+		User user = new User(this.uuid, username, languages);
+
 		// Ensure a nonempty string has been entered
 		if (username.isEmpty()) {
 			Toast.makeText(this,
@@ -76,7 +94,7 @@ public class CreateUserActivity extends Activity {
 		} else {
 
 			try {
-				FileIO.writeUser(username, this.uuid);
+				FileIO.writeUser(user);
 			} catch (IOException e) {
 				Toast.makeText(this,
 						"Writing user data failed.", Toast.LENGTH_LONG).show();
@@ -148,16 +166,35 @@ public class CreateUserActivity extends Activity {
 	}
 
 	/**
-	 * Deal with the aftermath of the photo taking activity.
+	 * Deal with the aftermath of the photo taking activity, and user language
+	 * selection
 	 */
 	protected void onActivityResult(int requestCode, int resultCode,
-			Intent _data) {
+			Intent intent) {
 		if (requestCode == PHOTO_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
 				handleSmallCameraPhoto();
 			}
+		} else if (requestCode == SELECT_LANGUAGE) {
+			if (resultCode == RESULT_OK) {
+				setLanguage((Language) intent.getParcelableExtra("language"));
+			}
 		}
 	}
 
+	/**
+	 * Takes the user to the language filter to choose their default language.
+	 */
+	public void goToLanguageFilter(View view) {
+		Intent intent = new Intent(this, LanguageFilterList.class);
+		startActivityForResult(intent, SELECT_LANGUAGE);
+	}
+
+	private void setLanguage(Language language) {
+		Button languageButton = (Button)
+				findViewById(R.id.language_button);
+		languageButton.setText(language.toString());
+		this.language = language;
+	}
 
 }

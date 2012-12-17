@@ -8,6 +8,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import com.google.common.base.Charsets;
@@ -22,6 +23,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 
 public class LanguageFilterList extends ListActivity {
+
 
 	private EditText filterText = null;
 	private ArrayAdapter<Language> adapter = null;
@@ -59,6 +61,8 @@ public class LanguageFilterList extends ListActivity {
 		setResult(RESULT_OK, intent);
 		this.finish();
 	}
+
+
 
 	private TextWatcher filterTextWatcher = new TextWatcher() {
 

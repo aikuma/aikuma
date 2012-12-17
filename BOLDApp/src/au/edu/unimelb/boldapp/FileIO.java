@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -175,6 +176,29 @@ public abstract class FileIO {
 		return FileUtils.readFileToString(path, Charsets.UTF_8);
 	}
 
+	public static JSONObject encodeLanguage(Language language) {
+		JSONObject encodedLanguage = new JSONObject();
+		encodedLanguage.put("name", language.getName());
+		encodedLanguage.put("code", language.getCode());
+		return encodedLanguage;
+	}
+
+	public static JSONArray encodeLanguages(List<Language> languages) {
+		JSONArray languageArray = new JSONArray();
+		for (Language language : languages) {
+			languageArray.add(encodeLanguage(language));
+		}
+		return languageArray;
+	}
+
+	public static JSONObject encodeUser(User user) {
+		JSONObject encodedUser = new JSONObject();
+		encodedUser.put("name", user.getName());
+		encodedUser.put("uuid", user.getUUID().toString());
+		encodedUser.put("languages", encodeLanguages(user.getLanguages()));
+		return encodedUser;
+	}
+
 	/**
 	 * Store user information to file
 	 *
@@ -182,16 +206,15 @@ public abstract class FileIO {
 	 * @param	uuid	The users associated UUID.
 	 *
 	 */
-	public static void writeUser(String name, UUID uuid) throws IOException {
+	public static void writeUser(String name, UUID uuid,
+			List<Language> languages) throws IOException {
 
 		// Create the JSON object
-		JSONObject obj = new JSONObject();
-		obj.put("name", name);
-		obj.put("uuid", uuid.toString());
+		JSONObject encodedUser = encodeUser(new User(uuid, name, languages));
 
 		// Write the JSON object to file.
 		StringWriter stringWriter = new StringWriter();
-		obj.writeJSONString(stringWriter);
+		encodedUser.writeJSONString(stringWriter);
 		String jsonText = stringWriter.toString();
 		write(new File(getUsersPath(), uuid.toString() + "/metadata.json"),
 				jsonText);
@@ -205,7 +228,32 @@ public abstract class FileIO {
 	 *
 	 */
 	public static void writeUser(User user) throws IOException {
-		writeUser(user.getName(), user.getUUID());
+		writeUser(user.getName(), user.getUUID(), user.getLanguages());
+		JSONObject encodedUser = encodeUser(user);
+		write(new File(getUsersPath(), user.getUUID().toString() + "/metadata.json"),
+				encodedUser.toString());
+	}
+
+	public static User readUser(String uuidString) throws IOException {
+		User user;
+		try {
+			JSONParser parser = new JSONParser();
+			String jsonStr = read(
+					new File(getUsersPath(), uuidString + "/metadata.json"));
+			Object obj = parser.parse(jsonStr);
+			JSONObject jsonObj = (JSONObject) obj;
+			JSONArray languagesArray = jsonObj.get("languages");
+			List<Language> languages = new ArrayList<Language>();
+			for (JSONObject jsonObj : languagesArray) {
+				languages.add(
+			}
+			user = new User(
+					UUID.fromString(jsonObj.get("uuid").toString()),
+					jsonObj.get("name").toString(), jsonObj.get("languages"));
+		} catch (org.json.simple.parser.ParseException e) {
+			throw new IOException(e);
+		}
+		return user;
 	}
 
 	/**
@@ -220,23 +268,9 @@ public abstract class FileIO {
 
 		// Get the user data from the metadata.json files
 		List<User> users = new ArrayList<User>();
-		JSONParser parser = new JSONParser();
 		for (String userUUID : userUUIDs) {
-			try {
-				String jsonStr = read(
-						new File(getUsersPath(), userUUID + "/metadata.json"));
-				Object obj = parser.parse(jsonStr);
-				JSONObject jsonObj = (JSONObject) obj;
-				users.add( new User(
-						UUID.fromString(jsonObj.get("uuid").toString()),
-						jsonObj.get("name").toString()));
-			} catch (org.json.simple.parser.ParseException e) {
-				throw new IOException(e);
-			}
+			users.add(readUser(userUUID));
 		}
-
-		//User[] usersArray = new User[users.size()];
-		//GlobalState.setUsers(users.toArray(usersArray));
 
 		return users;
 	}
@@ -282,7 +316,7 @@ public abstract class FileIO {
 			}
 			if (jsonObj.containsKey("language_name") &&
 					jsonObj.containsKey("language_code")) {
-				language = new Language((String)jsonObj.get("Language_name"),
+				language = new Language((String)jsonObj.get("language_name"),
 							(String)jsonObj.get("language_code"));
 			} else {
 				language = null;

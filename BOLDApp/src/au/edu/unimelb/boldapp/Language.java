@@ -7,7 +7,6 @@ public class Language implements Parcelable {
 
 	private String name;
 	private String code;
-	private String listName;
 
 	public void setName(String name) {
 		this.name = name;

@@ -1,5 +1,6 @@
 package au.edu.unimelb.boldapp;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -20,6 +21,11 @@ public class User {
 	private String name;
 
 	/**
+	 * The user's languages
+	 */
+	private List<Language> languages;
+
+	/**
 	 * Default constructor.
 	 *
 	 * @param	uuid	The new user's UUID.
@@ -28,6 +34,32 @@ public class User {
 	public User(UUID uuid, String name) {
 		setUuid(uuid);
 		setName(name);
+	}
+
+	/**
+	 * Constructor that allows for languages to be specified.
+	 *
+	 * @param	uuid	The new user's UUID.
+	 * @param	name	The new user's name.
+	 */
+	public User(UUID uuid, String name, List<Language> languages) {
+		setUuid(uuid);
+		setName(name);
+		setLanguages(languages);
+	}
+
+	/**
+	 * Languages accessor.
+	 */
+	public List<Language> getLanguages() {
+		return languages;
+	}
+
+	/**
+	 * Languages mutator.
+	 */
+	public void setLanguages(List<Language> languages) { 
+		this.languages = languages;
 	}
 
 	/**
