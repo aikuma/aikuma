@@ -26,17 +26,6 @@ public class User {
 	private List<Language> languages;
 
 	/**
-	 * Default constructor.
-	 *
-	 * @param	uuid	The new user's UUID.
-	 * @param	name	The new user's name.
-	 */
-	public User(UUID uuid, String name) {
-		setUuid(uuid);
-		setName(name);
-	}
-
-	/**
 	 * Constructor that allows for languages to be specified.
 	 *
 	 * @param	uuid	The new user's UUID.

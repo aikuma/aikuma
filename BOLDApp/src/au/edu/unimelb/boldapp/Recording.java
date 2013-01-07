@@ -62,16 +62,6 @@ public class Recording {
 		setOriginalUuid(originalUuid);
 	 }
 
-	public Recording(UUID uuid, UUID creatorUUID, String name, Date date,
-			UUID originalUuid) {
-		setUuid(uuid);
-		setCreatorUUID(creatorUUID);
-		setName(name);
-		setDate(date);
-		setLanguage(language);
-		setOriginalUuid(originalUuid);
-	 }
-
 	/**
 	 * Default Constructor
 	 */
@@ -83,14 +73,6 @@ public class Recording {
 		setDate(date);
 		setLanguage(language);
 	}
-
-	public Recording(UUID uuid, UUID creatorUUID, String name, Date date) {
-		setUuid(uuid);
-		setCreatorUUID(creatorUUID);
-		setName(name);
-		setDate(date);
-		setLanguage(language);
-	 }
 
 	/**
 	 * uuid mutator

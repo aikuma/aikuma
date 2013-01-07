@@ -41,14 +41,15 @@ public class GlobalStateTest extends TestCase {
 
 	public void testSortRecordingsAlphabetical() {
 		List<Recording> recordings = new ArrayList<Recording>();
+		Language language = new Language("Alekano", "gah");
 		recordings.add(new Recording(UUID.randomUUID(), UUID.randomUUID(),
-				"Alpha", new Date()));
+				"Alpha", new Date(), language));
 		recordings.add(new Recording(UUID.randomUUID(), UUID.randomUUID(),
-				"Epsilon", new Date()));
+				"Epsilon", new Date(), language));
 		recordings.add(new Recording(UUID.randomUUID(), UUID.randomUUID(),
-				"Delta", new Date()));
+				"Delta", new Date(), language));
 		recordings.add(new Recording(UUID.randomUUID(), UUID.randomUUID(),
-				"Beta", new Date()));
+				"Beta", new Date(), language));
 		GlobalState.setRecordings(recordings);
 		// Just assert that setters and getters work
 		assertEquals(recordings, GlobalState.getRecordings());
@@ -61,14 +62,15 @@ public class GlobalStateTest extends TestCase {
 
 	public void testSortRecordingsDate() {
 		List<Recording> recordings = new ArrayList<Recording>();
+		Language language = new Language("Alekano", "gah");
 		recordings.add(new Recording(UUID.randomUUID(), UUID.randomUUID(),
-				"Alpha", new Date(1l), UUID.randomUUID()));
+				"Alpha", new Date(1l), language, UUID.randomUUID()));
 		recordings.add(new Recording(UUID.randomUUID(), UUID.randomUUID(),
-				"Epsilon", new Date(3l), UUID.randomUUID()));
+				"Epsilon", new Date(3l), language, UUID.randomUUID()));
 		recordings.add(new Recording(UUID.randomUUID(), UUID.randomUUID(),
-				"Delta", new Date(2l), UUID.randomUUID()));
+				"Delta", new Date(2l), language, UUID.randomUUID()));
 		recordings.add(new Recording(UUID.randomUUID(), UUID.randomUUID(),
-				"Beta", new Date(4l), UUID.randomUUID()));
+				"Beta", new Date(4l), language, UUID.randomUUID()));
 		GlobalState.setRecordings(recordings);
 		// Just assert that getters and setters work.
 		assertEquals(recordings, GlobalState.getRecordings());
