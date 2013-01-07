@@ -16,7 +16,9 @@ import org.apache.commons.io.FileUtils;
 public class GlobalStateTest extends TestCase {
 
 	public void testLoadUsers() throws Exception {
-		User testUser = new User(UUID.randomUUID(), "test user");
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(new Language("Alekano", "gah"));
+		User testUser = new User(UUID.randomUUID(), "test user", languages);
 		FileIO.writeUser(testUser);
 		GlobalState.loadUsers();
 		List<User> users = GlobalState.getUsers();
@@ -79,7 +81,7 @@ public class GlobalStateTest extends TestCase {
 
 	public void testLoadRecordings() throws Exception {
 		Recording testRecording = new Recording(UUID.randomUUID(), UUID.randomUUID(),
-				"test recording", new Date(), UUID.randomUUID());
+				"test recording", new Date(), new Language("Alekano", "gah"), UUID.randomUUID());
 		FileIO.writeRecording(testRecording);
 		GlobalState.loadRecordings();
 		List<Recording> recordings = GlobalState.getRecordings();
