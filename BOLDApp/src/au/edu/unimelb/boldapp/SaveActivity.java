@@ -56,7 +56,11 @@ public class SaveActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.save);
-		setLanguage(new Language("English", "eng"));
+		if (GlobalState.getCurrentUser().getLanguages().size() >= 1) {
+			setLanguage(GlobalState.getCurrentUser().getLanguages().get(0));
+		} else {
+			setLanguage(new Language("English", "eng"));
+		}
 		Intent intent = getIntent();
 		if (intent.getExtras().containsKey("originalUUID")) {
 			originalUUID = (UUID) intent.getExtras().get("originalUUID");
