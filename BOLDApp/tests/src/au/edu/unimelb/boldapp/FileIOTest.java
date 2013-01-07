@@ -79,9 +79,8 @@ public class FileIOTest extends TestCase {
 		// ORDER
 		List<User> users = FileIO.readUsers();
 
-		Log.i("FileIOTest", "hotta " + user.getLanguages().get(0).getName());
-		Log.i("FileIOTest", "hotta " + users.size());
-		Log.i("FileIOTest", "hotta " + users.get(1).getLanguages());
+		Log.i("FileIOTest", user.getLanguages().get(0).getCode());
+		Log.i("FileIOTest", users.get(1).getLanguages().get(0).getCode());
 
 		assertEquals(user.getName(), users.get(1).getName());
 		assertEquals(user.getUUID(), users.get(1).getUUID());

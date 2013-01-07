@@ -218,7 +218,6 @@ public abstract class FileIO {
 		String jsonText = stringWriter.toString();
 		write(new File(getUsersPath(), uuid.toString() + "/metadata.json"),
 				jsonText);
-
 	}
 
 	/**
@@ -242,14 +241,20 @@ public abstract class FileIO {
 					new File(getUsersPath(), uuidString + "/metadata.json"));
 			Object obj = parser.parse(jsonStr);
 			JSONObject jsonObj = (JSONObject) obj;
-			JSONArray languagesArray = jsonObj.get("languages");
+			JSONArray languagesArray = (JSONArray) jsonObj.get("languages");
+			Log.i("readUser", languagesArray.toString());
 			List<Language> languages = new ArrayList<Language>();
-			for (JSONObject jsonObj : languagesArray) {
-				languages.add(
+			for (Object langObj : languagesArray) {
+				JSONObject jsonLangObj = (JSONObject) langObj;
+				Language lang = new Language(
+						jsonLangObj.get("name").toString(),
+						jsonLangObj.get("code").toString());
+				languages.add(lang);
 			}
 			user = new User(
 					UUID.fromString(jsonObj.get("uuid").toString()),
-					jsonObj.get("name").toString(), jsonObj.get("languages"));
+					jsonObj.get("name").toString(), languages);
+			Log.i("readUser", "loaded " + user.getLanguages().toString());
 		} catch (org.json.simple.parser.ParseException e) {
 			throw new IOException(e);
 		}
