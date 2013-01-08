@@ -76,7 +76,7 @@ public class FileIOTest extends TestCase {
 		FileIO.writeUser(user2);
 
 		// NOTE: ASSUMING readUsers() RETURNS THE LIST IN REVERSE CHRONOLOGICAL
-		// ORDER
+		// ORDER.
 		List<User> users = FileIO.readUsers();
 
 		Log.i("FileIOTest", user.getLanguages().get(0).getCode());
@@ -96,6 +96,7 @@ public class FileIOTest extends TestCase {
 				users.get(0).getLanguages().get(0).getCode());
 
 
+		//If there are other users, this won't work.
 		// Cleanup these test user directories.
 		FileUtils.deleteDirectory(new File(FileIO.getUsersPath(),
 				user.getUUID().toString()));
