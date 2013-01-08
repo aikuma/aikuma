@@ -70,8 +70,7 @@ public class SaveActivity extends Activity {
 			Log.i("issue1", recordingNameEditText + " ");
 			Log.i("issue1", originalName + " ");
 			recordingNameEditText.setText(
-					"Respeaking of " + originalName,
-					TextView.BufferType.EDITABLE);
+					originalName, TextView.BufferType.EDITABLE);
 		}
 		uuid = (UUID) intent.getExtras().get("UUID");
 	}

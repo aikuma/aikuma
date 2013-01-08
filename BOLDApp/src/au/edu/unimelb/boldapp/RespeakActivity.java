@@ -26,11 +26,6 @@ import au.edu.unimelb.boldapp.audio.Respeaker;
 public class RespeakActivity extends Activity {
 
 	/**
-	 * The prefix of the name of the recording
-	 */
-	protected String recordingNamePrefix;
-
-	/**
 	 * Indicates whether the respeaking has been started already
 	 */
 	protected Boolean startedRespeaking;
@@ -76,8 +71,6 @@ public class RespeakActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		this.recordingNamePrefix = "Respeaking of ";
 
 		//Get the original from the intent
 		Intent intent = getIntent();
