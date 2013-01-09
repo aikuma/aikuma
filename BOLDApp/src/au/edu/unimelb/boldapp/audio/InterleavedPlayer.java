@@ -86,7 +86,7 @@ public class InterleavedPlayer implements PlayerInterface {
 		this(respeakingUUID, new ArrayList<Integer>(), new
 		ArrayList<Integer>());
 		initializePlayers(respeakingUUID);
-		readSegments(respeakingUUID);
+		//readSegments(respeakingUUID);
 
 		// Set the first notification markers.
 
@@ -136,35 +136,6 @@ public class InterleavedPlayer implements PlayerInterface {
 
 	}
 
-	/* Returns samples innit.
-	 */
-	private Map<String, List> readSegments(UUID respeakingUUID) {
-		Map<String, List> segments = new HashMap<String, List>();
-		segments.put("original", new ArrayList<Integer>());
-		segments.put("respeaking", new ArrayList<Integer>());
-
-		try {
-			String mapString = FileIO.read(new File(
-					FileIO.getRecordingsPath(), respeakingUUID.toString()));
-			//Log.i("InterleavedPlayerTest", mapString);
-			String[] lines = mapString.split("\n");
-			for (String line : lines) {
-				String[] lineSegments = line.split(",");
-				if (lineSegments.length == 1) {
-					segments.get("original").add(Integer.parseInt(lineSegments[0]));
-				} else if (lineSegments.length == 2) {
-					segments.get("original").add(Integer.parseInt(lineSegments[0]));
-					segments.get("respeaking").add(Integer.parseInt(lineSegments[1]));
-				} 
-			}
-		} catch (IOException e) {
-			//Probably should just leave this as is and return empty lists
-		}
-		//originalSegments.add(original.getDuration());
-		//respeakingSegments.add(respeaking.getDuration());
-
-		return segments;
-	}
 
 	public int getSampleRate() {
 		return original.getSampleRate();
