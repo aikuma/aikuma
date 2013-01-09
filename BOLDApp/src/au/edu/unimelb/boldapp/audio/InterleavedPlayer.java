@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.Set;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.media.MediaPlayer;
 import android.util.Log;
@@ -57,6 +59,10 @@ public class InterleavedPlayer implements PlayerInterface {
 	/**
 	 */
 	private boolean toPlayOriginal;
+
+	// For unit testing
+	public InterleavedPlayer() {
+	}
 
 	/**
 	 * Will create a broken InterleavedPlayer; only useful for unit testing
@@ -130,45 +136,34 @@ public class InterleavedPlayer implements PlayerInterface {
 
 	}
 
-	private void readSegments(UUID respeakingUUID) {
-		originalSegments = new ArrayList<Integer>();
-		respeakingSegments = new ArrayList<Integer>();
-		// Reading the samples from the mapping file into a list of segments.
+	/* Returns samples innit.
+	 */
+	private Map<String, List> readSegments(UUID respeakingUUID) {
+		Map<String, List> segments = new HashMap<String, List>();
+		segments.put("original", new ArrayList<Integer>());
+		segments.put("respeaking", new ArrayList<Integer>());
+
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(
-					new File(FileIO.getRecordingsPath(),
-					respeakingUUID.toString() + ".map")));
-			String line;
-			try {
-				while ((line = reader.readLine()) != null) {
-					String[] lineSplit = line.split(",");
-					originalSegments.add( Integer.parseInt(lineSplit[0]) *
-							1000/respeaking.getSampleRate());
-					// If there is a respeaking sample
-					if (lineSplit.length == 2) {
-						respeakingSegments.add( Integer.parseInt(lineSplit[1])
-								* 1000/respeaking.getSampleRate());
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+			String mapString = FileIO.read(new File(
+					FileIO.getRecordingsPath(), respeakingUUID.toString()));
+			//Log.i("InterleavedPlayerTest", mapString);
+			String[] lines = mapString.split("\n");
+			for (String line : lines) {
+				String[] lineSegments = line.split(",");
+				if (lineSegments.length == 1) {
+					segments.get("original").add(Integer.parseInt(lineSegments[0]));
+				} else if (lineSegments.length == 2) {
+					segments.get("original").add(Integer.parseInt(lineSegments[0]));
+					segments.get("respeaking").add(Integer.parseInt(lineSegments[1]));
+				} 
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			//Probably should just leave this as is and return empty lists
 		}
+		//originalSegments.add(original.getDuration());
+		//respeakingSegments.add(respeaking.getDuration());
 
-		originalSegments.add(original.getDuration());
-		respeakingSegments.add(respeaking.getDuration());
-
-			Log.i("issue2", "originalSegments: -------");
-		for (Integer segment : originalSegments) {
-			Log.i("issue2", "originalSegments: " + segment);
-		}
-			Log.i("issue2", "respeakingSegments: -------");
-		for (Integer segment : respeakingSegments) {
-			Log.i("issue2", "respeakingSegments: " + segment);
-		}
-
+		return segments;
 	}
 
 	public int getSampleRate() {
