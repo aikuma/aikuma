@@ -23,10 +23,11 @@ public class Segments {
 		return respeakingSegments;
 	}
 
-	public Segments(UUID respeakingUUID) {
+	public Segments(UUID respeakingUUID) throws Exception {
 		this.respeakingUUID = respeakingUUID;
 		originalSegments = new ArrayList<Integer>();
 		respeakingSegments = new ArrayList<Integer>();
+		readSegments();
 	}
 
 	public void readSegments() throws Exception {

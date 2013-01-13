@@ -45,48 +45,19 @@ public class InterleavedPlayer implements PlayerInterface {
 	private SimplePlayer respeaking;
 
 	/**
-	 * A list of time values in milliseconds that correspond to segments in the
-	 * original audio.
+	 * The object that holds the alignment of segments between the original and
+	 * respeaking.
 	 */
-	private List<Integer> originalSegments;
+	private Segments segments;
 
 	/**
-	 * A list of time values in milliseconds that correspond to segments in the
-	 * respeaking audio.
-	 */
-	private List<Integer> respeakingSegments;
-
-	/**
+	 * Boolean that tells us whether to play the original or not.
 	 */
 	private boolean toPlayOriginal;
 
-	// For unit testing
-	public InterleavedPlayer() {
-	}
+	public InterleavedPlayer(UUID respeakingUUID) throws Exception {
 
-	/**
-	 * Will create a broken InterleavedPlayer; only useful for unit testing
-	 * methods
-	 */
-	public InterleavedPlayer(UUID respeakingUUID,
-			ArrayList<Integer> originalSegments,
-			ArrayList<Integer> respeakingSegments) {
-
-		this.originalSegments = originalSegments;
-		this.respeakingSegments = respeakingSegments;
-
-
-		//new Thread(new Tellme()).start();
-
-		toPlayOriginal = true;
-	}
-
-	public InterleavedPlayer(UUID respeakingUUID) {
-
-		this(respeakingUUID, new ArrayList<Integer>(), new
-		ArrayList<Integer>());
-		initializePlayers(respeakingUUID);
-		//readSegments(respeakingUUID);
+		this.segments = new Segments(respeakingUUID);
 
 		// Set the first notification markers.
 
@@ -115,30 +86,14 @@ public class InterleavedPlayer implements PlayerInterface {
 
 	}
 
-	private void initializePlayers(UUID respeakingUUID) {
+	private void initializePlayers(UUID respeakingUUID) throws IOException {
+		Recording respeakingMeta = FileIO.readRecording(respeakingUUID);
+		UUID originalUUID = respeakingMeta.getOriginalUUID();
 
-		try {
-			Recording respeakingMeta = FileIO.readRecording(respeakingUUID);
-			UUID originalUUID = respeakingMeta.getOriginalUUID();
-
-			original = new SimplePlayer(originalUUID, new
-					OriginalMarkerReachedListener());
-			respeaking = new SimplePlayer(respeakingUUID, new
-					RespeakingMarkerReachedListener());
-
-			// If the sample rates aren't the same, do something
-			if (original.getSampleRate() != respeaking.getSampleRate()) {
-				// What exactly, is yet to be decided.
-			}
-		} catch (IOException e) {
-			// What would one do? Something bad has happened.
-		}
-
-	}
-
-
-	public int getSampleRate() {
-		return original.getSampleRate();
+		original = new SimplePlayer(originalUUID, new
+				OriginalMarkerReachedListener());
+		respeaking = new SimplePlayer(respeakingUUID, new
+				RespeakingMarkerReachedListener());
 	}
 
 	public void start() {
@@ -161,9 +116,6 @@ public class InterleavedPlayer implements PlayerInterface {
 				original.setNotificationMarkerPosition(0);
 				return;
 			}
-			Log.i("segCount", "segCount before respeaking = " + segCount);
-			Log.i("segCount", "respeaking position = " + 
-					respeaking.getCurrentPosition());
 			respeaking.start();
 		}
 	}
@@ -189,17 +141,6 @@ public class InterleavedPlayer implements PlayerInterface {
 		}
 	}
 
-	/*
-	private class Tellme implements Runnable {
-		public void run() {
-			while (true) {
-				Log.i("playing", " " + original.isPlaying() + " " +
-						respeaking.isPlaying());
-			}
-		}
-	}
-	*/
-
 	public void release() {
 		original.release();
 		respeaking.release();
@@ -223,9 +164,13 @@ public class InterleavedPlayer implements PlayerInterface {
 		}
 	}
 
+	/**
+	 * Seeks to the specified time position.
+	 * 
+	 * @param	target	The offset in milliseconds from the start to seek to.
+	 */
 	public void seekTo(int target) {
 		Result results = calculateOffsets(target);
-		// First element denotes whether the original is to play or not.
 		segCount = results.segCount;
 		toPlayOriginal = results.toPlayOriginal;
 		original.seekTo(results.originalSeekTo);
