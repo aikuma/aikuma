@@ -1,6 +1,10 @@
 package au.edu.unimelb.boldapp.audio;
 
+
 import android.media.MediaPlayer;
+import au.edu.unimelb.boldapp.FileIO;
+import au.edu.unimelb.boldapp.Recording;
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -17,12 +21,48 @@ public class InterleavedPlayer implements PlayerInterface {
 	private Segments segments;
 
 	/**
+	 * The Player for the original audio.
+	 */
+	private SimplePlayer original;
+
+	/**
+	 * The Player for the respeaking audio.
+	 */
+	private SimplePlayer respeaking;
+
+	/**
+	 * Boolean that indicates whether to play the original or not; used when
+	 * the InterleavedPlayer is to start playing after being paused to
+	 * determine which player to use.
+	 */
+	private boolean toPlayOriginal;
+
+	/**
+	 * Counter which indicates which segment in the original and respeaking the
+	 * player is up to; is incremented after both the original and respeaking
+	 * have been played for a given segment.
+	 */
+	private int segmentCount;
+
+	/**
 	 * Standard Constructor; takes the UUID of the respeaking.
 	 *
 	 * @param	respeakingUUID	The UUID of the respeaking.
 	 */
 	public InterleavedPlayer(UUID respeakingUUID) throws Exception {
+		this.initializePlayers(respeakingUUID);
 		this.segments = new Segments(respeakingUUID);
+		toPlayOriginal = true;
+		segmentCount = 0;
+	}
+
+	private void initializePlayers(UUID respeakingUUID) throws IOException {
+		Recording respeakingMeta = FileIO.readRecording(respeakingUUID);
+		UUID originalUUID = respeakingMeta.getOriginalUUID();
+		original = new SimplePlayer(originalUUID, new
+				OriginalMarkerReachedListener());
+		respeaking = new SimplePlayer(respeakingUUID, new
+				RespeakingMarkerReachedListener());
 	}
 
 	/**
@@ -31,7 +71,7 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * @return the current position in milliseconds.
 	 */
 	public int getCurrentPosition() {
-		return 1234;
+		return original.getCurrentPosition() + respeaking.getCurrentPosition();
 	}
 
 	/**
@@ -40,7 +80,7 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * @return	true if currently playing; false otherwise.
 	 */
 	public boolean isPlaying() {
-		return false;
+		return original.isPlaying() || respeaking.isPlaying();
 	}
 
 	/**
@@ -49,6 +89,11 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * stopped, or never started before, playback will start at the beginning.
 	 */
 	public void start() {
+		if (toPlayOriginal) {
+			original.start();
+		} else {
+			respeaking.start();
+		}
 	}
 
 	/**
@@ -59,18 +104,27 @@ public class InterleavedPlayer implements PlayerInterface {
 	 */
 	public void setOnCompletionListener(
 			MediaPlayer.OnCompletionListener listener) {
+		original.setOnCompletionListener(listener);
+		respeaking.setOnCompletionListener(listener);
 	}
 
 	/**
 	 * Releases resources associated with this Player.
 	 */
 	public void release() {
+		original.release();
+		respeaking.release();
 	}
 
 	/**
 	 * Pauses playback; call start() to resume.
 	 */
 	public void pause() {
+		if (original.isPlaying()) {
+			original.pause();
+		} else {
+			respeaking.pause();
+		}
 	}
 
 	/**
@@ -79,7 +133,7 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * @return	the duration of the file in milliseconds.
 	 */
 	public int getDuration() {
-		return 1234;
+		return original.getDuration() + respeaking.getDuration();
 	}
 
 	/**
@@ -96,5 +150,36 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * @param	msec	The amount of milliseconds to rewind.
 	 */
 	public void rewind(int msec) {
+	}
+
+	private class OriginalMarkerReachedListener extends
+			MarkedMediaPlayer.OnMarkerReachedListener {
+		public void onMarkerReached(MarkedMediaPlayer p) {
+			original.pause();
+			try {
+				original.setNotificationMarkerPosition(
+						segments.getRespeakingSegments().get(segmentCount+1));
+			} catch (IndexOutOfBoundsException e) {
+				respeaking.setNotificationMarkerPosition(0);
+				return;
+			}
+			respeaking.start();
+		}
+	}
+
+	private class RespeakingMarkerReachedListener extends
+			MarkedMediaPlayer.OnMarkerReachedListener {
+		public void onMarkerReached(MarkedMediaPlayer p) {
+			respeaking.pause();
+			segmentCount++;
+			try {
+				respeaking.setNotificationMarkerPosition(
+						segments.getRespeakingSegments().get(segmentCount));
+			} catch (IndexOutOfBoundsException e) {
+				respeaking.setNotificationMarkerPosition(0);
+				return;
+			}
+			original.start();
+		}
 	}
 }

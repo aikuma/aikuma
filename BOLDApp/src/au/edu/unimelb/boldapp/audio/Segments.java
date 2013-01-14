@@ -32,7 +32,7 @@ public class Segments {
 
 	private void readSegments() throws Exception {
 		String mapString = FileIO.read(new File(
-				FileIO.getRecordingsPath(), respeakingUUID.toString()));
+				FileIO.getRecordingsPath(), respeakingUUID.toString() + ".map"));
 		String[] lines = mapString.split("\n");
 		for (String line : lines) {
 			String[] lineSegments = line.split(",");

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.widget.Toast;
 import android.view.View;
 import au.edu.unimelb.boldapp.audio.PlayerInterface;
 import au.edu.unimelb.boldapp.audio.SimplePlayer;
@@ -91,7 +92,11 @@ public class ListenActivity extends Activity
 				try {
 					this.player = new InterleavedPlayer(this.recording.getUuid());
 				} catch (Exception e) {
-					//Just pop some toast for the user and then leave the activity.
+					Toast.makeText(this, 
+							e.getMessage(),
+							Toast.LENGTH_LONG).show();
+					Log.e("ListenActivity", "fine dime brizzle", e);
+					ListenActivity.this.finish();
 				}
 			} else {
 				this.player = new SimplePlayer(this.recording.getUuid());
@@ -107,22 +112,24 @@ public class ListenActivity extends Activity
 		}
 
 		// The code that is to be run when the player is complete.
-		player.setOnCompletionListener(new OnCompletionListener() {
-			@Override
-			public void onCompletion(MediaPlayer _player) {
-				// Reset the play button
-				ImageButton button = (ImageButton) 
-						findViewById(R.id.Play);
-				button.setImageResource(R.drawable.button_play);
-				// Adjust relevant booleans
-				startedPlaying = false;
-				// Stop the seekBarThread and set the progress to max.
-				if (seekBarThread != null) {
-					seekBarThread.interrupt();
+		if (player != null) {
+			player.setOnCompletionListener(new OnCompletionListener() {
+				@Override
+				public void onCompletion(MediaPlayer _player) {
+					// Reset the play button
+					ImageButton button = (ImageButton) 
+							findViewById(R.id.Play);
+					button.setImageResource(R.drawable.button_play);
+					// Adjust relevant booleans
+					startedPlaying = false;
+					// Stop the seekBarThread and set the progress to max.
+					if (seekBarThread != null) {
+						seekBarThread.interrupt();
+					}
+					seekBar.setProgress(seekBar.getMax());
 				}
-				seekBar.setProgress(seekBar.getMax());
-			}
-		});
+			});
+		}
 	}
 
 	/**
