@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.util.Log;
 import android.content.Intent;
@@ -16,6 +17,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import au.edu.unimelb.boldapp.audio.Respeaker;
+
+import au.edu.unimelb.boldapp.sensors.ProximityDetector;
 
 /**
  * The activity that allows one to respeak audio.
@@ -49,6 +52,11 @@ public class RespeakActivity extends Activity {
 	 * Instance of the respeaker class that offers methods to respeak
 	 */
 	protected Respeaker respeaker;
+
+	/**
+	 * Proximity detector.
+	 */
+	protected ProximityDetector proximityDetector;
 
 	/**
 	 * Indicates whether audio is being recorded
@@ -115,6 +123,22 @@ public class RespeakActivity extends Activity {
 	public void onStop() {
 		//recorder.stop();
 		super.onStop();
+		this.proximityDetector.stop();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		this.proximityDetector =
+				new ProximityDetector( RespeakActivity.this, 2.0f) {
+					public void near(float distance) {
+							respeak();
+					}
+					public void far(float distance) {
+							pause();
+					}
+				};
+		this.proximityDetector.start();
 	}
 
 	/**
@@ -172,22 +196,32 @@ public class RespeakActivity extends Activity {
 		this.finish();
 	}
 
+	public void respeak(View view) {
+		respeak();
+	}
+
+	public void pause(View view) {
+		pause();
+	}
+
 	/**
 	 * Start/resume the respeaking of audio.
 	 *
 	 * @param	button	The button that was clicked
 	 */
-	public void respeak(View view) {
-		ImageButton respeakButton = (ImageButton) view;
-		respeaking = true;
-		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
-		pauseButton.setVisibility(View.VISIBLE);
-		respeakButton.setVisibility(View.INVISIBLE);
-		if (startedRespeaking) {
-			respeaker.resume();
-		} else {
-			startedRespeaking = true;
-			respeaker.listen();
+	public void respeak() {
+		if (!respeaker.getFinishedPlaying()) {
+			ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
+			respeaking = true;
+			ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
+			pauseButton.setVisibility(View.VISIBLE);
+			respeakButton.setVisibility(View.INVISIBLE);
+			if (startedRespeaking) {
+				respeaker.resume();
+			} else {
+				startedRespeaking = true;
+				respeaker.listen();
+			}
 		}
 	}
 
@@ -196,13 +230,28 @@ public class RespeakActivity extends Activity {
 	 *
 	 * @param	button	The pause button that was clicked.
 	 */
-	 public void pause(View view) {
-	 	ImageButton pauseButton = (ImageButton) view;
-		respeaking = false;
-		ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
-		respeakButton.setVisibility(View.VISIBLE);
-		pauseButton.setVisibility(View.INVISIBLE);
-		respeaker.pause();
+	 public void pause() {
+		if (!respeaker.getFinishedPlaying()) {
+			ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
+			respeaking = false;
+			ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
+			respeakButton.setVisibility(View.VISIBLE);
+			pauseButton.setVisibility(View.INVISIBLE);
+			respeaker.pause();
+		}
 	 }
+
+	/**
+	 * If phone is close to the ear, any touch event will be ignored.
+	 */
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+		if (proximityDetector.isNear()) {
+			return false;
+		} else {
+			return super.dispatchTouchEvent(event);
+		}
+	}
+
 
 }
