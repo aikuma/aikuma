@@ -30,7 +30,7 @@ public class Segments {
 		readSegments();
 	}
 
-	public void readSegments() throws Exception {
+	private void readSegments() throws Exception {
 		String mapString = FileIO.read(new File(
 				FileIO.getRecordingsPath(), respeakingUUID.toString()));
 		String[] lines = mapString.split("\n");

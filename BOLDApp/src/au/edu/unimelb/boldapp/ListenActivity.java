@@ -88,7 +88,11 @@ public class ListenActivity extends Activity
 			this.player = new SimplePlayer(this.recording.getUuid());
 		} else {
 			if (intent.getBooleanExtra("interleavedChoice", true)) {
-				this.player = new InterleavedPlayer(this.recording.getUuid());
+				try {
+					this.player = new InterleavedPlayer(this.recording.getUuid());
+				} catch (Exception e) {
+					//Just pop some toast for the user and then leave the activity.
+				}
 			} else {
 				this.player = new SimplePlayer(this.recording.getUuid());
 			}

@@ -1,24 +1,7 @@
 package au.edu.unimelb.boldapp.audio;
 
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.UUID;
-import java.util.Set;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.media.MediaPlayer;
-import android.util.Log;
-import android.util.Pair;
-
-import au.edu.unimelb.boldapp.FileIO;
-import au.edu.unimelb.boldapp.Recording;
+import java.util.UUID;
 
 /**
  * Offers functionality to play a respeaking interleaved with the original.
@@ -27,219 +10,91 @@ import au.edu.unimelb.boldapp.Recording;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class InterleavedPlayer implements PlayerInterface {
-
 	/**
-	 * Counter for which segments to update the notificationMarkerPosition to
-	 * as the markers are reached.
-	 */
-	private int segCount;
-
-	/**
-	 * The Player for the original audio.
-	 */
-	private SimplePlayer original;
-
-	/**
-	 * The Player for the respeaking audio.
-	 */
-	private SimplePlayer respeaking;
-
-	/**
-	 * The object that holds the alignment of segments between the original and
-	 * respeaking.
+	 * The object that represents the mapping between segments of the original
+	 * and the respeaking.
 	 */
 	private Segments segments;
 
 	/**
-	 * Boolean that tells us whether to play the original or not.
+	 * Standard Constructor; takes the UUID of the respeaking.
+	 *
+	 * @param	respeakingUUID	The UUID of the respeaking.
 	 */
-	private boolean toPlayOriginal;
-
 	public InterleavedPlayer(UUID respeakingUUID) throws Exception {
-
 		this.segments = new Segments(respeakingUUID);
-
-		// Set the first notification markers.
-
-		// If the length of the segments list is only 1, then there was either
-		// no mapping file, or nothing was actually recorded for the respective
-		// recording. The one element in the list would be the duration as
-		// added in readSegments
-
-		if (originalSegments.size() == 1) {
-			original.setNotificationMarkerPosition(
-					originalSegments.get(0));
-			segCount = 1;
-		} else {
-			original.setNotificationMarkerPosition(
-					originalSegments.get(1));
-			segCount = 2;
-		}
-
-		if (respeakingSegments.size() == 1) {
-			respeaking.setNotificationMarkerPosition(
-					respeakingSegments.get(0));
-		} else {
-			respeaking.setNotificationMarkerPosition(
-					respeakingSegments.get(1));
-		}
-
 	}
 
-	private void initializePlayers(UUID respeakingUUID) throws IOException {
-		Recording respeakingMeta = FileIO.readRecording(respeakingUUID);
-		UUID originalUUID = respeakingMeta.getOriginalUUID();
-
-		original = new SimplePlayer(originalUUID, new
-				OriginalMarkerReachedListener());
-		respeaking = new SimplePlayer(respeakingUUID, new
-				RespeakingMarkerReachedListener());
+	/**
+	 * Gets the current playback position.
+	 *
+	 * @return the current position in milliseconds.
+	 */
+	public int getCurrentPosition() {
+		return 1234;
 	}
 
+	/**
+	 * Checks whether the MediaPlayer is playing.
+	 *
+	 * @return	true if currently playing; false otherwise.
+	 */
+	public boolean isPlaying() {
+		return false;
+	}
+
+	/**
+	 * Starts and resumes playback; if playback had previously been paused,
+	 * playback will resume from where it was paused; if playback had been
+	 * stopped, or never started before, playback will start at the beginning.
+	 */
 	public void start() {
-		if (toPlayOriginal) {
-			original.start();
-		} else {
-			respeaking.start();
-		}
 	}
 
-	private class OriginalMarkerReachedListener extends
-			MarkedMediaPlayer.OnMarkerReachedListener{
-		public void onMarkerReached(MarkedMediaPlayer p) {
-			original.pause();
-			try {
-				original.setNotificationMarkerPosition(
-						originalSegments.get(segCount));
-			} catch (IndexOutOfBoundsException e) {
-				// No more to play
-				original.setNotificationMarkerPosition(0);
-				return;
-			}
-			respeaking.start();
-		}
-	}
-
-	private class RespeakingMarkerReachedListener extends
-			MarkedMediaPlayer.OnMarkerReachedListener{
-		public void onMarkerReached(MarkedMediaPlayer p) {
-			respeaking.pause();
-			try {
-				respeaking.setNotificationMarkerPosition(
-						respeakingSegments.get(segCount));
-			} catch (IndexOutOfBoundsException e) {
-				// No more to play set the notificationMarkerPosition to be
-				// greater than the duration.
-				respeaking.setNotificationMarkerPosition(0);
-				return;
-			}
-			segCount++;
-			Log.i("segCount", "segCount before original = " + segCount);
-			Log.i("segCount", "original position = " + 
-				original.getCurrentPosition());
-			original.start();
-		}
-	}
-
-	public void release() {
-		original.release();
-		respeaking.release();
-	}
-
+	/**
+	 * Register a callback to be invoked when the end of a media source has
+	 * been reached during playback.
+	 *
+	 * @param	listener	the callback that will be run.
+	 */
 	public void setOnCompletionListener(
 			MediaPlayer.OnCompletionListener listener) {
-		original.setOnCompletionListener(listener);
-		respeaking.setOnCompletionListener(listener);
 	}
 
-	public boolean isPlaying() {
-		return original.isPlaying() || respeaking.isPlaying();
+	/**
+	 * Releases resources associated with this Player.
+	 */
+	public void release() {
 	}
 
+	/**
+	 * Pauses playback; call start() to resume.
+	 */
 	public void pause() {
-		if (original.isPlaying()) {
-			original.pause();
-		} else {
-			respeaking.pause();
-		}
+	}
+
+	/**
+	 * Gets the duration of the file.
+	 *
+	 * @return	the duration of the file in milliseconds.
+	 */
+	public int getDuration() {
+		return 1234;
 	}
 
 	/**
 	 * Seeks to the specified time position.
-	 * 
-	 * @param	target	The offset in milliseconds from the start to seek to.
+	 *
+	 * @param	msec	the offset in milliseconds from the start to seek to.
 	 */
-	public void seekTo(int target) {
-		Result results = calculateOffsets(target);
-		segCount = results.segCount;
-		toPlayOriginal = results.toPlayOriginal;
-		original.seekTo(results.originalSeekTo);
-		respeaking.seekTo(results.respeakingSeekTo);
-
-		original.setNotificationMarkerPosition(
-				originalSegments.get(segCount));
-		respeaking.setNotificationMarkerPosition(
-				respeakingSegments.get(segCount));
+	public void seekTo(int msec) {
 	}
 
 	/**
-	 * Result of a call to calculateOffsets, to be unpacked by seekTo
+	 * Rewinds the player a number of milliseconds.
+	 *
+	 * @param	msec	The amount of milliseconds to rewind.
 	 */
-	public static class Result {
-		public Integer segCount;
-		public Boolean toPlayOriginal;
-		public Integer originalSeekTo;
-		public Integer respeakingSeekTo;
-	}
-
-	public Result calculateOffsets(int target) {
-		Result result = new Result();
-		int total = 0;
-		int previous;
-		int i;
-		for (i = 1; i < originalSegments.size(); i++) {
-			previous = total;
-			total += (originalSegments.get(i) - originalSegments.get(i-1));
-			//i will be segCount
-			result.segCount = i;
-			if (total > target) {
-				result.toPlayOriginal = true;
-				result.originalSeekTo = originalSegments.get(i-1) +
-						target - previous;
-				result.respeakingSeekTo = respeakingSegments.get(i-1);
-				return result;
-			}
-			previous = total;
-			if (i >= respeakingSegments.size()) {
-				result.toPlayOriginal = false;
-				result.originalSeekTo = originalSegments.get(i);
-				result.respeakingSeekTo = respeakingSegments.get(i-1);
-				return result;
-			}
-			total += (respeakingSegments.get(i) - respeakingSegments.get(i-1));
-			if (total > target) {
-				result.toPlayOriginal = false;
-				result.originalSeekTo = originalSegments.get(i);
-				result.respeakingSeekTo = 
-						respeakingSegments.get(i-1) + target - previous;
-				return result;
-			}
-		}
-		result.segCount = originalSegments.size();
-		result.toPlayOriginal = true;
-		result.originalSeekTo = original.getDuration();
-		result.respeakingSeekTo = respeaking.getDuration();
-		return result;
-	}
-
-	public int getCurrentPosition() {
-		return original.getCurrentPosition() + respeaking.getCurrentPosition();
-	}
-
-	public int getDuration() {
-		return original.getDuration() + respeaking.getDuration();
-	}
-
 	public void rewind(int msec) {
 	}
 }

@@ -1,6 +1,9 @@
 package au.edu.unimelb.boldapp;
 
 import au.edu.unimelb.boldapp.audio.InterleavedPlayer;
+import java.io.File;
+import java.util.UUID;
+import junit.framework.TestCase;
 
 public class InterleavedPlayerTest extends TestCase {
 
