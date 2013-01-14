@@ -1,7 +1,7 @@
 package au.edu.unimelb.boldapp.audio;
 
-
 import android.media.MediaPlayer;
+import android.util.Log;
 import au.edu.unimelb.boldapp.FileIO;
 import au.edu.unimelb.boldapp.Recording;
 import java.io.IOException;
@@ -53,7 +53,9 @@ public class InterleavedPlayer implements PlayerInterface {
 		this.initializePlayers(respeakingUUID);
 		this.segments = new Segments(respeakingUUID);
 		toPlayOriginal = true;
-		segmentCount = 0;
+		segmentCount = 1;
+		original.setNotificationMarkerPosition(original.sampleToMsec(
+				segments.getOriginalSegments().get(segmentCount)));
 	}
 
 	private void initializePlayers(UUID respeakingUUID) throws IOException {
@@ -90,6 +92,7 @@ public class InterleavedPlayer implements PlayerInterface {
 	 */
 	public void start() {
 		if (toPlayOriginal) {
+			Log.i("InterleavedPlayer", "starting original");
 			original.start();
 		} else {
 			respeaking.start();
@@ -157,12 +160,13 @@ public class InterleavedPlayer implements PlayerInterface {
 		public void onMarkerReached(MarkedMediaPlayer p) {
 			original.pause();
 			try {
-				original.setNotificationMarkerPosition(
-						segments.getRespeakingSegments().get(segmentCount+1));
+				original.setNotificationMarkerPosition(original.sampleToMsec(
+						segments.getRespeakingSegments().get(segmentCount+1)));
 			} catch (IndexOutOfBoundsException e) {
 				respeaking.setNotificationMarkerPosition(0);
 				return;
 			}
+			Log.i("InterleavedPlayer", "about to start respeaking");
 			respeaking.start();
 		}
 	}
@@ -173,8 +177,8 @@ public class InterleavedPlayer implements PlayerInterface {
 			respeaking.pause();
 			segmentCount++;
 			try {
-				respeaking.setNotificationMarkerPosition(
-						segments.getRespeakingSegments().get(segmentCount));
+				respeaking.setNotificationMarkerPosition(respeaking.sampleToMsec(
+						segments.getRespeakingSegments().get(segmentCount)));
 			} catch (IndexOutOfBoundsException e) {
 				respeaking.setNotificationMarkerPosition(0);
 				return;
