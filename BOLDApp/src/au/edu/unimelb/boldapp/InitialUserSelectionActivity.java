@@ -66,7 +66,6 @@ public class InitialUserSelectionActivity extends ListActivity {
 				user.getName() + " selected", Toast.LENGTH_LONG).show();
 		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
-		this.finish();
 	}
 
 	/**
