@@ -3,12 +3,16 @@ package au.edu.unimelb.boldapp;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import au.edu.unimelb.boldapp.sync.SyncForActivity;
 
@@ -30,6 +34,8 @@ public class InitialUserSelectionActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.initial_user_selection);
+		TextView link = (TextView) findViewById(R.id.Url);
+		setAsLink(link, link.getText().toString());
 	}
 
 	/**
@@ -48,6 +54,12 @@ public class InitialUserSelectionActivity extends ListActivity {
 		setListAdapter(adapter);
 
 		GlobalState.loadLangCodeMap(getResources());
+	}
+
+	private void setAsLink(TextView view, String url){
+		Pattern pattern = Pattern.compile(url);
+		Linkify.addLinks(view, pattern, "http://");
+		view.setText(Html.fromHtml("<a href='http://"+url+"'>http://"+url+"</a>"));
 	}
 
 	/**
