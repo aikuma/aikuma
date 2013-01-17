@@ -46,6 +46,12 @@ public class MainActivity extends Activity {
 	public void onResume() {
 		super.onResume();
 		TextView nameView = (TextView) findViewById(R.id.UserName);
+		if (nameView == null) {
+			Log.i("line49", "nameview null ");
+		}
+		if (GlobalState.getCurrentUser() == null) {
+			Log.i("line49", "GlobalState.getCurentUser() null ");
+		}
 		nameView.setText(GlobalState.getCurrentUser().getName());
 
 		if (GlobalState.getCurrentUser().getUuid() != this.uuid) {
