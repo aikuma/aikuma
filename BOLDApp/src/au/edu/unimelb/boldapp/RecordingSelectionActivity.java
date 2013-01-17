@@ -61,16 +61,8 @@ public class RecordingSelectionActivity extends ListActivity {
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		//Otherwise it is listen
 		Intent intent = new Intent(this, ListenActivity.class);
-		if (nextActivityName.equals("RespeakActivity")) {
-			intent = new Intent(this, RespeakActivity.class);
-			this.finish();
-		} else if (!recording.isOriginal()) {
-			// The activity is the Listen activity.  If the chosen recording is
-			// not an original, open activity that gives the user a choice
-			// between interleaved or not.
-			intent = new Intent(this, InterleavedChoiceActivity.class);
-		}
 		intent.putExtra("recordingUUID", recording.getUuid());
+		intent.putExtra("interleavedChoice", false);
 		startActivity(intent);
 	}
 
