@@ -27,24 +27,12 @@ public class MainActivity extends Activity {
 	private UUID uuid;
   
 	/**
-	 * Called when the activity is initially created.
-	 *
-	 * @param	savedInstanceState	Bundle that contains the data most recently
-	 * supplied to onSaveInstanceState(Bundle).
-	 */
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
-	}
-
-	/**
 	 * Things to do when the activity resumes
 	 */
 	@Override
 	public void onResume() {
 		super.onResume();
+		setContentView(R.layout.main);
 		TextView nameView = (TextView) findViewById(R.id.UserName);
 		if (nameView == null) {
 			Log.i("line49", "nameview null ");
