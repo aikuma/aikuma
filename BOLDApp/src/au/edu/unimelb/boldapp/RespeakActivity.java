@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.UUID;
 
 import android.app.Activity;
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
@@ -27,6 +29,8 @@ import au.edu.unimelb.boldapp.sensors.ProximityDetector;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class RespeakActivity extends Activity {
+
+	private AudioManager audioManager;  
 
 	/**
 	 * Indicates whether the respeaking has been started already
@@ -68,6 +72,7 @@ public class RespeakActivity extends Activity {
 	//private Recorder recorder;
 	//private Boolean alreadyStarted;
 
+
 	/**
 	 * Called when the activity starts.
 	 *
@@ -79,6 +84,7 @@ public class RespeakActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 
 		//Get the original from the intent
 		Intent intent = getIntent();
@@ -99,6 +105,10 @@ public class RespeakActivity extends Activity {
 				".wav").toString(),
 				new File(FileIO.getRecordingsPath(), uuid.toString() +
 				".map").toString());
+
+		audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);  
+		audioManager.setMode(AudioManager.MODE_IN_CALL); 
+		audioManager.setSpeakerphoneOn(false); 
 
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
@@ -124,6 +134,7 @@ public class RespeakActivity extends Activity {
 		//recorder.stop();
 		super.onStop();
 		this.proximityDetector.stop();
+		audioManager.setMode(AudioManager.MODE_NORMAL); 
 	}
 
 	@Override
