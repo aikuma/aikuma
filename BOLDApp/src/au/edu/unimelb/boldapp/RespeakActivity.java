@@ -106,9 +106,6 @@ public class RespeakActivity extends Activity {
 				new File(FileIO.getRecordingsPath(), uuid.toString() +
 				".map").toString());
 
-		audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);  
-		audioManager.setMode(AudioManager.MODE_IN_CALL); 
-		audioManager.setSpeakerphoneOn(false); 
 
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
@@ -134,12 +131,25 @@ public class RespeakActivity extends Activity {
 		//recorder.stop();
 		super.onStop();
 		this.proximityDetector.stop();
+		Log.i("RespeakActivity", "onStop");
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.i("RespeakActivity", "onpause");
 		audioManager.setMode(AudioManager.MODE_NORMAL); 
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		//Make sound play through the earpiece.
+		audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);  
+		audioManager.setMode(AudioManager.MODE_IN_CALL); 
+		audioManager.setSpeakerphoneOn(false); 
+
 		this.proximityDetector =
 				new ProximityDetector( RespeakActivity.this, 2.0f) {
 					public void near(float distance) {
