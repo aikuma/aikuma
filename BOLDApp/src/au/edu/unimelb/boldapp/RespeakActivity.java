@@ -30,6 +30,9 @@ import au.edu.unimelb.boldapp.sensors.ProximityDetector;
  */
 public class RespeakActivity extends Activity {
 
+	/**
+	 * The AudioManager used to enforce the use of the earpiece speaker
+	 */
 	private AudioManager audioManager;  
 
 	/**
@@ -130,7 +133,6 @@ public class RespeakActivity extends Activity {
 	public void onStop() {
 		//recorder.stop();
 		super.onStop();
-		this.proximityDetector.stop();
 		Log.i("RespeakActivity", "onStop");
 	}
 
@@ -138,6 +140,7 @@ public class RespeakActivity extends Activity {
 	public void onPause() {
 		super.onPause();
 		Log.i("RespeakActivity", "onpause");
+		this.proximityDetector.stop();
 		audioManager.setMode(AudioManager.MODE_NORMAL); 
 	}
 
