@@ -61,7 +61,11 @@ public class RecordingSelectionActivity extends ListActivity {
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		//Otherwise it is listen
 		Intent intent = new Intent(this, ListenActivity.class);
-		intent.putExtra("recordingUUID", recording.getUuid());
+		if (nextActivityName.equals("RespeakActivity")) {
+			intent = new Intent(this, RespeakActivity.class);
+			this.finish();
+		}
+		intent.putExtra("recordingUUID", recording.getUUID());
 		intent.putExtra("interleavedChoice", false);
 		startActivity(intent);
 	}
