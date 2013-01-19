@@ -20,7 +20,8 @@ public class SegmentsTest extends TestCase {
 		UUID uuid = UUID.randomUUID();
 
 		String map = "0,0\n10,20\n";
-		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString()), map);
+		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".map"), map);
 
 		Segments segments = new Segments(uuid);
 
@@ -30,7 +31,7 @@ public class SegmentsTest extends TestCase {
 		assertEquals(expectedOriginalSegments, segments.getOriginalSegments());
 		assertEquals(expectedRespeakingSegments, segments.getRespeakingSegments());
 
-		new File(FileIO.getRecordingsPath(), uuid.toString()).delete();
+		new File(FileIO.getRecordingsPath(), uuid.toString() + ".map").delete();
 	}
 
 
@@ -39,7 +40,8 @@ public class SegmentsTest extends TestCase {
 		UUID uuid = UUID.randomUUID();
 
 		String map = ",0,0\n10,20\n";
-		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString()), map);
+		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".map"), map);
 
 		boolean caught = false;
 		try {
@@ -49,7 +51,7 @@ public class SegmentsTest extends TestCase {
 		}
 		assertTrue(caught);
 
-		new File(FileIO.getRecordingsPath(), uuid.toString()).delete();
+		new File(FileIO.getRecordingsPath(), uuid.toString() + ".map").delete();
 	}
 
 	public void testReadSegments3() throws Exception {
@@ -57,7 +59,8 @@ public class SegmentsTest extends TestCase {
 		UUID uuid = UUID.randomUUID();
 
 		String map = "0,0\nfail,20\n";
-		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString()), map);
+		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".map"), map);
 
 		boolean caught = false;
 		try {
@@ -67,7 +70,7 @@ public class SegmentsTest extends TestCase {
 		}
 		assertTrue(caught);
 
-		new File(FileIO.getRecordingsPath(), uuid.toString()).delete();
+		new File(FileIO.getRecordingsPath(), uuid.toString() + ".map").delete();
 	}
 
 	public void testReadSegments4() throws Exception {
@@ -75,7 +78,8 @@ public class SegmentsTest extends TestCase {
 		UUID uuid = UUID.randomUUID();
 
 		String map = "0,0\n,20\n";
-		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString()), map);
+		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".map"), map);
 
 		boolean caught = false;
 		try {
@@ -85,7 +89,7 @@ public class SegmentsTest extends TestCase {
 		}
 		assertTrue(caught);
 
-		new File(FileIO.getRecordingsPath(), uuid.toString()).delete();
+		new File(FileIO.getRecordingsPath(), uuid.toString() + ".map").delete();
 	}
 
 	public void testReadSegments5() throws Exception {
@@ -93,7 +97,8 @@ public class SegmentsTest extends TestCase {
 		UUID uuid = UUID.randomUUID();
 
 		String map = "0,0\n10,20\n30";
-		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString()), map);
+		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".map"), map);
 
 		Segments segments = new Segments(uuid);
 
@@ -103,7 +108,7 @@ public class SegmentsTest extends TestCase {
 		assertEquals(expectedOriginalSegments, segments.getOriginalSegments());
 		assertEquals(expectedRespeakingSegments, segments.getRespeakingSegments());
 
-		new File(FileIO.getRecordingsPath(), uuid.toString()).delete();
+		new File(FileIO.getRecordingsPath(), uuid.toString() + ".map").delete();
 	}
 
 	public void testReadSegments6() throws Exception {
@@ -111,7 +116,8 @@ public class SegmentsTest extends TestCase {
 		UUID uuid = UUID.randomUUID();
 
 		String map = "0,0\n10,20\n30,";
-		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString()), map);
+		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".map"), map);
 
 		Segments segments = new Segments(uuid);
 
@@ -121,7 +127,8 @@ public class SegmentsTest extends TestCase {
 		assertEquals(expectedOriginalSegments, segments.getOriginalSegments());
 		assertEquals(expectedRespeakingSegments, segments.getRespeakingSegments());
 
-		File file = new File(FileIO.getRecordingsPath(), uuid.toString());
+		File file = new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".map");
 		assertTrue(file.delete());
 	}
 }
