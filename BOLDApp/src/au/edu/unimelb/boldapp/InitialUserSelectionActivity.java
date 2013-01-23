@@ -59,7 +59,8 @@ public class InitialUserSelectionActivity extends ListActivity {
 	private void setAsLink(TextView view, String url){
 		Pattern pattern = Pattern.compile(url);
 		Linkify.addLinks(view, pattern, "http://");
-		view.setText(Html.fromHtml("<a href='http://"+url+"'>http://"+url+"</a>"));
+		view.setText(Html.fromHtml(
+				"<a href='http://"+url+"'>"+url+"</a>"));
 	}
 
 	/**
