@@ -1,5 +1,7 @@
 package au.edu.unimelb.boldapp;
 
+import android.graphics.Bitmap;
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,6 +44,18 @@ public class User {
 	 */
 	public List<Language> getLanguages() {
 		return languages;
+	}
+
+	/**
+	 * Returns the small version of the image associated with a user. We don't
+	 * return a drawable because creating a BitmapDrawable requires access to
+	 * Resources.
+	 *
+	 * @return 	small version of a user's image; null if it doesn't exist.
+	 */
+	public Bitmap getSmallImage() {
+		return ImageUtils.retrieveFromFile(
+				new File(FileIO.getImagesPath(), getUUID() + ".small.jpg"));
 	}
 
 	/**

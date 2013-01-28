@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.R;
+import android.widget.ImageView;
+import android.graphics.Bitmap;
+//import android.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,8 +30,7 @@ public class UserArrayAdapter extends ArrayAdapter<User> {
 	/**
 	 * The simple layout used in rendering the individual list items
 	 */
-	protected static final int listItemLayout =
-			android.R.layout.simple_list_item_1;
+	protected static final int listItemLayout = R.layout.user_list_item;
 	
 	/**
 	 * The layout inflater used to convert the xml into a view.
@@ -58,11 +59,25 @@ public class UserArrayAdapter extends ArrayAdapter<User> {
 	@Override
 	public View getView(int position, View _cachedView, ViewGroup parent) {
 
-		TextView userView = (TextView) inflater
+		View userView = (View) inflater
 				.inflate(listItemLayout, parent, false);
 		User user = getItem(position);
 
-		userView.setText(user.getName());
+		
+		ImageView userImageView = (ImageView)
+				userView.findViewById(R.id.UserImage);
+		TextView userNameView = (TextView) userView.findViewById(R.id.UserName);
+
+		Log.i("UserArrayAdapter", " " + user);
+		Log.i("UserArrayAdapter", " " + user.getSmallImage());
+
+		Bitmap userImage = user.getSmallImage();
+		if (userImage != null) {
+			userImageView.setImageBitmap(userImage);
+		} else {
+			userImageView.setImageResource(R.drawable.unknown_user);
+		}
+		userNameView.setText(user.getName());
 
 		return userView;
 	}

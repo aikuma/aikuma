@@ -65,12 +65,12 @@ public class Respeaker extends Recorder {
 	/** Default constructor. */
 	public Respeaker() {
 		super(new ThresholdSpeechAnalyzer(88, 3,
-				new AverageRecognizer(32, 32)));
+				new AverageRecognizer(60, 60)));
 		setFinishedPlaying(false);
 		this.player = new Player();
 		//0.18 is the highest volume that can be set without causing the
 		//feedback problem for the respeak activity on the cheap huawei phones.
-		this.player.setVolume(0.18f,0.18f);
+		//this.player.setVolume(0.18f,0.18f);
 	}
   
 	/** Prepare the respeaker by setting a source file and a target file. */

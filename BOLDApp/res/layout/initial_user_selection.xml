@@ -36,6 +36,20 @@
 			android:layout_height="match_parent"
 			android:layout_weight="1"
 	>
+		<TextView
+			android:id="@+id/AppTitle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:textSize="35sp"
+			android:gravity="center"
+			android:text="@string/app_name"/>
+		<TextView
+			android:id="@+id/Url"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:textSize="22sp"
+			android:gravity="center"
+			android:text="@string/url"/>
 		<Button
 			android:id="@+id/Sync"
 			android:layout_width="match_parent"

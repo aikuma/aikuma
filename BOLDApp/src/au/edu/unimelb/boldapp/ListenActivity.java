@@ -102,6 +102,7 @@ public class ListenActivity extends Activity
 		this.seekBar.setOnSeekBarChangeListener(this);
 		if (!this.recording.isOriginal()) {
 			if (intent.getBooleanExtra("interleavedChoice", true)) {
+				Log.i("ListenActivity", "interleavedChoice");
 				this.seekBar.setVisibility(View.INVISIBLE);
 			}
 		}

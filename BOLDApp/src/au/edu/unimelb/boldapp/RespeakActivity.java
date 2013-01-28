@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.UUID;
 
 import android.app.Activity;
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
@@ -27,6 +29,11 @@ import au.edu.unimelb.boldapp.sensors.ProximityDetector;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class RespeakActivity extends Activity {
+
+	/**
+	 * The AudioManager used to enforce the use of the earpiece speaker
+	 */
+	private AudioManager audioManager;  
 
 	/**
 	 * Indicates whether the respeaking has been started already
@@ -68,6 +75,7 @@ public class RespeakActivity extends Activity {
 	//private Recorder recorder;
 	//private Boolean alreadyStarted;
 
+
 	/**
 	 * Called when the activity starts.
 	 *
@@ -79,6 +87,7 @@ public class RespeakActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 
 		//Get the original from the intent
 		Intent intent = getIntent();
@@ -99,6 +108,7 @@ public class RespeakActivity extends Activity {
 				".wav").toString(),
 				new File(FileIO.getRecordingsPath(), uuid.toString() +
 				".map").toString());
+
 
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
@@ -123,12 +133,26 @@ public class RespeakActivity extends Activity {
 	public void onStop() {
 		//recorder.stop();
 		super.onStop();
+		Log.i("RespeakActivity", "onStop");
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.i("RespeakActivity", "onpause");
 		this.proximityDetector.stop();
+		audioManager.setMode(AudioManager.MODE_NORMAL); 
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		//Make sound play through the earpiece.
+		audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);  
+		audioManager.setMode(AudioManager.MODE_IN_CALL); 
+		audioManager.setSpeakerphoneOn(false); 
+
 		this.proximityDetector =
 				new ProximityDetector( RespeakActivity.this, 2.0f) {
 					public void near(float distance) {

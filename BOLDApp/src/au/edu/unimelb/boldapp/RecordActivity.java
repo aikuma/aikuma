@@ -8,10 +8,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
 import au.edu.unimelb.boldapp.audio.Recorder;
+
+import au.edu.unimelb.boldapp.sensors.ProximityDetector;
 
 /**
  * The activity that allows one to record audio.
@@ -34,6 +37,11 @@ public class RecordActivity extends Activity {
 	 * UUID of the file being recorded.
 	 */
 	private UUID uuid;
+
+	/**
+	 * Proximity detector.
+	 */
+	protected ProximityDetector proximityDetector;
 
 	/**
 	 * Called when the activity starts.
@@ -67,6 +75,28 @@ public class RecordActivity extends Activity {
 		pause(findViewById(R.id.Pause));
 	}
 
+	@Override 
+	public void onPause() {
+		super.onPause();
+		this.proximityDetector.stop();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		this.proximityDetector =
+				new ProximityDetector(RecordActivity.this, 2.0f) {
+					public void near(float distance) {
+						record();
+					}
+					public void far(float distance) {
+						pause();
+					}
+				};
+		this.proximityDetector.start();
+	}
+
 	/**
 	 * Returns to the previous activity without saving the wav.
 	 *
@@ -94,13 +124,21 @@ public class RecordActivity extends Activity {
 		this.finish();
 	}
 
+	public void record(View view) {
+		record();
+	}
+
+	public void pause(View view) {
+		pause();
+	}
+
 	/**
 	 * Start and stop the recording of audio.
 	 *
 	 * @param	button	The record button that was clicked.
 	 */
-	public void record(View view) {
-		ImageButton recordButton = (ImageButton) view;
+	public void record() {
+		ImageButton recordButton = (ImageButton) findViewById(R.id.Record);
 		//Toggle the recording Boolean.
 		recording = true;
 		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
@@ -114,8 +152,8 @@ public class RecordActivity extends Activity {
 	 *
 	 * @param	button	The pause button that was clicked.
 	 */
-	public void pause(View view) {
-		ImageButton pauseButton = (ImageButton) view;
+	public void pause() {
+		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
 		//Toggle the recording Boolean.
 		recording = false;
 		ImageButton recordButton = (ImageButton) findViewById(R.id.Record);
@@ -123,4 +161,17 @@ public class RecordActivity extends Activity {
 		pauseButton.setVisibility(View.INVISIBLE);
 		recorder.pause();
 	}
+
+	/**
+	 * If phone is close to the ear, any touch event will be ignored.
+	 */
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+		if (proximityDetector.isNear()) {
+			return false;
+		} else {
+			return super.dispatchTouchEvent(event);
+		}
+	}
+
 }

@@ -93,6 +93,8 @@ public class CreateUserActivity extends Activity {
 					"Please enter a username", Toast.LENGTH_LONG).show();
 		} else {
 
+			GlobalState.setCurrentUser(user);
+
 			try {
 				FileIO.writeUser(user);
 			} catch (IOException e) {
@@ -100,6 +102,9 @@ public class CreateUserActivity extends Activity {
 						"Writing user data failed.", Toast.LENGTH_LONG).show();
 			}
 
+			Intent intent = new Intent(this, MainActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
 			this.finish();
 		}
 	}

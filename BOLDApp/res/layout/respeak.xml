@@ -42,7 +42,7 @@
 				android:layout_height="match_parent"
 				android:layout_weight="0.5"
 				android:scaleType="centerInside"
-				android:src="@drawable/button_record"
+				android:src="@drawable/main_respeak"
 				android:onClick="respeak"
 			/>
 			<ImageButton
