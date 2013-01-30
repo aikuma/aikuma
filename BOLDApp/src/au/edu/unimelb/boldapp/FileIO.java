@@ -70,6 +70,7 @@ public abstract class FileIO {
 		File path = new File(Environment.getExternalStorageDirectory(),
 				appRootPath);
 		path.mkdirs();
+		assert path != null;
 		return path;
 	}
 
@@ -81,6 +82,7 @@ public abstract class FileIO {
 	public static File getUsersPath(){
 		File path = new File(getAppRootPath(), usersPath);
 		path.mkdirs();
+		assert path != null;
 		return path;
 	}
 
@@ -92,6 +94,7 @@ public abstract class FileIO {
 	public static File getImagesPath(){
 		File path = new File(getAppRootPath(), imagesPath);
 		path.mkdirs();
+		assert path != null;
 		return path;
 	}
 
@@ -103,6 +106,7 @@ public abstract class FileIO {
 	public static File getRecordingsPath(){
 		File path = new File(getAppRootPath(), recordingsPath);
 		path.mkdirs();
+		assert path != null;
 		return path;
 	}
 
