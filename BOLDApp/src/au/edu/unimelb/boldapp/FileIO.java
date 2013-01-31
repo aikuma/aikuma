@@ -246,14 +246,15 @@ public abstract class FileIO {
 			Object obj = parser.parse(jsonStr);
 			JSONObject jsonObj = (JSONObject) obj;
 			JSONArray languagesArray = (JSONArray) jsonObj.get("languages");
-			Log.i("readUser", languagesArray.toString());
 			List<Language> languages = new ArrayList<Language>();
-			for (Object langObj : languagesArray) {
-				JSONObject jsonLangObj = (JSONObject) langObj;
-				Language lang = new Language(
-						jsonLangObj.get("name").toString(),
-						jsonLangObj.get("code").toString());
-				languages.add(lang);
+			if (languagesArray != null) {
+				for (Object langObj : languagesArray) {
+					JSONObject jsonLangObj = (JSONObject) langObj;
+					Language lang = new Language(
+							jsonLangObj.get("name").toString(),
+							jsonLangObj.get("code").toString());
+					languages.add(lang);
+				}
 			}
 			user = new User(
 					UUID.fromString(jsonObj.get("uuid").toString()),
