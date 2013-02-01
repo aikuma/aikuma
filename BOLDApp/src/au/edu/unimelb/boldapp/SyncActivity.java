@@ -1,9 +1,5 @@
 package au.edu.unimelb.boldapp;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-
 import android.util.Log;
 import android.content.Intent;
 import android.app.Activity;
@@ -11,11 +7,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import au.edu.unimelb.boldapp.sync.Client;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 
 public class SyncActivity extends Activity {
 
@@ -28,22 +23,15 @@ public class SyncActivity extends Activity {
 		super.onResume();
 
 		// Load previously set router info.
-		JSONParser parser = new JSONParser();
 		try {
-			String jsonStr = FileIO.read(new File(FileIO.getAppRootPath(),
-					"router.json"));
-			Object obj = parser.parse(jsonStr);
-			JSONObject jsonObj = (JSONObject) obj;
-			String routerIPAddress = jsonObj.get("ipaddress").toString();
-			String routerUsername = jsonObj.get("username").toString();
-			String routerPassword = jsonObj.get("password").toString();
+			Server server = FileIO.readServer();
 
 			EditText editText = (EditText) findViewById(R.id.edit_ip);
-			editText.setText(routerIPAddress);
+			editText.setText(server.getIPAddress());
 			editText = (EditText) findViewById(R.id.edit_router_username);
-			editText.setText(routerUsername);
+			editText.setText(server.getUsername());
 			editText = (EditText) findViewById(R.id.edit_password);
-			editText.setText(routerPassword);
+			editText.setText(server.getPassword());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -68,38 +56,27 @@ public class SyncActivity extends Activity {
 	public void sync(View view) {
 		// Get the information from the edit views and add to the intent
 		EditText editText = (EditText) findViewById(R.id.edit_ip);
-		String routerIPAddress = editText.getText().toString();
+		String ipAddress = editText.getText().toString();
 		editText = (EditText) findViewById(R.id.edit_router_username);
-		String routerUsername = editText.getText().toString();
+		String username = editText.getText().toString();
 		editText = (EditText) findViewById(R.id.edit_password);
-		String routerPassword = editText.getText().toString();
+		String password = editText.getText().toString();
 
-		JSONObject obj = new JSONObject();
-		obj.put("ipaddress", routerIPAddress);
-		obj.put("username", routerUsername);
-		obj.put("password", routerPassword);
+		Server server = new Server(ipAddress, username, password);
 
-		StringWriter stringWriter = new StringWriter();
-		try {
-			obj.writeJSONString(stringWriter);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		String jsonText = stringWriter.toString();
-		Log.i("ftp", FileIO.getAppRootPath() + "router.json");
-		if (routerIPAddress.equals("")) {
+		if (ipAddress.equals("")) {
 			Toast.makeText(this, "Please enter a router IP address",
 					Toast.LENGTH_LONG).show();
 		} else {
 			try {
-				FileIO.write(new File(FileIO.getAppRootPath(), "router.json"), jsonText);
+				FileIO.writeServer(server);
 			} catch (IOException e) {
-				//Something bad happened.
+				//Something bad happened, but no big deal, the user will just
+				//have to re-enter the credentials later.
 			}
 			Intent intent = new Intent(this, SyncSplashActivity.class);
+			intent.putExtra("ServerInfo", server);
 			startActivity(intent);
 		}
 	}
-
 }

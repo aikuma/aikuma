@@ -410,4 +410,47 @@ public abstract class FileIO {
 		}
 		return map;
 	}
+
+	/**
+	 * Reads the information about the server into a Server object, using the
+	 * default location of server.json in the app's root directory.
+	 */
+	public static Server readServer() throws IOException {
+		return FileIO.readServer(
+				new File(FileIO.getAppRootPath(), "server.json"));
+	}
+
+	/**
+	 * Reads the information about the server into a Server object
+	 */
+	public static Server readServer(File serverInfoFile) throws IOException {
+		try {
+			JSONParser parser = new JSONParser();
+			String jsonStr = FileIO.read(serverInfoFile);
+			Object obj = parser.parse(jsonStr);
+			JSONObject jsonObj = (JSONObject) obj;
+			return new Server(jsonObj.get("ipaddress").toString(),
+					jsonObj.get("username").toString(),
+					jsonObj.get("password").toString());
+		} catch (org.json.simple.parser.ParseException e) {
+			throw new IOException(e);
+		}
+	}
+
+	public static void writeServer(Server server) throws IOException {
+		FileIO.writeServer(server,
+				new File(FileIO.getAppRootPath(), "server.json"));
+	}
+
+	public static void writeServer(Server server, File serverInfoFile) throws IOException {
+		JSONObject obj = new JSONObject();
+		obj.put("ipaddress", server.getIPAddress());
+		obj.put("username", server.getUsername());
+		obj.put("password", server.getPassword());
+
+		StringWriter stringWriter = new StringWriter();
+		obj.writeJSONString(stringWriter);
+		String jsonText = stringWriter.toString();
+		FileIO.write(serverInfoFile, jsonText);
+	}
 }
