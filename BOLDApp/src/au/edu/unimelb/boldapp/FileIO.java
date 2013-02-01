@@ -256,6 +256,12 @@ public abstract class FileIO {
 					languages.add(lang);
 				}
 			}
+			if (jsonObj.get("uuid") == null) {
+				throw new IOException("No UUID in the JSON file.");
+			}
+			if (jsonObj.get("name") == null) {
+				throw new IOException("No user name in the JSON file.");
+			}
 			user = new User(
 					UUID.fromString(jsonObj.get("uuid").toString()),
 					jsonObj.get("name").toString(), languages);
