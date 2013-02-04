@@ -342,6 +342,11 @@ public abstract class FileIO {
 				recording.getUUID() + ".json"), jsonText);
 	}
 
+	/**
+	 * Reads the recording information from it's metadata file
+	 *
+	 * @param	file	The path to the recordings metadata file
+	 */
 	public static Recording readRecording(File path) throws IOException {
 		String jsonStr = FileIO.read(path);
 		JSONParser parser = new JSONParser();
