@@ -180,6 +180,12 @@ public abstract class FileIO {
 		return FileUtils.readFileToString(path, Charsets.UTF_8);
 	}
 
+	/**
+	 * Encodes a Language object as a corresponding JSONObject.
+	 *
+	 * @param	language	The language object to be encoded
+	 * @return	A JSONObject corresponding to the supplied language object.
+	 */
 	public static JSONObject encodeLanguage(Language language) {
 		JSONObject encodedLanguage = new JSONObject();
 		encodedLanguage.put("name", language.getName());
@@ -187,6 +193,12 @@ public abstract class FileIO {
 		return encodedLanguage;
 	}
 
+	/**
+	 * Encodes a list of languages as a corresponding JSONArray.
+	 *
+	 * @param	languages	The list of languages to be encoded
+	 * @return	A JSONArray corresponding to the supplied language list.
+	 */
 	public static JSONArray encodeLanguages(List<Language> languages) {
 		JSONArray languageArray = new JSONArray();
 		for (Language language : languages) {
@@ -195,6 +207,12 @@ public abstract class FileIO {
 		return languageArray;
 	}
 
+	/**
+	 * Encodes a User object as a corresponding JSONObject.
+	 *
+	 * @param	user	The User object to be encoded
+	 * @return	A JSONObject corresponding to the supplied User object.
+	 */
 	public static JSONObject encodeUser(User user) {
 		JSONObject encodedUser = new JSONObject();
 		encodedUser.put("name", user.getName());
@@ -300,14 +318,14 @@ public abstract class FileIO {
 			throws IOException {
 		JSONObject obj = new JSONObject();
 		obj.put("uuid", recording.getUUID().toString());
-		obj.put("creatorUUID", recording.getCreatorUUID().toString());
+		obj.put("creator_uuid", recording.getCreatorUUID().toString());
 		obj.put("recording_name", recording.getName());
 		obj.put("date_string", new StandardDateFormat().format(recording.getDate()));
 		Log.i("lol", " " + recording.getLanguage());
 		obj.put("language_name", recording.getLanguage().getName());
 		obj.put("language_code", recording.getLanguage().getCode());
 		if (recording.getOriginalUUID() != null) {
-			obj.put("originalUUID", recording.getOriginalUUID().toString());
+			obj.put("original_uuid", recording.getOriginalUUID().toString());
 		}
 		StringWriter stringWriter = new StringWriter();
 		obj.writeJSONString(stringWriter);

@@ -2,6 +2,7 @@ package au.edu.unimelb.boldapp;
 
 import android.util.Log;
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.UUID;
@@ -11,7 +12,6 @@ import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 
 public class FileIOTest extends TestCase {
 
@@ -35,23 +35,31 @@ public class FileIOTest extends TestCase {
 	}
 
 	public void testWriteRead1() throws Exception {
-		FileIO.write("testdir/test1/test1", "hallo");
+		File testFile = 
+				new File(FileIO.getAppRootPath(), "testdir/test1/test1");
+		FileIO.write(testFile, "hallo");
 		assertEquals("hallo", FileIO.read("/mnt/sdcard/bold/testdir/test1/test1"));
 	}
 
 	public void testWriteRead2() throws Exception {
-		FileIO.write("/mnt/sdcard/bold/testdir/test1/", "okies");
+		File testFile =
+			new File(FileIO.getAppRootPath(), "/testdir/test1/");
+		FileIO.write(testFile, "okies");
 		assertEquals("okies", FileIO.read("testdir/test1/"));
 	}
 
 	public void testWriteRead3() throws Exception {
-		FileIO.write("testdir/test3", "once upon\n a time\n");
+		File testFile =
+			new File(FileIO.getAppRootPath(), "testdir/test3");
+		FileIO.write(testFile, "once upon\n a time\n");
 		assertEquals("once upon\n a time\n", FileIO.read("testdir/test3"));
 	}
 
 	public void testWriteRead4() throws Exception {
-		FileIO.write("testdir/test4", "once upon\n a time");
-		assertTrue(!"once upon\n a time\n"
+		File testFile =
+			new File(FileIO.getAppRootPath(), "testdir/test4");
+		FileIO.write(testFile, "once úpon\n a tîme");
+		assertTrue(!"once úpon\n a tîme\n"
 				.equals(FileIO.read("testdir/test4")));
 	}
 
@@ -61,6 +69,105 @@ public class FileIOTest extends TestCase {
 				"hallo");
 		assertEquals("hallo", FileIO.read(
 				new File(FileIO.getAppRootPath(), "testdir/test1/test1")));
+	}
+
+	public void testEncodeLanguage() throws Exception {
+		Language language = new Language("English", "eng");
+		JSONObject encodedLanguage = FileIO.encodeLanguage(language);
+		assertEquals("{\"code\":\"eng\",\"name\":\"English\"}",
+				encodedLanguage.toString());
+	}
+
+	public void testEncodeLanguages() throws Exception {
+		Language l1 = new Language("Alekano", "gah");
+		Language l2 = new Language("Usarufa", "usa");
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(l1);
+		languages.add(l2);
+		JSONArray encodedLanguages = FileIO.encodeLanguages(languages);
+		assertEquals(
+				"[{\"code\":\"gah\",\"name\":\"Alekano\"},{\"code\":\"usa\",\"name\":\"Usarufa\"}]",
+				encodedLanguages.toString());
+	}
+
+	public void testEncodeUser() throws Exception {
+		Language l1 = new Language("Alekano", "gah");
+		Language l2 = new Language("Usarufa", "usa");
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(l1);
+		languages.add(l2);
+		User user = new User(UUID.randomUUID(), "TestUser", languages);
+		assertEquals(
+				"{\"languages\":[{\"code\":\"gah\",\"name\":\"Alekano\"},{\"code\":\"usa\",\"name\":\"Usarufa\"}],\"uuid\":\""
+				+ user.getUUID() + "\",\"name\":\"TestUser\"}",
+				FileIO.encodeUser(user).toString());
+	}
+
+	public void testReadUser1() throws Exception {
+		UUID uuid = UUID.randomUUID();
+		String jsonStr =
+			"{\"uuid\":\"" + uuid + "\",\"name\":\"TestReadUser1\"}";
+		File file = new File(FileIO.getUsersPath(), uuid.toString() +
+				"/metadata.json");
+		FileIO.write(file, jsonStr);
+		User user = FileIO.readUser(uuid.toString());
+		assertEquals("TestReadUser1", user.getName());
+		assertEquals(uuid, user.getUUID());
+		List<Language> languages = new ArrayList<Language>();
+		assertEquals(languages, user.getLanguages());
+		FileUtils.deleteDirectory(file.getParentFile());
+	}
+
+	public void testReadUser2() throws Exception {
+		UUID uuid = UUID.randomUUID();
+		String jsonStr = "{\"languages\":[{\"code\":\"gah\",\"name\":\"Alekano"
+			+ "\"},{\"code\":\"usa\",\"name\":\"Usarufa\"}],"
+			+ "\"name\":\"TestReadUser1\"}";
+		File file = new File(FileIO.getUsersPath(), uuid.toString() +
+				"/metadata.json");
+		FileIO.write(file, jsonStr);
+		try {
+			User user = FileIO.readUser(uuid.toString());
+		} catch (IOException e) {
+			assertEquals("No UUID in the JSON file.", e.getMessage());
+		}
+		FileUtils.deleteDirectory(file.getParentFile());
+
+	}
+
+	public void testReadUser3() throws Exception {
+		UUID uuid = UUID.randomUUID();
+		String jsonStr = "{\"languages\":[{\"code\":\"gah\",\"name\":\"Alekano"
+			+ "\"},{\"code\":\"usa\",\"name\":\"Usarufa\"}],"
+			+ "\"uuid\":\"" + uuid + "\"}";
+		File file = new File(FileIO.getUsersPath(), uuid.toString() +
+				"/metadata.json");
+		FileIO.write(file, jsonStr);
+		try {
+			User user = FileIO.readUser(uuid.toString());
+		} catch (IOException e) {
+			assertEquals("No user name in the JSON file.", e.getMessage());
+		}
+		FileUtils.deleteDirectory(file.getParentFile());
+	}
+
+	public void testReadUser4() throws Exception {
+		UUID uuid = UUID.randomUUID();
+		String jsonStr = "\"languages\":[{\"code\":\"gah\",\"name\":\"Alekano"
+			+ "\"},{\"code\":\"usa\",\"name\":\"Usarufa\"}],"
+			+ "\"uuid\":\"" + uuid + "\"}";
+		File file = new File(FileIO.getUsersPath(), uuid.toString() +
+				"/metadata.json");
+		FileIO.write(file, jsonStr);
+		boolean caught = false;
+		try {
+			User user = FileIO.readUser(uuid.toString());
+		} catch (IOException e) {
+			caught = true;
+		}
+		assertTrue(caught);
+		FileUtils.deleteDirectory(file.getParentFile());
+
 	}
 
 	public void testWriteAndReadUsers() throws Exception {
@@ -104,6 +211,24 @@ public class FileIOTest extends TestCase {
 				user2.getUUID().toString()));
 	}
 
+	public void testReadRecording1() throws Exception {
+		UUID uuid = UUID.randomUUID();
+		UUID creatorUUID = UUID.randomUUID();
+		UUID originalUUID = UUID.randomUUID();
+		String date_string = new StandardDateFormat().format(new Date());
+		String jsonStr = "{\"uuid\":\"" + uuid + "\", \"creatorUUID\":\"" +
+				creatorUUID + "\", " + "\"recording_name\":\"TestRecording\", "
+				+ "\"date_string\":\"" + date_string + "\", \"language_name\":"
+				+ "\"Usarufa\", \"language_code\":\"usa\", \"original_uuid\":\""
+				+ originalUUID + "\"}";
+		File file = new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".json");
+		FileIO.write(file, jsonStr);
+		FileIO.readRecording(file);
+		assertTrue(file.delete());
+	}
+
+	/*
 	public void testWriteAndReadRecording() throws Exception {
 		Language language = new Language("English", "eng");
 		Recording recording = new Recording(
@@ -178,38 +303,7 @@ public class FileIOTest extends TestCase {
 		assertTrue(new File(FileIO.getRecordingsPath(),
 				recording2.getUUID() + ".json").delete());
 	}
-
-	public void testEncodeLanguage() throws Exception {
-		Language language = new Language("English", "eng");
-		JSONObject encodedLanguage = FileIO.encodeLanguage(language);
-		assertEquals("{\"code\":\"eng\",\"name\":\"English\"}",
-				encodedLanguage.toString());
-	}
-
-	public void testEncodeLanguages() throws Exception {
-		Language l1 = new Language("Alekano", "gah");
-		Language l2 = new Language("Usarufa", "usa");
-		List<Language> languages = new ArrayList<Language>();
-		languages.add(l1);
-		languages.add(l2);
-		JSONArray encodedLanguages = FileIO.encodeLanguages(languages);
-		assertEquals(
-				"[{\"code\":\"gah\",\"name\":\"Alekano\"},{\"code\":\"usa\",\"name\":\"Usarufa\"}]",
-				encodedLanguages.toString());
-	}
-
-	public void testEncodeUser() throws Exception {
-		Language l1 = new Language("Alekano", "gah");
-		Language l2 = new Language("Usarufa", "usa");
-		List<Language> languages = new ArrayList<Language>();
-		languages.add(l1);
-		languages.add(l2);
-		User user = new User(UUID.randomUUID(), "TestUser", languages);
-		assertEquals(
-				"{\"languages\":[{\"code\":\"gah\",\"name\":\"Alekano\"},{\"code\":\"usa\",\"name\":\"Usarufa\"}],\"uuid\":\""
-				+ user.getUUID() + "\",\"name\":\"TestUser\"}",
-				FileIO.encodeUser(user).toString());
-	}
+	*/
 
 	@Override
 	public void tearDown() throws Exception {
