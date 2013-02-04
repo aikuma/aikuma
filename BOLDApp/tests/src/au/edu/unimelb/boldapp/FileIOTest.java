@@ -216,7 +216,7 @@ public class FileIOTest extends TestCase {
 		UUID creatorUUID = UUID.randomUUID();
 		UUID originalUUID = UUID.randomUUID();
 		String date_string = new StandardDateFormat().format(new Date());
-		String jsonStr = "{\"uuid\":\"" + uuid + "\", \"creatorUUID\":\"" +
+		String jsonStr = "{\"uuid\":\"" + uuid + "\", \"creator_uuid\":\"" +
 				creatorUUID + "\", " + "\"recording_name\":\"TestRecording\", "
 				+ "\"date_string\":\"" + date_string + "\", \"language_name\":"
 				+ "\"Usarufa\", \"language_code\":\"usa\", \"original_uuid\":\""
@@ -224,7 +224,16 @@ public class FileIOTest extends TestCase {
 		File file = new File(FileIO.getRecordingsPath(), uuid.toString() +
 				".json");
 		FileIO.write(file, jsonStr);
-		FileIO.readRecording(file);
+		Recording recording = FileIO.readRecording(file);
+		assertEquals(uuid, recording.getUUID());
+		assertEquals(creatorUUID, recording.getCreatorUUID());
+		assertEquals(originalUUID, recording.getOriginalUUID());
+		assertEquals(date_string, 
+				new StandardDateFormat().format(recording.getDate()));
+		assertEquals("TestRecording", recording.getName());
+		assertEquals("Usarufa", recording.getLanguage().getName());
+		assertEquals("usa", recording.getLanguage().getCode());
+
 		assertTrue(file.delete());
 	}
 

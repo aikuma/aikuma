@@ -52,7 +52,13 @@ public class Recording {
 	/**
 	 * Default Constructor
 	 */
-	 public Recording(UUID uuid, UUID creatorUUID, String name, Date date,
+	public Recording(){
+	}
+
+	/**
+	 * Alternative Constructor
+	 */
+	public Recording(UUID uuid, UUID creatorUUID, String name, Date date,
 			Language language, UUID originalUuid) {
 	 	setUuid(uuid);
 		setCreatorUUID(creatorUUID);
@@ -63,7 +69,7 @@ public class Recording {
 	 }
 
 	/**
-	 * Default Constructor
+	 * Alternative Constructor
 	 */
 	public Recording(UUID uuid, UUID creatorUUID, String name, Date date,
 			Language language) {
@@ -82,9 +88,23 @@ public class Recording {
 	}
 
 	/**
+	 * uuid mutator
+	 */
+	public void setUUID(UUID uuid) {
+		this.uuid = uuid;
+	}
+
+	/**
 	 * OriginalUUID mutator
 	 */
 	public void setOriginalUuid(UUID originalUuid) {
+		this.originalUuid = originalUuid;
+	}
+
+	/**
+	 * OriginalUUID mutator
+	 */
+	public void setOriginalUUID(UUID originalUuid) {
 		this.originalUuid = originalUuid;
 	}
 

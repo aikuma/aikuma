@@ -20,6 +20,7 @@ import java.io.ObjectOutputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.UUID;
@@ -41,6 +42,13 @@ import org.json.simple.parser.ParseException;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public abstract class FileIO {
+	
+	/**
+	 * The date format used for parsing dates from JSON files.
+	 */
+	private static StandardDateFormat standardDateFormat =
+			new StandardDateFormat();
+	
 	/**
 	 * The images directory path
 	 */
@@ -337,37 +345,45 @@ public abstract class FileIO {
 	public static Recording readRecording(File path) throws IOException {
 		String jsonStr = FileIO.read(path);
 		JSONParser parser = new JSONParser();
+
+		Recording recording = new Recording();
+
 		try {
-			Object obj = parser.parse(jsonStr);
-			JSONObject jsonObj = (JSONObject) obj;
-			UUID originalUUID;
-			Language language;
-			if (jsonObj.containsKey("originalUUID")) {
-				originalUUID = UUID.fromString(
-						jsonObj.get("originalUUID").toString());
+			JSONObject jsonObj = (JSONObject) parser.parse(jsonStr);
+
+			if (jsonObj.containsKey("uuid")) {
+				recording.setUUID(
+						UUID.fromString(jsonObj.get("uuid").toString()));
 			} else {
-				originalUUID = null;
+				throw new IOException( "No UUID found in JSON file.");
 			}
-			if (jsonObj.containsKey("language_name") &&
-					jsonObj.containsKey("language_code")) {
-				language = new Language((String)jsonObj.get("language_name"),
-							(String)jsonObj.get("language_code"));
-			} else {
-				language = null;
+			if (jsonObj.containsKey("recording_name")) {
+				recording.setName(jsonObj.get("recording_name").toString());
 			}
-			return new Recording(
-					UUID.fromString(jsonObj.get("uuid").toString()),
-					UUID.fromString(jsonObj.get("creatorUUID").toString()),
-					jsonObj.get("recording_name").toString(),
-					new StandardDateFormat().parse(
-							jsonObj.get("date_string").toString()),
-					language,
-					originalUUID);
-		} catch (org.json.simple.parser.ParseException e) {
-			throw new IOException(e);
-		} catch (java.text.ParseException e) {
+			if (jsonObj.containsKey("creator_uuid")) {
+				recording.setCreatorUUID(
+						UUID.fromString(jsonObj.get("creator_uuid").toString()));
+			}
+			if (jsonObj.containsKey("original_uuid")) {
+				recording.setOriginalUUID(
+						UUID.fromString(jsonObj.get("original_uuid").toString()));
+			}
+			if (jsonObj.containsKey("date_string")) {
+				recording.setDate(standardDateFormat.parse(
+						jsonObj.get("date_string").toString()));
+			}
+			if (jsonObj.containsKey("language_name")) {
+				if (jsonObj.containsKey("language_code")) {
+					recording.setLanguage(new Language(
+							jsonObj.get("language_name").toString(),
+							jsonObj.get("language_code").toString()));
+				}
+			}
+		} catch (Exception e) {
 			throw new IOException(e);
 		}
+
+		return recording;
 	}
 
 	public static Recording readRecording(UUID uuid) throws IOException {
