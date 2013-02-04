@@ -237,6 +237,55 @@ public class FileIOTest extends TestCase {
 		assertTrue(file.delete());
 	}
 
+	public void testReadRecording2() throws Exception {
+		UUID uuid = UUID.randomUUID();
+		UUID creatorUUID = UUID.randomUUID();
+		UUID originalUUID = UUID.randomUUID();
+		String date_string = new StandardDateFormat().format(new Date());
+		String jsonStr = "\"uuid\":\"" + uuid + "\", \"creator_uuid\":\"" +
+				creatorUUID + "\", " + "\"recording_name\":\"TestRecording\", "
+				+ "\"date_string\":\"" + date_string + "\", \"language_name\":"
+				+ "\"Usarufa\", \"language_code\":\"usa\", \"original_uuid\":\""
+				+ originalUUID + "\"}";
+		File file = new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".json");
+		FileIO.write(file, jsonStr);
+		boolean caught = false;
+		try {
+			Recording recording = FileIO.readRecording(file);
+		} catch (Exception e) {
+			caught = true;
+		}
+		assertTrue(caught);
+		assertTrue(file.delete());
+	}
+
+	public void testReadRecording3() throws Exception {
+		UUID uuid = UUID.randomUUID();
+		UUID creatorUUID = UUID.randomUUID();
+		UUID originalUUID = UUID.randomUUID();
+		String date_string = new StandardDateFormat().format(new Date());
+		String jsonStr = "{\"uuid\":\"" + uuid + "\", \"SOME_RANDOM_KEY\":\"" +
+				creatorUUID + "\", " + "\"recording_name\":\"TestRecording\", "
+				+ "\"date_string\":\"" + date_string + "\", \"language_name\":"
+				+ "\"Usarufa\", \"language_code\":\"usa\", \"original_uuid\":\""
+				+ originalUUID + "\"}";
+		File file = new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".json");
+		FileIO.write(file, jsonStr);
+		Recording recording = FileIO.readRecording(file);
+		assertEquals(uuid, recording.getUUID());
+		assertEquals(null, recording.getCreatorUUID());
+		assertEquals(originalUUID, recording.getOriginalUUID());
+		assertEquals(date_string, 
+				new StandardDateFormat().format(recording.getDate()));
+		assertEquals("TestRecording", recording.getName());
+		assertEquals("Usarufa", recording.getLanguage().getName());
+		assertEquals("usa", recording.getLanguage().getCode());
+
+		assertTrue(file.delete());
+	}
+
 	/*
 	public void testWriteAndReadRecording() throws Exception {
 		Language language = new Language("English", "eng");
