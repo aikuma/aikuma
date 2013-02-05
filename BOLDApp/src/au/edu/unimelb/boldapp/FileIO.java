@@ -325,13 +325,25 @@ public abstract class FileIO {
 	public static void writeRecording(Recording recording) 
 			throws IOException {
 		JSONObject obj = new JSONObject();
-		obj.put("uuid", recording.getUUID().toString());
-		obj.put("creator_uuid", recording.getCreatorUUID().toString());
-		obj.put("recording_name", recording.getName());
-		obj.put("date_string", new StandardDateFormat().format(recording.getDate()));
+		if (recording.hasUUID()) {
+			obj.put("uuid", recording.getUUID().toString());
+		}
+		if (recording.hasCreatorUUID()) {
+			obj.put("creator_uuid", recording.getCreatorUUID().toString());
+		}
+		if (recording.hasName()) {
+			obj.put("recording_name", recording.getName());
+		}
+		if (recording.hasDate()) {
+			obj.put("date_string",
+					standardDateFormat.format(recording.getDate()));
+		}
+		if (recording.Language()) {
+		
 		obj.put("language_name", recording.getLanguage().getName());
 		obj.put("language_code", recording.getLanguage().getCode());
-		if (recording.getOriginalUUID() != null) {
+		}
+		if (recording.hasOriginalUUID() != null) {
 			obj.put("original_uuid", recording.getOriginalUUID().toString());
 		}
 		StringWriter stringWriter = new StringWriter();
