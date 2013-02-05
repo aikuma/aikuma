@@ -34,7 +34,7 @@ public class Recording {
 	 * The recording that this recording is a respeaking of (if applicable;
 	 * null otherwise)
 	 */
-	private UUID originalUuid;
+	private UUID originalUUID;
 
 	/**
 	 * The language of the recording
@@ -59,13 +59,13 @@ public class Recording {
 	 * Alternative Constructor
 	 */
 	public Recording(UUID uuid, UUID creatorUUID, String name, Date date,
-			Language language, UUID originalUuid) {
+			Language language, UUID originalUUID) {
 	 	setUuid(uuid);
 		setCreatorUUID(creatorUUID);
 		setName(name);
 		setDate(date);
 		setLanguage(language);
-		setOriginalUuid(originalUuid);
+		setOriginalUuid(originalUUID);
 	 }
 
 	/**
@@ -97,15 +97,15 @@ public class Recording {
 	/**
 	 * OriginalUUID mutator
 	 */
-	public void setOriginalUuid(UUID originalUuid) {
-		this.originalUuid = originalUuid;
+	public void setOriginalUuid(UUID originalUUID) {
+		this.originalUUID = originalUUID;
 	}
 
 	/**
 	 * OriginalUUID mutator
 	 */
-	public void setOriginalUUID(UUID originalUuid) {
-		this.originalUuid = originalUuid;
+	public void setOriginalUUID(UUID originalUUID) {
+		this.originalUUID = originalUUID;
 	}
 
 	/**
@@ -140,14 +140,14 @@ public class Recording {
 	 * originalUUID accessor
 	 */
 	public UUID getOriginalUuid() {
-		return this.originalUuid;
+		return this.originalUUID;
 	}
 
 	/**
 	 * originalUUID accessor
 	 */
 	public UUID getOriginalUUID() {
-		return this.originalUuid;
+		return this.originalUUID;
 	}
 
 	/**
@@ -184,5 +184,47 @@ public class Recording {
 	 */
 	public Date getDate() {
 		return this.date;
+	}
+
+	public boolean hasUUID() {
+		if (this.uuid != null) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean hasName() {
+		if (this.name != null) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean hasCreatorUUID() {
+		if (this.creatorUUID != null) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean hasOriginalUUID() {
+		if (this.originalUUID != null) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean hasDate() {
+		if (this.date != null) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean hasLanguage() {
+		if (this.language != null) {
+			return true;
+		}
+		return false;
 	}
 }

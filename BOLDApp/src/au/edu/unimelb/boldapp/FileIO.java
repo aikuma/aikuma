@@ -329,7 +329,6 @@ public abstract class FileIO {
 		obj.put("creator_uuid", recording.getCreatorUUID().toString());
 		obj.put("recording_name", recording.getName());
 		obj.put("date_string", new StandardDateFormat().format(recording.getDate()));
-		Log.i("lol", " " + recording.getLanguage());
 		obj.put("language_name", recording.getLanguage().getName());
 		obj.put("language_code", recording.getLanguage().getCode());
 		if (recording.getOriginalUUID() != null) {
