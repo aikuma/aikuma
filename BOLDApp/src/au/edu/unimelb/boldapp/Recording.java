@@ -1,5 +1,7 @@
 package au.edu.unimelb.boldapp;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.Date;
 
@@ -57,6 +59,7 @@ public class Recording {
 	 * Default Constructor
 	 */
 	public Recording(){
+		setLanguages(new ArrayList<Language>());
 	}
 
 	/**
@@ -201,9 +204,6 @@ public class Recording {
 	}
 
 	public boolean hasLanguages() {
-		if (this.languages == null) {
-			return false
-		}
 		if (this.languages.size() == 0) {
 			return false;
 		}

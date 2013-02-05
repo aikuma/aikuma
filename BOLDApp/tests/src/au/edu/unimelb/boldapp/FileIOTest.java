@@ -231,8 +231,6 @@ public class FileIOTest extends TestCase {
 		assertEquals(date_string, 
 				new StandardDateFormat().format(recording.getDate()));
 		assertEquals("TestRecording", recording.getName());
-		assertEquals("Usarufa", recording.getLanguage().getName());
-		assertEquals("usa", recording.getLanguage().getCode());
 
 		assertTrue(file.delete());
 	}
@@ -280,8 +278,6 @@ public class FileIOTest extends TestCase {
 		assertEquals(date_string, 
 				new StandardDateFormat().format(recording.getDate()));
 		assertEquals("TestRecording", recording.getName());
-		assertEquals("Usarufa", recording.getLanguage().getName());
-		assertEquals("usa", recording.getLanguage().getCode());
 
 		assertTrue(file.delete());
 	}
@@ -291,6 +287,22 @@ public class FileIOTest extends TestCase {
 		UUID uuid = UUID.randomUUID();
 		recording.setUUID(uuid);
 		assertEquals("{\"uuid\":\"" + recording.getUUID() + "\"}",
+				FileIO.encodeRecording(recording).toString());
+	}
+
+	public void testEncodeRecording2() throws Exception {
+		UUID uuid = UUID.randomUUID();
+		Language l1 = new Language("Alekano", "gah");
+		Language l2 = new Language("Usarufa", "usa");
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(l1);
+		languages.add(l2);
+		Recording recording = new Recording();
+		recording.setLanguages(languages);
+		assertEquals(
+				"{\"languages\":[{\"code\":\"gah\",\"name\":\"Alekano\"}," +
+				"{\"code\":\"usa\",\"name\":\"Usarufa\"}],\"uuid\":\"" +
+				recording.getUUID() + "\"}",
 				FileIO.encodeRecording(recording).toString());
 	}
 

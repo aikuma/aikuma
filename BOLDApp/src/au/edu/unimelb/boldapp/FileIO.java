@@ -347,8 +347,8 @@ public abstract class FileIO {
 			obj.put("date_string",
 					standardDateFormat.format(recording.getDate()));
 		}
-		if (recording.hasLanguage()) {
-			obj.put("language", encodeLanguage(recording.getLanguage()));
+		if (recording.hasLanguages()) {
+			obj.put("language", encodeLanguages(recording.getLanguages()));
 		}
 		if (recording.hasOriginalUUID()) {
 			obj.put("original_uuid", recording.getOriginalUUID().toString());
@@ -393,7 +393,7 @@ public abstract class FileIO {
 			}
 			if (jsonObj.containsKey("language_name")) {
 				if (jsonObj.containsKey("language_code")) {
-					recording.setLanguage(new Language(
+					recording.addLanguage(new Language(
 							jsonObj.get("language_name").toString(),
 							jsonObj.get("language_code").toString()));
 				}
