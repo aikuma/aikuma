@@ -286,6 +286,14 @@ public class FileIOTest extends TestCase {
 		assertTrue(file.delete());
 	}
 
+	public void testEncodeRecording() throws Exception {
+		Recording recording = new Recording();
+		UUID uuid = UUID.randomUUID();
+		recording.setUUID(uuid);
+		assertEquals("{\"uuid\":\"" + recording.getUUID() + "\"}",
+				FileIO.encodeRecording(recording).toString());
+	}
+
 	/*
 	public void testWriteAndReadRecording() throws Exception {
 		Language language = new Language("English", "eng");

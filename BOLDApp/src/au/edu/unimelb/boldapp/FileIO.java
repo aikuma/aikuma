@@ -322,9 +322,18 @@ public abstract class FileIO {
 	 *
 	 * @param	recording	The recording metadata to be written to file.
 	 */
-	public static void writeRecording(Recording recording) 
-			throws IOException {
+	public static void writeRecording(Recording recording) throws IOException {
+		JSONObject encodedRecording = encodeRecording(recording);
+		write(new File(getRecordingsPath(), recording.getUUID().toString() + ".json"),
+				encodedRecording.toString());
+	}
+
+	/**
+	 * Encodes the recording as a JSONObject
+	 */
+	public static JSONObject encodeRecording(Recording recording) {
 		JSONObject obj = new JSONObject();
+		JSONObject encodedUser = new JSONObject();
 		if (recording.hasUUID()) {
 			obj.put("uuid", recording.getUUID().toString());
 		}
@@ -338,19 +347,13 @@ public abstract class FileIO {
 			obj.put("date_string",
 					standardDateFormat.format(recording.getDate()));
 		}
-		if (recording.Language()) {
-		
-		obj.put("language_name", recording.getLanguage().getName());
-		obj.put("language_code", recording.getLanguage().getCode());
+		if (recording.hasLanguage()) {
+			obj.put("language", encodeLanguage(recording.getLanguage()));
 		}
-		if (recording.hasOriginalUUID() != null) {
+		if (recording.hasOriginalUUID()) {
 			obj.put("original_uuid", recording.getOriginalUUID().toString());
 		}
-		StringWriter stringWriter = new StringWriter();
-		obj.writeJSONString(stringWriter);
-		String jsonText = stringWriter.toString();
-		FileIO.write(new File(FileIO.getRecordingsPath(),
-				recording.getUUID() + ".json"), jsonText);
+		return obj;
 	}
 
 	/**
