@@ -128,25 +128,15 @@ public abstract class GlobalState {
 	/**
 	 * Loads the users from the bold directory.
 	 */
-	public static boolean loadUsers() {
-		try {
-			setUsers(FileIO.readUsers());
-		} catch (IOException e) {
-			return false;
-		}
-		return true;
+	public static void loadUsers() {
+		setUsers(FileIO.readUsers());
 	}
 
 	/**
 	 * Loads the users from the bold directory.
 	 */
-	public static boolean loadRecordings() {
-		try {
-			setRecordings(FileIO.readRecordings());
-		} catch (IOException e) {
-			return false;
-		}
-		return true;
+	public static void loadRecordings() {
+		setRecordings(FileIO.readRecordings());
 	}
 
 	/**
