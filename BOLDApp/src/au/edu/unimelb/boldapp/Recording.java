@@ -63,6 +63,35 @@ public class Recording {
 	}
 
 	/**
+	 * Alternative constructor for original recordings with one language
+	 */
+	public Recording(
+			UUID uuid, UUID creatorUUID, String name, Date date, Language
+			language) {
+		setUUID(uuid);
+		setCreatorUUID(uuid);
+		setName(name);
+		setDate(date);
+		setLanguages(new ArrayList<Language>());
+		addLanguage(language);
+	}
+
+	/**
+	 * Alternative constructor for respeakings recordings with one language
+	 */
+	public Recording(
+			UUID uuid, UUID creatorUUID, String name, Date date, Language
+			language, UUID originalUUID) {
+		setUUID(uuid);
+		setCreatorUUID(uuid);
+		setName(name);
+		setDate(date);
+		setLanguages(new ArrayList<Language>());
+		addLanguage(language);
+		setOriginalUUID(originalUUID);
+	}
+
+	/**
 	 * uuid mutator
 	 */
 	public void setUuid(UUID uuid) {
