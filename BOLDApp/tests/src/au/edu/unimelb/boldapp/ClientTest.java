@@ -27,7 +27,6 @@ public class ClientTest extends TestCase {
 	public void testLoginLogout() {
 		assertEquals(true, client.login("192.168.1.1", "admin", "admin"));
 		// Test that the findServerBaseDir works for our test router.
-		assertEquals("/part0/share", client.getServerBaseDir());
 		assertEquals(true, client.logout());
 
 		assertEquals(false, client.login("192.168.1.1", "admin", "wrongpass"));
