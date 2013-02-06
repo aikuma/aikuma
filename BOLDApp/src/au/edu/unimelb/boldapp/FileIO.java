@@ -304,14 +304,19 @@ public abstract class FileIO {
 	 *
 	 * @return	a list of users in the directory.
 	 */
-	public static List<User> readUsers() throws IOException {
+	public static List<User> readUsers() {
 		// Get an array of all the UUIDs from the "users" directory
 		List<String> userUUIDs = Arrays.asList(getUsersPath().list());
 
 		// Get the user data from the metadata.json files
 		List<User> users = new ArrayList<User>();
 		for (String userUUID : userUUIDs) {
-			users.add(readUser(userUUID));
+			try {
+				users.add(readUser(userUUID));
+			} catch (IOException e) {
+				// Couldn't read that User because the JSON file wasn't
+				// formatted well. Oh well, we just won't add it.
+			}
 		}
 
 		return users;
@@ -442,7 +447,7 @@ public abstract class FileIO {
 	 * @return	recordings	A list of all the recordings in the bold directory;
 	 * null if something went wrong.
 	 */
-	public static List<Recording> readRecordings() throws IOException {
+	public static List<Recording> readRecordings() {
 		// Get an array of all the UUIDs from the "users" directory
 		JSONFilenameFilter fnf = new JSONFilenameFilter();
 		List<String> recordingFilenames =
@@ -451,8 +456,13 @@ public abstract class FileIO {
 		// Get the user data from the metadata.json files
 		List<Recording> recordings = new ArrayList<Recording>();
 		for (String recordingFilename : recordingFilenames) {
-			recordings.add(readRecording(new File(FileIO.getRecordingsPath(),
-					recordingFilename)));
+			try {
+				recordings.add(readRecording(new File(FileIO.getRecordingsPath(),
+						recordingFilename)));
+			} catch (IOException e) {
+				// Couldn't read that recording because the JSON file wasn't
+				// formatted well. Oh well, we just won't add it.
+			}
 		}
 
 		return recordings;
