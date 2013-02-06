@@ -348,7 +348,7 @@ public abstract class FileIO {
 					standardDateFormat.format(recording.getDate()));
 		}
 		if (recording.hasLanguages()) {
-			obj.put("language", encodeLanguages(recording.getLanguages()));
+			obj.put("languages", encodeLanguages(recording.getLanguages()));
 		}
 		if (recording.hasOriginalUUID()) {
 			obj.put("original_uuid", recording.getOriginalUUID().toString());
@@ -398,6 +398,18 @@ public abstract class FileIO {
 							jsonObj.get("language_code").toString()));
 				}
 			}
+			JSONArray languagesArray = (JSONArray) jsonObj.get("languages");
+			List<Language> languages = new ArrayList<Language>();
+			if (languagesArray != null) {
+				for (Object langObj : languagesArray) {
+					JSONObject jsonLangObj = (JSONObject) langObj;
+					Language lang = new Language(
+							jsonLangObj.get("name").toString(),
+							jsonLangObj.get("code").toString());
+					languages.add(lang);
+				}
+			}
+			recording.setLanguages(languages);
 		} catch (Exception e) {
 			throw new IOException(e);
 		}

@@ -42,10 +42,10 @@ public class RecordingTest extends TestCase {
 		assertTrue(recording.hasDate());
 	}
 
-	public void testHasLanguage() {
-		assertTrue(!recording.hasLanguage());
-		recording.setLanguage(new Language("Usarufa", "usa"));
-		assertTrue(recording.hasLanguage());
+	public void testHasLanguages() {
+		assertTrue(!recording.hasLanguages());
+		recording.addLanguage(new Language("Usarufa", "usa"));
+		assertTrue(recording.hasLanguages());
 	}
 
 }

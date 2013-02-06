@@ -186,9 +186,6 @@ public class FileIOTest extends TestCase {
 		// ORDER.
 		List<User> users = FileIO.readUsers();
 
-		Log.i("FileIOTest", user.getLanguages().get(0).getCode());
-		Log.i("FileIOTest", users.get(1).getLanguages().get(0).getCode());
-
 		assertEquals(user.getName(), users.get(1).getName());
 		assertEquals(user.getUUID(), users.get(1).getUUID());
 		assertEquals(user.getLanguages().get(0).getName(),
@@ -299,6 +296,7 @@ public class FileIOTest extends TestCase {
 		languages.add(l2);
 		Recording recording = new Recording();
 		recording.setLanguages(languages);
+		recording.setUUID(uuid);
 		assertEquals(
 				"{\"languages\":[{\"code\":\"gah\",\"name\":\"Alekano\"}," +
 				"{\"code\":\"usa\",\"name\":\"Usarufa\"}],\"uuid\":\"" +
@@ -306,19 +304,17 @@ public class FileIOTest extends TestCase {
 				FileIO.encodeRecording(recording).toString());
 	}
 
-	/*
 	public void testWriteAndReadRecording() throws Exception {
+		Recording recording = new Recording();
+		recording.setUUID(UUID.randomUUID());
+		recording.setCreatorUUID(UUID.randomUUID());
+		recording.setName("FileIOTestRecording");
+		recording.setDate(new Date());
 		Language language = new Language("English", "eng");
-		Recording recording = new Recording(
-				UUID.randomUUID(), UUID.randomUUID(), "FileIOTestRecording",
-				new Date(), language);
+		recording.addLanguage(language);
 
 		FileIO.writeRecording(recording);
-
 		Recording readRecording = FileIO.readRecording(recording.getUUID());
-
-		Log.i("FileIOTest", recording.getLanguage().toString());
-		Log.i("FileIOTest", readRecording.getLanguage().toString());
 
 		assertEquals(recording.getUUID(), readRecording.getUUID());
 		assertEquals(recording.getCreatorUUID(),
@@ -326,54 +322,67 @@ public class FileIOTest extends TestCase {
 		assertEquals(recording.getName(), readRecording.getName());
 		assertEquals(recording.getDate(), readRecording.getDate());
 		assertEquals(recording.getOriginalUUID(), readRecording.getOriginalUUID());
-		assertEquals(recording.getLanguage().getName(),
-				readRecording.getLanguage().getName());
-		assertEquals(recording.getLanguage().getCode(),
-				readRecording.getLanguage().getCode());
+		assertEquals(recording.getLanguages().get(0).getName(),
+				readRecording.getLanguages().get(0).getName());
+		assertEquals(recording.getLanguages().get(0).getCode(),
+				readRecording.getLanguages().get(0).getCode());
 
 		// Do some cleanup
 		assertTrue(new File(FileIO.getRecordingsPath(),
 				recording.getUUID() + ".json").delete());
 	}
 
+
 	public void testWriteAndReadRecording2() throws Exception {
-		Language language = new Language("English", "eng");
+		Recording recording = new Recording();
+		recording.setUUID(UUID.randomUUID());
+		recording.setCreatorUUID(UUID.randomUUID());
+		recording.setName("FileIOTestRecording");
+		recording.setDate(new Date());
+		Language language1 = new Language("English", "eng");
+		recording.addLanguage(language1);
 
-		Recording recording = new Recording(
-				UUID.randomUUID(), UUID.randomUUID(), "Test",
-				new Date(), language);
-
-		Recording recording2 = new Recording(
-				UUID.randomUUID(), UUID.randomUUID(), "Test",
-				new Date(), language, UUID.randomUUID());
+		Recording recording2 = new Recording();
+		recording2.setUUID(UUID.randomUUID());
+		recording2.setCreatorUUID(UUID.randomUUID());
+		recording2.setName("FileIOTestRecording");
+		recording2.setDate(new Date());
+		Language language2 = new Language("German", "deu");
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(language1);
+		languages.add(language2);
+		recording2.setLanguages(languages);
 
 		FileIO.writeRecording(recording);
 		FileIO.writeRecording(recording2);
 
 		List<Recording> recordings = FileIO.readRecordings();
-		Log.i("FileIO", " " + recordings.size());
-
-		assertEquals(recording.getUUID(), recordings.get(1).getUUID());
-		assertEquals(recording.getCreatorUUID(),
-				recordings.get(1).getCreatorUUID());
-		assertEquals(recording.getName(), recordings.get(1).getName());
-		assertEquals(recording.getDate(), recordings.get(1).getDate());
-		assertEquals(null, recordings.get(1).getOriginalUUID());
-		assertEquals(recording2.getLanguage().getName(),
-				recordings.get(1).getLanguage().getName());
-		assertEquals(recording2.getLanguage().getCode(),
-				recordings.get(1).getLanguage().getCode());
 
 		assertEquals(recording2.getUUID(), recordings.get(0).getUUID());
-		assertEquals(recording2.getCreatorUUID(), recordings.get(0).getCreatorUUID());
+		assertEquals(recording2.getCreatorUUID(),
+				recordings.get(0).getCreatorUUID());
 		assertEquals(recording2.getName(), recordings.get(0).getName());
 		assertEquals(recording2.getDate(), recordings.get(0).getDate());
-		assertEquals(recording2.getOriginalUUID(),
-				recordings.get(0).getOriginalUUID());
-		assertEquals(recording2.getLanguage().getName(),
-				recordings.get(0).getLanguage().getName());
-		assertEquals(recording2.getLanguage().getCode(),
-				recordings.get(0).getLanguage().getCode());
+		assertEquals(null, recordings.get(0).getOriginalUUID());
+		assertEquals(recording2.getLanguages().get(0).getName(),
+				recordings.get(0).getLanguages().get(0).getName());
+		assertEquals(recording2.getLanguages().get(0).getCode(),
+				recordings.get(0).getLanguages().get(0).getCode());
+		assertEquals(recording2.getLanguages().get(1).getName(),
+				recordings.get(0).getLanguages().get(1).getName());
+		assertEquals(recording2.getLanguages().get(1).getCode(),
+				recordings.get(0).getLanguages().get(1).getCode());
+
+		assertEquals(recording.getUUID(), recordings.get(1).getUUID());
+		assertEquals(recording.getCreatorUUID(), recordings.get(1).getCreatorUUID());
+		assertEquals(recording.getName(), recordings.get(1).getName());
+		assertEquals(recording.getDate(), recordings.get(1).getDate());
+		assertEquals(recording.getOriginalUUID(),
+				recordings.get(1).getOriginalUUID());
+		assertEquals(recording2.getLanguages().get(0).getName(),
+				recordings.get(1).getLanguages().get(0).getName());
+		assertEquals(recording2.getLanguages().get(0).getCode(),
+				recordings.get(1).getLanguages().get(0).getCode());
 
 		// Do some cleanup
 		assertTrue(new File(FileIO.getRecordingsPath(),
@@ -381,7 +390,6 @@ public class FileIOTest extends TestCase {
 		assertTrue(new File(FileIO.getRecordingsPath(),
 				recording2.getUUID() + ".json").delete());
 	}
-	*/
 
 	@Override
 	public void tearDown() throws Exception {
