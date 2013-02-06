@@ -180,36 +180,6 @@ public class RespeakActivity extends Activity {
 		startActivity(intent);
 	}
 
-	/**
-	 * Save the respeaking to file
-	 *
-	 * @param	view	The button that was clicked.
-	 */
-	 /*
-	public void save(View view) {
-		respeaker.stop();
-
-		//Generate metadata file for the recording.
-		User currentUser = GlobalState.getCurrentUser();
-		Recording respeaking = new Recording( uuid, currentUser.getUUID(), 
-				this.recordingNamePrefix + original.getName(), new Date(),
-				original.getUUID());
-
-		try {
-			FileIO.writeRecording(respeaking);
-			Toast.makeText(this,
-					this.recordingNamePrefix + original.getName() + " saved",
-					Toast.LENGTH_LONG).show();
-			this.finish();
-		} catch (IOException e) {
-			Toast.makeText(this, "Failed writing " + 
-					this.recordingNamePrefix + original.getName(),
-					Toast.LENGTH_LONG).show();
-		}
-		this.finish();
-	}
-	*/
-
 	public void goToSaveActivity(View view) {
 		respeaker.stop();
 		Intent intent = new Intent(this, SaveActivity.class);

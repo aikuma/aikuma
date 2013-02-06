@@ -116,13 +116,14 @@ public class SaveActivity extends Activity {
 		String recordingName = editText.getText().toString();
 
 		User currentUser = GlobalState.getCurrentUser();
-		Recording recording;
-		if (originalUUID == null) {
-			recording = new Recording(uuid, currentUser.getUUID(),
-					recordingName, new Date(), language);
-		} else {
-			recording = new Recording(uuid, currentUser.getUUID(),
-					recordingName, new Date(), language, originalUUID);
+		Recording recording = new Recording();
+		recording.setUUID(uuid);
+		recording.setCreatorUUID(currentUser.getUUID());
+		recording.setName(recordingName);
+		recording.setDate(new Date());
+		recording.addLanguage(language);
+		if (this.originalUUID != null) {
+			recording.setOriginalUUID(this.originalUUID);
 		}
 
 		try {
