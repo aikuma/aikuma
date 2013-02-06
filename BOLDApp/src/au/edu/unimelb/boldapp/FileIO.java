@@ -382,15 +382,29 @@ public abstract class FileIO {
 			if (jsonObj.containsKey("creator_uuid")) {
 				recording.setCreatorUUID(
 						UUID.fromString(jsonObj.get("creator_uuid").toString()));
+			} else {
+				// Added for backwards compatibility with old key name
+				if (jsonObj.containsKey("creatorUUID")) {
+					recording.setCreatorUUID(
+							UUID.fromString(jsonObj.get("creatorUUID").toString()));
+				}
 			}
 			if (jsonObj.containsKey("original_uuid")) {
 				recording.setOriginalUUID(
 						UUID.fromString(jsonObj.get("original_uuid").toString()));
+			} else {
+				// Added for backwards compatibility with old key name
+				if (jsonObj.containsKey("originalUUID")) {
+					recording.setCreatorUUID(
+							UUID.fromString(jsonObj.get("originalUUID").toString()));
+				}
 			}
 			if (jsonObj.containsKey("date_string")) {
 				recording.setDate(standardDateFormat.parse(
 						jsonObj.get("date_string").toString()));
 			}
+			// Added for backwards compatibility with the model where there was
+			//only one language
 			if (jsonObj.containsKey("language_name")) {
 				if (jsonObj.containsKey("language_code")) {
 					recording.addLanguage(new Language(
