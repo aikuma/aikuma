@@ -1,7 +1,7 @@
-package au.edu.unimelb.boldapp.sync;
-import au.edu.unimelb.boldapp.SyncActivity;
+package au.edu.unimelb.aikuma.sync;
+import au.edu.unimelb.aikuma.SyncActivity;
 
-import au.edu.unimelb.boldapp.FileIO;
+import au.edu.unimelb.aikuma.FileIO;
 
 import android.content.Context;
 import android.widget.Toast;

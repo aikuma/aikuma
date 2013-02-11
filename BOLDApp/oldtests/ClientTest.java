@@ -1,4 +1,4 @@
-import au.edu.unimelb.boldapp.sync.Client;
+import au.edu.unimelb.aikuma.sync.Client;
 
 import java.io.File;
 import java.io.FileWriter;

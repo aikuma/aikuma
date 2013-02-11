@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp.audio;
+package au.edu.unimelb.aikuma.audio;
 
 import java.io.File;
 import java.io.BufferedReader;
@@ -15,8 +15,8 @@ import android.media.MediaPlayer;
 import android.util.Log;
 import android.util.Pair;
 
-import au.edu.unimelb.boldapp.FileIO;
-import au.edu.unimelb.boldapp.Recording;
+import au.edu.unimelb.aikuma.FileIO;
+import au.edu.unimelb.aikuma.Recording;
 
 /**
  * Offers functionality to play a respeaking interleaved with the original.

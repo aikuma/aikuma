@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp;
+package au.edu.unimelb.aikuma;
 
 import android.graphics.Bitmap;
 import java.io.File;

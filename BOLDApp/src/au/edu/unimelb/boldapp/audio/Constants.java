@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp.audio;
+package au.edu.unimelb.aikuma.audio;
 
 /**
  * Constants used by the audio package.

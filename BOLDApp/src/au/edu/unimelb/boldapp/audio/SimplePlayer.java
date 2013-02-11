@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp.audio;
+package au.edu.unimelb.aikuma.audio;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.util.UUID;
 import android.media.MediaPlayer;
 import android.util.Log;
 
-import au.edu.unimelb.boldapp.FileIO;
+import au.edu.unimelb.aikuma.FileIO;
 
 /**
  * A player that allows individual audio files to be played.

@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp;
+package au.edu.unimelb.aikuma;
 
 import java.util.UUID;
 
@@ -16,13 +16,13 @@ import android.view.View;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 
-import au.edu.unimelb.boldapp.audio.PlayerInterface;
-import au.edu.unimelb.boldapp.audio.SimplePlayer;
-import au.edu.unimelb.boldapp.audio.MarkedMediaPlayer;
-import au.edu.unimelb.boldapp.audio.InterleavedPlayer;
+import au.edu.unimelb.aikuma.audio.PlayerInterface;
+import au.edu.unimelb.aikuma.audio.SimplePlayer;
+import au.edu.unimelb.aikuma.audio.MarkedMediaPlayer;
+import au.edu.unimelb.aikuma.audio.InterleavedPlayer;
 
-import au.edu.unimelb.boldapp.sensors.ProximityDetector;
-import au.edu.unimelb.boldapp.sensors.ShakeDetector;
+import au.edu.unimelb.aikuma.sensors.ProximityDetector;
+import au.edu.unimelb.aikuma.sensors.ShakeDetector;
 
 /**
  * Activity that allows the user to listen to recordings

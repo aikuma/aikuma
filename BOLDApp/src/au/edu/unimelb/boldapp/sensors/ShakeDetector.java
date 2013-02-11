@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp.sensors;
+package au.edu.unimelb.aikuma.sensors;
 
 import android.app.Activity;
 import android.hardware.Sensor;

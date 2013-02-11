@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp.sync;
+package au.edu.unimelb.aikuma.sync;
 
 import java.io.File;
 import java.io.FileInputStream;

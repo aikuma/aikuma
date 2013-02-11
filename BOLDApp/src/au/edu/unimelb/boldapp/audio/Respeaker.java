@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp.audio;
+package au.edu.unimelb.aikuma.audio;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -9,10 +9,10 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-import au.edu.unimelb.boldapp.audio.Player;
-import au.edu.unimelb.boldapp.audio.analyzers.Analyzer;
-import au.edu.unimelb.boldapp.audio.analyzers.ThresholdSpeechAnalyzer;
-import au.edu.unimelb.boldapp.audio.recognizers.AverageRecognizer;
+import au.edu.unimelb.aikuma.audio.Player;
+import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
+import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
+import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
 
 /** Respeaker used to get input from eg. a microphone and
  *  output into a file. In addition, it also 

@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp;
+package au.edu.unimelb.aikuma;
 
 import java.io.File;
 import java.util.UUID;
@@ -14,7 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import au.edu.unimelb.boldapp.sync.SyncForActivity;
+import au.edu.unimelb.aikuma.sync.SyncForActivity;
 
 /**
  * The main menu activity that is first run when the application is started.

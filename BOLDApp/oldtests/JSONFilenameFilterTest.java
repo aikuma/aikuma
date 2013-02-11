@@ -1,4 +1,4 @@
-//package au.edu.unimelb.boldapp.test;
+//package au.edu.unimelb.aikuma.test;
 
 import java.util.UUID;
 import java.io.File;
@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import org.junit.runner.RunWith;
 
-import au.edu.unimelb.boldapp.JSONFilenameFilter;
+import au.edu.unimelb.aikuma.JSONFilenameFilter;
 
 //@RunWith(CustomTestRunner.class)
 public class JSONFilenameFilterTest {

@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp.audio;
+package au.edu.unimelb.aikuma.audio;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -8,8 +8,8 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-import au.edu.unimelb.boldapp.audio.analyzers.Analyzer;
-import au.edu.unimelb.boldapp.audio.analyzers.SimpleAnalyzer;
+import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
+import au.edu.unimelb.aikuma.audio.analyzers.SimpleAnalyzer;
 
 /** A Recorder is used to get input from eg. a microphone and
  *  output into a file.

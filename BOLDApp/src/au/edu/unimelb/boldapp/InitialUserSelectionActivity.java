@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp;
+package au.edu.unimelb.aikuma;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-import au.edu.unimelb.boldapp.sync.SyncForActivity;
+import au.edu.unimelb.aikuma.sync.SyncForActivity;
 
 /**
  * Activity that allows for the changing of currentUser, and links to the

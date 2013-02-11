@@ -1,6 +1,6 @@
-package au.edu.unimelb.boldapp;
+package au.edu.unimelb.aikuma;
 
-import au.edu.unimelb.boldapp.sync.Client;
+import au.edu.unimelb.aikuma.sync.Client;
 
 import java.io.BufferedWriter;
 import java.io.File;

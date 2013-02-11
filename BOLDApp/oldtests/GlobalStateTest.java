@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-import au.edu.unimelb.boldapp.User;
-import au.edu.unimelb.boldapp.GlobalState;
+import au.edu.unimelb.aikuma.User;
+import au.edu.unimelb.aikuma.GlobalState;
 
 public class GlobalStateTest {
 	User user;

@@ -1,6 +1,6 @@
-package au.edu.unimelb.boldapp.audio.analyzers;
+package au.edu.unimelb.aikuma.audio.analyzers;
 
-import au.edu.unimelb.boldapp.audio.AudioHandler;
+import au.edu.unimelb.aikuma.audio.AudioHandler;
 
 public class SimpleAnalyzer extends Analyzer {
 

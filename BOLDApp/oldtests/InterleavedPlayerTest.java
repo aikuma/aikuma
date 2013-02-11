@@ -1,6 +1,6 @@
 import java.util.UUID;
 
-import au.edu.unimelb.boldapp.audio.InterleavedPlayer;
+import au.edu.unimelb.aikuma.audio.InterleavedPlayer;
 import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.assertEquals;

@@ -5,8 +5,8 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
-import au.edu.unimelb.boldapp.audio.AudioHandler;
-import au.edu.unimelb.boldapp.audio.analyzers.ThresholdSpeechAnalyzer;
+import au.edu.unimelb.aikuma.audio.AudioHandler;
+import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
 
 public class ThresholdSpeechAnalyzerTest {
 	

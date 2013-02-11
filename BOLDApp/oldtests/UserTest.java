@@ -1,4 +1,4 @@
-//package au.edu.unimelb.boldapp.test;
+//package au.edu.unimelb.aikuma.test;
 
 import java.util.UUID;
 
@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.junit.runner.RunWith;
 
-import au.edu.unimelb.boldapp.User;
+import au.edu.unimelb.aikuma.User;
 
 //@RunWith(CustomTestRunner.class)
 public class UserTest {

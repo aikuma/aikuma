@@ -1,6 +1,6 @@
-package au.edu.unimelb.boldapp.audio.recognizers;
+package au.edu.unimelb.aikuma.audio.recognizers;
 
-import au.edu.unimelb.boldapp.audio.recognizers.Recognizer;
+import au.edu.unimelb.aikuma.audio.recognizers.Recognizer;
 
 /** 
  *

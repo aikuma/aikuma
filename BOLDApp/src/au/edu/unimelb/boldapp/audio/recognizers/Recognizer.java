@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp.audio.recognizers;
+package au.edu.unimelb.aikuma.audio.recognizers;
 
 public abstract class Recognizer {
 

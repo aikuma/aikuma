@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp; 
+package au.edu.unimelb.aikuma; 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -18,9 +18,9 @@ import android.content.Intent;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import au.edu.unimelb.boldapp.audio.Respeaker;
+import au.edu.unimelb.aikuma.audio.Respeaker;
 
-import au.edu.unimelb.boldapp.sensors.ProximityDetector;
+import au.edu.unimelb.aikuma.sensors.ProximityDetector;
 
 /**
  * The activity that allows one to respeak audio.

@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp;
+package au.edu.unimelb.aikuma;
 
 import android.util.Log;
 import android.app.Activity;
@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.content.Intent;
 import android.widget.Toast;
-import au.edu.unimelb.boldapp.sync.Client;
-import au.edu.unimelb.boldapp.FileIO;
+import au.edu.unimelb.aikuma.sync.Client;
+import au.edu.unimelb.aikuma.FileIO;
 
 public class SyncSplashActivity extends Activity {
 

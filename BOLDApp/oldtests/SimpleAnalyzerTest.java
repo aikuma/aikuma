@@ -3,9 +3,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-import au.edu.unimelb.boldapp.audio.AudioHandler;
-import au.edu.unimelb.boldapp.audio.Recorder;
-import au.edu.unimelb.boldapp.audio.analyzers.SimpleAnalyzer;
+import au.edu.unimelb.aikuma.audio.AudioHandler;
+import au.edu.unimelb.aikuma.audio.Recorder;
+import au.edu.unimelb.aikuma.audio.analyzers.SimpleAnalyzer;
 
 public class SimpleAnalyzerTest {
   

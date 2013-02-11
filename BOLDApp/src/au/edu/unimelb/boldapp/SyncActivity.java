@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp;
+package au.edu.unimelb.aikuma;
 
 import android.util.Log;
 import android.content.Intent;
@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-import au.edu.unimelb.boldapp.sync.Client;
+import au.edu.unimelb.aikuma.sync.Client;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;

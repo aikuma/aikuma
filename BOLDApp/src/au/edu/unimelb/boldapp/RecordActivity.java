@@ -1,4 +1,4 @@
-package au.edu.unimelb.boldapp;
+package au.edu.unimelb.aikuma;
 
 import java.io.StringWriter;
 import java.util.UUID;
@@ -12,9 +12,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
-import au.edu.unimelb.boldapp.audio.Recorder;
+import au.edu.unimelb.aikuma.audio.Recorder;
 
-import au.edu.unimelb.boldapp.sensors.ProximityDetector;
+import au.edu.unimelb.aikuma.sensors.ProximityDetector;
 
 /**
  * The activity that allows one to record audio.
