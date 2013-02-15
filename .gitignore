@@ -20,3 +20,6 @@ local.properties
 BOLDApp/tests/bin
 BOLDApp/tests/gen
 BOLDApp/tests/local.properties
+
+**/bin/*
+**/gen/*
