@@ -23,3 +23,5 @@ BOLDApp/tests/local.properties
 
 **/bin/*
 **/gen/*
+**/test/bin/*
+**/test/gen/*
