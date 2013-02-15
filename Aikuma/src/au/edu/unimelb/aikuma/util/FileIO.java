@@ -1,8 +1,8 @@
 package au.edu.unimelb.aikuma.util;
 
-import au.edu.unimelb.aikuma.R;
 import android.content.res.Resources;
 import android.os.Environment;
+import au.edu.unimelb.aikuma.R;
 import com.google.common.base.Charsets;
 import java.io.File;
 import java.io.InputStream;
@@ -31,7 +31,7 @@ public final class FileIO {
 	private FileIO () {}
 
 	/**
-	 * The date format used for parsing dates from JSON files.
+	 * The ISO 8601 date format used for parsing dates from JSON files.
 	 */
 	private static StandardDateFormat standardDateFormat =
 			new StandardDateFormat();
