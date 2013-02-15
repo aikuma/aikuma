@@ -18,6 +18,36 @@ public class FileIOTest extends TestCase {
 		assertEquals(new File("/mnt/sdcard/bold"), FileIO.getAppRootPath());
 	}
 
+	public void testWriteRead1() throws Exception {
+		FileIO.write("testdir/dir/test1", "süßholzraspeln");
+		File file = new File(FileIO.getAppRootPath(), "testdir/dir/test1");
+		assertTrue(file.exists());
+		assertEquals("süßholzraspeln", FileIO.read("testdir/dir/test1"));
+	}
+
+	public void testWriteRead2() throws Exception {
+		boolean caught = false;
+		try {
+			FileIO.write("/testdir/dir/test2", "süßholzraspeln");
+		} catch (IOException e) {
+			caught = true;
+		}
+		assertTrue(caught);
+	}
+
+	public void testWriteRead3() throws Exception {
+		FileIO.write("/mnt/sdcard/bold/testdir/test2", "süßholzraspeln");
+		assertEquals("süßholzraspeln",
+				FileIO.read("/mnt/sdcard/bold/testdir/test2"));
+	}
+
+	@Override
+	public void tearDown() throws Exception {
+
+		FileUtils.deleteDirectory(new File(FileIO.getAppRootPath(),
+				"testdir"));
+	}
+
 	/*
 	public void testGetUsersPath() throws Exception {
 		assertEquals(new File("/mnt/sdcard/bold/users"),
@@ -390,12 +420,6 @@ public class FileIOTest extends TestCase {
 		assertTrue(new File(FileIO.getRecordingsPath(),
 				recording2.getUUID() + ".json").delete());
 	}
-
-	@Override
-	public void tearDown() throws Exception {
-
-		FileUtils.deleteDirectory(new File(FileIO.getAppRootPath(),
-				"testdir"));
-	}
 	*/
+
 }

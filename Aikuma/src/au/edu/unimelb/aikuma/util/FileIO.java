@@ -143,7 +143,6 @@ public final class FileIO {
 	 * @param	data	The data that is to be written to the file.
 	 *
 	 */
-
 	public static void write(File path, String data) throws IOException {
 		FileUtils.writeStringToFile(path, data, Charsets.UTF_8);
 	}
