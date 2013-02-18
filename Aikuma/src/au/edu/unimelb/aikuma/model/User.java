@@ -53,10 +53,12 @@ public class User {
 	 *
 	 * @return 	small version of a user's image; null if it doesn't exist.
 	 */
+	/*
 	public Bitmap getSmallImage() {
 		return ImageUtils.retrieveFromFile(
 				new File(FileIO.getImagesPath(), getUUID() + ".small.jpg"));
 	}
+	*/
 
 	/**
 	 * Languages mutator.
@@ -100,15 +102,28 @@ public class User {
 		return this.name;
 	}
 
-	public JSONObject encodeUser(User user) {
+	/*
+	public JSONObject encodeUser() {
 		JSONObject encodedUser = new JSONObject();
+		if (hasName()) {
+			encodedUser.put("name", user.getName());
+		}
+		if (hasUUID()) {
+			encodedUser.put("uuid", user.getUUID().toString());
+		}
+		if (hasLanguages()) {
+			encodedUser.put("languages",
+					Language.encodeList(user.getLanguages()));
+		}
+		return encodedUser;
 	}
+	*/
 
 	/**
 	 * Write the user to file
 	 */
-	public void writeUser() throws IOException {
-	}
+	//public void writeUser() throws IOException {
+	//}
 
 	/**
 	 * Read a user from the file
