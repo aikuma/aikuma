@@ -510,8 +510,8 @@ public final class FileIO {
 		String inputString = writer.toString();
 		Map<String,String> map = new HashMap<String,String>();
 		String[] lines = inputString.split("\n");
-		for (String line : lines) {
-			String[] elements = line.split("(?=\t)");
+		for (int i = 1; i < 7776; i++) {
+			String[] elements = lines[i].split("(?=\t)");
 			map.put(elements[6].trim(), elements[0].trim());
 		}
 		return map;

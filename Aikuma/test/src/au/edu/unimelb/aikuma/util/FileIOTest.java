@@ -1,18 +1,19 @@
 package au.edu.unimelb.aikuma.util;
 
+import android.test.AndroidTestCase;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
-import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
-import junit.framework.TestCase;
+import java.util.Map;
+import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-public class FileIOTest extends TestCase {
+public class FileIOTest extends AndroidTestCase {
 
 	public void testGetAppRootPath() throws Exception {
 		assertEquals(new File("/mnt/sdcard/bold"), FileIO.getAppRootPath());
@@ -41,9 +42,15 @@ public class FileIOTest extends TestCase {
 				FileIO.read("/mnt/sdcard/bold/testdir/test2"));
 	}
 
+	public void testReadLangCodes() throws Exception {
+		Map map = FileIO.readLangCodes(getContext().getResources());
+		assertEquals(7775, map.size());
+		assertEquals("usa", map.get("Usarufa"));
+		assertEquals("eng", map.get("English"));
+	}
+
 	@Override
 	public void tearDown() throws Exception {
-
 		FileUtils.deleteDirectory(new File(FileIO.getAppRootPath(),
 				"testdir"));
 	}
