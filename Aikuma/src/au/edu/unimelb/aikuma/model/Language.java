@@ -1,8 +1,8 @@
 package au.edu.unimelb.aikuma.model;
 
-import java.util.List;
 import android.os.Parcelable;
 import android.os.Parcel;
+import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
