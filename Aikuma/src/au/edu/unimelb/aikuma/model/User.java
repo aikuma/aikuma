@@ -9,7 +9,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * The class that contains user data.
@@ -196,14 +199,45 @@ public class User {
 	}
 
 	/**
-	 * Read a user from the file
+	 * Read a user from the file.
 	 */
-	//public static User readUser(UUID uuid) {
-	//}
+	public static User read(UUID uuid) throws IOException {
+		User user;
+		try {
+			JSONParser parser = new JSONParser();
+			String jsonStr = FileIO.read(
+					new File(getUsersPath(), uuid.toString() +
+					"/metadata.json"));
+			Object obj = parser.parse(jsonStr);
+			JSONObject jsonObj = (JSONObject) obj;
+			JSONArray languagesArray = (JSONArray) jsonObj.get("languages");
+			List<Language> languages = new ArrayList<Language>();
+			if (languagesArray != null) {
+				for (Object langObj : languagesArray) {
+					JSONObject jsonLangObj = (JSONObject) langObj;
+					Language lang = new Language(
+							jsonLangObj.get("name").toString(),
+							jsonLangObj.get("code").toString());
+					languages.add(lang);
+				}
+			}
+			if (jsonObj.get("uuid") == null) {
+				throw new IOException("No UUID in the JSON file.");
+			}
+			if (jsonObj.get("name") == null) {
+				throw new IOException("No user name in the JSON file.");
+			}
+			user = new User(UUID.fromString(jsonObj.get("uuid").toString()),
+					jsonObj.get("name").toString(), languages);
+		} catch (org.json.simple.parser.ParseException e) {
+			throw new IOException(e);
+		}
+		return user;
+	}
 
 	/**
 	 * Read all users from file
 	 */
-	//public static User readUser(UUID uuid) {
+	//public static User readUserAll() {
 	//}
 }

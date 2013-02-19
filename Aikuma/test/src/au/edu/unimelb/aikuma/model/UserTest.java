@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import junit.framework.TestCase;
+import org.apache.commons.io.FileUtils;
 
 public class UserTest extends TestCase {
 
@@ -59,49 +60,94 @@ public class UserTest extends TestCase {
 		User user = new User(UUID.randomUUID(), "TestUser",
 				new Language("Usarufa", "usa"));
 		user.write();
-		String jsonStr = FileIO.read(new File(FileIO.getAppRootPath(),
-				"users/" + user.getUUID() + "/metadata.json"));
+		File file = new File(FileIO.getAppRootPath(),
+				"users/" + user.getUUID() + "/metadata.json");
+		String jsonStr = FileIO.read(file);
 		assertEquals(
 				"{\"languages\":[{\"code\":\"usa\",\"name\":\"Usarufa\"}" +
 				"],\"uuid\":\"" + user.getUUID() + "\",\"name\":\"TestUser\"}",
 				user.encode().toString());
+		FileUtils.deleteDirectory(file.getParentFile());
 	}
 
 	/**
-	 * Test when the user has no associated data
+	 * Reading when the file doesn't exist
 	 */
-	/*
-	public void testWriteUser1() {
-		User user = new User();
+	public void testRead1() {
+		boolean caught = false;
+		try {
+			User.read(UUID.randomUUID());
+		} catch (IOException e) {
+			caught = true;
+		}
+		assertTrue(caught);
 	}
-	*/
 
-	/**
-	 * Test when the user just has a name
-	 */
-	 /*
-	public void testWriteUser2() {
-		User user = new User();
-		String name = "TestUser";
-		user.setName(name);
-	}
-	*/
-
-	/*
-	public void testWriteUser3() {
-		User user = new User();
+	public void testRead2() throws IOException {
 		UUID uuid = UUID.randomUUID();
-		user.setUUID(uuid);
+		String jsonStr = "{\"languages\":[{\"code\":\"usa\",\"name\":\"Usarufa\"}" +
+				"],\"uuid\":\"" + uuid + "\",\"name\":\"TestUser\"}";
+		File file = new File(FileIO.getAppRootPath(),
+				"users/" + uuid + "/metadata.json");
+		FileIO.write(file, jsonStr);
+		User user = User.read(uuid);
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(new Language("Usarufa", "usa"));
+		assertTrue(languages.equals(user.getLanguages()));
+		assertEquals("TestUser", user.getName());
+		assertEquals(uuid, user.getUUID());
+		FileUtils.deleteDirectory(file.getParentFile());
 	}
-	*/
 
-	/*
-	public void testWriteUser4() {
-		User user = new User();
-		String name = "TestUser";
+	public void testRead3() throws IOException {
 		UUID uuid = UUID.randomUUID();
-		user.setName(name);
-		user.setUUID(uuid);
+		String jsonStr = "{\"uuid\":\"" + uuid + "\",\"name\":\"TestUser\"}";
+		File file = new File(FileIO.getAppRootPath(),
+				"users/" + uuid + "/metadata.json");
+		FileIO.write(file, jsonStr);
+		User user = User.read(uuid);
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(new Language("Usarufa", "usa"));
+		assertEquals(false, user.hasALanguage());
+		assertEquals("TestUser", user.getName());
+		assertEquals(uuid, user.getUUID());
+		FileUtils.deleteDirectory(file.getParentFile());
 	}
-	*/
+
+	public void testRead4() throws IOException {
+		UUID uuid = UUID.randomUUID();
+		//Missing a finishing curly brace
+		String jsonStr = "{\"uuid\":\"" + uuid + "\",\"name\":\"TestUser\"";
+		File file = new File(FileIO.getAppRootPath(),
+				"users/" + uuid + "/metadata.json");
+		FileIO.write(file, jsonStr);
+		boolean caught = false;
+		try {
+			User user = User.read(uuid);
+		} catch (IOException e) {
+			caught = true;
+		}
+		assertTrue(caught);
+		FileUtils.deleteDirectory(file.getParentFile());
+	}
+
+	public void testRead5() throws IOException {
+		UUID uuid = UUID.randomUUID();
+		//Missing a finishing curly brace
+		String jsonStr = "{\"name\":\"TestUser\"}";
+		File file = new File(FileIO.getAppRootPath(),
+				"users/" + uuid + "/metadata.json");
+		FileIO.write(file, jsonStr);
+		boolean caught = false;
+		String message = "";
+		try {
+			User user = User.read(uuid);
+		} catch (IOException e) {
+			caught = true;
+			message = e.getMessage();
+		}
+		assertEquals("No UUID in the JSON file.", message);
+		assertTrue(caught);
+		FileUtils.deleteDirectory(file.getParentFile());
+	}
 }
