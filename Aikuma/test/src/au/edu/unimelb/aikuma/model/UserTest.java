@@ -1,5 +1,8 @@
 package au.edu.unimelb.aikuma.model;
 
+import au.edu.unimelb.aikuma.util.FileIO;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -49,7 +52,19 @@ public class UserTest extends TestCase {
 				"{\"languages\":[{\"code\":\"usa\",\"name\":\"Usarufa\"}," +
 				"{\"code\":\"eng\",\"name\":\"English\"}],\"uuid\":\"" +
 				user.getUUID() + "\",\"name\":\"TestUser\"}",
-				user.encodeUser().toString());
+				user.encode().toString());
+	}
+
+	public void testWriteUser() throws IOException {
+		User user = new User(UUID.randomUUID(), "TestUser",
+				new Language("Usarufa", "usa"));
+		user.write();
+		String jsonStr = FileIO.read(new File(FileIO.getAppRootPath(),
+				"users/" + user.getUUID() + "/metadata.json"));
+		assertEquals(
+				"{\"languages\":[{\"code\":\"usa\",\"name\":\"Usarufa\"}" +
+				"],\"uuid\":\"" + user.getUUID() + "\",\"name\":\"TestUser\"}",
+				user.encode().toString());
 	}
 
 	/**

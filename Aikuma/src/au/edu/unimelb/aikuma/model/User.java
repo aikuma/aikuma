@@ -2,8 +2,10 @@ package au.edu.unimelb.aikuma.model;
 
 import android.graphics.Bitmap;
 import au.edu.unimelb.aikuma.util.ImageUtils;
+import au.edu.unimelb.aikuma.util.FileIO;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +18,13 @@ import org.json.simple.JSONObject;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class User {
+
+	/**
+	 * Returns the application's users directory
+	 */
+	private static File getUsersPath() {
+		return new File(FileIO.getAppRootPath(), "users");
+	}
 
 	/**
 	 * The user's UUID.
@@ -158,7 +167,7 @@ public class User {
 	/**
 	 * Encodes the User object as a corresponding JSONObject.
 	 */
-	public JSONObject encodeUser() {
+	public JSONObject encode() {
 		JSONObject encodedUser = new JSONObject();
 		if (hasName()) {
 			encodedUser.put("name", getName());
@@ -176,8 +185,15 @@ public class User {
 	/**
 	 * Write the user to file
 	 */
-	//public void writeUser() throws IOException {
-	//}
+	public void write() throws IOException {
+		JSONObject encodedUser = this.encode();
+
+		StringWriter stringWriter = new StringWriter();
+		encodedUser.writeJSONString(stringWriter);
+		String jsonStr = stringWriter.toString();
+		FileIO.write(new File(getUsersPath(),
+				this.getUUID().toString() + "/metadata.json"), jsonStr);
+	}
 
 	/**
 	 * Read a user from the file
