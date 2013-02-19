@@ -3,6 +3,7 @@ package au.edu.unimelb.aikuma.model;
 import android.os.Parcelable;
 import android.os.Parcel;
 import java.util.List;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
@@ -140,4 +141,16 @@ public class Language implements Parcelable {
 		}
 		return languageArray;
 	}
+
+	public boolean equals(Object obj) {
+		if (obj == null) { return false; }
+		if (obj == this) {return true; }
+		if (obj.getClass() != getClass()) {
+			return false;
+		}
+		Language rhs = (Language) obj;
+		return new EqualsBuilder()
+				.append(name, rhs.name).append(code, rhs.code).isEquals();
+	}
+
 }
