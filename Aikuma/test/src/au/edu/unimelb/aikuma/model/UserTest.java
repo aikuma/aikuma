@@ -1,11 +1,41 @@
 package au.edu.unimelb.aikuma.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import junit.framework.TestCase;
 
 public class UserTest extends TestCase {
 
-	protected void setUp() {
-		
+	public void testConstructor1() {
+		Language usarufa = new Language("Usarufa", "usa");
+		User user = new User(UUID.randomUUID(), "TestUser", usarufa);
+		assertTrue(user.hasALanguage());
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(usarufa);
+		assertTrue(languages.equals(user.getLanguages()));
+	}
+
+	public void testConstructor2() {
+		Language usarufa = new Language("Usarufa", "usa");
+		User user = new User(UUID.randomUUID(), "TestUser");
+		assertTrue(!user.hasALanguage());
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(usarufa);
+		user.addLanguage(usarufa);
+		assertTrue(user.hasALanguage());
+		assertTrue(languages.equals(user.getLanguages()));
+	}
+
+	public void testConstructor3() {
+		Language usarufa = new Language("Usarufa", "usa");
+		Language english = new Language("English", "eng");
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(usarufa);
+		languages.add(english);
+		User user = new User(UUID.randomUUID(), "TestUser", languages);
+		assertTrue(user.hasALanguage());
+		assertTrue(languages.equals(user.getLanguages()));
 	}
 
 	/**
