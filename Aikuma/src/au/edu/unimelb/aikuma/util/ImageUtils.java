@@ -21,6 +21,13 @@ public final class ImageUtils {
 	private ImageUtils() {}
 
 	/**
+	 * Returns the images directory.
+	 */
+	private static File getImagesPath() {
+		return new File(FileIO.getAppRootPath(), "images");
+	}
+
+	/**
 	 * Resizes the photo to the specified scale.
 	 *
 	 * @param	original	The original image
@@ -57,7 +64,7 @@ public final class ImageUtils {
 	public static Bitmap retrieveFromFile(String path) throws IOException {
 		// If the path isn't specified absolutely, assume the bold directory.
 		if (!path.startsWith("/")) {
-			path = new File(FileIO.getAppRootPath(), path).getPath();
+			path = new File(getImagesPath(), path).getPath();
 		}
 		Bitmap image = BitmapFactory.decodeFile(path);
 		if (image == null) {
