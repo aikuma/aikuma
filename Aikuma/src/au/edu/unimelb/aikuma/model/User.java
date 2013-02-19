@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.json.simple.JSONObject;
 
 /**
  * The class that contains user data.
@@ -125,28 +126,52 @@ public class User {
 	}
 
 	/**
+	 * Returns true if the user has a name; false otherwise
+	 */
+	public boolean hasName() {
+		if (getName() == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * Returns true if the user has a UUID; false otherwise
+	 */
+	public boolean hasUUID() {
+		if (getUUID() == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+
+	/**
 	 * Add's another language to the user's list
 	 */
 	public void addLanguage(Language language) {
 		this.languages.add(language);
 	}
 
-	/*
+	/**
+	 * Encodes the User object as a corresponding JSONObject.
+	 */
 	public JSONObject encodeUser() {
 		JSONObject encodedUser = new JSONObject();
 		if (hasName()) {
-			encodedUser.put("name", user.getName());
+			encodedUser.put("name", getName());
 		}
 		if (hasUUID()) {
-			encodedUser.put("uuid", user.getUUID().toString());
+			encodedUser.put("uuid", getUUID().toString());
 		}
-		if (hasLanguages()) {
+		if (hasALanguage()) {
 			encodedUser.put("languages",
-					Language.encodeList(user.getLanguages()));
+					Language.encodeList(getLanguages()));
 		}
 		return encodedUser;
 	}
-	*/
 
 	/**
 	 * Write the user to file

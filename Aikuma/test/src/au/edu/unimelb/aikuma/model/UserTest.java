@@ -38,6 +38,20 @@ public class UserTest extends TestCase {
 		assertTrue(languages.equals(user.getLanguages()));
 	}
 
+	public void testEncodeUser() {
+		Language usarufa = new Language("Usarufa", "usa");
+		Language english = new Language("English", "eng");
+		List<Language> languages = new ArrayList<Language>();
+		languages.add(usarufa);
+		languages.add(english);
+		User user = new User(UUID.randomUUID(), "TestUser", languages);
+		assertEquals(
+				"{\"languages\":[{\"code\":\"usa\",\"name\":\"Usarufa\"}," +
+				"{\"code\":\"eng\",\"name\":\"English\"}],\"uuid\":\"" +
+				user.getUUID() + "\",\"name\":\"TestUser\"}",
+				user.encodeUser().toString());
+	}
+
 	/**
 	 * Test when the user has no associated data
 	 */
