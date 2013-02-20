@@ -15,10 +15,18 @@ import org.json.simple.JSONObject;
 
 public class FileIOTest extends AndroidTestCase {
 
+	/**
+	 * Ensures that FileIO.getAppRootPath returns the appropriate absolute
+	 * path.
+	 */
 	public void testGetAppRootPath() throws Exception {
 		assertEquals(new File("/mnt/sdcard/bold"), FileIO.getAppRootPath());
 	}
 
+	/**
+	 * Ensure that write and read balance and ensure that the test file is in
+	 * the correct location.
+	 */
 	public void testWriteRead1() throws Exception {
 		FileIO.write("testdir/dir/test1", "süßholzraspeln");
 		File file = new File(FileIO.getAppRootPath(), "testdir/dir/test1");
@@ -26,7 +34,10 @@ public class FileIOTest extends AndroidTestCase {
 		assertEquals("süßholzraspeln", FileIO.read("testdir/dir/test1"));
 	}
 
-	public void testWriteRead2() throws Exception {
+	/**
+	 * Ensure that write accepts absolute paths as expected.
+	 */
+	public void testWrite() throws Exception {
 		boolean caught = false;
 		try {
 			FileIO.write("/testdir/dir/test2", "süßholzraspeln");
@@ -36,12 +47,18 @@ public class FileIOTest extends AndroidTestCase {
 		assertTrue(caught);
 	}
 
-	public void testWriteRead3() throws Exception {
+	/**
+	 * Ensure that write and read accept absolute paths as expected.
+	 */
+	public void testWriteRead2() throws Exception {
 		FileIO.write("/mnt/sdcard/bold/testdir/test2", "süßholzraspeln");
 		assertEquals("süßholzraspeln",
 				FileIO.read("/mnt/sdcard/bold/testdir/test2"));
 	}
 
+	/**
+	 * Ensure that the reading of language codes functions as expected.
+	 */
 	public void testReadLangCodes() throws Exception {
 		Map map = FileIO.readLangCodes(getContext().getResources());
 		assertEquals(7775, map.size());
@@ -49,6 +66,9 @@ public class FileIOTest extends AndroidTestCase {
 		assertEquals("eng", map.get("English"));
 	}
 
+	/**
+	 * Clean up
+	 */
 	@Override
 	public void tearDown() throws Exception {
 		FileUtils.deleteDirectory(new File(FileIO.getAppRootPath(),

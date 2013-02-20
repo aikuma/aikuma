@@ -10,6 +10,10 @@ import android.test.AndroidTestCase;
 
 public class ImageUtilsTest extends AndroidTestCase {
 
+	/**
+	 * Get an image from the resources and put it in the images directory to
+	 * test loading later.
+	 */
 	protected void setUp() throws Exception {
 		Bitmap bmp = BitmapFactory.decodeResource(
 				getContext().getResources(), R.raw.image1);
@@ -23,6 +27,10 @@ public class ImageUtilsTest extends AndroidTestCase {
 		fos.close();
 	}
 
+	/**
+	 * Ensure that an exception is thrown when a null Bitmap is supplied to
+	 * resizeBitmap
+	 */
 	public void testResizeBitmap() {
 		Bitmap bmp = null;
 		boolean caught = false;
@@ -34,6 +42,10 @@ public class ImageUtilsTest extends AndroidTestCase {
 		assertTrue(caught);
 	}
 
+	/**
+	 * Ensures an exception is thrown when retrieveFromFile is supplied with a
+	 * nonexistant image file.
+	 */
 	public void testRetrieveFromFile1() {
 		boolean caught = false;
 		try {
@@ -44,6 +56,10 @@ public class ImageUtilsTest extends AndroidTestCase {
 		assertTrue(caught);
 	}
 
+	/**
+	 * Helps to ensure that retrieving and resizing an image functions - you
+	 * may want to manually check the resized output image.
+	 */
 	public void testRetrieveFromFileAndResize() throws Exception {
 		Bitmap bmp = ImageUtils.retrieveFromFile("image1.jpg");
 		assertTrue(bmp != null);
@@ -56,6 +72,9 @@ public class ImageUtilsTest extends AndroidTestCase {
 		fos.close();
 	}
 
+	/**
+	 * Clean up
+	 */
 	protected void tearDown() {
 		new File(FileIO.getAppRootPath(), "images/image1.jpg").delete();
 		new File(FileIO.getAppRootPath(), "images/image1resized.jpg").delete();
