@@ -26,6 +26,8 @@ public class User {
 
 	/**
 	 * Returns the application's users directory
+	 *
+	 * @return	A File representing the users directory.
 	 */
 	private static File getUsersPath() {
 		return new File(FileIO.getAppRootPath(), "users");
@@ -50,6 +52,7 @@ public class User {
 	 *
 	 * @param	uuid	The new user's UUID.
 	 * @param	name	The new user's name.
+	 * @param	languages	A list of the user's langauges.
 	 */
 	public User(UUID uuid, String name, List<Language> languages) {
 		this(uuid, name);
@@ -58,6 +61,9 @@ public class User {
 
 	/**
 	 * Constructor that doesn't require a language
+	 *
+	 * @param	uuid	The new user's UUID.
+	 * @param	name	The new user's name.
 	 */
 	public User(UUID uuid, String name) {
 		setUuid(uuid);
@@ -70,6 +76,7 @@ public class User {
 	 *
 	 * @param	uuid	The new user's UUID.
 	 * @param	name	The new user's name.
+	 * @param	language	A single language of the user.
 	 */
 	public User(UUID uuid, String name, Language language) {
 		this(uuid, name);
@@ -130,7 +137,9 @@ public class User {
 	}
 
 	/**
-	 * Returns true if the user has at least one language; false otherwise
+	 * Returns true if the user has at least one language; false otherwise.
+	 *
+	 * @return	true if the user has at least one language; false otherwise.
 	 */
 	public boolean hasALanguage() {
 		if (this.languages.size() == 0) {
@@ -141,7 +150,10 @@ public class User {
 
 	/**
 	 * Returns true if the user has a name; false otherwise
+	 *
+	 * @return	true if user has a name; false otherwise.
 	 */
+	/*
 	public boolean hasName() {
 		if (getName() == null) {
 			return false;
@@ -149,10 +161,12 @@ public class User {
 			return true;
 		}
 	}
+	*/
 
 	/**
 	 * Returns true if the user has a UUID; false otherwise
 	 */
+	 /*
 	public boolean hasUUID() {
 		if (getUUID() == null) {
 			return false;
@@ -160,10 +174,14 @@ public class User {
 			return true;
 		}
 	}
+	*/
 
 
 	/**
 	 * Add's another language to the user's list
+	 *
+	 * @param	language	The language to be added to the user's list of
+	 * languages.
 	 */
 	public void addLanguage(Language language) {
 		this.languages.add(language);
@@ -171,6 +189,8 @@ public class User {
 
 	/**
 	 * Encodes the User object as a corresponding JSONObject.
+	 *
+	 * @return	A JSONObject instance representing the User.
 	 */
 	public JSONObject encode() {
 		JSONObject encodedUser = new JSONObject();
@@ -188,7 +208,8 @@ public class User {
 	}
 
 	/**
-	 * Write the user to file
+	 * Write the user to file in a subdirectory of the user directory named as
+	 * the UUID of this user.
 	 */
 	public void write() throws IOException {
 		JSONObject encodedUser = this.encode();
@@ -201,7 +222,9 @@ public class User {
 	}
 
 	/**
-	 * Read a user from the file.
+	 * Read a user from the file; see User.write.
+	 *
+	 * @param	uuid	The uuid of the user to be read.
 	 */
 	public static User read(UUID uuid) throws IOException {
 		User user;
@@ -259,6 +282,13 @@ public class User {
 		return users;
 	}
 
+	/**
+	 * Compares the given object with the User, and returns true if the
+	 * Users uuid, name and languages are equal.
+	 *
+	 * @return	true if the uuid, name and languages of the User are equal;
+	 * false otherwise.
+	 */
 	public boolean equals(Object obj) {
 		if (obj == null) { return false; }
 		if (obj == this) {return true; }
