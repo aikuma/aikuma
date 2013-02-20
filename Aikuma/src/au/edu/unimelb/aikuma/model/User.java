@@ -149,35 +149,6 @@ public class User {
 	}
 
 	/**
-	 * Returns true if the user has a name; false otherwise
-	 *
-	 * @return	true if user has a name; false otherwise.
-	 */
-	/*
-	public boolean hasName() {
-		if (getName() == null) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	*/
-
-	/**
-	 * Returns true if the user has a UUID; false otherwise
-	 */
-	 /*
-	public boolean hasUUID() {
-		if (getUUID() == null) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	*/
-
-
-	/**
 	 * Add's another language to the user's list
 	 *
 	 * @param	language	The language to be added to the user's list of

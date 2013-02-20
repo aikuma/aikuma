@@ -36,10 +36,6 @@ public final class FileIO {
 	private static StandardDateFormat standardDateFormat =
 			new StandardDateFormat();
 	
-	/**
-	 * The images directory path
-	 */
-	//static final String imagesPath = "images/";
 
 	/**
 	 * The application's top level path in the external storage.
@@ -47,19 +43,10 @@ public final class FileIO {
 	static final String appRootPath = "bold/";
 
 	/**
-	 * The users directory path
-	 */
-	//static final String usersPath = "users/";
-
-	/**
-	 * The recordings directory path
-	 */
-	//static final String recordingsPath = "recordings/";
-
-	/**
 	 * Returns the path to the application's data.
 	 *
-	 * @return	the applications base directory (the "bold" directory)
+	 * @return	A File representing the applications base directory (the "bold"
+	 * directory)
 	 */
 	public static File getAppRootPath(){
 		File path = new File(Environment.getExternalStorageDirectory(),
@@ -68,34 +55,6 @@ public final class FileIO {
 		assert path != null;
 		return path;
 	}
-
-	/**
-	 * Returns the path to the BOLD app's user directory.
-	 *
-	 * @return	the path to the users directory (absolute).
-	 */
-	/*
-	public static File getUsersPath(){
-		File path = new File(getAppRootPath(), usersPath);
-		path.mkdirs();
-		assert path != null;
-		return path;
-	}
-	*/
-
-	/**
-	 * Returns the path to the BOLD app's images directory.
-	 *
-	 * @return The path to the images directory (absolute).
-	 */
-	/*
-	public static File getImagesPath(){
-		File path = new File(getAppRootPath(), imagesPath);
-		path.mkdirs();
-		assert path != null;
-		return path;
-	}
-	*/
 
 	/**
 	 * Returns the path to the BOLD app's recordings directory.
@@ -121,7 +80,6 @@ public final class FileIO {
 	 * @param	data	The data that is to be written to the file.
 	 *
 	 */
-
 	public static void write(String path, String data) throws IOException {
 		File file;
 		// If the path is absolute, use that path, otherwise make it relative
@@ -179,154 +137,6 @@ public final class FileIO {
 	public static String read(File path) throws IOException {
 		return FileUtils.readFileToString(path, Charsets.UTF_8);
 	}
-
-	/**
-	 * Encodes a Language object as a corresponding JSONObject.
-	 *
-	 * @param	language	The language object to be encoded
-	 * @return	A JSONObject corresponding to the supplied language object.
-	 */
-	/*
-	public static JSONObject encodeLanguage(Language language) {
-		JSONObject encodedLanguage = new JSONObject();
-		encodedLanguage.put("name", language.getName());
-		encodedLanguage.put("code", language.getCode());
-		return encodedLanguage;
-	}
-	*/
-
-	/**
-	 * Encodes a list of languages as a corresponding JSONArray.
-	 *
-	 * @param	languages	The list of languages to be encoded
-	 * @return	A JSONArray corresponding to the supplied language list.
-	 */
-	 /*
-	public static JSONArray encodeLanguages(List<Language> languages) {
-		JSONArray languageArray = new JSONArray();
-		for (Language language : languages) {
-			languageArray.add(encodeLanguage(language));
-		}
-		return languageArray;
-	}
-	*/
-
-	/**
-	 * Encodes a User object as a corresponding JSONObject.
-	 *
-	 * @param	user	The User object to be encoded
-	 * @return	A JSONObject corresponding to the supplied User object.
-	 */
-	 /*
-	public static JSONObject encodeUser(User user) {
-		JSONObject encodedUser = new JSONObject();
-		encodedUser.put("name", user.getName());
-		encodedUser.put("uuid", user.getUUID().toString());
-		encodedUser.put("languages", encodeLanguages(user.getLanguages()));
-		return encodedUser;
-	}
-	*/
-
-	/**
-	 * Store user information to file
-	 *
-	 * @param	username	The name of the user.
-	 * @param	uuid	The users associated UUID.
-	 *
-	 */
-	 /*
-	public static void writeUser(String name, UUID uuid,
-			List<Language> languages) throws IOException {
-
-		// Create the JSON object
-		JSONObject encodedUser = encodeUser(new User(uuid, name, languages));
-
-		// Write the JSON object to file.
-		StringWriter stringWriter = new StringWriter();
-		encodedUser.writeJSONString(stringWriter);
-		String jsonText = stringWriter.toString();
-		write(new File(getUsersPath(), uuid.toString() + "/metadata.json"),
-				jsonText);
-	}
-	*/
-
-	/**
-	 * Store user information to file
-	 *
-	 * @param	user	The user to be written.
-	 *
-	 */
-	 /*
-	public static void writeUser(User user) throws IOException {
-		writeUser(user.getName(), user.getUUID(), user.getLanguages());
-		JSONObject encodedUser = encodeUser(user);
-		write(new File(getUsersPath(), user.getUUID().toString() + "/metadata.json"),
-				encodedUser.toString());
-	}
-	*/
-
-	/*
-	public static User readUser(String uuidString) throws IOException {
-		User user;
-		try {
-			JSONParser parser = new JSONParser();
-			String jsonStr = read(
-					new File(getUsersPath(), uuidString + "/metadata.json"));
-			Object obj = parser.parse(jsonStr);
-			JSONObject jsonObj = (JSONObject) obj;
-			JSONArray languagesArray = (JSONArray) jsonObj.get("languages");
-			List<Language> languages = new ArrayList<Language>();
-			if (languagesArray != null) {
-				for (Object langObj : languagesArray) {
-					JSONObject jsonLangObj = (JSONObject) langObj;
-					Language lang = new Language(
-							jsonLangObj.get("name").toString(),
-							jsonLangObj.get("code").toString());
-					languages.add(lang);
-				}
-			}
-			if (jsonObj.get("uuid") == null) {
-				throw new IOException("No UUID in the JSON file.");
-			}
-			if (jsonObj.get("name") == null) {
-				throw new IOException("No user name in the JSON file.");
-			}
-			user = new User(
-					UUID.fromString(jsonObj.get("uuid").toString()),
-					jsonObj.get("name").toString(), languages);
-			Log.i("readUser", "loaded " + user.getLanguages().toString());
-		} catch (org.json.simple.parser.ParseException e) {
-			throw new IOException(e);
-		}
-		return user;
-	}
-	*/
-
-	/**
-	 * Method to load all the users from the users directory into an array of
-	 * User objects in GlobalState.
-	 *
-	 * @return	a list of users in the directory.
-	 */
-	/*
-	public static List<User> readUsers() {
-		// Get an array of all the UUIDs from the "users" directory
-		List<String> userUUIDs = Arrays.asList(getUsersPath().list());
-
-		// Get the user data from the metadata.json files
-		List<User> users = new ArrayList<User>();
-		for (String userUUID : userUUIDs) {
-			try {
-				users.add(readUser(userUUID));
-			} catch (IOException e) {
-				// Couldn't read that User because the JSON file wasn't
-				// formatted well. Oh well, we just won't add it.
-			}
-		}
-
-		return users;
-	}
-	*/
 
 	/**
 	 * Writes the metadata of a recording to file.
@@ -481,18 +291,6 @@ public final class FileIO {
 		}
 
 		return recordings;
-	}
-	*/
-
-	/**
-	 * DEPRECATED: Delete the filename supplied as an argument
-	 *
-	 * @param	fileName	Name of the file to be deleted.
-	 */
-	 /*
-	public static boolean delete(String fileName) {
-		File file = new File(getAppRootPath() + fileName);
-		return file.delete();
 	}
 	*/
 
