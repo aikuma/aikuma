@@ -57,20 +57,6 @@ public final class FileIO {
 	}
 
 	/**
-	 * Returns the path to the BOLD app's recordings directory.
-	 *
-	 * @return The path to the recordings directory (absolute).
-	 */
-	/*
-	public static File getRecordingsPath(){
-		File path = new File(getAppRootPath(), recordingsPath);
-		path.mkdirs();
-		assert path != null;
-		return path;
-	}
-	*/
-
-	/**
 	 * Takes a file path (relative to the bold directory or absolute ) and some
 	 * data and writes the data into the file in the bold directory in external
 	 * storage.

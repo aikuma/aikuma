@@ -11,6 +11,10 @@ import org.apache.commons.io.FileUtils;
 
 public class UserTest extends TestCase {
 
+	/**
+	 * Ensures that construction and testing of hasALanguage (positive), along with the
+	 * Language.equals() method by calling List.equals().
+	 */
 	public void testConstructor1() {
 		Language usarufa = new Language("Usarufa", "usa");
 		User user = new User(UUID.randomUUID(), "TestUser", usarufa);
@@ -20,6 +24,10 @@ public class UserTest extends TestCase {
 		assertTrue(languages.equals(user.getLanguages()));
 	}
 
+	/**
+	 * Ensures that construction and testing of hasALanguage (negative), along with the
+	 * Language.equals() method by calling List.equals().
+	 */
 	public void testConstructor2() {
 		Language usarufa = new Language("Usarufa", "usa");
 		User user = new User(UUID.randomUUID(), "TestUser");
@@ -31,6 +39,9 @@ public class UserTest extends TestCase {
 		assertTrue(languages.equals(user.getLanguages()));
 	}
 
+	/**
+	 * Tests constructor and hasALanguage for multiple languages.
+	 */
 	public void testConstructor3() {
 		Language usarufa = new Language("Usarufa", "usa");
 		Language english = new Language("English", "eng");
@@ -42,6 +53,9 @@ public class UserTest extends TestCase {
 		assertTrue(languages.equals(user.getLanguages()));
 	}
 
+	/**
+	 * Ensures that a user can be encoded validly.
+	 */
 	public void testEncodeUser() {
 		Language usarufa = new Language("Usarufa", "usa");
 		Language english = new Language("English", "eng");
@@ -56,6 +70,9 @@ public class UserTest extends TestCase {
 				user.encode().toString());
 	}
 
+	/**
+	 * Ensures a user is written correctly.
+	 */
 	public void testWriteUser() throws IOException {
 		User user = new User(UUID.randomUUID(), "TestUser",
 				new Language("Usarufa", "usa"));
@@ -71,7 +88,7 @@ public class UserTest extends TestCase {
 	}
 
 	/**
-	 * Reading when the file doesn't exist
+	 * Reading when the file doesn't exist - ensure an exception is thrown.
 	 */
 	public void testRead1() {
 		boolean caught = false;
@@ -83,6 +100,9 @@ public class UserTest extends TestCase {
 		assertTrue(caught);
 	}
 
+	/**
+	 * Ensure read works with a valid JSON file.
+	 */
 	public void testRead2() throws IOException {
 		UUID uuid = UUID.randomUUID();
 		String jsonStr = "{\"languages\":[{\"code\":\"usa\",\"name\":\"Usarufa\"}" +
@@ -99,6 +119,9 @@ public class UserTest extends TestCase {
 		FileUtils.deleteDirectory(file.getParentFile());
 	}
 
+	/**
+	 * Ensure read works with a valid and minimal JSON file.
+	 */
 	public void testRead3() throws IOException {
 		UUID uuid = UUID.randomUUID();
 		String jsonStr = "{\"uuid\":\"" + uuid + "\",\"name\":\"TestUser\"}";
@@ -114,6 +137,9 @@ public class UserTest extends TestCase {
 		FileUtils.deleteDirectory(file.getParentFile());
 	}
 
+	/**
+	 * Ensure read throws an exception on invalid JSON.
+	 */
 	public void testRead4() throws IOException {
 		UUID uuid = UUID.randomUUID();
 		//Missing a finishing curly brace
@@ -131,6 +157,10 @@ public class UserTest extends TestCase {
 		FileUtils.deleteDirectory(file.getParentFile());
 	}
 
+	/**
+	 * Ensure read throws an exception when the JSON is well formed but doesn't
+	 * contain a UUID.
+	 */
 	public void testRead5() throws IOException {
 		UUID uuid = UUID.randomUUID();
 		//Missing a finishing curly brace
@@ -151,6 +181,11 @@ public class UserTest extends TestCase {
 		FileUtils.deleteDirectory(file.getParentFile());
 	}
 
+	/**
+	 * Ensure readAll functions when there is an invalid User JSON file amongst
+	 * valid User JSON files - No exception should be thrown, but the invalid
+	 * User should not be read.
+	 */
 	public void testReadAll() throws IOException {
 		// Write an inappropriate metadata file (no UUID in the file)
 		UUID uuid = UUID.randomUUID();
