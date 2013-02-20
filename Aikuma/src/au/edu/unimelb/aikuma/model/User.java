@@ -60,7 +60,7 @@ public class User {
 	}
 
 	/**
-	 * Constructor that doesn't require a language
+	 * The minimal constructor.
 	 *
 	 * @param	uuid	The new user's UUID.
 	 * @param	name	The new user's name.

@@ -54,7 +54,7 @@ public class Language implements Parcelable {
 	}
 
 	/**
-	 * Standard constructor
+	 * The minimal constructor.
 	 *
 	 * @param	name	The name of the language.
 	 * @param	code	The ISO 639-3 code of the language.
