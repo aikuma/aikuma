@@ -1,6 +1,8 @@
 package au.edu.unimelb.aikuma.model;
 
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -31,6 +33,27 @@ public class Recording {
 	}
 
 	/**
+	 * creatorUUID accessor.
+	 */
+	public UUID getCreatorUUID() {
+		return creatorUUID;
+	}
+
+	/**
+	 * originalUUID accessor.
+	 */
+	public UUID getOriginalUUID() {
+		return originalUUID;
+	}
+
+	/**
+	 * languages accessor.
+	 */
+	public List<Language> getLanguages() {
+		return languages;
+	}
+
+	/**
 	 * UUID mutator.
 	 */
 	public void setUUID(UUID uuid) {
@@ -52,6 +75,27 @@ public class Recording {
 	}
 
 	/**
+	 * creatorUUID mutator.
+	 */
+	public void setCreatorUUID(UUID creatorUUID) {
+		this.creatorUUID = creatorUUID;
+	}
+
+	/**
+	 * originalUUID mutator.
+	 */
+	public void setOriginalUUID(UUID originalUUID) {
+		this.originalUUID = originalUUID;
+	}
+
+	/**
+	 * languages mutator.
+	 */
+	public void setLanguages(List<Language> languages) {
+		this.languages = languages;
+	}
+
+	/**
 	 * The minimal constructor
 	 *
 	 * @param	uuid	the recording's UUID.
@@ -62,6 +106,7 @@ public class Recording {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
+		setLanguages(new ArrayList<Language>());
 	}
 
 	/**
@@ -78,4 +123,19 @@ public class Recording {
 	 * The recording's date.
 	 */
 	private Date date;
+
+	/**
+	 * The UUID of the creator of the recording
+	 */
+	private UUID creatorUUID;
+
+	/**
+	 * The UUID of the original of the recording if it is a respeaking.
+	 */
+	private UUID originalUUID;
+
+	/**
+	 * The languages of the recording.
+	 */
+	private List<Language> languages;
 }
