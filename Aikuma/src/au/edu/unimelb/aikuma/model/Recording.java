@@ -75,6 +75,28 @@ public class Recording {
 	}
 
 	/**
+	 * Returns true if the Recording has at least one language; false otherwise.
+	 *
+	 * @return	true if the Recording has at least one language; false otherwise.
+	 */
+	public boolean hasALanguage() {
+		if (this.languages.size() == 0) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Add's another language to the Recording's language list
+	 *
+	 * @param	language	The language to be added to the Recording's list of
+	 * languages.
+	 */
+	public void addLanguage(Language language) {
+		this.languages.add(language);
+	}
+
+	/**
 	 * creatorUUID mutator.
 	 */
 	public void setCreatorUUID(UUID creatorUUID) {
