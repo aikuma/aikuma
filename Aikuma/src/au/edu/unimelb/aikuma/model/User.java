@@ -30,7 +30,9 @@ public class User {
 	 * @return	A File representing the users directory.
 	 */
 	private static File getUsersPath() {
-		return new File(FileIO.getAppRootPath(), "users");
+		File path = new File(FileIO.getAppRootPath(), "users");
+		path.mkdirs();
+		return path;
 	}
 
 	/**

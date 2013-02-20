@@ -1,5 +1,7 @@
 package au.edu.unimelb.aikuma.model;
 
+import au.edu.unimelb.aikuma.util.FileIO;
+import java.io.File;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +117,17 @@ public class Recording {
 	 */
 	public void setLanguages(List<Language> languages) {
 		this.languages = languages;
+	}
+
+	/**
+	 * Get the applications recordings directory
+	 *
+	 * @return	A File representing the path of the recordings directory
+	 */
+	private static File getRecordingsPath() {
+		File path = new File(FileIO.getAppRootPath(), "recordings");
+		path.mkdirs();
+		return path;
 	}
 
 	/**

@@ -26,7 +26,9 @@ public final class ImageUtils {
 	 * @return	A File representing the images directory.
 	 */
 	private static File getImagesPath() {
-		return new File(FileIO.getAppRootPath(), "images");
+		File path = new File(FileIO.getAppRootPath(), "images");
+		path.mkdirs();
+		return path;
 	}
 
 	/**
