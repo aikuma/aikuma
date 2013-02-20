@@ -16,6 +16,7 @@ public class ImageUtilsTest extends AndroidTestCase {
 		assertTrue(bmp != null);
 		File dest = new File(FileIO.getAppRootPath(),
 				"images/image1.jpg");
+		dest.getParentFile().mkdirs();
 		FileOutputStream fos = new FileOutputStream(dest);
 		assertTrue(bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos));
 		fos.flush();
