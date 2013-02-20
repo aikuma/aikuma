@@ -150,4 +150,35 @@ public class UserTest extends TestCase {
 		assertTrue(caught);
 		FileUtils.deleteDirectory(file.getParentFile());
 	}
+
+	public void testReadAll() throws IOException {
+		// Write an inappropriate metadata file (no UUID in the file)
+		UUID uuid = UUID.randomUUID();
+		String jsonStr = "{\"name\":\"TestUser\"}";
+		File file = new File(FileIO.getAppRootPath(),
+				"users/" + uuid + "/metadata.json");
+		FileIO.write(file, jsonStr);
+		// Write a user with a name and uuid
+		User user1 = new User(UUID.randomUUID(), "TestUser1");
+		user1.write();
+		// Write a user with a name, uuid, and language.
+		User user2 = new User(UUID.randomUUID(), "TestUser2",
+				new Language("Usarufa", "usa"));
+		user2.write();
+
+		List<User> userList = User.readAll();
+		// Ensure that the poorly formed user doesn't somehow get read.
+		assertEquals(2, userList.size());
+		// Ensure the other two are actually the corresponding users.
+		assertTrue(userList.contains(user1));
+		assertTrue(userList.contains(user2));
+
+		FileUtils.deleteDirectory(new File(FileIO.getAppRootPath(), "users/" + 
+				uuid + "/metadata.json").getParentFile());
+		FileUtils.deleteDirectory(new File(FileIO.getAppRootPath(), "users/" + 
+				user1.getUUID() + "/metadata.json").getParentFile());
+		FileUtils.deleteDirectory(new File(FileIO.getAppRootPath(), "users/" + 
+				user2.getUUID() + "/metadata.json").getParentFile());
+
+	}
 }

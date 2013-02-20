@@ -6,9 +6,11 @@ import au.edu.unimelb.aikuma.util.FileIO;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -237,7 +239,35 @@ public class User {
 
 	/**
 	 * Read all users from file
+	 *
+	 * @return	A list of the users found in the users directory.
 	 */
-	//public static User readUserAll() {
-	//}
+	public static List<User> readAll() {
+		// Get a list of all the UUIDs of users in the "users" directory.
+		List<String> userUUIDs = Arrays.asList(getUsersPath().list());
+
+		// Get the user data from the metadata.json files.
+		List<User> users = new ArrayList<User>();
+		for (String userUUID : userUUIDs) {
+			try {
+				users.add(User.read(UUID.fromString(userUUID)));
+			} catch (IOException e) {
+				// Couldn't read that user for whatever reason (perhaps JSON
+				// file wasn't formatted correctly). Lets just ignore that user.
+			}
+		}
+		return users;
+	}
+
+	public boolean equals(Object obj) {
+		if (obj == null) { return false; }
+		if (obj == this) {return true; }
+		if (obj.getClass() != getClass()) {
+			return false;
+		}
+		User rhs = (User) obj;
+		return new EqualsBuilder()
+				.append(uuid, rhs.uuid).append(name, rhs.name)
+				.append(languages, rhs.languages).isEquals();
+	}
 }
