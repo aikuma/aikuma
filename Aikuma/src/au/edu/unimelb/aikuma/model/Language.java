@@ -55,6 +55,9 @@ public class Language implements Parcelable {
 
 	/**
 	 * Standard constructor
+	 *
+	 * @param	name	The name of the language.
+	 * @param	code	The ISO 639-3 code of the language.
 	 */
 	public Language(String name, String code) {
 		setName(name);
@@ -73,6 +76,8 @@ public class Language implements Parcelable {
 	/**
 	 * Describe the kinds of special objects contained in this Parcelable's
 	 * marshalled representation.
+	 *
+	 * @return	an int (always zero).
 	 */
 	public int describeContents() {
 		return 0;
@@ -142,6 +147,13 @@ public class Language implements Parcelable {
 		return languageArray;
 	}
 
+	/**
+	 * Compares the given object with the Language, and returns true if the
+	 * Language name and code are equal.
+	 *
+	 * @return	true if the name and codes of the languages are equal; false
+	 * otherwise.
+	 */
 	public boolean equals(Object obj) {
 		if (obj == null) { return false; }
 		if (obj == this) {return true; }

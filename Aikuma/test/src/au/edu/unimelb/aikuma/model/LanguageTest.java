@@ -8,6 +8,9 @@ import org.json.simple.JSONArray;
 
 public class LanguageTest extends TestCase {
 
+	/**
+	 * Ensures that one language can be encoded successfully.
+	 */
 	public void testEncodeLanguage() {
 		Language language = new Language("English", "eng");
 		JSONObject encodedLanguage = language.encode();
@@ -15,6 +18,9 @@ public class LanguageTest extends TestCase {
 				encodedLanguage.toString());
 	}
 
+	/**
+	 * Ensures that a list of two languages can be encoded correctly.
+	 */
 	public void testEncodeLanguages() throws Exception {
 		Language l1 = new Language("Alekano", "gah");
 		Language l2 = new Language("Usarufa", "usa");
@@ -27,5 +33,4 @@ public class LanguageTest extends TestCase {
 				",{\"code\":\"usa\",\"name\":\"Usarufa\"}]",
 				encodedLanguages.toString());
 	}
-
 }
