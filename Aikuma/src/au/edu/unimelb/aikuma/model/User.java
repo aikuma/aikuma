@@ -165,12 +165,8 @@ public class User {
 	 */
 	public JSONObject encode() {
 		JSONObject encodedUser = new JSONObject();
-		if (hasName()) {
-			encodedUser.put("name", getName());
-		}
-		if (hasUUID()) {
-			encodedUser.put("uuid", getUUID().toString());
-		}
+		encodedUser.put("name", getName());
+		encodedUser.put("uuid", getUUID().toString());
 		if (hasALanguage()) {
 			encodedUser.put("languages",
 					Language.encodeList(getLanguages()));
