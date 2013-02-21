@@ -1,4 +1,4 @@
-package au.edu.unimelb.aikuma.util;
+package au.edu.unimelb.aikuma;
 
 import android.content.Context;
 import android.provider.Settings.Secure;
@@ -9,11 +9,11 @@ import android.provider.Settings.Secure;
  * http://stackoverflow.com/questions/2002288/static-way-to-get-context-on-android
  */
 
-public class ContextSupplier extends android.app.Application {
+public class Aikuma extends android.app.Application {
 
-	private static ContextSupplier instance;
+	private static Aikuma instance;
 
-	public ContextSupplier() {
+	public Aikuma() {
 		instance = this;
 	}
 
