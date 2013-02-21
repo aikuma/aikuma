@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 /**
  * The class that stores the metadata of a recording, including it's UUID,
@@ -264,5 +265,28 @@ public class Recording {
 	 * The UUID of the original of the recording if it is a respeaking.
 	 */
 	private UUID originalUUID;
+
+	/**
+	 * Compares the given object with the Recording, and returns true if the
+	 * Recordings uuid, name, date, languages, androidID and originalUUID are
+	 * equal
+	 *
+	 * @return	true if the uuid, name, date, languages, androidID and
+	 * originalUUID are equal; false otherwise.
+	 */
+	 public boolean equals(Object obj) {
+	 	if (obj == null) {return false;}
+		if (obj == this) {return true;}
+		if (obj.getClass() != getClass()) {return false;}
+		Recording rhs = (Recording) obj;
+		return new EqualsBuilder()
+				.append(uuid, rhs.uuid)
+				.append(name, rhs.name)
+				.append(date, rhs.date)
+				.append(languages, rhs.languages)
+				.append(androidID, rhs.androidID)
+				.append(originalUUID, rhs.originalUUID)
+				.isEquals();
+	 }
 
 }
