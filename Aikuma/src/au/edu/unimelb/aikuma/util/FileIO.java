@@ -13,9 +13,9 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 //import org.json.simple.JSONArray;
-//import org.json.simple.JSONObject;
-//import org.json.simple.parser.JSONParser;
-//import org.json.simple.parser.ParseException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * Utility class that offers various File IO related methods.
@@ -100,7 +100,7 @@ public final class FileIO {
 	 */
 	public static void writeJSONObject(File path, JSONObject jsonObj)
 			throws IOException {
-		StringWriter stringWriter = new StringWRiter();
+		StringWriter stringWriter = new StringWriter();
 		jsonObj.writeJSONString(stringWriter);
 		String jsonStr = stringWriter.toString();
 		write(path, jsonStr);
@@ -137,6 +137,23 @@ public final class FileIO {
 	 */
 	public static String read(File path) throws IOException {
 		return FileUtils.readFileToString(path, Charsets.UTF_8);
+	}
+
+	/**
+	 * Takes a file path and reads a JSONObject from that file.
+	 *
+	 * @param	path	The path to the file where the JSON is stored.
+	 */
+	public static JSONObject readJSONObject(File path) throws IOException {
+		try {
+			String jsonStr = read(path);
+			JSONParser parser = new JSONParser();
+			Object obj = parser.parse(jsonStr);
+			JSONObject jsonObj = (JSONObject) obj;
+			return jsonObj;
+		} catch (org.json.simple.parser.ParseException e) {
+			throw new IOException(e);
+		}
 	}
 
 	/**

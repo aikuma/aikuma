@@ -13,8 +13,6 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 /**
  * The class that contains user data.
@@ -183,11 +181,8 @@ public class User {
 	public void write() throws IOException {
 		JSONObject encodedUser = this.encode();
 
-		StringWriter stringWriter = new StringWriter();
-		encodedUser.writeJSONString(stringWriter);
-		String jsonStr = stringWriter.toString();
-		FileIO.write(new File(getUsersPath(),
-				this.getUUID().toString() + "/metadata.json"), jsonStr);
+		FileIO.writeJSONObject(new File(getUsersPath(),
+				this.getUUID().toString() + "/metadata.json"), encodedUser);
 	}
 
 	/**
@@ -197,35 +192,28 @@ public class User {
 	 */
 	public static User read(UUID uuid) throws IOException {
 		User user;
-		try {
-			JSONParser parser = new JSONParser();
-			String jsonStr = FileIO.read(
-					new File(getUsersPath(), uuid.toString() +
-					"/metadata.json"));
-			Object obj = parser.parse(jsonStr);
-			JSONObject jsonObj = (JSONObject) obj;
-			JSONArray languagesArray = (JSONArray) jsonObj.get("languages");
-			List<Language> languages = new ArrayList<Language>();
-			if (languagesArray != null) {
-				for (Object langObj : languagesArray) {
-					JSONObject jsonLangObj = (JSONObject) langObj;
-					Language lang = new Language(
-							jsonLangObj.get("name").toString(),
-							jsonLangObj.get("code").toString());
-					languages.add(lang);
-				}
+		JSONObject jsonObj = FileIO.readJSONObject(
+				new File(getUsersPath(), uuid.toString() +
+				"/metadata.json"));
+		JSONArray languagesArray = (JSONArray) jsonObj.get("languages");
+		List<Language> languages = new ArrayList<Language>();
+		if (languagesArray != null) {
+			for (Object langObj : languagesArray) {
+				JSONObject jsonLangObj = (JSONObject) langObj;
+				Language lang = new Language(
+						jsonLangObj.get("name").toString(),
+						jsonLangObj.get("code").toString());
+				languages.add(lang);
 			}
-			if (jsonObj.get("uuid") == null) {
-				throw new IOException("No UUID in the JSON file.");
-			}
-			if (jsonObj.get("name") == null) {
-				throw new IOException("No user name in the JSON file.");
-			}
-			user = new User(UUID.fromString(jsonObj.get("uuid").toString()),
-					jsonObj.get("name").toString(), languages);
-		} catch (org.json.simple.parser.ParseException e) {
-			throw new IOException(e);
 		}
+		if (jsonObj.get("uuid") == null) {
+			throw new IOException("No UUID in the JSON file.");
+		}
+		if (jsonObj.get("name") == null) {
+			throw new IOException("No user name in the JSON file.");
+		}
+		user = new User(UUID.fromString(jsonObj.get("uuid").toString()),
+				jsonObj.get("name").toString(), languages);
 		return user;
 	}
 
