@@ -1,6 +1,6 @@
 package au.edu.unimelb.aikuma.model;
 
-import android.net.wifi.WifiInfo;
+import au.edu.unimelb.aikuma.Aikuma;
 import au.edu.unimelb.aikuma.util.FileIO;
 import java.io.File;
 import java.util.Date;
@@ -59,6 +59,13 @@ public class Recording {
 	}
 
 	/**
+	 * androidID accessor
+	 */
+	public String getAndroidID() {
+		return androidID;
+	}
+
+	/**
 	 * originalUUID accessor.
 	 */
 	public UUID getOriginalUUID() throws Exception {
@@ -83,7 +90,6 @@ public class Recording {
 		}
 	}
 
-
 	/**
 	 * The minimal constructor
 	 */
@@ -91,6 +97,7 @@ public class Recording {
 		setUUID(UUID.randomUUID());
 		setDate(new Date());
 		setLanguages(new ArrayList<Language>());
+		setAndroidID(Aikuma.getAndroidID());
 	}
 
 	/**
@@ -105,6 +112,24 @@ public class Recording {
 		setName(name);
 		setDate(date);
 		setLanguages(new ArrayList<Language>());
+		setAndroidID(Aikuma.getAndroidID());
+	}
+
+	/**
+	 * Constructs a new Recording using a specified UUID, name, date,
+	 * languages and android ID
+	 *
+	 * @param	uuid	the recording's UUID.
+	 * @param	name	The recording's name.
+	 * @param	date	The date of creation.
+	 */
+	public Recording(UUID uuid, String name, Date date,
+			List<Language> languages, String androidID) {
+		setUUID(uuid);
+		setName(name);
+		setDate(date);
+		setLanguages(languages);
+		setAndroidID(androidID);
 	}
 
 	/**
@@ -116,27 +141,12 @@ public class Recording {
 	 * @param	date	The date of creation.
 	 */
 	public Recording(UUID uuid, String name, Date date,
-			List<Language> languages) {
+			List<Language> languages, String androidID, UUID originalUUID) {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
 		setLanguages(languages);
-	}
-
-	/**
-	 * Constructs a new Recording using a specified UUID, name, date,
-	 * languages and UUID.
-	 *
-	 * @param	uuid	the recording's UUID.
-	 * @param	name	The recording's name.
-	 * @param	date	The date of creation.
-	 */
-	public Recording(UUID uuid, String name, Date date,
-			List<Language> languages, UUID originalUUID) {
-		setUUID(uuid);
-		setName(name);
-		setDate(date);
-		setLanguages(languages);
+		setAndroidID(androidID);
 		setOriginalUUID(originalUUID);
 	}
 
@@ -170,13 +180,6 @@ public class Recording {
 	}
 
 	/**
-	 * originalUUID mutator.
-	 */
-	private void setOriginalUUID(UUID originalUUID) {
-		this.originalUUID = originalUUID;
-	}
-
-	/**
 	 * languages mutator.
 	 */
 	private void setLanguages(List<Language> languages) {
@@ -200,6 +203,24 @@ public class Recording {
 					"A language for the recording cannot be null");
 		}
 		this.languages.add(language);
+	}
+
+	/**
+	 * androidID mutator
+	 */
+	private void setAndroidID(String androidID) {
+		if (androidID == null) {
+			throw new IllegalArgumentException(
+					"The androidID for the recording cannot be null");
+		}
+		this.androidID = androidID;
+	}
+
+	/**
+	 * originalUUID mutator.
+	 */
+	private void setOriginalUUID(UUID originalUUID) {
+		this.originalUUID = originalUUID;
 	}
 
 	/**
@@ -230,13 +251,18 @@ public class Recording {
 	private Date date;
 
 	/**
-	 * The UUID of the original of the recording if it is a respeaking.
-	 */
-	private UUID originalUUID;
-
-	/**
 	 * The languages of the recording.
 	 */
 	private List<Language> languages;
+
+	/**
+	 * The Android ID of the device that the recording was made on.
+	 */
+	private String androidID;
+
+	/**
+	 * The UUID of the original of the recording if it is a respeaking.
+	 */
+	private UUID originalUUID;
 
 }
