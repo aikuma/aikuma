@@ -57,7 +57,7 @@ public final class FileIO {
 	}
 
 	/**
-	 * Takes a file path (relative to the bold directory or absolute ) and some
+	 * Takes a file path (relative to the bold directory or absolute) and some
 	 * data and writes the data into the file in the bold directory in external
 	 * storage.
 	 *
@@ -89,6 +89,21 @@ public final class FileIO {
 	 */
 	public static void write(File path, String data) throws IOException {
 		FileUtils.writeStringToFile(path, data, Charsets.UTF_8);
+	}
+
+	/**
+	 * Takes a File representation of a path and a JSONObject and writes that
+	 * JSONObject to the file.
+	 *
+	 * @param	path	The File where the JSONObject will be written.
+	 * @param	jsonObj	The JSONObject to be written.
+	 */
+	public static void writeJSONObject(File path, JSONObject jsonObj)
+			throws IOException {
+		StringWriter stringWriter = new StringWRiter();
+		jsonObj.writeJSONString(stringWriter);
+		String jsonStr = stringWriter.toString();
+		write(path, jsonStr);
 	}
 
 	/**
