@@ -29,14 +29,14 @@ public class Language implements Parcelable {
 	/**
 	 * Name mutator
 	 */
-	public void setName(String name) {
+	private void setName(String name) {
 		this.name = name;
 	}
 
 	/**
 	 * Code mutator
 	 */
-	public void setCode(String code) {
+	private void setCode(String code) {
 		this.code = code;
 	}
 
