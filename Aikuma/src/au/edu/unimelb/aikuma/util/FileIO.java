@@ -157,35 +157,6 @@ public final class FileIO {
 	}
 
 	/**
-	 * Reads the recordings from file.
-	 *
-	 * @return	recordings	A list of all the recordings in the bold directory;
-	 * null if something went wrong.
-	 */
-	 /*
-	public static List<Recording> readRecordings() {
-		// Get an array of all the UUIDs from the "users" directory
-		JSONFilenameFilter fnf = new JSONFilenameFilter();
-		List<String> recordingFilenames =
-				Arrays.asList(getRecordingsPath().list(fnf));
-
-		// Get the user data from the metadata.json files
-		List<Recording> recordings = new ArrayList<Recording>();
-		for (String recordingFilename : recordingFilenames) {
-			try {
-				recordings.add(readRecording(new File(FileIO.getRecordingsPath(),
-						recordingFilename)));
-			} catch (IOException e) {
-				// Couldn't read that recording because the JSON file wasn't
-				// formatted well. Oh well, we just won't add it.
-			}
-		}
-
-		return recordings;
-	}
-	*/
-
-	/**
 	 * Loads the ISO 639-3 language codes from the original text file.
 	 *
 	 * @param	resources	resources so that the iso 639-3 text file can be

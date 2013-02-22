@@ -6,6 +6,7 @@ import au.edu.unimelb.aikuma.util.StandardDateFormat;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -306,6 +307,30 @@ public class Recording {
 		Recording recording = new Recording(
 				uuid, name, date, languages, androidID, originalUUID);
 		return recording;
+	}
+
+	/**
+	 * Read all recordings from file
+	 *
+	 * @return	A list of the users found in the users directory.
+	 */
+	public static List<Recording> readAll() {
+		// Get a list of all the UUIDs of users in the "recordings" directory.
+		List<String> recordingUUIDs =
+				Arrays.asList(getRecordingsPath().list());
+
+		// Get the recordings data from the metadata.json files.
+		List<Recording> recordings = new ArrayList<Recording>();
+		for (String recordingUUID : recordingUUIDs) {
+			try {
+				recordings.add(Recording.read(UUID.fromString(recordingUUID)));
+			} catch (IOException e) {
+				// Couldn't read that recording for whateve rreason (perhaps
+				// json file wasn't formatted correctly). Let's just ignore
+				// that user.
+			}
+		}
+		return recordings;
 	}
 
 	/**

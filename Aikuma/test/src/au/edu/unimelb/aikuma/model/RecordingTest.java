@@ -161,9 +161,43 @@ public class RecordingTest extends AndroidTestCase {
 		String androidID = Aikuma.getAndroidID();
 		Recording recording = new Recording(
 				uuid, "A name", date, languages, androidID, UUID.randomUUID());
-		recording.write();
-		assertEquals(recording, Recording.read(uuid));
-		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
+		new File(FileIO.getAppRootPath(), "recordings/" + recording.getUUID() +
+				"/metadata.json").delete();
+	}
+
+	/**
+	 * Ensures Recording.readAll() functions correctly.
+	 */
+	public void testReadAll() throws IOException {
+		// Create the first Recording.
+		UUID uuid = UUID.randomUUID();
+		Date date = new Date();
+		List<Language> languages = new ArrayList<Language>();
+		String androidID = Aikuma.getAndroidID();
+		Recording recording1 =
+				new Recording(uuid, null, date, languages, androidID, null);
+		recording1.write();
+
+		// Create the second Recording.
+		uuid = UUID.randomUUID();
+		date = new Date();
+		languages = new ArrayList<Language>();
+		Language lang1 = new Language("Usarufa", "usa");
+		Language lang2 = new Language("English", "eng");
+		languages.add(lang1);
+		languages.add(lang2);
+		androidID = Aikuma.getAndroidID();
+		Recording recording2 = new Recording(
+				uuid, "A name", date, languages, androidID, UUID.randomUUID());
+		recording2.write();
+
+		List<Recording> recordings = Recording.readAll();
+		assertTrue(recordings.contains(recording1));
+		assertTrue(recordings.contains(recording2));
+
+		new File(FileIO.getAppRootPath(), "recordings/" + recording1.getUUID() +
+				"/metadata.json").delete();
+		new File(FileIO.getAppRootPath(), "recordings/" + recording2.getUUID() +
 				"/metadata.json").delete();
 	}
 
