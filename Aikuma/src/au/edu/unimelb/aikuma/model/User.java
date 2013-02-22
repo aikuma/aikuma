@@ -195,17 +195,8 @@ public class User {
 		JSONObject jsonObj = FileIO.readJSONObject(
 				new File(getUsersPath(), uuid.toString() +
 				"/metadata.json"));
-		JSONArray languagesArray = (JSONArray) jsonObj.get("languages");
-		List<Language> languages = new ArrayList<Language>();
-		if (languagesArray != null) {
-			for (Object langObj : languagesArray) {
-				JSONObject jsonLangObj = (JSONObject) langObj;
-				Language lang = new Language(
-						jsonLangObj.get("name").toString(),
-						jsonLangObj.get("code").toString());
-				languages.add(lang);
-			}
-		}
+		List<Language> languages =
+				Language.decodeJSONArray((JSONArray) jsonObj.get("languages"));
 		if (jsonObj.get("uuid") == null) {
 			throw new IOException("No UUID in the JSON file.");
 		}
