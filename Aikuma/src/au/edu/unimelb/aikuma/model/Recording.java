@@ -283,20 +283,33 @@ public class Recording {
 				new File(getRecordingsPath(), uuid.toString() + "/metadata.json"));
 		// Don't have to worry about these being null
 		UUID readUUID = UUID.fromString((String) jsonObj.get("uuid"));
+		if (readUUID == null) {
+			throw new IOException("Null UUID in the JSON file.");
+		}
 		if (!readUUID.equals(uuid)) {
 			throw new IOException("UUID of the filename is different to UUID" +
 					"in the file's JSON");
 		}
 		String name = (String) jsonObj.get("name");
+		String dateString = (String) jsonObj.get("date");
+		if (dateString == null) {
+			throw new IOException("Null date in the JSON file.");
+		}
 		Date date;
 		try {
-			date = new StandardDateFormat().parse((String) jsonObj.get("date"));
+			date = new StandardDateFormat().parse(dateString);
 		} catch (ParseException e) {
 			throw new IOException(e);
 		}
-		List<Language> languages = Language.decodeJSONArray((JSONArray)
-				jsonObj.get("languages"));
+		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
+		if (languageArray == null) {
+			throw new IOException("Null languages in the JSON file.");
+		}
+		List<Language> languages = Language.decodeJSONArray(languageArray);
 		String androidID = (String) jsonObj.get("androidID");
+		if (androidID == null) {
+			throw new IOException("Null androidID in the JSON file.");
+		}
 		UUID originalUUID;
 
 		if (jsonObj.get("originalUUID") == null) {
