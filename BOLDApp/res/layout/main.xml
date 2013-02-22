@@ -80,13 +80,12 @@
 				android:src="@drawable/main_record"
 				android:onClick="goToRecord"
 			/>
-			<ImageButton
+			<Button
 				android:id="@+id/goToRespeak"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_weight="1"
-				android:scaleType="centerInside"
-				android:src="@drawable/main_respeak"
+				android:text="@string/respeak1"
 				android:onClick="goToRespeak"
 			/>
 		</LinearLayout>
@@ -107,12 +106,12 @@
 				android:onClick="goToListen"
 			/>
 			<Button
-				android:id="@+id/Sync"
+				android:id="@+id/goToRespeak2"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_weight="1"
-				android:text="@string/sync"
-				android:onClick="syncActivity"
+				android:text="@string/respeak2"
+				android:onClick="goToRespeak2"
 			/>
 			<!--
 			<ImageButton

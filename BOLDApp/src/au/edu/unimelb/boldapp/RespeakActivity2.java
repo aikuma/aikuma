@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import android.app.Activity;
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
@@ -21,8 +20,6 @@ import android.widget.Toast;
 import au.edu.unimelb.aikuma.audio.Respeaker;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
-import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
-import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
 
 /**
  * The activity that allows one to respeak audio.
@@ -30,12 +27,7 @@ import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class RespeakActivity extends Activity {
-
-	/**
-	 * The AudioManager used to enforce the use of the earpiece speaker
-	 */
-	private AudioManager audioManager;  
+public class RespeakActivity2 extends Activity {
 
 	/**
 	 * Indicates whether the respeaking has been started already
@@ -63,22 +55,6 @@ public class RespeakActivity extends Activity {
 	protected Respeaker respeaker;
 
 	/**
-	 * Proximity detector.
-	 */
-	protected ProximityDetector proximityDetector;
-
-	/**
-	 * Indicates whether audio is being recorded
-	 */
-	//private Boolean recording;
-	/**
-	 * Instance of the recorder class that offers methods to record.
-	 */
-	//private Recorder recorder;
-	//private Boolean alreadyStarted;
-
-
-	/**
 	 * Called when the activity starts.
 	 *
 	 * Generates a UUID for the recording, prepares the file and creates a
@@ -90,17 +66,15 @@ public class RespeakActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-
 		//Get the original from the intent
 		Intent intent = getIntent();
 		UUID originalUUID = (UUID) intent.getExtras().get("recordingUUID");
 		this.original = GlobalState.getRecordingMap().get(originalUUID);
-		setContentView(R.layout.respeak);
+		setContentView(R.layout.respeak2);
 
 		startedRespeaking = false;
 		respeaking = false;
-		respeaker = new Respeaker(new ThresholdSpeechAnalyzer(88, 3,
-				new AverageRecognizer(60, 60)));
+		respeaker = new Respeaker();
 
 		this.uuid = UUID.randomUUID();
 
@@ -112,21 +86,72 @@ public class RespeakActivity extends Activity {
 				new File(FileIO.getRecordingsPath(), uuid.toString() +
 				".map").toString());
 
+		installBehaviour(savedInstanceState);
 
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _player) {
 				ImageButton respeakButton = (ImageButton) 
-						findViewById(R.id.Respeak);
+						findViewById(R.id.RespeakButton);
 				ImageButton pauseButton = (ImageButton) 
-						findViewById(R.id.Pause);
+						findViewById(R.id.PlayButton);
 				pauseButton.setVisibility(View.INVISIBLE);
 				respeakButton.setVisibility(View.INVISIBLE);
-				//respeaker.stop();
 				respeaker.setFinishedPlaying(true);
 				respeaker.listenAfterFinishedPlaying();
 			}
 		});
+	}
+
+	private void installBehaviour(Bundle savedInstanceState) {
+		final ImageButton respeakButton = (ImageButton)
+				findViewById(R.id.RespeakButton);
+		final ImageButton playButton = (ImageButton)
+				findViewById(R.id.PlayButton);
+
+		playButton.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View view, MotionEvent event) {
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					if (!respeaker.getFinishedPlaying()) {
+						respeaker.play();
+						Log.i("RespeakActivity2", "down");
+					}
+				}
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					Log.i("RespeakActivity2", "up");
+					respeaker.pause();
+				}
+				return false;
+			}
+		});
+
+		respeakButton.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View view, MotionEvent event) {
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					respeaker.listenToSpeaker();
+					Log.i("RespeakActivity2", "respeak down");
+				}
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					Log.i("RespeakActivity2", "respeak up");
+					respeaker.pause();
+				}
+				return false;
+			}
+		});
+		/*
+		playButton.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View view) {
+				if (!respeaker.getFinishedPlaying()) {
+					respeaker.listen();
+					Log.i("RespeakActivity2", "down");
+				}
+				return false;
+			}
+		});
+		*/
 	}
 
 	/**
@@ -136,36 +161,16 @@ public class RespeakActivity extends Activity {
 	public void onStop() {
 		//recorder.stop();
 		super.onStop();
-		Log.i("RespeakActivity", "onStop");
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		Log.i("RespeakActivity", "onpause");
-		this.proximityDetector.stop();
-		audioManager.setMode(AudioManager.MODE_NORMAL); 
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		//Make sound play through the earpiece.
-		audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);  
-		audioManager.setMode(AudioManager.MODE_IN_CALL); 
-		audioManager.setSpeakerphoneOn(false); 
-
-		this.proximityDetector =
-				new ProximityDetector( RespeakActivity.this, 2.0f) {
-					public void near(float distance) {
-							respeak();
-					}
-					public void far(float distance) {
-							pause();
-					}
-				};
-		this.proximityDetector.start();
 	}
 
 	/**
@@ -177,9 +182,9 @@ public class RespeakActivity extends Activity {
 		respeaker.stop();
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".map");
-		RespeakActivity.this.finish();
+		RespeakActivity2.this.finish();
 		Intent intent = new Intent(this, RecordingSelectionActivity.class);
-		intent.putExtra("activity", "RespeakActivity");
+		intent.putExtra("activity", "RespeakActivity2");
 		startActivity(intent);
 	}
 
@@ -192,63 +197,5 @@ public class RespeakActivity extends Activity {
 		startActivity(intent);
 		this.finish();
 	}
-
-	public void respeak(View view) {
-		respeak();
-	}
-
-	public void pause(View view) {
-		pause();
-	}
-
-	/**
-	 * Start/resume the respeaking of audio.
-	 *
-	 * @param	button	The button that was clicked
-	 */
-	public void respeak() {
-		if (!respeaker.getFinishedPlaying()) {
-			ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
-			respeaking = true;
-			ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
-			pauseButton.setVisibility(View.VISIBLE);
-			respeakButton.setVisibility(View.INVISIBLE);
-			if (startedRespeaking) {
-				respeaker.resume();
-			} else {
-				startedRespeaking = true;
-				respeaker.listen();
-			}
-		}
-	}
-
-	/**
-	 * Pause the respeaking
-	 *
-	 * @param	button	The pause button that was clicked.
-	 */
-	 public void pause() {
-		if (!respeaker.getFinishedPlaying()) {
-			ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
-			respeaking = false;
-			ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
-			respeakButton.setVisibility(View.VISIBLE);
-			pauseButton.setVisibility(View.INVISIBLE);
-			respeaker.pause();
-		}
-	 }
-
-	/**
-	 * If phone is close to the ear, any touch event will be ignored.
-	 */
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent event) {
-		if (proximityDetector.isNear()) {
-			return false;
-		} else {
-			return super.dispatchTouchEvent(event);
-		}
-	}
-
 
 }

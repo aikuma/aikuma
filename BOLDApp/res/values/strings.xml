@@ -18,4 +18,6 @@
 	<string name="edit_router_username">Router user name</string>
 	<string name="edit_password">Password</string>
 	<string name="url">lp20.org/aikuma</string>
+	<string name="respeak1">Respeak 1</string>
+	<string name="respeak2">Respeak 2</string>
 </resources>

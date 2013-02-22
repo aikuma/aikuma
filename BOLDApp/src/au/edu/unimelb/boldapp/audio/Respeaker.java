@@ -64,14 +64,24 @@ public class Respeaker extends Recorder {
 
 	/** Default constructor. */
 	public Respeaker() {
-		super(new ThresholdSpeechAnalyzer(88, 3,
-				new AverageRecognizer(60, 60)));
+		super();
 		setFinishedPlaying(false);
 		this.player = new Player();
 		//0.18 is the highest volume that can be set without causing the
 		//feedback problem for the respeak activity on the cheap huawei phones.
 		//this.player.setVolume(0.18f,0.18f);
 	}
+
+	/** Default constructor. */
+	public Respeaker(ThresholdSpeechAnalyzer analyzer) {
+		super(analyzer);
+		setFinishedPlaying(false);
+		this.player = new Player();
+		//0.18 is the highest volume that can be set without causing the
+		//feedback problem for the respeak activity on the cheap huawei phones.
+		//this.player.setVolume(0.18f,0.18f);
+	}
+
   
 	/** Prepare the respeaker by setting a source file and a target file. */
 	public void prepare(String sourceFilename, String targetFilename,
@@ -96,12 +106,20 @@ public class Respeaker extends Recorder {
 		}
 	}
 
+	public void listenToSpeaker() {
+		super.listen();
+	}
+
 	/**
 	 * To listen to the final piece of annotation after playing of the original
 	 * has been completed.
 	 */
 	public void listenAfterFinishedPlaying() {
 		super.listen();
+	}
+
+	public void play() {
+		player.play();
 	}
 
 	@Override

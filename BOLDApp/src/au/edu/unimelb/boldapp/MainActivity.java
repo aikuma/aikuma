@@ -113,9 +113,10 @@ public class MainActivity extends Activity {
 	 *
 	 * @param	view	The button that was clicked.
 	 */
-	public void syncActivity(View view) {
+	public void goToRespeak2(View view) {
 		//SyncForActivity.sync(this);
-		Intent intent = new Intent(this, SyncActivity.class);
+		Intent intent = new Intent(this, RecordingSelectionActivity.class);
+		intent.putExtra("activity", "RespeakActivity2");
 		startActivity(intent);
 
 	}
