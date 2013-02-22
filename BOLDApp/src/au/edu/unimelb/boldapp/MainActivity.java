@@ -120,4 +120,9 @@ public class MainActivity extends Activity {
 		startActivity(intent);
 
 	}
+
+	public void sync(View view) {
+		Intent intent = new Intent(this, SyncActivity.class);
+		startActivity(intent);
+	}
 }
