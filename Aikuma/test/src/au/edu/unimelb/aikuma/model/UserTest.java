@@ -202,8 +202,6 @@ public class UserTest extends TestCase {
 		user2.write();
 
 		List<User> userList = User.readAll();
-		// Ensure that the poorly formed user doesn't somehow get read.
-		assertEquals(2, userList.size());
 		// Ensure the other two are actually the corresponding users.
 		assertTrue(userList.contains(user1));
 		assertTrue(userList.contains(user2));
