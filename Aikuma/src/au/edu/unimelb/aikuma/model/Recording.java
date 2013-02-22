@@ -2,12 +2,17 @@ package au.edu.unimelb.aikuma.model;
 
 import au.edu.unimelb.aikuma.Aikuma;
 import au.edu.unimelb.aikuma.util.FileIO;
+import au.edu.unimelb.aikuma.util.StandardDateFormat;
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
 
 /**
  * The class that stores the metadata of a recording, including it's UUID,
@@ -235,6 +240,73 @@ public class Recording {
 		return path;
 	}
 
+	/**
+	 * Encode the Recording as a corresponding JSONObject.
+	 *
+	 * @return	A JSONObject instance representing the Recording;
+	 */
+	private JSONObject encode() {
+		JSONObject encodedRecording = new JSONObject();
+		encodedRecording.put("uuid", this.uuid.toString());
+		encodedRecording.put("name", (String) this.name);
+		encodedRecording.put("date", new StandardDateFormat().format(this.date));
+		encodedRecording.put("languages", Language.encodeList(languages));
+		encodedRecording.put("androidID", this.androidID);
+		if (this.originalUUID == null) {
+			encodedRecording.put("originalUUID", null);
+		} else {
+			encodedRecording.put("originalUUID", this.originalUUID.toString());
+		}
+		return encodedRecording;
+	}
+
+	/**
+	 * Write the Recording to file in a subdirectory of the recordings
+	 * directory named as <uuid>.json
+	 */
+	public void write() throws IOException {
+		JSONObject encodedRecording = this.encode();
+
+		FileIO.writeJSONObject(new File(
+				getRecordingsPath(), this.getUUID().toString() + "/metadata.json"),
+				encodedRecording);
+	}
+
+	/**
+	 * Read a recording from the file containing JSON describing the Recording
+	 *
+	 * @param	uuid	The uuid of the recording to be read.
+	 */
+	public static Recording read(UUID uuid) throws IOException {
+		JSONObject jsonObj = FileIO.readJSONObject(
+				new File(getRecordingsPath(), uuid.toString() + "/metadata.json"));
+		// Don't have to worry about these being null
+		UUID readUUID = UUID.fromString((String) jsonObj.get("uuid"));
+		if (!readUUID.equals(uuid)) {
+			throw new IOException("UUID of the filename is different to UUID" +
+					"in the file's JSON");
+		}
+		String name = (String) jsonObj.get("name");
+		Date date;
+		try {
+			date = new StandardDateFormat().parse((String) jsonObj.get("date"));
+		} catch (ParseException e) {
+			throw new IOException(e);
+		}
+		List<Language> languages = Language.decodeJSONArray((JSONArray)
+				jsonObj.get("languages"));
+		String androidID = (String) jsonObj.get("androidID");
+		UUID originalUUID;
+
+		if (jsonObj.get("originalUUID") == null) {
+			originalUUID = null;
+		} else {
+			originalUUID = UUID.fromString((String) jsonObj.get("originalUUID"));
+		}
+		Recording recording = new Recording(
+				uuid, name, date, languages, androidID, originalUUID);
+		return recording;
+	}
 
 	/**
 	 * The recording's UUID.

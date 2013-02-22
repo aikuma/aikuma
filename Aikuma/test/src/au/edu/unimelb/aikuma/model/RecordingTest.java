@@ -1,8 +1,11 @@
 package au.edu.unimelb.aikuma.model;
 
+import au.edu.unimelb.aikuma.util.FileIO;
 import au.edu.unimelb.aikuma.Aikuma;
 import android.util.Log;
 import android.test.AndroidTestCase;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -106,6 +109,62 @@ public class RecordingTest extends AndroidTestCase {
 					e.getMessage());
 		}
 		assertTrue(caught);
+	}
+
+	/**
+	 * Ensures Recording.write() and Recording.read() are inverse functions.
+	 */
+	public void testWriteRead1() throws IOException {
+		UUID uuid = UUID.randomUUID();
+		Date date = new Date();
+		List<Language> languages = new ArrayList<Language>();
+		String androidID = Aikuma.getAndroidID();
+		Recording recording =
+				new Recording(uuid, null, date, languages, androidID, null);
+		recording.write();
+		assertEquals(recording, Recording.read(uuid));
+		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
+				"/metadata.json").delete();
+	}
+
+	/**
+	 * Ensures Recording.write() and Recording.read() are inverse functions.
+	 */
+	public void testWriteRead2() throws IOException {
+		UUID uuid = UUID.randomUUID();
+		Date date = new Date();
+		List<Language> languages = new ArrayList<Language>();
+		Language lang1 = new Language("Usarufa", "usa");
+		Language lang2 = new Language("English", "eng");
+		languages.add(lang1);
+		languages.add(lang2);
+		String androidID = Aikuma.getAndroidID();
+		Recording recording =
+				new Recording(uuid, null, date, languages, androidID, null);
+		recording.write();
+		assertEquals(recording, Recording.read(uuid));
+		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
+				"/metadata.json").delete();
+	}
+
+	/**
+	 * Ensures Recording.write() and Recording.read() are inverse functions.
+	 */
+	public void testWriteRead3() throws IOException {
+		UUID uuid = UUID.randomUUID();
+		Date date = new Date();
+		List<Language> languages = new ArrayList<Language>();
+		Language lang1 = new Language("Usarufa", "usa");
+		Language lang2 = new Language("English", "eng");
+		languages.add(lang1);
+		languages.add(lang2);
+		String androidID = Aikuma.getAndroidID();
+		Recording recording = new Recording(
+				uuid, "A name", date, languages, androidID, UUID.randomUUID());
+		recording.write();
+		assertEquals(recording, Recording.read(uuid));
+		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
+				"/metadata.json").delete();
 	}
 
 }
