@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import org.apache.commons.io.FileUtils;
 
 /**
  * A class to test model.Recording, the representation of a recording's
@@ -123,8 +124,8 @@ public class RecordingTest extends AndroidTestCase {
 				new Recording(uuid, null, date, languages, androidID, null);
 		recording.write();
 		assertEquals(recording, Recording.read(uuid));
-		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
-				"/metadata.json").delete();
+		FileUtils.deleteDirectory(
+				new File(FileIO.getAppRootPath(), "recordings/" + uuid));
 	}
 
 	/**
@@ -143,8 +144,8 @@ public class RecordingTest extends AndroidTestCase {
 				new Recording(uuid, null, date, languages, androidID, null);
 		recording.write();
 		assertEquals(recording, Recording.read(uuid));
-		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
-				"/metadata.json").delete();
+		FileUtils.deleteDirectory(
+				new File(FileIO.getAppRootPath(), "recordings/" + uuid));
 	}
 
 	/**
@@ -161,8 +162,8 @@ public class RecordingTest extends AndroidTestCase {
 		String androidID = Aikuma.getAndroidID();
 		Recording recording = new Recording(
 				uuid, "A name", date, languages, androidID, UUID.randomUUID());
-		new File(FileIO.getAppRootPath(), "recordings/" + recording.getUUID() +
-				"/metadata.json").delete();
+		FileUtils.deleteDirectory(
+				new File(FileIO.getAppRootPath(), "recordings/" + uuid));
 	}
 
 	/**
@@ -195,10 +196,12 @@ public class RecordingTest extends AndroidTestCase {
 		assertTrue(recordings.contains(recording1));
 		assertTrue(recordings.contains(recording2));
 
-		new File(FileIO.getAppRootPath(), "recordings/" + recording1.getUUID() +
-				"/metadata.json").delete();
-		new File(FileIO.getAppRootPath(), "recordings/" + recording2.getUUID() +
-				"/metadata.json").delete();
+		FileUtils.deleteDirectory(
+				new File(FileIO.getAppRootPath(), "recordings/" +
+				recording1.getUUID()));
+		FileUtils.deleteDirectory(
+				new File(FileIO.getAppRootPath(), "recordings/" +
+				recording2.getUUID()));
 	}
 
 }

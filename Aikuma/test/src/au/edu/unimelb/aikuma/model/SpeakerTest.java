@@ -163,6 +163,8 @@ public class SpeakerTest extends AndroidTestCase {
 		speaker.write();
 		Speaker readSpeaker = Speaker.read(speaker.getUUID());
 		assertEquals(speaker, readSpeaker);
+		FileUtils.deleteDirectory(new File(FileIO.getAppRootPath(), "speakers/" +
+				speaker.getUUID()));
 	}
 
 	/**
@@ -199,6 +201,5 @@ public class SpeakerTest extends AndroidTestCase {
 				speaker1.getUUID() + "/metadata.json").getParentFile());
 		FileUtils.deleteDirectory(new File(FileIO.getAppRootPath(), "speakers/" + 
 				speaker2.getUUID() + "/metadata.json").getParentFile());
-
 	}
 }
