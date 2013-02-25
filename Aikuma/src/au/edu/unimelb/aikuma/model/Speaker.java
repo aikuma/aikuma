@@ -32,6 +32,10 @@ public class Speaker {
 
 	/**
 	 * The complete constructor
+	 *
+	 * @param	uuid	The UUID of the speaker
+	 * @param	name	The name of the speaker
+	 * @param	languages	A list of languages of the speaker.
 	 */
 	public Speaker(UUID uuid, String name, List<Language> languages) {
 		setUUID(uuid);
@@ -136,6 +140,10 @@ public class Speaker {
 			throw new IOException("Null UUID in the JSON file.");
 		}
 		UUID readUUID = UUID.fromString(uuidString);
+		if (!readUUID.equals(uuid)) {
+			throw new IOException("UUID of the filename is different to UUID" +
+					"in the file's JSON");
+		}
 		String name = (String) jsonObj.get("name");
 		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
 		if (languageArray == null) {

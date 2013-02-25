@@ -18,8 +18,71 @@ import org.json.simple.JSONArray;
 /**
  * The class that stores the metadata of a recording, including it's UUID,
  * creator's UUID, name, date, originalUUID (if applicable), and languages.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class Recording {
+
+	/**
+	 * The minimal constructor
+	 */
+	public Recording() {
+		setUUID(UUID.randomUUID());
+		setDate(new Date());
+		setLanguages(new ArrayList<Language>());
+		setAndroidID(Aikuma.getAndroidID());
+	}
+
+	/**
+	 * Constructs a new Recording using a specified UUID, name and date.
+	 *
+	 * @param	uuid	the recording's UUID.
+	 * @param	name	The recording's name.
+	 * @param	date	The date of creation.
+	 */
+	public Recording(UUID uuid, String name, Date date) {
+		setUUID(uuid);
+		setName(name);
+		setDate(date);
+		setLanguages(new ArrayList<Language>());
+		setAndroidID(Aikuma.getAndroidID());
+	}
+
+	/**
+	 * Constructs a new Recording using a specified UUID, name, date,
+	 * languages and android ID
+	 *
+	 * @param	uuid	the recording's UUID.
+	 * @param	name	The recording's name.
+	 * @param	date	The date of creation.
+	 */
+	public Recording(UUID uuid, String name, Date date,
+			List<Language> languages, String androidID) {
+		setUUID(uuid);
+		setName(name);
+		setDate(date);
+		setLanguages(languages);
+		setAndroidID(androidID);
+	}
+
+	/**
+	 * Constructs a new Recording using a specified UUID, name, date,
+	 * languages and UUID.
+	 *
+	 * @param	uuid	the recording's UUID.
+	 * @param	name	The recording's name.
+	 * @param	date	The date of creation.
+	 */
+	public Recording(UUID uuid, String name, Date date,
+			List<Language> languages, String androidID, UUID originalUUID) {
+		setUUID(uuid);
+		setName(name);
+		setDate(date);
+		setLanguages(languages);
+		setAndroidID(androidID);
+		setOriginalUUID(originalUUID);
+	}
 
 	/**
 	 * UUID accessor.
@@ -98,64 +161,133 @@ public class Recording {
 	}
 
 	/**
-	 * The minimal constructor
+	 * Encode the Recording as a corresponding JSONObject.
+	 *
+	 * @return	A JSONObject instance representing the Recording;
 	 */
-	public Recording() {
-		setUUID(UUID.randomUUID());
-		setDate(new Date());
-		setLanguages(new ArrayList<Language>());
-		setAndroidID(Aikuma.getAndroidID());
+	public JSONObject encode() {
+		JSONObject encodedRecording = new JSONObject();
+		encodedRecording.put("uuid", this.uuid.toString());
+		encodedRecording.put("name", this.name);
+		encodedRecording.put("date", new StandardDateFormat().format(this.date));
+		encodedRecording.put("languages", Language.encodeList(languages));
+		encodedRecording.put("androidID", this.androidID);
+		if (this.originalUUID == null) {
+			encodedRecording.put("originalUUID", null);
+		} else {
+			encodedRecording.put("originalUUID", this.originalUUID.toString());
+		}
+		return encodedRecording;
 	}
 
 	/**
-	 * Constructs a new Recording using a specified UUID, name and date.
-	 *
-	 * @param	uuid	the recording's UUID.
-	 * @param	name	The recording's name.
-	 * @param	date	The date of creation.
+	 * Write the Recording to file in a subdirectory of the recordings
+	 * directory named as <uuid>.json
 	 */
-	public Recording(UUID uuid, String name, Date date) {
-		setUUID(uuid);
-		setName(name);
-		setDate(date);
-		setLanguages(new ArrayList<Language>());
-		setAndroidID(Aikuma.getAndroidID());
+	public void write() throws IOException {
+		JSONObject encodedRecording = this.encode();
+
+		FileIO.writeJSONObject(new File(
+				getRecordingsPath(), this.getUUID().toString() + "/metadata.json"),
+				encodedRecording);
 	}
 
 	/**
-	 * Constructs a new Recording using a specified UUID, name, date,
-	 * languages and android ID
+	 * Read a recording from the file containing JSON describing the Recording
 	 *
-	 * @param	uuid	the recording's UUID.
-	 * @param	name	The recording's name.
-	 * @param	date	The date of creation.
+	 * @param	uuid	The uuid of the recording to be read.
 	 */
-	public Recording(UUID uuid, String name, Date date,
-			List<Language> languages, String androidID) {
-		setUUID(uuid);
-		setName(name);
-		setDate(date);
-		setLanguages(languages);
-		setAndroidID(androidID);
+	public static Recording read(UUID uuid) throws IOException {
+		JSONObject jsonObj = FileIO.readJSONObject(
+				new File(getRecordingsPath(), uuid.toString() + "/metadata.json"));
+		String uuidString = (String) jsonObj.get("uuid");
+		if (uuidString == null) {
+			throw new IOException("Null UUID in the JSON file.");
+		}
+		UUID readUUID = UUID.fromString(uuidString);
+		if (!readUUID.equals(uuid)) {
+			throw new IOException("UUID of the filename is different to UUID" +
+					"in the file's JSON");
+		}
+		String name = (String) jsonObj.get("name");
+		String dateString = (String) jsonObj.get("date");
+		if (dateString == null) {
+			throw new IOException("Null date in the JSON file.");
+		}
+		Date date;
+		try {
+			date = new StandardDateFormat().parse(dateString);
+		} catch (ParseException e) {
+			throw new IOException(e);
+		}
+		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
+		if (languageArray == null) {
+			throw new IOException("Null languages in the JSON file.");
+		}
+		List<Language> languages = Language.decodeJSONArray(languageArray);
+		String androidID = (String) jsonObj.get("androidID");
+		if (androidID == null) {
+			throw new IOException("Null androidID in the JSON file.");
+		}
+		UUID originalUUID;
+
+		if (jsonObj.get("originalUUID") == null) {
+			originalUUID = null;
+		} else {
+			originalUUID = UUID.fromString((String) jsonObj.get("originalUUID"));
+		}
+		Recording recording = new Recording(
+				uuid, name, date, languages, androidID, originalUUID);
+		return recording;
 	}
 
 	/**
-	 * Constructs a new Recording using a specified UUID, name, date,
-	 * languages and UUID.
+	 * Read all recordings from file
 	 *
-	 * @param	uuid	the recording's UUID.
-	 * @param	name	The recording's name.
-	 * @param	date	The date of creation.
+	 * @return	A list of the users found in the users directory.
 	 */
-	public Recording(UUID uuid, String name, Date date,
-			List<Language> languages, String androidID, UUID originalUUID) {
-		setUUID(uuid);
-		setName(name);
-		setDate(date);
-		setLanguages(languages);
-		setAndroidID(androidID);
-		setOriginalUUID(originalUUID);
+	public static List<Recording> readAll() {
+		// Get a list of all the UUIDs of users in the "recordings" directory.
+		List<String> recordingUUIDs =
+				Arrays.asList(getRecordingsPath().list());
+
+		// Get the recordings data from the metadata.json files.
+		List<Recording> recordings = new ArrayList<Recording>();
+		for (String recordingUUID : recordingUUIDs) {
+			try {
+				recordings.add(Recording.read(UUID.fromString(recordingUUID)));
+			} catch (IOException e) {
+				// Couldn't read that recording for whateve rreason (perhaps
+				// json file wasn't formatted correctly). Let's just ignore
+				// that user.
+			}
+		}
+		return recordings;
 	}
+
+	/**
+	 * Compares the given object with the Recording, and returns true if the
+	 * Recordings uuid, name, date, languages, androidID and originalUUID are
+	 * equal
+	 *
+	 * @return	true if the uuid, name, date, languages, androidID and
+	 * originalUUID are equal; false otherwise.
+	 */
+	 public boolean equals(Object obj) {
+	 	if (obj == null) {return false;}
+		if (obj == this) {return true;}
+		if (obj.getClass() != getClass()) {return false;}
+		Recording rhs = (Recording) obj;
+		return new EqualsBuilder()
+				.append(uuid, rhs.uuid)
+				.append(name, rhs.name)
+				.append(date, rhs.date)
+				.append(languages, rhs.languages)
+				.append(androidID, rhs.androidID)
+				.append(originalUUID, rhs.originalUUID)
+				.isEquals();
+	 }
+
 
 	/**
 	 * UUID mutator.
@@ -241,110 +373,6 @@ public class Recording {
 		return path;
 	}
 
-	/**
-	 * Encode the Recording as a corresponding JSONObject.
-	 *
-	 * @return	A JSONObject instance representing the Recording;
-	 */
-	private JSONObject encode() {
-		JSONObject encodedRecording = new JSONObject();
-		encodedRecording.put("uuid", this.uuid.toString());
-		encodedRecording.put("name", (String) this.name);
-		encodedRecording.put("date", new StandardDateFormat().format(this.date));
-		encodedRecording.put("languages", Language.encodeList(languages));
-		encodedRecording.put("androidID", this.androidID);
-		if (this.originalUUID == null) {
-			encodedRecording.put("originalUUID", null);
-		} else {
-			encodedRecording.put("originalUUID", this.originalUUID.toString());
-		}
-		return encodedRecording;
-	}
-
-	/**
-	 * Write the Recording to file in a subdirectory of the recordings
-	 * directory named as <uuid>.json
-	 */
-	public void write() throws IOException {
-		JSONObject encodedRecording = this.encode();
-
-		FileIO.writeJSONObject(new File(
-				getRecordingsPath(), this.getUUID().toString() + "/metadata.json"),
-				encodedRecording);
-	}
-
-	/**
-	 * Read a recording from the file containing JSON describing the Recording
-	 *
-	 * @param	uuid	The uuid of the recording to be read.
-	 */
-	public static Recording read(UUID uuid) throws IOException {
-		JSONObject jsonObj = FileIO.readJSONObject(
-				new File(getRecordingsPath(), uuid.toString() + "/metadata.json"));
-		// Don't have to worry about these being null
-		UUID readUUID = UUID.fromString((String) jsonObj.get("uuid"));
-		if (readUUID == null) {
-			throw new IOException("Null UUID in the JSON file.");
-		}
-		if (!readUUID.equals(uuid)) {
-			throw new IOException("UUID of the filename is different to UUID" +
-					"in the file's JSON");
-		}
-		String name = (String) jsonObj.get("name");
-		String dateString = (String) jsonObj.get("date");
-		if (dateString == null) {
-			throw new IOException("Null date in the JSON file.");
-		}
-		Date date;
-		try {
-			date = new StandardDateFormat().parse(dateString);
-		} catch (ParseException e) {
-			throw new IOException(e);
-		}
-		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
-		if (languageArray == null) {
-			throw new IOException("Null languages in the JSON file.");
-		}
-		List<Language> languages = Language.decodeJSONArray(languageArray);
-		String androidID = (String) jsonObj.get("androidID");
-		if (androidID == null) {
-			throw new IOException("Null androidID in the JSON file.");
-		}
-		UUID originalUUID;
-
-		if (jsonObj.get("originalUUID") == null) {
-			originalUUID = null;
-		} else {
-			originalUUID = UUID.fromString((String) jsonObj.get("originalUUID"));
-		}
-		Recording recording = new Recording(
-				uuid, name, date, languages, androidID, originalUUID);
-		return recording;
-	}
-
-	/**
-	 * Read all recordings from file
-	 *
-	 * @return	A list of the users found in the users directory.
-	 */
-	public static List<Recording> readAll() {
-		// Get a list of all the UUIDs of users in the "recordings" directory.
-		List<String> recordingUUIDs =
-				Arrays.asList(getRecordingsPath().list());
-
-		// Get the recordings data from the metadata.json files.
-		List<Recording> recordings = new ArrayList<Recording>();
-		for (String recordingUUID : recordingUUIDs) {
-			try {
-				recordings.add(Recording.read(UUID.fromString(recordingUUID)));
-			} catch (IOException e) {
-				// Couldn't read that recording for whateve rreason (perhaps
-				// json file wasn't formatted correctly). Let's just ignore
-				// that user.
-			}
-		}
-		return recordings;
-	}
 
 	/**
 	 * The recording's UUID.
@@ -376,27 +404,5 @@ public class Recording {
 	 */
 	private UUID originalUUID;
 
-	/**
-	 * Compares the given object with the Recording, and returns true if the
-	 * Recordings uuid, name, date, languages, androidID and originalUUID are
-	 * equal
-	 *
-	 * @return	true if the uuid, name, date, languages, androidID and
-	 * originalUUID are equal; false otherwise.
-	 */
-	 public boolean equals(Object obj) {
-	 	if (obj == null) {return false;}
-		if (obj == this) {return true;}
-		if (obj.getClass() != getClass()) {return false;}
-		Recording rhs = (Recording) obj;
-		return new EqualsBuilder()
-				.append(uuid, rhs.uuid)
-				.append(name, rhs.name)
-				.append(date, rhs.date)
-				.append(languages, rhs.languages)
-				.append(androidID, rhs.androidID)
-				.append(originalUUID, rhs.originalUUID)
-				.isEquals();
-	 }
 
 }
