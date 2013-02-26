@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:orientation="vertical" android:baselineAligned="false" android:layout_height="fill_parent">
-    <au.edu.melbuni.boldapp.views.HorizontalListView android:layout_weight="0" android:id="@+id/timeline" android:layout_width="match_parent" android:layout_margin="4dip" android:layout_height="35dip"></au.edu.melbuni.boldapp.views.HorizontalListView>
-    <LinearLayout android:id="@+id/linearLayout3" android:layout_width="match_parent" android:baselineAligned="true" android:layout_height="match_parent">
-        <ImageButton android:layout_weight="1" android:layout_height="match_parent" android:layout_width="match_parent" android:layout_gravity="right" android:id="@+id/playButton" android:src="@drawable/button_play"></ImageButton>
-    </LinearLayout>
-</LinearLayout>
