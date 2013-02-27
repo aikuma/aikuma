@@ -3,11 +3,6 @@
 .metadata
 *.swp
 
-BOLDApp/tmp
-BOLDApp/bin
-BOLDApp/gen
-
-BOLDApp/mnt/sdcard/bold
 server/public/
 
 .DS_Store
@@ -16,10 +11,6 @@ server/public/
 local.properties
 
 /web/example
-
-BOLDApp/tests/bin
-BOLDApp/tests/gen
-BOLDApp/tests/local.properties
 
 **/bin/*
 **/gen/*
