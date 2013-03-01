@@ -21,6 +21,8 @@ import au.edu.unimelb.aikuma.audio.Respeaker;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
 
+import au.edu.unimelb.aikuma.audio.Player;
+
 /**
  * The activity that allows one to respeak audio.
  *
@@ -91,16 +93,17 @@ public class RespeakActivity2 extends Activity {
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _player) {
+				Log.i("brazil", "onCompletionListener called.");
 				ImageButton respeakButton = (ImageButton) 
 						findViewById(R.id.RespeakButton);
-				ImageButton pauseButton = (ImageButton) 
+				ImageButton playButton = (ImageButton) 
 						findViewById(R.id.PlayButton);
-				pauseButton.setVisibility(View.INVISIBLE);
-				respeakButton.setVisibility(View.INVISIBLE);
+				playButton.setVisibility(View.INVISIBLE);
 				respeaker.setFinishedPlaying(true);
 				respeaker.listenAfterFinishedPlaying();
 			}
 		});
+
 	}
 
 	private void installBehaviour(Bundle savedInstanceState) {
@@ -115,11 +118,9 @@ public class RespeakActivity2 extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					if (!respeaker.getFinishedPlaying()) {
 						respeaker.play();
-						Log.i("RespeakActivity2", "down");
 					}
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					Log.i("RespeakActivity2", "up");
 					respeaker.pause();
 				}
 				return false;
@@ -131,27 +132,13 @@ public class RespeakActivity2 extends Activity {
 			public boolean onTouch(View view, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					respeaker.listenToSpeaker();
-					Log.i("RespeakActivity2", "respeak down");
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					Log.i("RespeakActivity2", "respeak up");
 					respeaker.pause();
 				}
 				return false;
 			}
 		});
-		/*
-		playButton.setOnLongClickListener(new View.OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View view) {
-				if (!respeaker.getFinishedPlaying()) {
-					respeaker.listen();
-					Log.i("RespeakActivity2", "down");
-				}
-				return false;
-			}
-		});
-		*/
 	}
 
 	/**

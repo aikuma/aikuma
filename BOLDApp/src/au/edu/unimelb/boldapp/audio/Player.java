@@ -61,7 +61,7 @@ public class Player extends MediaPlayer{
 			setDataSource(generateFilePath(fileName));
 			prepare();
 		} catch (IOException e) {
-			e.printStackTrace();
+			// Something serious should be happening here.
 		}
 	}
 
@@ -98,7 +98,9 @@ public class Player extends MediaPlayer{
 
 	/** Pause */
 	public void pause() {
-		super.pause();
+		if (super.isPlaying()) {
+			super.pause();
+		}
 		playing = false;
 	}
 
