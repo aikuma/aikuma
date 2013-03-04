@@ -23,9 +23,10 @@ public class RecordingComparator implements Comparator<Recording> {
 	public RecordingComparator(String compareBy) {
 		if (compareBy.equals("alphabetical")) {
 			this.compareBy = compareBy;
-		} else {
+		} else if (compareBy.equals("date")) {
 			this.compareBy = "date";
-			//this.compareBy = "alphabetical";
+		} else if (compareBy.equals("likes")) {
+			this.compareBy = "likes";
 		}
 	}
 
@@ -40,9 +41,16 @@ public class RecordingComparator implements Comparator<Recording> {
 	public int compare(Recording lhs, Recording rhs) {
 		if (compareBy.equals("alphabetical")) {
 			return lhs.getName().compareTo(rhs.getName());
-		} else {
+		} else if (compareBy.equals("date")) {
 			// Else compare by date
 			return lhs.getDate().compareTo(rhs.getDate());
+		} else if (compareBy.equals("likes")) {
+			// rhs - lhs because we want to order from most likes to least
+			return rhs.getLikes() - lhs.getLikes();
+		} else {
+			// There's no specified way to compare things, so everything is
+			// equal.
+			return 0;
 		}
 	}
 }

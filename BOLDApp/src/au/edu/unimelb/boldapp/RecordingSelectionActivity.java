@@ -105,4 +105,13 @@ public class RecordingSelectionActivity extends ListActivity {
 				GlobalState.getRecordings("date").toArray(new Recording[0]));
 		setListAdapter(adapter);
 	}
+
+	/**
+	 * Sort recordings by number of likes
+	 */
+	public void sortLikes(View view) {
+		ArrayAdapter adapter = new RecordingArrayAdapter(this,
+				GlobalState.getRecordings("likes").toArray(new Recording[0]));
+		setListAdapter(adapter);
+	}
 }
