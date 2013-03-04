@@ -137,18 +137,14 @@ public class ListenActivity extends Activity
 	 * Called when someone "like"s the recording.
 	 */
 	public void like(View view) {
-		Button likeButton = (Button) view;
+		ImageButton likeButton = (ImageButton) view;
 		try {
 			this.likeFile.createNewFile();
 		} catch (IOException e) {
 			//Do nothing
 		}
-		likeButton.setVisibility(View.INVISIBLE);
-		/*
-		if (likeFile.exists()) {
-			likeButton.setVisibility(View.INVISIBLE);
-		}
-		*/
+		//likeButton.setVisibility(View.INVISIBLE);
+		likeButton.setEnabled(false);
 	}
   
   /**
@@ -158,13 +154,14 @@ public class ListenActivity extends Activity
 	 */
 	@Override
 	public void onResume() {
-	Button likeButton = (Button) findViewById(R.id.Like);
+	ImageButton likeButton = (ImageButton) findViewById(R.id.Like);
 	this.likeFile = new File(FileIO.getRecordingsPath(),
 			this.recording.getUUID() + "/likes/" +
 			GlobalState.getCurrentUser().getUUID());
 	likeFile.getParentFile().mkdirs();
 	if (likeFile.exists()) {
-		likeButton.setVisibility(View.INVISIBLE);
+		//likeButton.setVisibility(View.INVISIBLE);
+		likeButton.setEnabled(false);
 	}
     super.onResume();
     

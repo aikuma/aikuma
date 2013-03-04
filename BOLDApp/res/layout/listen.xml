@@ -19,13 +19,13 @@
 			android:onClick="goBack"
 			android:layout_alignParentLeft="true"
 		/>
-		<Button
+		<ImageButton
 			android:id="@+id/Like"
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
-			android:text="Like"
 			android:layout_alignParentRight="true"
 			android:onClick="like"
+			android:src="@drawable/star_button"
 		/>
 	</RelativeLayout>
 	<LinearLayout
