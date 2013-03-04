@@ -1,5 +1,7 @@
 package au.edu.unimelb.aikuma;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 import android.app.Activity;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
@@ -69,6 +72,8 @@ public class ListenActivity extends Activity
 	 */
   protected ShakeDetector shakeDetector;
 
+  protected File likeFile;
+
 	/**
 	 * Initialization when the activity starts.
 	 *
@@ -127,6 +132,24 @@ public class ListenActivity extends Activity
 			}
 		});
 	}
+
+	/**
+	 * Called when someone "like"s the recording.
+	 */
+	public void like(View view) {
+		Button likeButton = (Button) view;
+		try {
+			this.likeFile.createNewFile();
+		} catch (IOException e) {
+			//Do nothing
+		}
+		likeButton.setVisibility(View.INVISIBLE);
+		/*
+		if (likeFile.exists()) {
+			likeButton.setVisibility(View.INVISIBLE);
+		}
+		*/
+	}
   
   /**
 	 * When the activity is resumed.
@@ -135,6 +158,14 @@ public class ListenActivity extends Activity
 	 */
 	@Override
 	public void onResume() {
+	Button likeButton = (Button) findViewById(R.id.Like);
+	this.likeFile = new File(FileIO.getRecordingsPath(),
+			this.recording.getUUID() + "/likes/" +
+			GlobalState.getCurrentUser().getUUID());
+	likeFile.getParentFile().mkdirs();
+	if (likeFile.exists()) {
+		likeButton.setVisibility(View.INVISIBLE);
+	}
     super.onResume();
     
     this.proximityDetector = new ProximityDetector(ListenActivity.this, 2.0f) {
