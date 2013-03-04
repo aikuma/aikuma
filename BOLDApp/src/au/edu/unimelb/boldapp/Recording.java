@@ -39,6 +39,11 @@ public class Recording {
 	private UUID originalUUID;
 
 	/**
+	 * The number of likes the recording has recieved.
+	 */
+	private int likes;
+
+	/**
 	 * The recording's languages
 	 */
 	private List<Language> languages;
@@ -89,6 +94,20 @@ public class Recording {
 		setLanguages(new ArrayList<Language>());
 		addLanguage(language);
 		setOriginalUUID(originalUUID);
+	}
+
+	/**
+	 * Likes mutator
+	 */
+	public void setLikes(int likes) {
+		this.likes = likes;
+	}
+
+	/**
+	 * Likes accessor
+	 */
+	public int getLikes() {
+		return likes;
 	}
 
 	/**

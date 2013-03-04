@@ -366,7 +366,7 @@ public abstract class FileIO {
 	 *
 	 * @param	file	The path to the recordings metadata file
 	 */
-	public static Recording readRecording(File path) throws IOException {
+	public static Recording readRecordingFile(File path) throws IOException {
 		String jsonStr = FileIO.read(path);
 		JSONParser parser = new JSONParser();
 
@@ -376,8 +376,9 @@ public abstract class FileIO {
 			JSONObject jsonObj = (JSONObject) parser.parse(jsonStr);
 
 			if (jsonObj.containsKey("uuid")) {
-				recording.setUUID(
-						UUID.fromString(jsonObj.get("uuid").toString()));
+				UUID uuid = UUID.fromString(jsonObj.get("uuid").toString());
+				recording.setUUID(uuid);
+				recording.setLikes(readRecordingLikes(uuid));
 			} else {
 				throw new IOException( "No UUID found in JSON file.");
 			}
@@ -429,6 +430,7 @@ public abstract class FileIO {
 				}
 			}
 			recording.setLanguages(languages);
+
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
@@ -437,8 +439,18 @@ public abstract class FileIO {
 	}
 
 	public static Recording readRecording(UUID uuid) throws IOException {
-		return readRecording(new File(FileIO.getRecordingsPath(),
+		return readRecordingFile(new File(FileIO.getRecordingsPath(),
 				uuid.toString() + ".json"));
+	}
+
+	private static int readRecordingLikes(UUID uuid) {
+		File recordingLikesDir =
+				new File(FileIO.getRecordingsPath(), uuid + "/likes");
+		if (recordingLikesDir.exists() && recordingLikesDir.isDirectory()) {
+			return recordingLikesDir.list().length;
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -457,7 +469,7 @@ public abstract class FileIO {
 		List<Recording> recordings = new ArrayList<Recording>();
 		for (String recordingFilename : recordingFilenames) {
 			try {
-				recordings.add(readRecording(new File(FileIO.getRecordingsPath(),
+				recordings.add(readRecordingFile(new File(FileIO.getRecordingsPath(),
 						recordingFilename)));
 			} catch (IOException e) {
 				// Couldn't read that recording because the JSON file wasn't

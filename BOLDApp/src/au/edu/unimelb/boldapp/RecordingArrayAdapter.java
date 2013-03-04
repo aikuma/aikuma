@@ -60,9 +60,11 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				inflate(listItemLayout, parent, false);
 		Recording recording = getItem(position);
 		if (recording.getName().equals("")) {
-			recordingView.setText(recording.getUuid().toString());
+			recordingView.setText(recording.getUuid().toString() + " (" +
+			recording.getLikes() + " likes)");
 		} else {
-			recordingView.setText(recording.getName());
+			recordingView.setText(recording.getName() + " (" +
+			recording.getLikes() + " likes)");
 		}
 
 		return recordingView;
