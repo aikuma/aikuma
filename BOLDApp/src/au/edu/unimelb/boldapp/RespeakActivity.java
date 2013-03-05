@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import au.edu.unimelb.aikuma.audio.Audio;
 import au.edu.unimelb.aikuma.audio.Respeaker;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
@@ -150,11 +151,8 @@ public class RespeakActivity extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		//Make sound play through the earpiece.
-		audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);  
-		audioManager.setMode(AudioManager.MODE_IN_CALL); 
-		audioManager.setSpeakerphoneOn(false); 
+    
+    Audio.playThroughEarpiece(this);
 
 		this.proximityDetector =
 				new ProximityDetector( RespeakActivity.this, 2.0f) {

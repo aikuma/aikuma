@@ -84,4 +84,5 @@ public interface PlayerInterface {
    * @param	msec	the amount of milliseconds to rewind.
    */
 	public void rewind(int msec);
+
 }
