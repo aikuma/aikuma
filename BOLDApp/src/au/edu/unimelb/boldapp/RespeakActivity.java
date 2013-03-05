@@ -34,11 +34,6 @@ import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
 public class RespeakActivity extends Activity {
 
 	/**
-	 * The AudioManager used to enforce the use of the earpiece speaker
-	 */
-	private AudioManager audioManager;  
-
-	/**
 	 * Indicates whether the respeaking has been started already
 	 */
 	protected Boolean startedRespeaking;
