@@ -93,7 +93,13 @@ public class InitialUserSelectionActivity extends ListActivity {
 
 	public void syncActivity(View view) {
 		//SyncForActivity.sync(this);
-		Intent intent = new Intent(this, SyncActivity.class);
+		//Intent intent = new Intent(this, SyncActivity.class);
+		//startActivity(intent);
+
+		Server server = new Server("us1.hostedftp.com",
+				"stevenbird1@gmail.com", "DMD819");
+		Intent intent = new Intent(this, SyncSplashActivity.class);
+		intent.putExtra("ServerInfo", server);
 		startActivity(intent);
 
 	}

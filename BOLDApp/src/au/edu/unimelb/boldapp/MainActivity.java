@@ -122,7 +122,10 @@ public class MainActivity extends Activity {
 	}
 
 	public void sync(View view) {
-		Intent intent = new Intent(this, SyncActivity.class);
+		Server server = new Server("us1.hostedftp.com",
+				"stevenbird1@gmail.com", "DMD819");
+		Intent intent = new Intent(this, SyncSplashActivity.class);
+		intent.putExtra("ServerInfo", server);
 		startActivity(intent);
 	}
 }

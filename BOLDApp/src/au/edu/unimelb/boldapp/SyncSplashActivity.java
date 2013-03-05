@@ -35,7 +35,7 @@ public class SyncSplashActivity extends Activity {
 						server.getPassword())) {
 					Log.i("1234", "here2");
 					Toast.makeText(SyncSplashActivity.this, "Login failed." + 
-					" Are you connected to the correct wireless network?",
+					" Are you connected to a wireless network?",
 							Toast.LENGTH_LONG).show();
 					finish();
 				} else if (!client.sync()) {

@@ -221,7 +221,7 @@ public class FileIOTest extends TestCase {
 		File file = new File(FileIO.getRecordingsPath(), uuid.toString() +
 				".json");
 		FileIO.write(file, jsonStr);
-		Recording recording = FileIO.readRecording(file);
+		Recording recording = FileIO.readRecordingFile(file);
 		assertEquals(uuid, recording.getUUID());
 		assertEquals(creatorUUID, recording.getCreatorUUID());
 		assertEquals(originalUUID, recording.getOriginalUUID());
@@ -247,7 +247,7 @@ public class FileIOTest extends TestCase {
 		FileIO.write(file, jsonStr);
 		boolean caught = false;
 		try {
-			Recording recording = FileIO.readRecording(file);
+			Recording recording = FileIO.readRecordingFile(file);
 		} catch (Exception e) {
 			caught = true;
 		}
@@ -268,7 +268,7 @@ public class FileIOTest extends TestCase {
 		File file = new File(FileIO.getRecordingsPath(), uuid.toString() +
 				".json");
 		FileIO.write(file, jsonStr);
-		Recording recording = FileIO.readRecording(file);
+		Recording recording = FileIO.readRecordingFile(file);
 		assertEquals(uuid, recording.getUUID());
 		assertEquals(null, recording.getCreatorUUID());
 		assertEquals(originalUUID, recording.getOriginalUUID());
