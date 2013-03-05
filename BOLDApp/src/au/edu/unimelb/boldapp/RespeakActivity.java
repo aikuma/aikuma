@@ -145,7 +145,7 @@ public class RespeakActivity extends Activity {
 		super.onPause();
 		Log.i("RespeakActivity", "onpause");
 		this.proximityDetector.stop();
-		audioManager.setMode(AudioManager.MODE_NORMAL); 
+		Audio.reset(this); 
 	}
 
 	@Override
