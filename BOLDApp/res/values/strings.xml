@@ -21,4 +21,5 @@
 	<string name="respeak1">Respeak 1</string>
 	<string name="respeak2">Respeak 2</string>
 	<string name="sort_likes">Sort by likes</string>
+	<string name="cancel_sync">Cancel</string>
 </resources>
