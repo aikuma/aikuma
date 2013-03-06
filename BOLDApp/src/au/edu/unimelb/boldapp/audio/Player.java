@@ -3,6 +3,7 @@ package au.edu.unimelb.aikuma.audio;
 import java.io.File;
 import java.io.IOException;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 
 /**

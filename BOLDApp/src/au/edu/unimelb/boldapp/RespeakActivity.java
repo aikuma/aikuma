@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import au.edu.unimelb.aikuma.audio.Audio;
 import au.edu.unimelb.aikuma.audio.Respeaker;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
@@ -31,11 +32,6 @@ import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class RespeakActivity extends Activity {
-
-	/**
-	 * The AudioManager used to enforce the use of the earpiece speaker
-	 */
-	private AudioManager audioManager;  
 
 	/**
 	 * Indicates whether the respeaking has been started already
@@ -144,17 +140,14 @@ public class RespeakActivity extends Activity {
 		super.onPause();
 		Log.i("RespeakActivity", "onpause");
 		this.proximityDetector.stop();
-		audioManager.setMode(AudioManager.MODE_NORMAL); 
+		Audio.reset(this); 
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		//Make sound play through the earpiece.
-		audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);  
-		audioManager.setMode(AudioManager.MODE_IN_CALL); 
-		audioManager.setSpeakerphoneOn(false); 
+    
+    Audio.playThroughEarpiece(this);
 
 		this.proximityDetector =
 				new ProximityDetector( RespeakActivity.this, 2.0f) {

@@ -19,6 +19,7 @@ import android.view.View;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 
+import au.edu.unimelb.aikuma.audio.Audio;
 import au.edu.unimelb.aikuma.audio.PlayerInterface;
 import au.edu.unimelb.aikuma.audio.SimplePlayer;
 import au.edu.unimelb.aikuma.audio.MarkedMediaPlayer;
@@ -167,9 +168,11 @@ public class ListenActivity extends Activity
     
     this.proximityDetector = new ProximityDetector(ListenActivity.this, 2.0f) {
       public void near(float distance) {
+        Audio.playThroughEarpiece(ListenActivity.this);
   			play();
       }
       public void far(float distance) {
+        Audio.playThroughSpeaker(ListenActivity.this);
   			pause();
       }
     };
