@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.util.Arrays;
 
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
@@ -73,10 +74,16 @@ public class Respeaker extends Recorder {
 	}
 
 	/** Default constructor. */
-	public Respeaker(ThresholdSpeechAnalyzer analyzer) {
+	public Respeaker(ThresholdSpeechAnalyzer analyzer, boolean
+			shouldPlayThroughSpeaker) {
 		super(analyzer);
 		setFinishedPlaying(false);
 		this.player = new Player();
+		if (shouldPlayThroughSpeaker) {
+			this.playThroughSpeaker();
+		} else {
+			this.playThroughEarpiece();
+		}
 		//0.18 is the highest volume that can be set without causing the
 		//feedback problem for the respeak activity on the cheap huawei phones.
 		//this.player.setVolume(0.18f,0.18f);
@@ -171,6 +178,8 @@ public class Respeaker extends Recorder {
 
 	@Override
 	public void audioTriggered(short[] buffer, boolean justChanged) {
+		Log.i("Bra", "trigga!");
+		Log.i("Bra", "trigga!-");
 		if (justChanged) {
 			try {
 				writer.write(file.getCurrentSample() + "\n");
@@ -185,6 +194,7 @@ public class Respeaker extends Recorder {
 
 	@Override
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
+		Log.i("Bra", "no dice.");
 		if (justChanged) {
 			//If the recording has finished playing and we're just annotating
 			//at the end, then we're finished and can stop the respeaking.
@@ -199,5 +209,14 @@ public class Respeaker extends Recorder {
 				switchToPlay();
 			}
 		}
+	}
+
+	public void playThroughEarpiece() {
+		player.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+
+	}
+
+	public void playThroughSpeaker() {
+		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 	}
 }

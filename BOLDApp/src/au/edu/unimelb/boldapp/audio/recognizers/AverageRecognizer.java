@@ -1,5 +1,6 @@
 package au.edu.unimelb.aikuma.audio.recognizers;
 
+import android.util.Log;
 import au.edu.unimelb.aikuma.audio.recognizers.Recognizer;
 
 /** 
@@ -50,6 +51,7 @@ public class AverageRecognizer extends Recognizer {
 	public boolean isSilence(short[] buffer) {
 		int reading = getAverageAmplitude(buffer);
 		
+		Log.i("Bra", "is silence " + (reading < silenceThreshold));
 		return reading < silenceThreshold;
 	}
 

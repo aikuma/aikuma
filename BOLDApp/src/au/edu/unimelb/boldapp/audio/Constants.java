@@ -7,6 +7,6 @@ package au.edu.unimelb.aikuma.audio;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public abstract class Constants {
-	public static int SAMPLE_RATE = 44100;
+	public static int SAMPLE_RATE = 16000;
 	public static int WAV_HEADER_SIZE = 44;
 }

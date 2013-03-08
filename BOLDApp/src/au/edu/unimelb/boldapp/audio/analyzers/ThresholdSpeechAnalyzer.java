@@ -124,11 +124,15 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
   
   /** Does the given buffer trigger silence? */
 	protected boolean doesTriggerSilence(short[] buffer) {
+		Log.i("Bra", "Silence triggers " + silenceTriggers + ", needed " +
+		silenceTriggerAmount);
 		if (recognizer.isSilence(buffer)) {
 			silenceTriggers++;
 		} else {
 			silenceTriggers = 0;
 		}
+		Log.i("Bra", "doesTriggerSilence " + (silenceTriggers >
+			silenceTriggerAmount));
 		return silenceTriggers > silenceTriggerAmount;
 	}
   
@@ -210,6 +214,8 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 	protected void clearAfterBuffer() {
 		afterBuffer = new short[] {};
 	}
+
+	protected int speedCount;
   
   /** Analyzes if there's speech.
    *
@@ -222,11 +228,13 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
    *  @param buffer The buffer with audio samples.
    */
 	public void analyze(AudioHandler handler, short[] buffer) {
+		Log.i("speedCount", "yo: " + speedCount++);
 		if (buffer == null) { return; }
 		
 		// Check if we need to callback.
 		//
 		if (speech) {
+			Log.i("Bra", "speech");
 			// We are in speech mode, we do not care whether there's
 			// speech.
 			if (doesTriggerSilence(buffer)) {

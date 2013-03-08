@@ -168,7 +168,7 @@ public class ListenActivity extends Activity
     
     this.proximityDetector = new ProximityDetector(ListenActivity.this, 2.0f) {
       public void near(float distance) {
-        Audio.playThroughEarpiece(ListenActivity.this);
+        Audio.playThroughEarpiece(ListenActivity.this, true);
   			play();
       }
       public void far(float distance) {
