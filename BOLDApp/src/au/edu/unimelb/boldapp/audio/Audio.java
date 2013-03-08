@@ -18,7 +18,7 @@ public class Audio {
   
   public static void playThroughEarpiece(Activity activity) {
     AudioManager audioManager = getAudioManager(activity);
-    audioManager.setMode(AudioManager.MODE_IN_CALL); 
+    //audioManager.setMode(AudioManager.MODE_IN_CALL); 
     audioManager.setSpeakerphoneOn(false);
   }
 
