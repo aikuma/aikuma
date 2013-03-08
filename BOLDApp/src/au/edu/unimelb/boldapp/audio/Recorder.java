@@ -143,6 +143,8 @@ public class Recorder implements AudioHandler {
 			}
 		}
 
+		Log.i("sick", "new stuff");
+
 		// Simply reads and reads...
 		//
 		t = new Thread(new Runnable() {
@@ -172,18 +174,36 @@ public class Recorder implements AudioHandler {
 		} while (listener.getState() != AudioRecord.RECORDSTATE_STOPPED);
 	}
 
+	protected int speedCount;
+
 	/** Read from the listener's buffer and call the callback. */
 	protected void read() {
 		// Start listening to the audio device.
 		listener.startRecording();
 
+		long startTime = 0l;
+		long endTime = 0l;
+		int numRead;
+
 		// Wait until something is heard.
-		while (listener.read(buffer, 0, buffer.length) > 0) {
+		while (true) {
+			startTime = System.nanoTime();
+			numRead = listener.read(buffer, 0, buffer.length);
+			Log.i("numRead", "numRead: " + numRead);
+			if (!(numRead > 0)) {
+				break;
+			}
+			endTime = System.nanoTime();
+			Log.i("sick", "itertime: " + ((endTime - startTime)/1000000f));
+			
 			// Hand in a copy of the buffer.
 			//
 			if (Thread.interrupted()) {
+				Log.i("sick", "woah there");
 				return;
 			}
+			Log.i("meAndMyBassGuitar", "speedCount " + speedCount++);
+			Log.i("meAndMyBassGuitar", "threadCount " + Thread.activeCount());
 			onBufferFull(Arrays.copyOf(buffer, buffer.length));
 		}
 	}
@@ -197,7 +217,10 @@ public class Recorder implements AudioHandler {
 		//  * silenceTriggered
 		//  * audioTriggered
 		//
+		long startTime = System.nanoTime();
 		analyzer.analyze(this, buffer);
+		long endTime = System.nanoTime();
+		Log.i("sick", "analyze time: " + (endTime - startTime));
 	}
 
 

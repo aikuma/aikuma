@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.util.Arrays;
 
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
@@ -171,6 +172,8 @@ public class Respeaker extends Recorder {
 
 	@Override
 	public void audioTriggered(short[] buffer, boolean justChanged) {
+		Log.i("Bra", "trigga!");
+		Log.i("Bra", "trigga!-");
 		if (justChanged) {
 			try {
 				writer.write(file.getCurrentSample() + "\n");
@@ -185,6 +188,7 @@ public class Respeaker extends Recorder {
 
 	@Override
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
+		Log.i("Bra", "no dice.");
 		if (justChanged) {
 			//If the recording has finished playing and we're just annotating
 			//at the end, then we're finished and can stop the respeaking.
@@ -199,5 +203,13 @@ public class Respeaker extends Recorder {
 				switchToPlay();
 			}
 		}
+	}
+
+	public void playThroughEarpiece() {
+		player.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+	}
+
+	public void playThroughSpeaker() {
+		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 	}
 }

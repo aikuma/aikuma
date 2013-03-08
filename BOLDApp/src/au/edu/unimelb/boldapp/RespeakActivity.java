@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import android.app.Activity;
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
@@ -18,10 +17,13 @@ import android.content.Intent;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import au.edu.unimelb.aikuma.audio.Audio;
 import au.edu.unimelb.aikuma.audio.Respeaker;
+import au.edu.unimelb.aikuma.audio.Audio;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
+
+import au.edu.unimelb.aikuma.audio.Player;
+
 import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
 import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
 
@@ -59,22 +61,6 @@ public class RespeakActivity extends Activity {
 	protected Respeaker respeaker;
 
 	/**
-	 * Proximity detector.
-	 */
-	protected ProximityDetector proximityDetector;
-
-	/**
-	 * Indicates whether audio is being recorded
-	 */
-	//private Boolean recording;
-	/**
-	 * Instance of the recorder class that offers methods to record.
-	 */
-	//private Recorder recorder;
-	//private Boolean alreadyStarted;
-
-
-	/**
 	 * Called when the activity starts.
 	 *
 	 * Generates a UUID for the recording, prepares the file and creates a
@@ -85,7 +71,6 @@ public class RespeakActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 
 		//Get the original from the intent
 		Intent intent = getIntent();
@@ -108,21 +93,60 @@ public class RespeakActivity extends Activity {
 				new File(FileIO.getRecordingsPath(), uuid.toString() +
 				".map").toString());
 
+		//installBehaviour(savedInstanceState);
 
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _player) {
+				Log.i("brazil", "onCompletionListener called.");
 				ImageButton respeakButton = (ImageButton) 
 						findViewById(R.id.Respeak);
 				ImageButton pauseButton = (ImageButton) 
 						findViewById(R.id.Pause);
-				pauseButton.setVisibility(View.INVISIBLE);
 				respeakButton.setVisibility(View.INVISIBLE);
-				//respeaker.stop();
+				pauseButton.setVisibility(View.INVISIBLE);
 				respeaker.setFinishedPlaying(true);
 				respeaker.listenAfterFinishedPlaying();
 			}
 		});
+
+	}
+
+	public void respeak(View view) {
+		respeak();
+	}
+
+	public void respeak() {
+		if (!respeaker.getFinishedPlaying()) {
+			ImageButton respeakButton = (ImageButton)
+					findViewById(R.id.Respeak);
+			respeaking = true;
+			ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
+			pauseButton.setVisibility(View.VISIBLE);
+			respeakButton.setVisibility(View.INVISIBLE);
+			if (startedRespeaking) {
+				respeaker.resume();
+			} else {
+				startedRespeaking = true;
+				respeaker.listen();
+			}
+		}
+	}
+
+	public void pause(View view) {
+		pause();
+	}
+
+	public void pause() {
+		if (!respeaker.getFinishedPlaying()) {
+			ImageButton respeakButton = (ImageButton) 
+					findViewById(R.id.Respeak);
+			ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
+			respeaking = false;
+			respeakButton.setVisibility(View.VISIBLE);
+			pauseButton.setVisibility(View.INVISIBLE);
+			respeaker.pause();
+		}
 	}
 
 	/**
@@ -132,33 +156,18 @@ public class RespeakActivity extends Activity {
 	public void onStop() {
 		//recorder.stop();
 		super.onStop();
-		Log.i("RespeakActivity", "onStop");
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		Log.i("RespeakActivity", "onpause");
-		this.proximityDetector.stop();
-		Audio.reset(this); 
+		//respeaker.playThroughSpeaker();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-    
-    Audio.playThroughEarpiece(this);
-
-		this.proximityDetector =
-				new ProximityDetector( RespeakActivity.this, 2.0f) {
-					public void near(float distance) {
-							respeak();
-					}
-					public void far(float distance) {
-							pause();
-					}
-				};
-		this.proximityDetector.start();
+		//respeaker.playThroughEarpiece();
 	}
 
 	/**
@@ -185,63 +194,5 @@ public class RespeakActivity extends Activity {
 		startActivity(intent);
 		this.finish();
 	}
-
-	public void respeak(View view) {
-		respeak();
-	}
-
-	public void pause(View view) {
-		pause();
-	}
-
-	/**
-	 * Start/resume the respeaking of audio.
-	 *
-	 * @param	button	The button that was clicked
-	 */
-	public void respeak() {
-		if (!respeaker.getFinishedPlaying()) {
-			ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
-			respeaking = true;
-			ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
-			pauseButton.setVisibility(View.VISIBLE);
-			respeakButton.setVisibility(View.INVISIBLE);
-			if (startedRespeaking) {
-				respeaker.resume();
-			} else {
-				startedRespeaking = true;
-				respeaker.listen();
-			}
-		}
-	}
-
-	/**
-	 * Pause the respeaking
-	 *
-	 * @param	button	The pause button that was clicked.
-	 */
-	 public void pause() {
-		if (!respeaker.getFinishedPlaying()) {
-			ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
-			respeaking = false;
-			ImageButton respeakButton = (ImageButton) findViewById(R.id.Respeak);
-			respeakButton.setVisibility(View.VISIBLE);
-			pauseButton.setVisibility(View.INVISIBLE);
-			respeaker.pause();
-		}
-	 }
-
-	/**
-	 * If phone is close to the ear, any touch event will be ignored.
-	 */
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent event) {
-		if (proximityDetector.isNear()) {
-			return false;
-		} else {
-			return super.dispatchTouchEvent(event);
-		}
-	}
-
 
 }
