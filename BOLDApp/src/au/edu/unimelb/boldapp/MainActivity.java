@@ -1,6 +1,7 @@
 package au.edu.unimelb.aikuma;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 import android.app.Activity;
@@ -122,8 +123,14 @@ public class MainActivity extends Activity {
 	}
 
 	public void sync(View view) {
-		Server server = new Server("us1.hostedftp.com",
-				"stevenbird1@gmail.com", "DMD819");
+		Server server;
+		try {
+			server = FileIO.readServer();
+		} catch (IOException e) {
+			//server = new Server("us1.hostedftp.com",
+			//		"stevenbird1@gmail.com", "DMD819");
+			server = new Server("192.168.1.1", "admin", "admin");
+		}
 		Intent intent = new Intent(this, SyncSplashActivity.class);
 		intent.putExtra("ServerInfo", server);
 		startActivity(intent);

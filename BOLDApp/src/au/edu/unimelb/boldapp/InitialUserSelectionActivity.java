@@ -95,9 +95,14 @@ public class InitialUserSelectionActivity extends ListActivity {
 		//SyncForActivity.sync(this);
 		//Intent intent = new Intent(this, SyncActivity.class);
 		//startActivity(intent);
-
-		Server server = new Server("us1.hostedftp.com",
-				"stevenbird1@gmail.com", "DMD819");
+		Server server;
+		try {
+			server = FileIO.readServer();
+		} catch (IOException e) {
+			//server = new Server("us1.hostedftp.com",
+			//		"stevenbird1@gmail.com", "DMD819");
+			server = new Server("192.168.1.1", "admin", "admin");
+		}
 		Intent intent = new Intent(this, SyncSplashActivity.class);
 		intent.putExtra("ServerInfo", server);
 		startActivity(intent);
