@@ -1,5 +1,6 @@
 package au.edu.unimelb.aikuma.audio;
 
+import android.util.Log;
 import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
@@ -16,9 +17,11 @@ public class Audio {
     playThroughSpeaker(activity);
   }
   
-  public static void playThroughEarpiece(Activity activity) {
+  public static void playThroughEarpiece(Activity activity, boolean toSetMode) {
     AudioManager audioManager = getAudioManager(activity);
-    //audioManager.setMode(AudioManager.MODE_IN_CALL); 
+	if (toSetMode) {
+		audioManager.setMode(AudioManager.MODE_IN_CALL); 
+	}
     audioManager.setSpeakerphoneOn(false);
   }
 

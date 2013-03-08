@@ -74,11 +74,16 @@ public class Respeaker extends Recorder {
 	}
 
 	/** Default constructor. */
-	public Respeaker(ThresholdSpeechAnalyzer analyzer) {
+	public Respeaker(ThresholdSpeechAnalyzer analyzer, boolean
+			shouldPlayThroughSpeaker) {
 		super(analyzer);
 		setFinishedPlaying(false);
 		this.player = new Player();
-		this.playThroughEarpiece();
+		if (shouldPlayThroughSpeaker) {
+			this.playThroughSpeaker();
+		} else {
+			this.playThroughEarpiece();
+		}
 		//0.18 is the highest volume that can be set without causing the
 		//feedback problem for the respeak activity on the cheap huawei phones.
 		//this.player.setVolume(0.18f,0.18f);

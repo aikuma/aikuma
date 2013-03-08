@@ -96,7 +96,7 @@ public class RespeakActivity extends Activity {
 		startedRespeaking = false;
 		respeaking = false;
 		respeaker = new Respeaker(new ThresholdSpeechAnalyzer(88, 3,
-				new AverageRecognizer(60, 60)));
+				new AverageRecognizer(60, 60)), false);
 
 		this.uuid = UUID.randomUUID();
 
@@ -147,7 +147,7 @@ public class RespeakActivity extends Activity {
 	public void onResume() {
 		super.onResume();
     
-		Audio.playThroughEarpiece(this);
+		Audio.playThroughEarpiece(this, false);
 		//respeaker.playThroughEarpiece();
 
 		this.proximityDetector =
