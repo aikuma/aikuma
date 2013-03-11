@@ -10,7 +10,6 @@ import android.media.MediaRecorder;
 import android.media.MediaPlayer;
 import android.util.Log;
 
-import au.edu.unimelb.aikuma.Aikuma;
 import au.edu.unimelb.aikuma.R;
 import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
 import au.edu.unimelb.aikuma.audio.analyzers.SimpleAnalyzer;
