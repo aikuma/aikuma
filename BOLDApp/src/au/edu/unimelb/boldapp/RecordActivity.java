@@ -13,8 +13,11 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import au.edu.unimelb.aikuma.audio.Recorder;
+import au.edu.unimelb.aikuma.audio.Player;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
+
+import android.media.MediaPlayer;
 
 /**
  * The activity that allows one to record audio.
@@ -56,13 +59,14 @@ public class RecordActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
 		recording = false;
-		recorder = new Recorder();
+		recorder = new Recorder(getApplicationContext());
 
 		this.uuid = UUID.randomUUID();
 
 		//Prepare the recorder
 		recorder.prepare(new File(FileIO.getRecordingsPath(),
 				uuid.toString() + ".wav").toString());
+
 	}
 
 	/**
@@ -95,6 +99,7 @@ public class RecordActivity extends Activity {
 					}
 				};
 		this.proximityDetector.start();
+
 	}
 
 	/**
