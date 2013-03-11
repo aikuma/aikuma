@@ -46,8 +46,6 @@ public class RecordActivity extends Activity {
 	 */
 	protected ProximityDetector proximityDetector;
 
-	protected MediaPlayer beepPlayer;
-
 	/**
 	 * Called when the activity starts.
 	 *
@@ -61,7 +59,7 @@ public class RecordActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
 		recording = false;
-		recorder = new Recorder();
+		recorder = new Recorder(getApplicationContext());
 
 		this.uuid = UUID.randomUUID();
 
@@ -85,7 +83,6 @@ public class RecordActivity extends Activity {
 	public void onPause() {
 		super.onPause();
 		this.proximityDetector.stop();
-		beepPlayer.release();
 	}
 
 	@Override
@@ -103,8 +100,6 @@ public class RecordActivity extends Activity {
 				};
 		this.proximityDetector.start();
 
-		beepPlayer = MediaPlayer.create(getApplicationContext(), R.raw.beeps);
-		beepPlayer.setVolume(.10f, .10f);
 	}
 
 	/**
@@ -148,7 +143,6 @@ public class RecordActivity extends Activity {
 	 * @param	button	The record button that was clicked.
 	 */
 	public void record() {
-		beepPlayer.start();
 		ImageButton recordButton = (ImageButton) findViewById(R.id.Record);
 		//Toggle the recording Boolean.
 		recording = true;

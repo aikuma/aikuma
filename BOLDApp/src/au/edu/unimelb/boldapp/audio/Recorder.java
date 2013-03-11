@@ -3,11 +3,15 @@ package au.edu.unimelb.aikuma.audio;
 import java.util.Arrays;
 import java.util.Set;
 
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.media.MediaPlayer;
 import android.util.Log;
 
+import au.edu.unimelb.aikuma.Aikuma;
+import au.edu.unimelb.aikuma.R;
 import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
 import au.edu.unimelb.aikuma.audio.analyzers.SimpleAnalyzer;
 
@@ -43,12 +47,21 @@ public class Recorder implements AudioHandler {
 	/** Analyzer that analyzes the incoming data. */
 	Analyzer analyzer;
 
+	/**
+	 * Plays beeps when recording starts
+	 */
+	protected MediaPlayer beepPlayer;
+
 	/** Default constructor.
 	 *
 	 *Note: Uses an analyzer which tells the recorder to always record.
 	 */
 	public Recorder() {
 		this(new SimpleAnalyzer());
+	}
+
+	public Recorder(Context appContext) {
+		this(new SimpleAnalyzer(), appContext);
 	}
 
 	/** Default constructor.
@@ -63,6 +76,16 @@ public class Recorder implements AudioHandler {
 
 		setUpListener();
 		setUpFile();
+	}
+
+	public Recorder(Analyzer analyzer, Context appContext) {
+		this.analyzer = analyzer;
+
+		setUpListener();
+		setUpFile();
+
+		beepPlayer = MediaPlayer.create(appContext, R.raw.beeps);
+		beepPlayer.setVolume(.10f, .10f);
 	}
 
 	/** Sets up the listening device. Eg. the microphone. */
@@ -134,6 +157,15 @@ public class Recorder implements AudioHandler {
 
 	/** Start listening. */
 	public void listen() {
+
+		if (beepPlayer != null) {
+			beepPlayer.start();
+			try {
+				Thread.sleep(500);
+			} catch (Exception e) {
+				Log.i("issue30", "hit");
+			}
+		}
 
 		// If there is already a thread listening then kill it and ensure it's
 		// dead before creating a new thread.

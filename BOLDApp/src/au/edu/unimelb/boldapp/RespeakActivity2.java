@@ -76,7 +76,7 @@ public class RespeakActivity2 extends Activity {
 
 		startedRespeaking = false;
 		respeaking = false;
-		respeaker = new Respeaker();
+		respeaker = new Respeaker(getApplicationContext());
 
 		this.uuid = UUID.randomUUID();
 

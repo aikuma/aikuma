@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.Arrays;
 
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -72,9 +73,27 @@ public class Respeaker extends Recorder {
 		//this.player.setVolume(0.18f,0.18f);
 	}
 
+	public Respeaker(Context context) {
+		super(context);
+		setFinishedPlaying(false);
+		this.player = new Player();
+		//0.18 is the highest volume that can be set without causing the
+		//feedback problem for the respeak activity on the cheap huawei phones.
+		//this.player.setVolume(0.18f,0.18f);
+	}
+
 	/** Default constructor. */
 	public Respeaker(ThresholdSpeechAnalyzer analyzer) {
 		super(analyzer);
+		setFinishedPlaying(false);
+		this.player = new Player();
+		//0.18 is the highest volume that can be set without causing the
+		//feedback problem for the respeak activity on the cheap huawei phones.
+		//this.player.setVolume(0.18f,0.18f);
+	}
+
+	public Respeaker(ThresholdSpeechAnalyzer analyzer, Context context) {
+		super(analyzer, context);
 		setFinishedPlaying(false);
 		this.player = new Player();
 		//0.18 is the highest volume that can be set without causing the
