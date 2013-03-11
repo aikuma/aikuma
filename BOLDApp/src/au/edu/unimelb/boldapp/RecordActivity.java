@@ -13,8 +13,11 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import au.edu.unimelb.aikuma.audio.Recorder;
+import au.edu.unimelb.aikuma.audio.Player;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
+
+import android.media.MediaPlayer;
 
 /**
  * The activity that allows one to record audio.
@@ -43,6 +46,8 @@ public class RecordActivity extends Activity {
 	 */
 	protected ProximityDetector proximityDetector;
 
+	protected MediaPlayer beepPlayer;
+
 	/**
 	 * Called when the activity starts.
 	 *
@@ -63,6 +68,7 @@ public class RecordActivity extends Activity {
 		//Prepare the recorder
 		recorder.prepare(new File(FileIO.getRecordingsPath(),
 				uuid.toString() + ".wav").toString());
+
 	}
 
 	/**
@@ -79,6 +85,7 @@ public class RecordActivity extends Activity {
 	public void onPause() {
 		super.onPause();
 		this.proximityDetector.stop();
+		beepPlayer.release();
 	}
 
 	@Override
@@ -95,6 +102,9 @@ public class RecordActivity extends Activity {
 					}
 				};
 		this.proximityDetector.start();
+
+		beepPlayer = MediaPlayer.create(getApplicationContext(), R.raw.beeps);
+		beepPlayer.setVolume(.10f, .10f);
 	}
 
 	/**
@@ -138,6 +148,7 @@ public class RecordActivity extends Activity {
 	 * @param	button	The record button that was clicked.
 	 */
 	public void record() {
+		beepPlayer.start();
 		ImageButton recordButton = (ImageButton) findViewById(R.id.Record);
 		//Toggle the recording Boolean.
 		recording = true;
