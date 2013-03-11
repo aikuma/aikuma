@@ -40,12 +40,12 @@ public final class FileIO {
 	/**
 	 * The application's top level path in the external storage.
 	 */
-	static final String appRootPath = "bold/";
+	static final String appRootPath = "aikuma/";
 
 	/**
 	 * Returns the path to the application's data.
 	 *
-	 * @return	A File representing the applications base directory (the "bold"
+	 * @return	A File representing the applications base directory (the "aikuma"
 	 * directory)
 	 */
 	public static File getAppRootPath(){
@@ -57,8 +57,8 @@ public final class FileIO {
 	}
 
 	/**
-	 * Takes a file path (relative to the bold directory or absolute) and some
-	 * data and writes the data into the file in the bold directory in external
+	 * Takes a file path (relative to the aikuma directory or absolute) and some
+	 * data and writes the data into the file in the aikuma directory in external
 	 * storage.
 	 *
 	 * @param	path	The path to the file in which the data is to be
@@ -69,7 +69,7 @@ public final class FileIO {
 	public static void write(String path, String data) throws IOException {
 		File file;
 		// If the path is absolute, use that path, otherwise make it relative
-		// to the bold directory.
+		// to the aikuma directory.
 		if (path.startsWith("/")) {
 			file = new File(path);
 		} else {
@@ -80,7 +80,7 @@ public final class FileIO {
 
 	/**
 	 * Takes an absolute file path, some data and
-	 * writes the data into the file in the bold directory in external storage.
+	 * writes the data into the file in the aikuma directory in external storage.
 	 *
 	 * @param	path	The path to the file in which the data is to be
 	 * written.
@@ -107,7 +107,7 @@ public final class FileIO {
 	}
 
 	/**
-	 * Takes a file path (relative to the bold directory) and
+	 * Takes a file path (relative to the aikuma directory) and
 	 * returns a string containing the file's contents.
 	 *
 	 * @param	path	The path to the file in which the data lies.
@@ -117,7 +117,7 @@ public final class FileIO {
 	public static String read(String path) throws IOException {
 		File file;
 		// If the path is absolute, use that path, otherwise make it relative
-		// to the bold directory.
+		// to the aikuma directory.
 		if (path.startsWith("/")) {
 			file = new File(path);
 		} else {
@@ -128,7 +128,7 @@ public final class FileIO {
 	} 
 
 	/**
-	 * Takes a file path (relative to the bold directory) and
+	 * Takes a file path (relative to the aikuma directory) and
 	 * returns a string containing the file's contents.
 	 *
 	 * @param	path	The path to the file in which the data lies.

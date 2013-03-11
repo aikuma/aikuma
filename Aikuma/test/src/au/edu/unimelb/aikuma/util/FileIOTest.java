@@ -20,7 +20,7 @@ public class FileIOTest extends AndroidTestCase {
 	 * path.
 	 */
 	public void testGetAppRootPath() throws Exception {
-		assertEquals(new File("/mnt/sdcard/bold"), FileIO.getAppRootPath());
+		assertEquals(new File("/mnt/sdcard/aikuma"), FileIO.getAppRootPath());
 	}
 
 	/**
@@ -51,9 +51,9 @@ public class FileIOTest extends AndroidTestCase {
 	 * Ensure that write and read accept absolute paths as expected.
 	 */
 	public void testWriteRead2() throws Exception {
-		FileIO.write("/mnt/sdcard/bold/testdir/test2", "süßholzraspeln");
+		FileIO.write("/mnt/sdcard/aikuma/testdir/test2", "süßholzraspeln");
 		assertEquals("süßholzraspeln",
-				FileIO.read("/mnt/sdcard/bold/testdir/test2"));
+				FileIO.read("/mnt/sdcard/aikuma/testdir/test2"));
 	}
 
 	/**
@@ -77,17 +77,17 @@ public class FileIOTest extends AndroidTestCase {
 
 	/*
 	public void testGetUsersPath() throws Exception {
-		assertEquals(new File("/mnt/sdcard/bold/users"),
+		assertEquals(new File("/mnt/sdcard/aikuma/users"),
 				FileIO.getUsersPath());
 	}
 
 	public void testGetImagesPath() throws Exception {
-		assertEquals(new File("/mnt/sdcard/bold/images"),
+		assertEquals(new File("/mnt/sdcard/aikuma/images"),
 				FileIO.getImagesPath());
 	}
 
 	public void testGetRecordingsPath() throws Exception {
-		assertEquals(new File("/mnt/sdcard/bold/recordings"),
+		assertEquals(new File("/mnt/sdcard/aikuma/recordings"),
 				FileIO.getRecordingsPath());
 	}
 
@@ -95,7 +95,7 @@ public class FileIOTest extends AndroidTestCase {
 		File testFile = 
 				new File(FileIO.getAppRootPath(), "testdir/test1/test1");
 		FileIO.write(testFile, "hallo");
-		assertEquals("hallo", FileIO.read("/mnt/sdcard/bold/testdir/test1/test1"));
+		assertEquals("hallo", FileIO.read("/mnt/sdcard/aikuma/testdir/test1/test1"));
 	}
 
 	public void testWriteRead2() throws Exception {
