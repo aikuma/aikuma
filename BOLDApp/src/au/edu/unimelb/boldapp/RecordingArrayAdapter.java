@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.R;
 import android.view.LayoutInflater;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -59,12 +60,17 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	 	TextView recordingView = (TextView) inflater.
 				inflate(listItemLayout, parent, false);
 		Recording recording = getItem(position);
+		User user = (User) GlobalState.getUserMap().values().toArray()[0];
 		if (recording.getName().equals("")) {
-			recordingView.setText(recording.getUuid().toString() + " (" +
-			recording.getLikes() + " likes)");
+			recordingView.setText(recording.getUuid().toString() + " " +
+			recording.getLikes() + " likes) by "+
+			GlobalState.getUserMap().get(recording.getCreatorUUID()).getName()
+			+ " on " + recording.getDate());
 		} else {
-			recordingView.setText(recording.getName() + " (" +
-			recording.getLikes() + " likes)");
+			recordingView.setText(recording.getName() + " " +
+			recording.getLikes() + " likes) by " +
+			GlobalState.getUserMap().get(recording.getCreatorUUID()).getName()
+			+ " on " + recording.getDate());
 		}
 
 		return recordingView;

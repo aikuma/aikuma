@@ -43,6 +43,7 @@ public class RecordingSelectionActivity extends ListActivity {
 	public void onStart() {
 		super.onStart();
 		GlobalState.loadRecordings();
+		GlobalState.loadUsers();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this,
 				GlobalState.getRecordings().toArray(new Recording[0]));
 		setListAdapter(adapter);
