@@ -57,6 +57,10 @@ public class InterleavedPlayer implements PlayerInterface {
 		segmentCount = 1;
 		original.setNotificationMarkerPosition(original.sampleToMsec(
 				segments.getOriginalSegments().get(segmentCount)));
+		respeaking.setNotificationMarkerPosition(respeaking.sampleToMsec(
+				segments.getRespeakingSegments().get(segmentCount)));
+		//Log.i("issue37", "segments original: " + this.segments.getOriginalSegments());
+		//Log.i("issue37", "segments respeaking: " + this.segments.getRespeakingSegments());
 	}
 
 	private void initializePlayers(UUID respeakingUUID) throws IOException {
@@ -159,10 +163,13 @@ public class InterleavedPlayer implements PlayerInterface {
 	private class OriginalMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
+			Log.i("issue37", "original marker reached");
 			original.pause();
 			try {
 				original.setNotificationMarkerPosition(original.sampleToMsec(
 						segments.getRespeakingSegments().get(segmentCount+1)));
+				Log.i("issue37", "set original notifcation marker position: " +
+						(segmentCount+1) + " " + segments.getOriginalSegments().get(segmentCount+1));
 			} catch (IndexOutOfBoundsException e) {
 				respeaking.setNotificationMarkerPosition(0);
 				return;
@@ -175,11 +182,14 @@ public class InterleavedPlayer implements PlayerInterface {
 	private class RespeakingMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
+			Log.i("issue37", "respeaking marker reached");
 			respeaking.pause();
 			segmentCount++;
 			try {
 				respeaking.setNotificationMarkerPosition(respeaking.sampleToMsec(
 						segments.getRespeakingSegments().get(segmentCount)));
+				Log.i("issue37", "set respeaking notifcation marker position: " +
+						segmentCount + " " + segments.getRespeakingSegments().get(segmentCount));
 			} catch (IndexOutOfBoundsException e) {
 				respeaking.setNotificationMarkerPosition(0);
 				return;

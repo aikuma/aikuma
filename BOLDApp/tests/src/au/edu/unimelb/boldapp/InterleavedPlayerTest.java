@@ -11,7 +11,8 @@ public class InterleavedPlayerTest extends TestCase {
 		UUID uuid = UUID.randomUUID();
 
 		String map = "0,0\n10,20\n";
-		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString()), map);
+		FileIO.write(new File(FileIO.getRecordingsPath(), uuid.toString() +
+				".map"), map);
 
 		InterleavedPlayer interleavedPlayer= new InterleavedPlayer(uuid);
 
