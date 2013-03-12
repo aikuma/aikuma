@@ -62,15 +62,29 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		Recording recording = getItem(position);
 		User user = (User) GlobalState.getUserMap().values().toArray()[0];
 		if (recording.getName().equals("")) {
-			recordingView.setText(recording.getUuid().toString() + " " +
+			recordingView.setText(recording.getUuid().toString() + " (" +
 			recording.getLikes() + " likes) by "+
 			GlobalState.getUserMap().get(recording.getCreatorUUID()).getName()
 			+ " on " + recording.getDate());
 		} else {
-			recordingView.setText(recording.getName() + " " +
-			recording.getLikes() + " likes) by " +
-			GlobalState.getUserMap().get(recording.getCreatorUUID()).getName()
-			+ " on " + recording.getDate());
+			/*
+			Log.i("nullp", "recording.getCreatorUUID " + recording.getCreatorUUID());
+			Log.i("nullp", "map element " +
+					GlobalState.getUserMap().get(recording.getCreatorUUID()).getName());
+			Log.i("nullp", "recording.getName() " + recording.getName());
+			Log.i("nullp", "recording.getLikes() " + recording.getLikes());
+			Log.i("nullp", "recording.getDate() " + recording.getDate());
+			*/
+			if (GlobalState.getUserMap().keySet().contains(recording.getCreatorUUID())) {
+				recordingView.setText(recording.getName() + " (" +
+				recording.getLikes() + " likes) by " +
+				GlobalState.getUserMap().get(recording.getCreatorUUID()).getName()
+				+ " on " + recording.getDate());
+			} else {
+				recordingView.setText(recording.getName() + " (" +
+				recording.getLikes() + " likes) by unknown"
+				+ " on " + recording.getDate());
+			}
 		}
 
 		return recordingView;
