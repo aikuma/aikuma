@@ -64,6 +64,12 @@ public class Respeaker extends Recorder {
 		return this.finishedPlaying;
 	}
 
+	public void setSensitivity(int divisor) {
+		this.analyzer = new ThresholdSpeechAnalyzer(88, 3,
+				new AverageRecognizer(divisor, divisor));
+		Log.i("issue35", "lol");
+	}
+
 	/** Default constructor. */
 	public Respeaker() {
 		super();

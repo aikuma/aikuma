@@ -39,8 +39,8 @@
 			<ImageButton
 				android:id="@+id/Respeak"
 				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="0.5"
+				android:layout_height="0px"
+				android:layout_weight="45"
 				android:scaleType="centerInside"
 				android:src="@drawable/main_respeak"
 				android:onClick="respeak"
@@ -48,12 +48,20 @@
 			<ImageButton
 				android:id="@+id/Pause"
 				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="0.5"
+				android:layout_height="0px"
+				android:layout_weight="45"
 				android:scaleType="centerInside"
 				android:src="@drawable/button_pause"
 				android:onClick="pause"
 				android:visibility="invisible"
 			/>
+			<SeekBar
+				style="@android:style/Widget.ProgressBar.Horizontal"
+				android:id="@+id/SensitivitySlider"
+				android:layout_width="match_parent"
+				android:layout_height="0px"
+				android:layout_weight="10"
+			/>
+
 	</LinearLayout>
 </LinearLayout>

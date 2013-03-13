@@ -17,6 +17,8 @@ import android.util.Log;
 import android.content.Intent;
 import android.widget.ImageButton;
 import android.widget.Toast;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import au.edu.unimelb.aikuma.audio.Audio;
 import au.edu.unimelb.aikuma.audio.Respeaker;
@@ -64,6 +66,11 @@ public class RespeakActivity extends Activity {
 	protected ProximityDetector proximityDetector;
 
 	/**
+	 * Sensitivity Slider
+	 */
+	protected SeekBar sensitivitySlider;
+
+	/**
 	 * Indicates whether audio is being recorded
 	 */
 	//private Boolean recording;
@@ -100,6 +107,27 @@ public class RespeakActivity extends Activity {
 
 		this.uuid = UUID.randomUUID();
 
+		this.sensitivitySlider = (SeekBar)
+				findViewById(R.id.SensitivitySlider);
+		this.sensitivitySlider.setMax(100);
+		sensitivitySlider.setOnSeekBarChangeListener(
+			new OnSeekBarChangeListener() {
+				public void onProgressChanged(SeekBar sensitivitySlider,
+						int sensitivity, boolean fromUser) {
+					Log.i("issue35", "sensitivity: " + sensitivity);
+					if (sensitivity == 0) {
+						respeaker.setSensitivity(1);
+					} else {
+						respeaker.setSensitivity(sensitivity);
+					}
+				}
+				public void onStartTrackingTouch(SeekBar seekBar) {
+				}
+				public void onStopTrackingTouch(SeekBar seekBar) {
+				}
+			});
+		sensitivitySlider.setProgress(50);
+
 		respeaker.prepare(
 				new File(FileIO.getRecordingsPath(), originalUUID.toString() +
 				".wav").toString(),
@@ -107,7 +135,6 @@ public class RespeakActivity extends Activity {
 				".wav").toString(),
 				new File(FileIO.getRecordingsPath(), uuid.toString() +
 				".map").toString());
-
 
 		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
 			@Override
@@ -124,6 +151,8 @@ public class RespeakActivity extends Activity {
 			}
 		});
 	}
+
+
 
 	/**
 	 * Called when the activity goes completely out of view
