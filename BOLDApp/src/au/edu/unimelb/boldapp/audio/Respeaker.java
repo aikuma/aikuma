@@ -133,7 +133,7 @@ public class Respeaker extends Recorder {
 		player.play();
 		try {
 			long originalCurrentSample = player.getCurrentSample();
-			writer.write(originalCurrentSample + ",");
+			//writer.write(originalCurrentSample + ",");
 			Log.i("issue37mapping", "original listen: " +
 					originalCurrentSample);
 		} catch (Exception e) {
@@ -208,12 +208,14 @@ public class Respeaker extends Recorder {
 	public void audioTriggered(short[] buffer, boolean justChanged) {
 		Log.i("Bra", "trigga!");
 		Log.i("Bra", "trigga!-");
+		long currentSample = file.getCurrentSample();
+		long originalCurrentSample = player.getCurrentSample();
+		if (currentSample % 10000 == 0) {
+			Log.i("issue37mapping", "r: " + currentSample + " o: " +
+					originalCurrentSample);
+		}
 		if (justChanged) {
 			try {
-				long currentSample = file.getCurrentSample();
-				writer.write(currentSample + "\n");
-				Log.i("issue37mapping", "respeaking: " + currentSample);
-				long originalCurrentSample = player.getCurrentSample();
 				writer.write(originalCurrentSample + ",");
 				Log.i("issue37mapping", "original: " + originalCurrentSample);
 			} catch (Exception e) {
@@ -227,9 +229,21 @@ public class Respeaker extends Recorder {
 	@Override
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
 		Log.i("Bra", "no dice.");
+		long currentSample = file.getCurrentSample();
+		long originalCurrentSample = player.getCurrentSample();
+		if (currentSample % 10000 == 0) {
+			Log.i("issue37mapping", "r: " + currentSample + " o: " +
+					originalCurrentSample);
+		}
 		if (justChanged) {
 			//If the recording has finished playing and we're just annotating
 			//at the end, then we're finished and can stop the respeaking.
+			try {
+				Log.i("issue37mapping", "respeaking: " + currentSample);
+				writer.write(currentSample + "\n");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			if (getFinishedPlaying()) {
 				super.stop();
 				try {

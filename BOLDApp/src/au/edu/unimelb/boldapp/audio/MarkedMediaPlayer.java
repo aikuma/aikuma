@@ -45,6 +45,8 @@ public class MarkedMediaPlayer extends MediaPlayer {
 	 * @param	notificationMarkerPosition	marker in milliseconds
 	 */
 	public void setNotificationMarkerPosition(int notificationMarkerPosition) {
+		Log.i("issue37stuff", "setting nmp: " +
+				notificationMarkerPosition*16);
 		this.notificationMarkerPosition = notificationMarkerPosition;
 	}
 

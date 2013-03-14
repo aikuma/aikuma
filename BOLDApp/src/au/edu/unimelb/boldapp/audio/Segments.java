@@ -1,5 +1,6 @@
 package au.edu.unimelb.aikuma.audio;
 
+import android.util.Log;
 import au.edu.unimelb.aikuma.FileIO;
 import java.io.File;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class Segments {
 		originalSegments = new ArrayList<Integer>();
 		respeakingSegments = new ArrayList<Integer>();
 		readSegments();
+		Log.i("issue37stuff", " " + originalSegments);
+		Log.i("issue37stuff", " " + respeakingSegments);
 	}
 
 	private void readSegments() throws Exception {
@@ -42,7 +45,7 @@ public class Segments {
 				originalSegments.add(Integer.parseInt(lineSegments[0]));
 				respeakingSegments.add(Integer.parseInt(lineSegments[1]));
 			} else {
-				throw new Exception("More than two segments on a line");
+				throw new Exception(line);
 			}
 		}
 	}

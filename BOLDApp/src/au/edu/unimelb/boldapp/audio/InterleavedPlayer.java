@@ -54,7 +54,7 @@ public class InterleavedPlayer implements PlayerInterface {
 		this.initializePlayers(respeakingUUID);
 		this.segments = new Segments(respeakingUUID);
 		toPlayOriginal = true;
-		segmentCount = 1;
+		segmentCount = 0;
 		original.setNotificationMarkerPosition(original.sampleToMsec(
 				segments.getOriginalSegments().get(segmentCount)));
 		respeaking.setNotificationMarkerPosition(respeaking.sampleToMsec(
@@ -167,11 +167,12 @@ public class InterleavedPlayer implements PlayerInterface {
 			original.pause();
 			try {
 				original.setNotificationMarkerPosition(original.sampleToMsec(
-						segments.getRespeakingSegments().get(segmentCount+1)));
+						segments.getOriginalSegments().get(segmentCount+1)));
 				Log.i("issue37", "set original notifcation marker position: " +
 						(segmentCount+1) + " " + segments.getOriginalSegments().get(segmentCount+1));
 			} catch (IndexOutOfBoundsException e) {
-				respeaking.setNotificationMarkerPosition(0);
+				respeaking.start();
+				original.setNotificationMarkerPosition(0);
 				return;
 			}
 			Log.i("InterleavedPlayer", "about to start respeaking");

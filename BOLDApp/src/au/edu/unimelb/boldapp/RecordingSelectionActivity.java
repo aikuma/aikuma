@@ -71,7 +71,7 @@ public class RecordingSelectionActivity extends ListActivity {
 			this.finish();
 		}
 		intent.putExtra("recordingUUID", recording.getUUID());
-		intent.putExtra("interleavedChoice", false);
+		intent.putExtra("interleavedChoice", true);
 		startActivity(intent);
 	}
 
