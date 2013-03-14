@@ -4,8 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+
+import au.edu.unimelb.aikuma.audio.Audio;
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -14,19 +18,17 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
-
+import android.widget.Toast;
 import android.view.View;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-
-import au.edu.unimelb.aikuma.audio.Audio;
 import au.edu.unimelb.aikuma.audio.PlayerInterface;
 import au.edu.unimelb.aikuma.audio.SimplePlayer;
 import au.edu.unimelb.aikuma.audio.MarkedMediaPlayer;
 import au.edu.unimelb.aikuma.audio.InterleavedPlayer;
-
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
 import au.edu.unimelb.aikuma.sensors.ShakeDetector;
+import java.util.UUID;
 
 /**
  * Activity that allows the user to listen to recordings
@@ -66,12 +68,12 @@ public class ListenActivity extends Activity
 	/**
 	 * Proximity detector to start/stop.
 	 */
-  protected ProximityDetector proximityDetector;
-  
+	protected ProximityDetector proximityDetector;
+
 	/**
 	 * Shake detector to rewind.
 	 */
-  protected ShakeDetector shakeDetector;
+	protected ShakeDetector shakeDetector;
 
   protected File likeFile;
 
@@ -98,7 +100,15 @@ public class ListenActivity extends Activity
 			this.player = new SimplePlayer(this.recording.getUuid());
 		} else {
 			if (intent.getBooleanExtra("interleavedChoice", true)) {
-				this.player = new InterleavedPlayer(this.recording.getUuid());
+				try {
+					this.player = new InterleavedPlayer(this.recording.getUuid());
+				} catch (Exception e) {
+					Toast.makeText(this, 
+							e.getMessage(),
+							Toast.LENGTH_LONG).show();
+					Log.e("ListenActivity", "fine dime brizzle", e);
+					ListenActivity.this.finish();
+				}
 			} else {
 				this.player = new SimplePlayer(this.recording.getUuid());
 			}
@@ -112,26 +122,26 @@ public class ListenActivity extends Activity
 				this.seekBar.setVisibility(View.INVISIBLE);
 			}
 		}
-		//this.seekBarThread = new Thread(this);
-
 
 		// The code that is to be run when the player is complete.
-		player.setOnCompletionListener(new OnCompletionListener() {
-			@Override
-			public void onCompletion(MediaPlayer _player) {
-				// Reset the play button
-				ImageButton button = (ImageButton) 
-						findViewById(R.id.Play);
-				button.setImageResource(R.drawable.button_play);
-				// Adjust relevant booleans
-				startedPlaying = false;
-				// Stop the seekBarThread and set the progress to max.
-				if (seekBarThread != null) {
-					seekBarThread.interrupt();
+		if (player != null) {
+			player.setOnCompletionListener(new OnCompletionListener() {
+				@Override
+				public void onCompletion(MediaPlayer _player) {
+					// Reset the play button
+					ImageButton button = (ImageButton) 
+							findViewById(R.id.Play);
+					button.setImageResource(R.drawable.button_play);
+					// Adjust relevant booleans
+					startedPlaying = false;
+					// Stop the seekBarThread and set the progress to max.
+					if (seekBarThread != null) {
+						seekBarThread.interrupt();
+					}
+					seekBar.setProgress(seekBar.getMax());
 				}
-				seekBar.setProgress(seekBar.getMax());
-			}
-		});
+			});
+		}
 	}
 
 	/**
@@ -150,57 +160,58 @@ public class ListenActivity extends Activity
   
   /**
 	 * When the activity is resumed.
-   *
-   * TODO Refactor as soon as the play method is refactored.
+	 *
+	 * TODO Refactor as soon as the play method is refactored.
 	 */
 	@Override
 	public void onResume() {
-	ImageButton likeButton = (ImageButton) findViewById(R.id.Like);
-	this.likeFile = new File(FileIO.getRecordingsPath(),
-			this.recording.getUUID() + "/likes/" +
-			GlobalState.getCurrentUser().getUUID());
-	likeFile.getParentFile().mkdirs();
-	if (likeFile.exists()) {
-		//likeButton.setVisibility(View.INVISIBLE);
-		likeButton.setEnabled(false);
-	}
-    super.onResume();
-    
-    this.proximityDetector = new ProximityDetector(ListenActivity.this, 2.0f) {
-      public void near(float distance) {
-        Audio.playThroughEarpiece(ListenActivity.this, true);
-  			play();
-      }
-      public void far(float distance) {
-        Audio.playThroughSpeaker(ListenActivity.this);
-  			pause();
-      }
-    };
+		ImageButton likeButton = (ImageButton) findViewById(R.id.Like);
+		this.likeFile = new File(FileIO.getRecordingsPath(),
+				this.recording.getUUID() + "/likes/" +
+				GlobalState.getCurrentUser().getUUID());
+		likeFile.getParentFile().mkdirs();
+		if (likeFile.exists()) {
+			//likeButton.setVisibility(View.INVISIBLE);
+			likeButton.setEnabled(false);
+		}
+		super.onResume();
+		
+		this.proximityDetector = new ProximityDetector(ListenActivity.this, 2.0f) {
+		  public void near(float distance) {
+			Audio.playThroughEarpiece(ListenActivity.this, true);
+				play();
+		  }
+		  public void far(float distance) {
+			Audio.playThroughSpeaker(ListenActivity.this);
+				pause();
+		  }
+		};
 		this.proximityDetector.start();
-    
-    this.shakeDetector = new ShakeDetector(ListenActivity.this, 2.0f) {
-      public void shaken(float acceleration) {
-  			player.rewind(3000);
-      }
-    };
+
+		this.shakeDetector = new ShakeDetector(ListenActivity.this, 2.0f) {
+			public void shaken(float acceleration) {
+				player.rewind(3000);
+			}
+		};
+
 		this.shakeDetector.start();
 	}
-  
-  /**
-   * When the activity is stopped.
-   */
-  @Override
-  public void onStop() {
-    super.onStop();
-    if (this.seekBarThread != null) {
-            this.seekBarThread.interrupt();
-    }
-    player.release();
-    this.proximityDetector.stop();
-    this.shakeDetector.stop();
-    ListenActivity.this.finish();
-  }
-  
+
+	/**
+	 * When the activity is stopped.
+	 */
+	@Override
+	public void onStop() {
+		super.onStop();
+		if (this.seekBarThread != null) {
+			this.seekBarThread.interrupt();
+		}
+		player.release();
+		this.proximityDetector.stop();
+		this.shakeDetector.stop();
+		ListenActivity.this.finish();
+	}
+
 	/**
 	 * When the back button is pressed
 	 *
@@ -259,10 +270,10 @@ public class ListenActivity extends Activity
 	/**
 	 * Updates the seek bar to the current progress.
 	 */
-  protected void updateProgress() {
+	protected void updateProgress() {
 		seekBar.setProgress((int)(((float)player.getCurrentPosition()/
 				(float)player.getDuration())*100));
-  }
+	}
 
 	/**
 	 * The run function for the thread that updates the seekBar.
@@ -286,13 +297,13 @@ public class ListenActivity extends Activity
 				e.printStackTrace();
 				return;
 			}
-      
-      // TODO Replace with updateProgress() – do not use
-      // currentPosition, but always player.getCurrentPosition.
-      //
-      // TODO Why is player == null necessary above when
-      // player.getDuration is called before we reach it?
-      //
+
+			// TODO Replace with updateProgress() – do not use
+			// currentPosition, but always player.getCurrentPosition.
+			//
+			// TODO Why is player == null necessary above when
+			// player.getDuration is called before we reach it?
+			//
 			seekBar.setProgress(
 					(int)(((float)currentPosition/(float)total)*100));
 		}
@@ -311,19 +322,19 @@ public class ListenActivity extends Activity
 			//Progress was changed programmatically
 		}
 	}
-  
-  /**
-   * If it is close to the ear, any touch event will
-   * be ignored.
-   */
-  @Override
-  public boolean dispatchTouchEvent(MotionEvent event) {
-    if (proximityDetector.isNear()) {
-      return false;
-    } else {
-      return super.dispatchTouchEvent(event);
-    }
-  }
+
+	/**
+	* If it is close to the ear, any touch event will
+	* be ignored.
+	*/
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+		if (proximityDetector.isNear()) {
+		  return false;
+		} else {
+		  return super.dispatchTouchEvent(event);
+		}
+	}
 
 	/**
 	 * Obligated to implement this, but we need no functionality here.

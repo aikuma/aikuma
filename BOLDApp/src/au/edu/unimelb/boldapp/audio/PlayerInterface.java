@@ -22,7 +22,7 @@ public interface PlayerInterface {
 	 *
 	 * @return	The sample rate of the file being played.
 	 */
-	int getSampleRate();
+	//int getSampleRate();
 
 //	/**
 //	 * Returns the current sample; a pointer to the current location in the

@@ -132,7 +132,10 @@ public class Respeaker extends Recorder {
 		super.listen();
 		player.play();
 		try {
-			writer.write(player.getCurrentSample()+",");
+			long originalCurrentSample = player.getCurrentSample();
+			writer.write(originalCurrentSample + ",");
+			Log.i("issue37mapping", "original listen: " +
+					originalCurrentSample);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -207,8 +210,12 @@ public class Respeaker extends Recorder {
 		Log.i("Bra", "trigga!-");
 		if (justChanged) {
 			try {
-				writer.write(file.getCurrentSample() + "\n");
-				writer.write(player.getCurrentSample() + ",");
+				long currentSample = file.getCurrentSample();
+				writer.write(currentSample + "\n");
+				Log.i("issue37mapping", "respeaking: " + currentSample);
+				long originalCurrentSample = player.getCurrentSample();
+				writer.write(originalCurrentSample + ",");
+				Log.i("issue37mapping", "original: " + originalCurrentSample);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
