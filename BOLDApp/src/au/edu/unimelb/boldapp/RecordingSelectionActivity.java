@@ -61,7 +61,7 @@ public class RecordingSelectionActivity extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		//Otherwise it is listen
-		Intent intent = new Intent(this, ListenActivity.class);
+		Intent intent = new Intent(this, InterleavedChoiceActivity.class);
 		if (nextActivityName.equals("RespeakActivity")) {
 			intent = new Intent(this, RespeakActivity.class);
 			this.finish();
