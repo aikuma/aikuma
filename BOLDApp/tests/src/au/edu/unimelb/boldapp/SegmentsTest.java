@@ -24,9 +24,11 @@ public class SegmentsTest extends TestCase {
 		NewSegments segments = new NewSegments(uuid);
 		segments.readSegments(mappingFile);
 		assertEquals(
-				new Pair<Integer, Integer>(5,9), segments.get(new Pair<Integer, Integer>(10,12)));
+				new Pair<Long, Long>(5l,9l), segments.get(new Pair<Long,
+				Long>(10l,12l)));
 		assertEquals(
-				new Pair<Integer, Integer>(0,5), segments.get(new Pair<Integer, Integer>(0,10)));
+				new Pair<Long, Long>(0l,5l), segments.get(new Pair<Long,
+				Long>(0l,10l)));
 	}
 
 	/*

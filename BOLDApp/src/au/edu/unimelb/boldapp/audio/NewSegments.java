@@ -13,23 +13,32 @@ import java.util.UUID;
  */
 public class NewSegments {
 
-	private HashMap<Pair<Integer, Integer>, Pair<Integer, Integer>> segmentMap;
+	private HashMap<Pair<Long, Long>, Pair<Long, Long>> segmentMap;
 	private UUID respeakingUUID;
 
 	public NewSegments(UUID respeakingUUID) {
+		this();
 		this.respeakingUUID = respeakingUUID;
 	}
+	public NewSegments() {
+		segmentMap = new HashMap<Pair<Long, Long>, Pair<Long, Long>>();
+	}
 
-	public Pair<Integer, Integer> 
-			get(Pair<Integer, Integer> originalSegment) {
+	public Pair<Long, Long> 
+			get(Pair<Long, Long> originalSegment) {
 		return segmentMap.get(originalSegment);
+	}
+
+	public void put(Pair<Long, Long> originalSegment,
+					Pair<Long, Long> respeakingSegment) {
+		segmentMap.put(originalSegment, respeakingSegment);
 	}
 
 	public void readSegments(File path) throws Exception {
 		String mapString = FileIO.read(path);
 		String[] lines = mapString.split("\n");
 		segmentMap = 
-				new HashMap<Pair<Integer, Integer>, Pair<Integer, Integer>>();
+				new HashMap<Pair<Long, Long>, Pair<Long, Long>>();
 		for (String line : lines) {
 			String[] segmentMatch = line.split(":");
 			if (segmentMatch.length != 2) {
@@ -38,16 +47,10 @@ public class NewSegments {
 			}
 			String[] originalSegment = segmentMatch[0].split(",");
 			String[] respeakingSegment = segmentMatch[1].split(",");
-			for (String s : originalSegment) {
-				Log.i("segments", "o: " + s);
-			}
-			for (String s : respeakingSegment) {
-				Log.i("segments", "r: " + s);
-			}
-			segmentMap.put(new Pair<Integer, Integer>(Integer.parseInt(originalSegment[0]),
-								Integer.parseInt(originalSegment[1])),
-					new Pair<Integer, Integer>(Integer.parseInt(respeakingSegment[0])
-						, Integer.parseInt(respeakingSegment[1])));
+			segmentMap.put(new Pair<Long, Long>(Long.parseLong(originalSegment[0]),
+								Long.parseLong(originalSegment[1])),
+					new Pair<Long, Long>(Long.parseLong(respeakingSegment[0])
+						, Long.parseLong(respeakingSegment[1])));
 		}
 	}
 }
