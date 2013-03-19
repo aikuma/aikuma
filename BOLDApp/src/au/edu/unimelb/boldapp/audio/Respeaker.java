@@ -1,7 +1,9 @@
 package au.edu.unimelb.aikuma.audio;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 
 import android.content.Context;
@@ -16,6 +18,8 @@ import au.edu.unimelb.aikuma.audio.Player;
 import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
 import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
 import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
+
+import au.edu.unimelb.aikuma.FileIO;
 
 /** Respeaker used to get input from eg. a microphone and
  *  output into a file. In addition, it also 
@@ -175,6 +179,11 @@ public class Respeaker extends Recorder {
 	public void stop() {
 		super.stop();
 		player.stop();
+		try {
+			segments.write(new File(FileIO.getRecordingsPath(), "test.map"));
+		} catch (IOException e) {
+			// Couldn't write mapping.
+		}
 		try {
 			writer.close();
 		} catch (Exception e) {

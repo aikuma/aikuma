@@ -4,7 +4,8 @@ import android.util.Log;
 import android.util.Pair;
 import au.edu.unimelb.aikuma.FileIO;
 import java.io.File;
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 /**
@@ -13,7 +14,7 @@ import java.util.UUID;
  */
 public class NewSegments {
 
-	private HashMap<Pair<Long, Long>, Pair<Long, Long>> segmentMap;
+	private LinkedHashMap<Pair<Long, Long>, Pair<Long, Long>> segmentMap;
 	private UUID respeakingUUID;
 
 	public NewSegments(UUID respeakingUUID) {
@@ -21,7 +22,7 @@ public class NewSegments {
 		this.respeakingUUID = respeakingUUID;
 	}
 	public NewSegments() {
-		segmentMap = new HashMap<Pair<Long, Long>, Pair<Long, Long>>();
+		segmentMap = new LinkedHashMap<Pair<Long, Long>, Pair<Long, Long>>();
 	}
 
 	public Pair<Long, Long> 
@@ -38,7 +39,7 @@ public class NewSegments {
 		String mapString = FileIO.read(path);
 		String[] lines = mapString.split("\n");
 		segmentMap = 
-				new HashMap<Pair<Long, Long>, Pair<Long, Long>>();
+				new LinkedHashMap<Pair<Long, Long>, Pair<Long, Long>>();
 		for (String line : lines) {
 			String[] segmentMatch = line.split(":");
 			if (segmentMatch.length != 2) {
@@ -52,5 +53,18 @@ public class NewSegments {
 					new Pair<Long, Long>(Long.parseLong(respeakingSegment[0])
 						, Long.parseLong(respeakingSegment[1])));
 		}
+	}
+
+	public void write(File path) throws IOException {
+		String mapString = new String();
+		Pair<Long, Long> respeakingSegment;
+		for (Pair<Long, Long> originalSegment : segmentMap.keySet()) {
+			respeakingSegment = segmentMap.get(originalSegment);
+			mapString +=
+					originalSegment.first + "," + originalSegment.second + ":" 
+					+ respeakingSegment.first + "," + respeakingSegment.second
+					+ "\n";
+		}
+		FileIO.write(path, mapString);
 	}
 }
