@@ -19,7 +19,7 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * The object that represents the mapping between segments of the original
 	 * and the respeaking.
 	 */
-	private Segments segments;
+	private NewSegments segments;
 
 	/**
 	 * The Player for the original audio.
@@ -38,12 +38,27 @@ public class InterleavedPlayer implements PlayerInterface {
 	 */
 	private boolean toPlayOriginal;
 
+	private Iterator<Pair<Long, Long>> segmentIterator;
+
 	/**
 	 * Counter which indicates which segment in the original and respeaking the
 	 * player is up to; is incremented after both the original and respeaking
 	 * have been played for a given segment.
 	 */
 	private int segmentCount;
+
+	private void playSegment(
+			Pair<Long, Long> segment, boolean isRespeakingSegment) {
+		if (isRespeakingSegment) {
+			respeaking.seekTo(respeaking.sampleToMsec(segment.first);
+			respeaking.setNotificationMarkerPosition(
+					respeaking.sampleToMsec(segment.last));
+		} else {
+			original.seekTo(original.sampleToMsec(segment.first);
+			original.setNotificationMarkerPosition(
+					original.sampleToMsec(segment.last));
+		}
+	}
 
 	/**
 	 * Standard Constructor; takes the UUID of the respeaking.
@@ -52,7 +67,8 @@ public class InterleavedPlayer implements PlayerInterface {
 	 */
 	public InterleavedPlayer(UUID respeakingUUID) throws Exception {
 		this.initializePlayers(respeakingUUID);
-		this.segments = new Segments(respeakingUUID);
+		this.segments = new NewSegments(respeakingUUID);
+		this.segmentIterator = segments.keySet().iterator();
 		toPlayOriginal = true;
 		segmentCount = 0;
 		original.setNotificationMarkerPosition(original.sampleToMsec(
@@ -163,13 +179,11 @@ public class InterleavedPlayer implements PlayerInterface {
 	private class OriginalMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
-			Log.i("issue37", "original marker reached");
 			original.pause();
+
 			try {
 				original.setNotificationMarkerPosition(original.sampleToMsec(
 						segments.getOriginalSegments().get(segmentCount+1)));
-				Log.i("issue37", "set original notifcation marker position: " +
-						(segmentCount+1) + " " + segments.getOriginalSegments().get(segmentCount+1));
 			} catch (IndexOutOfBoundsException e) {
 				respeaking.start();
 				original.setNotificationMarkerPosition(0);
@@ -177,6 +191,7 @@ public class InterleavedPlayer implements PlayerInterface {
 			}
 			Log.i("InterleavedPlayer", "about to start respeaking");
 			respeaking.start();
+			playSegment(segmentIterator.next(), false)
 		}
 	}
 
