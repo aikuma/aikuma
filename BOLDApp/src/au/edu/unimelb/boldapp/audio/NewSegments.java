@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.UUID;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 /**
  * A class to represent the alignment between segments in an original recording
@@ -15,7 +16,7 @@ import java.util.UUID;
  */
 public class NewSegments {
 
-	public LinkedHashMap<Segment, Segment> segmentMap;
+	private LinkedHashMap<Segment, Segment> segmentMap;
 	private UUID respeakingUUID;
 
 	public NewSegments(UUID respeakingUUID) {
@@ -67,18 +68,8 @@ public class NewSegments {
 	}
 
 	public void write(File path) throws IOException {
-		String mapString = new String();
-		Segment respeakingSegment;
-		for (Segment originalSegment : segmentMap.keySet()) {
-			respeakingSegment = segmentMap.get(originalSegment);
-			mapString +=
-					originalSegment.getStartSample() + "," +
-					originalSegment.getEndSample() + ":" 
-					+ respeakingSegment.getStartSample() + "," +
-					respeakingSegment.getEndSample() + "\n";
-		}
-		FileIO.write(path, mapString);
-		Log.i("segments", "path: " + path + "mapstring: " + mapString);
+		FileIO.write(path, toString());
+		Log.i("segments", "path: " + path + " mapstring: " + toString());
 	}
 
 	/**
@@ -98,5 +89,40 @@ public class NewSegments {
 		public Long getEndSample() {
 			return this.pair.second;
 		}
+
+		public String toString() {
+			return getStartSample() + "," + getEndSample();
+		}
+
+		public boolean equals(Object obj) {
+			if (obj == null) { return false; }
+			if (obj == this) { return true; }
+			if (obj.getClass() != getClass()) {
+				return false;
+			}
+			Segment rhs = (Segment) obj;
+			return new EqualsBuilder()
+					.append(getStartSample(), rhs.getStartSample())
+					.append(getEndSample(), rhs.getEndSample())
+					.isEquals();
+		}
+
+		public int hashCode() {
+			return pair.hashCode();
+		}
+	}
+
+	public String toString() {
+		String mapString = new String();
+		Segment respeakingSegment;
+		for (Segment originalSegment : segmentMap.keySet()) {
+			respeakingSegment = getRespeakingSegment(originalSegment);
+			mapString +=
+					originalSegment.getStartSample() + "," +
+					originalSegment.getEndSample() + ":" 
+					+ respeakingSegment.getStartSample() + "," +
+					respeakingSegment.getEndSample() + "\n";
+		}
+		return mapString;
 	}
 }

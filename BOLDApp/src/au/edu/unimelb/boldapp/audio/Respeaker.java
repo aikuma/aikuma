@@ -185,7 +185,7 @@ public class Respeaker extends Recorder {
 		player.stop();
 		try {
 			Log.i("segments", "Samples file name: " + mappingFilename);
-			segments.write(new File(FileIO.getRecordingsPath(), mappingFilename));
+			segments.write(new File(mappingFilename));
 		} catch (IOException e) {
 			// Couldn't write mapping.
 			Log.e("segments", "couldn't write mapping", e);

@@ -6,6 +6,7 @@ import au.edu.unimelb.aikuma.FileIO;
 import au.edu.unimelb.aikuma.Recording;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.HashMap;
 import java.util.UUID;
 
 import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
@@ -42,7 +43,7 @@ public class InterleavedPlayer implements PlayerInterface {
 
 	private Iterator<Segment> originalSegmentIterator;
 
-	private Segment currentSegment;
+	private Segment currentOriginalSegment;
 
 	/**
 	 * Counter which indicates which segment in the original and respeaking the
@@ -53,9 +54,11 @@ public class InterleavedPlayer implements PlayerInterface {
 
 	private void playSegment(
 			Segment segment, SimplePlayer player) {
+		Log.i("segments", "playing segment: " + segment);
 		player.seekTo(respeaking.sampleToMsec(segment.getStartSample()));
 		player.setNotificationMarkerPosition(
 				player.sampleToMsec(segment.getEndSample()));
+		player.start();
 	}
 
 	/**
@@ -67,9 +70,10 @@ public class InterleavedPlayer implements PlayerInterface {
 		this.initializePlayers(respeakingUUID);
 		this.segments = new NewSegments(respeakingUUID);
 		Log.i("segments", respeakingUUID.toString());
-		Log.i("segments", segments.segmentMap.keySet().toString());
+		Log.i("segments", segments.toString());
 		this.originalSegmentIterator = segments.getOriginalSegmentIterator();
 		toPlayOriginal = true;
+		currentOriginalSegment = originalSegmentIterator.next();
 	}
 
 	private void initializePlayers(UUID respeakingUUID) throws IOException {
@@ -105,12 +109,14 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * stopped, or never started before, playback will start at the beginning.
 	 */
 	public void start() {
+		playSegment(currentOriginalSegment, original);
+		/*
 		if (toPlayOriginal) {
-			Log.i("InterleavedPlayer", "starting original");
 			original.start();
 		} else {
 			respeaking.start();
 		}
+		*/
 	}
 
 	/**
@@ -170,7 +176,11 @@ public class InterleavedPlayer implements PlayerInterface {
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
 			original.pause();
-			playSegment(segments.getRespeakingSegment(currentSegment), respeaking);
+			// Set notification marker back to zero so that the callback
+			// doesn't repeatedly get triggered
+			original.setNotificationMarkerPosition(0);
+			Log.i("segments", " " + segments.getRespeakingSegment(currentOriginalSegment));
+			playSegment(segments.getRespeakingSegment(currentOriginalSegment), respeaking);
 		}
 	}
 
@@ -178,8 +188,13 @@ public class InterleavedPlayer implements PlayerInterface {
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
 			respeaking.pause();
-			currentSegment = originalSegmentIterator.next();
-			playSegment(currentSegment, original);
+			// Set notification marker back to zero so that the callback
+			// doesn't repeatedly get triggered
+			respeaking.setNotificationMarkerPosition(0);
+			currentOriginalSegment = originalSegmentIterator.next();
+			Log.i("segments", "new currentOriginalSegment: " +
+					currentOriginalSegment);
+			playSegment(currentOriginalSegment, original);
 		}
 	}
 }
