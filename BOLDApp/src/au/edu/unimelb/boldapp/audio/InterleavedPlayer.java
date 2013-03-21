@@ -179,7 +179,6 @@ public class InterleavedPlayer implements PlayerInterface {
 			// Set notification marker back to zero so that the callback
 			// doesn't repeatedly get triggered
 			original.setNotificationMarkerPosition(0);
-			Log.i("segments", " " + segments.getRespeakingSegment(currentOriginalSegment));
 			playSegment(segments.getRespeakingSegment(currentOriginalSegment), respeaking);
 		}
 	}
@@ -191,10 +190,10 @@ public class InterleavedPlayer implements PlayerInterface {
 			// Set notification marker back to zero so that the callback
 			// doesn't repeatedly get triggered
 			respeaking.setNotificationMarkerPosition(0);
-			currentOriginalSegment = originalSegmentIterator.next();
-			Log.i("segments", "new currentOriginalSegment: " +
-					currentOriginalSegment);
-			playSegment(currentOriginalSegment, original);
+			if (originalSegmentIterator.hasNext()) {
+				currentOriginalSegment = originalSegmentIterator.next();
+				playSegment(currentOriginalSegment, original);
+			}
 		}
 	}
 }
