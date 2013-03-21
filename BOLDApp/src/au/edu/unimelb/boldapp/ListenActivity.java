@@ -102,6 +102,7 @@ public class ListenActivity extends Activity
 			if (intent.getBooleanExtra("interleavedChoice", true)) {
 				try {
 					this.player = new InterleavedPlayer(this.recording.getUuid());
+					Log.i("segments", "using interleaved player");
 				} catch (Exception e) {
 					Toast.makeText(this, 
 							e.getMessage(),

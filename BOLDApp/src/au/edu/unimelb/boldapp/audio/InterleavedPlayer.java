@@ -6,6 +6,7 @@ import android.util.Pair;
 import au.edu.unimelb.aikuma.FileIO;
 import au.edu.unimelb.aikuma.Recording;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.UUID;
 
 /**
@@ -38,7 +39,9 @@ public class InterleavedPlayer implements PlayerInterface {
 	 */
 	private boolean toPlayOriginal;
 
-	private Iterator<Pair<Long, Long>> segmentIterator;
+	private Iterator<Pair<Long, Long>> originalSegmentIterator;
+
+	private Pair<Long, Long> currentSegment;
 
 	/**
 	 * Counter which indicates which segment in the original and respeaking the
@@ -48,16 +51,10 @@ public class InterleavedPlayer implements PlayerInterface {
 	private int segmentCount;
 
 	private void playSegment(
-			Pair<Long, Long> segment, boolean isRespeakingSegment) {
-		if (isRespeakingSegment) {
-			respeaking.seekTo(respeaking.sampleToMsec(segment.first);
-			respeaking.setNotificationMarkerPosition(
-					respeaking.sampleToMsec(segment.last));
-		} else {
-			original.seekTo(original.sampleToMsec(segment.first);
-			original.setNotificationMarkerPosition(
-					original.sampleToMsec(segment.last));
-		}
+			Pair<Long, Long> segment, SimplePlayer player) {
+		player.seekTo(respeaking.sampleToMsec(segment.first));
+		player.setNotificationMarkerPosition(
+				player.sampleToMsec(segment.second));
 	}
 
 	/**
@@ -68,15 +65,10 @@ public class InterleavedPlayer implements PlayerInterface {
 	public InterleavedPlayer(UUID respeakingUUID) throws Exception {
 		this.initializePlayers(respeakingUUID);
 		this.segments = new NewSegments(respeakingUUID);
-		this.segmentIterator = segments.keySet().iterator();
+		Log.i("segments", respeakingUUID.toString());
+		Log.i("segments", segments.segmentMap.keySet().toString());
+		this.originalSegmentIterator = segments.getOriginalSegmentIterator();
 		toPlayOriginal = true;
-		segmentCount = 0;
-		original.setNotificationMarkerPosition(original.sampleToMsec(
-				segments.getOriginalSegments().get(segmentCount)));
-		respeaking.setNotificationMarkerPosition(respeaking.sampleToMsec(
-				segments.getRespeakingSegments().get(segmentCount)));
-		//Log.i("issue37", "segments original: " + this.segments.getOriginalSegments());
-		//Log.i("issue37", "segments respeaking: " + this.segments.getRespeakingSegments());
 	}
 
 	private void initializePlayers(UUID respeakingUUID) throws IOException {
@@ -144,11 +136,8 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * Pauses playback; call start() to resume.
 	 */
 	public void pause() {
-		if (original.isPlaying()) {
-			original.pause();
-		} else {
-			respeaking.pause();
-		}
+		original.pause();
+		respeaking.pause();
 	}
 
 	/**
@@ -180,37 +169,16 @@ public class InterleavedPlayer implements PlayerInterface {
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
 			original.pause();
-
-			try {
-				original.setNotificationMarkerPosition(original.sampleToMsec(
-						segments.getOriginalSegments().get(segmentCount+1)));
-			} catch (IndexOutOfBoundsException e) {
-				respeaking.start();
-				original.setNotificationMarkerPosition(0);
-				return;
-			}
-			Log.i("InterleavedPlayer", "about to start respeaking");
-			respeaking.start();
-			playSegment(segmentIterator.next(), false)
+			playSegment(segments.getRespeakingSegment(currentSegment), respeaking);
 		}
 	}
 
 	private class RespeakingMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
-			Log.i("issue37", "respeaking marker reached");
 			respeaking.pause();
-			segmentCount++;
-			try {
-				respeaking.setNotificationMarkerPosition(respeaking.sampleToMsec(
-						segments.getRespeakingSegments().get(segmentCount)));
-				Log.i("issue37", "set respeaking notifcation marker position: " +
-						segmentCount + " " + segments.getRespeakingSegments().get(segmentCount));
-			} catch (IndexOutOfBoundsException e) {
-				respeaking.setNotificationMarkerPosition(0);
-				return;
-			}
-			original.start();
+			currentSegment = originalSegmentIterator.next();
+			playSegment(currentSegment, original);
 		}
 	}
 }

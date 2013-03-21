@@ -6,6 +6,7 @@ import au.edu.unimelb.aikuma.FileIO;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Iterator;
 import java.util.UUID;
 
 /**
@@ -14,25 +15,36 @@ import java.util.UUID;
  */
 public class NewSegments {
 
-	private LinkedHashMap<Pair<Long, Long>, Pair<Long, Long>> segmentMap;
+	public LinkedHashMap<Pair<Long, Long>, Pair<Long, Long>> segmentMap;
 	private UUID respeakingUUID;
 
 	public NewSegments(UUID respeakingUUID) {
 		this();
 		this.respeakingUUID = respeakingUUID;
+		try {
+			readSegments(new File(
+					FileIO.getRecordingsPath(), respeakingUUID + ".map"));
+		} catch (Exception e) {
+			Log.i("segments", "caught exception");
+			//Issue with reading mapping. Maybe throw an exception?
+		}
 	}
 	public NewSegments() {
 		segmentMap = new LinkedHashMap<Pair<Long, Long>, Pair<Long, Long>>();
 	}
 
 	public Pair<Long, Long> 
-			get(Pair<Long, Long> originalSegment) {
+			getRespeakingSegment(Pair<Long, Long> originalSegment) {
 		return segmentMap.get(originalSegment);
 	}
 
 	public void put(Pair<Long, Long> originalSegment,
 					Pair<Long, Long> respeakingSegment) {
 		segmentMap.put(originalSegment, respeakingSegment);
+	}
+
+	public Iterator<Pair<Long, Long>> getOriginalSegmentIterator() {
+		return segmentMap.keySet().iterator();
 	}
 
 	public void readSegments(File path) throws Exception {
@@ -44,7 +56,7 @@ public class NewSegments {
 			String[] segmentMatch = line.split(":");
 			if (segmentMatch.length != 2) {
 				throw new Exception(
-						"More than one colon on in a segment mapping line");
+						"There must be just one colon on in a segment mapping line");
 			}
 			String[] originalSegment = segmentMatch[0].split(",");
 			String[] respeakingSegment = segmentMatch[1].split(",");
@@ -66,5 +78,6 @@ public class NewSegments {
 					+ "\n";
 		}
 		FileIO.write(path, mapString);
+		Log.i("segments", "path: " + path + "mapstring: " + mapString);
 	}
 }

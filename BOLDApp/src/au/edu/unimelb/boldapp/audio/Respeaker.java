@@ -62,6 +62,8 @@ public class Respeaker extends Recorder {
 	private Long respeakingStartOfSegment;
 	private Long respeakingEndOfSegment;
 
+	private String mappingFilename;
+
 	/**
 	 * finishedPlaying mutator
 	 */
@@ -133,11 +135,12 @@ public class Respeaker extends Recorder {
   
 	/** Prepare the respeaker by setting a source file and a target file. */
 	public void prepare(String sourceFilename, String targetFilename,
-			String samplesFilename) {
+			String mappingFilename) {
 		player.prepare(sourceFilename);
 		super.prepare(targetFilename);
+		this.mappingFilename = mappingFilename;
 		try {
-			writer = new BufferedWriter(new FileWriter(samplesFilename));
+			writer = new BufferedWriter(new FileWriter(mappingFilename + "old"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -180,9 +183,11 @@ public class Respeaker extends Recorder {
 		super.stop();
 		player.stop();
 		try {
-			segments.write(new File(FileIO.getRecordingsPath(), "test.map"));
+			Log.i("segments", "Samples file name: " + mappingFilename);
+			segments.write(new File(FileIO.getRecordingsPath(), mappingFilename));
 		} catch (IOException e) {
 			// Couldn't write mapping.
+			Log.e("segments", "couldn't write mapping", e);
 		}
 		try {
 			writer.close();
