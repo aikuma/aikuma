@@ -2,12 +2,13 @@ package au.edu.unimelb.aikuma.audio;
 
 import android.media.MediaPlayer;
 import android.util.Log;
-import android.util.Pair;
 import au.edu.unimelb.aikuma.FileIO;
 import au.edu.unimelb.aikuma.Recording;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.UUID;
+
+import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
 
 /**
  * Offers functionality to play a respeaking interleaved with the original.
@@ -39,9 +40,9 @@ public class InterleavedPlayer implements PlayerInterface {
 	 */
 	private boolean toPlayOriginal;
 
-	private Iterator<Pair<Long, Long>> originalSegmentIterator;
+	private Iterator<Segment> originalSegmentIterator;
 
-	private Pair<Long, Long> currentSegment;
+	private Segment currentSegment;
 
 	/**
 	 * Counter which indicates which segment in the original and respeaking the
@@ -51,10 +52,10 @@ public class InterleavedPlayer implements PlayerInterface {
 	private int segmentCount;
 
 	private void playSegment(
-			Pair<Long, Long> segment, SimplePlayer player) {
-		player.seekTo(respeaking.sampleToMsec(segment.first));
+			Segment segment, SimplePlayer player) {
+		player.seekTo(respeaking.sampleToMsec(segment.getStartSample()));
 		player.setNotificationMarkerPosition(
-				player.sampleToMsec(segment.second));
+				player.sampleToMsec(segment.getEndSample()));
 	}
 
 	/**

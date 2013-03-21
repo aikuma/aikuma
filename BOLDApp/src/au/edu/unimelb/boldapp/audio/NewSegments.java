@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public class NewSegments {
 
-	public LinkedHashMap<Pair<Long, Long>, Pair<Long, Long>> segmentMap;
+	public LinkedHashMap<Segment, Segment> segmentMap;
 	private UUID respeakingUUID;
 
 	public NewSegments(UUID respeakingUUID) {
@@ -30,20 +30,19 @@ public class NewSegments {
 		}
 	}
 	public NewSegments() {
-		segmentMap = new LinkedHashMap<Pair<Long, Long>, Pair<Long, Long>>();
+		segmentMap = new LinkedHashMap<Segment, Segment>();
 	}
 
-	public Pair<Long, Long> 
-			getRespeakingSegment(Pair<Long, Long> originalSegment) {
+	public Segment getRespeakingSegment(Segment originalSegment) {
 		return segmentMap.get(originalSegment);
 	}
 
-	public void put(Pair<Long, Long> originalSegment,
-					Pair<Long, Long> respeakingSegment) {
+	public void put(Segment originalSegment,
+					Segment respeakingSegment) {
 		segmentMap.put(originalSegment, respeakingSegment);
 	}
 
-	public Iterator<Pair<Long, Long>> getOriginalSegmentIterator() {
+	public Iterator<Segment> getOriginalSegmentIterator() {
 		return segmentMap.keySet().iterator();
 	}
 
@@ -51,7 +50,7 @@ public class NewSegments {
 		String mapString = FileIO.read(path);
 		String[] lines = mapString.split("\n");
 		segmentMap = 
-				new LinkedHashMap<Pair<Long, Long>, Pair<Long, Long>>();
+				new LinkedHashMap<Segment, Segment>();
 		for (String line : lines) {
 			String[] segmentMatch = line.split(":");
 			if (segmentMatch.length != 2) {
@@ -60,24 +59,44 @@ public class NewSegments {
 			}
 			String[] originalSegment = segmentMatch[0].split(",");
 			String[] respeakingSegment = segmentMatch[1].split(",");
-			segmentMap.put(new Pair<Long, Long>(Long.parseLong(originalSegment[0]),
+			segmentMap.put(new Segment(Long.parseLong(originalSegment[0]),
 								Long.parseLong(originalSegment[1])),
-					new Pair<Long, Long>(Long.parseLong(respeakingSegment[0])
+					new Segment(Long.parseLong(respeakingSegment[0])
 						, Long.parseLong(respeakingSegment[1])));
 		}
 	}
 
 	public void write(File path) throws IOException {
 		String mapString = new String();
-		Pair<Long, Long> respeakingSegment;
-		for (Pair<Long, Long> originalSegment : segmentMap.keySet()) {
+		Segment respeakingSegment;
+		for (Segment originalSegment : segmentMap.keySet()) {
 			respeakingSegment = segmentMap.get(originalSegment);
 			mapString +=
-					originalSegment.first + "," + originalSegment.second + ":" 
-					+ respeakingSegment.first + "," + respeakingSegment.second
-					+ "\n";
+					originalSegment.getStartSample() + "," +
+					originalSegment.getEndSample() + ":" 
+					+ respeakingSegment.getStartSample() + "," +
+					respeakingSegment.getEndSample() + "\n";
 		}
 		FileIO.write(path, mapString);
 		Log.i("segments", "path: " + path + "mapstring: " + mapString);
+	}
+
+	/**
+	 * Represents a segment.
+	 */
+	public static class Segment {
+		private Pair<Long, Long> pair;
+
+		public Segment(Long startSample, Long endSample) {
+			this.pair = new Pair<Long, Long>(startSample, endSample);
+		}
+
+		public Long getStartSample() {
+			return this.pair.first;
+		}
+
+		public Long getEndSample() {
+			return this.pair.second;
+		}
 	}
 }

@@ -12,7 +12,6 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
-import android.util.Pair;
 
 import au.edu.unimelb.aikuma.audio.Player;
 import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
@@ -20,6 +19,8 @@ import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
 import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
 
 import au.edu.unimelb.aikuma.FileIO;
+
+import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
 
 /** Respeaker used to get input from eg. a microphone and
  *  output into a file. In addition, it also 
@@ -226,9 +227,9 @@ public class Respeaker extends Recorder {
 	protected void switchToPlay() {
 		rewind(650);
 		respeakingEndOfSegment = file.getCurrentSample();
-		Pair<Long, Long> originalSegment = new Pair<Long, Long>(
+		Segment originalSegment = new Segment(
 				originalStartOfSegment, originalEndOfSegment);
-		Pair<Long, Long> respeakingSegment = new Pair<Long, Long>(
+		Segment respeakingSegment = new Segment(
 				respeakingStartOfSegment, respeakingEndOfSegment);
 		Log.i("segments", "putting: " + originalStartOfSegment + "," +
 				originalEndOfSegment + ":" + respeakingStartOfSegment + "," +
@@ -294,9 +295,9 @@ public class Respeaker extends Recorder {
 			}
 			if (getFinishedPlaying()) {
 				respeakingEndOfSegment = file.getCurrentSample();
-				Pair<Long, Long> originalSegment = new Pair<Long, Long>(
+				Segment originalSegment = new Segment(
 						originalStartOfSegment, originalEndOfSegment);
-				Pair<Long, Long> respeakingSegment = new Pair<Long, Long>(
+				Segment respeakingSegment = new Segment(
 						respeakingStartOfSegment, respeakingEndOfSegment);
 				Log.i("segments", "putting: " + originalStartOfSegment + "," +
 						originalEndOfSegment + ":" + respeakingStartOfSegment + "," +
