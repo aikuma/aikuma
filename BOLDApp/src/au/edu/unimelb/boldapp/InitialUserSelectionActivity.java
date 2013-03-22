@@ -34,6 +34,13 @@ public class InitialUserSelectionActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.initial_user_selection);
+		TextView appName = (TextView) findViewById(R.id.AppTitle);
+		try {
+			appName.setText("Aikuma " + this.getPackageManager().getPackageInfo(
+					this.getPackageName(), 0).versionName);
+		} catch (android.content.pm.PackageManager.NameNotFoundException e) {
+			// Don't worry, just leave the title TextView as it was.
+		}
 		TextView link = (TextView) findViewById(R.id.Url);
 		setAsLink(link, link.getText().toString());
 	}
