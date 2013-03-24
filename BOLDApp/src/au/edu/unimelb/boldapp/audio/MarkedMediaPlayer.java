@@ -71,6 +71,11 @@ public class MarkedMediaPlayer extends MediaPlayer {
 	
 	private static int count;
 
+	private static long msecToSample(int msec) {
+		double sample = msec * (16000 / (float) 1000);
+		return (long) sample;
+	}
+
 	/**
 	 * Implements a run that polls the current position to check
 	 * if a previously set marker has been reache
@@ -82,6 +87,7 @@ public class MarkedMediaPlayer extends MediaPlayer {
 			while (getCurrentPosition() < getDuration()) {
 				try {
 					Thread.sleep(100);
+					//Log.i("segments", " " + ((long) sample));
 				} catch (InterruptedException e) {
 					// The player is being released so this thread should end.
 					return;
@@ -89,9 +95,13 @@ public class MarkedMediaPlayer extends MediaPlayer {
 				// If the marker is at zero, it's trivially low and the
 				// callback shouldn't be called.
 				if (notificationMarkerPosition != 0) {
+					Log.i("segments", " " +
+							msecToSample(notificationMarkerPosition) + " " +
+							msecToSample(getCurrentPosition()) + " " +
+							msecToSample(getDuration()));
 					if (getCurrentPosition() >= 
 							getNotificationMarkerPosition()) {
-						Log.i("mark", "marker reached");
+						Log.i("segments", "marker reached");
 						if(onMarkerReachedListener != null) {
 							Log.i("segCount", " " + count++);
 							onMarkerReachedListener.onMarkerReached(
@@ -99,6 +109,7 @@ public class MarkedMediaPlayer extends MediaPlayer {
 						}
 					}
 				}
+
 			}
 		}
 	}

@@ -30,6 +30,11 @@ public class Player extends MediaPlayer{
 		return (long) sample;
 	}
 
+	public long msecToSample(int msec) {
+		double sample = msec * (getSampleRate() / (float) 1000);
+		return (long) sample;
+	}
+
 	/**
 	 * Indicates whether the audio is currently being played
 	 */

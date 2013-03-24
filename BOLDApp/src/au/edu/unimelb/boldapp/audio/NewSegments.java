@@ -17,7 +17,18 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 public class NewSegments {
 
 	private LinkedHashMap<Segment, Segment> segmentMap;
+	private Segment finalOriginalSegment;
 	private UUID respeakingUUID;
+
+	/*
+	public void setFinalOriginalSegment(Segment finalOriginalSegment) {
+		this.finalOriginalSegment = finalOriginalSegment;
+	}
+	
+	public Segment getFinalOriginalSegment() {
+		return finalOriginalSegment;
+	}
+	*/
 
 	public NewSegments(UUID respeakingUUID) {
 		this();

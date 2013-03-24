@@ -129,6 +129,7 @@ public class ListenActivity extends Activity
 			player.setOnCompletionListener(new OnCompletionListener() {
 				@Override
 				public void onCompletion(MediaPlayer _player) {
+					Log.i("segments", "on completion hit!");
 					// Reset the play button
 					ImageButton button = (ImageButton) 
 							findViewById(R.id.Play);

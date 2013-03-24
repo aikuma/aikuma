@@ -183,6 +183,15 @@ public class Respeaker extends Recorder {
 	public void stop() {
 		super.stop();
 		player.stop();
+		if (respeakingStartOfSegment != null) {
+			Segment originalSegment = new Segment(
+				originalStartOfSegment,
+				originalEndOfSegment);
+			Segment respeakingSegment = new Segment(
+					respeakingStartOfSegment,
+					file.getCurrentSample());
+			segments.put(originalSegment, respeakingSegment);
+		}
 		try {
 			Log.i("segments", "Samples file name: " + mappingFilename);
 			segments.write(new File(mappingFilename));
@@ -216,8 +225,8 @@ public class Respeaker extends Recorder {
 	}
 
 	/** Rewinds the player. */
-	public void rewind(int miliseconds) {
-		player.rewind(miliseconds);
+	public void rewind(int milliseconds) {
+		player.rewind(milliseconds);
 	}
   
 	/*
@@ -235,6 +244,8 @@ public class Respeaker extends Recorder {
 				originalEndOfSegment + ":" + respeakingStartOfSegment + "," +
 				respeakingEndOfSegment);
 		segments.put(originalSegment, respeakingSegment);
+		respeakingStartOfSegment = null;
+		respeakingEndOfSegment = null;
 		Log.i("segments", "respeakingEndOfSegment: " + respeakingEndOfSegment);
 		originalStartOfSegment = player.getCurrentSample();
 		Log.i("segments", "originalStartOfSegment: " + originalStartOfSegment);

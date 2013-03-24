@@ -82,6 +82,11 @@ public class SimplePlayer extends MarkedMediaPlayer
 		return (int) sample / (getSampleRate() / 1000);
 	}
 
+	public long msecToSample(int msec) {
+		double sample = msec * (getSampleRate() / (float) 1000);
+		return (long) sample;
+	}
+
 
 	/**
 	 * Rewind the player a number of milliseconds.

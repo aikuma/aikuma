@@ -55,10 +55,16 @@ public class InterleavedPlayer implements PlayerInterface {
 	private void playSegment(
 			Segment segment, SimplePlayer player) {
 		Log.i("segments", "playing segment: " + segment);
-		player.seekTo(respeaking.sampleToMsec(segment.getStartSample()));
+		player.seekTo(player.sampleToMsec(segment.getStartSample()));
 		player.setNotificationMarkerPosition(
 				player.sampleToMsec(segment.getEndSample()));
 		player.start();
+	}
+
+	private void playFinalOriginalSegment() {
+		Log.i("segments", "playing final original segment");
+		original.seekTo(original.sampleToMsec(currentOriginalSegment.getEndSample()));
+		original.start();
 	}
 
 	/**
@@ -71,6 +77,7 @@ public class InterleavedPlayer implements PlayerInterface {
 		this.segments = new NewSegments(respeakingUUID);
 		Log.i("segments", respeakingUUID.toString());
 		Log.i("segments", segments.toString());
+		Log.i("segments", " " + respeaking.msecToSample(respeaking.getDuration()));
 		this.originalSegmentIterator = segments.getOriginalSegmentIterator();
 		toPlayOriginal = true;
 		currentOriginalSegment = originalSegmentIterator.next();
@@ -179,6 +186,8 @@ public class InterleavedPlayer implements PlayerInterface {
 			// Set notification marker back to zero so that the callback
 			// doesn't repeatedly get triggered
 			original.setNotificationMarkerPosition(0);
+			// If we're not playing the final segment, then play the
+			// corresponding respeaking segment.
 			playSegment(segments.getRespeakingSegment(currentOriginalSegment), respeaking);
 		}
 	}
@@ -187,12 +196,17 @@ public class InterleavedPlayer implements PlayerInterface {
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
 			respeaking.pause();
+			Log.i("segments", "MADE IT OMG");
 			// Set notification marker back to zero so that the callback
 			// doesn't repeatedly get triggered
 			respeaking.setNotificationMarkerPosition(0);
 			if (originalSegmentIterator.hasNext()) {
+				Log.i("segments", "hasnext");
 				currentOriginalSegment = originalSegmentIterator.next();
 				playSegment(currentOriginalSegment, original);
+			} else {
+				Log.i("segments", "else");
+				playFinalOriginalSegment();
 			}
 		}
 	}
