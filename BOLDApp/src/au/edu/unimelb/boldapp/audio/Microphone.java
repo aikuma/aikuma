@@ -28,7 +28,7 @@ public class Microphone {
 	 *
 	 *  Used to ferry samples to a PCM based file/consumer.
 	 */
-	protected short[] buffer = new short[1000];
+	protected short[] buffer = new short[1000]; // TODO Adapt this buffer size to the sampling rate. 1000 is for 44.1k.
 
 	/** AudioRecord listens to the microphone */
 	protected AudioRecord physicalMicrophone;

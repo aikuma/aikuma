@@ -35,7 +35,7 @@ public class Recorder implements AudioHandler {
 	 *
 	 *  Used to ferry samples to a PCM based file/consumer.
 	 */
-	protected short[] buffer = new short[1000];
+	protected short[] buffer = new short[1000]; // TODO Adapt this buffer size to the sampling rate.
 
 	/** AudioRecord listens to the microphone */
 	protected AudioRecord listener;
