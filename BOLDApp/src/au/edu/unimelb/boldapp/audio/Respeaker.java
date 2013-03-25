@@ -23,7 +23,7 @@ import au.edu.unimelb.aikuma.FileIO;
 import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
 
 /** Respeaker used to get input from eg. a microphone and
- *  output into a file. In addition, it also 
+ *  output into a file.tIn addition, it also 
  * 
  *  Usage:
  *    Respeaker respeaker = new Respeaker();

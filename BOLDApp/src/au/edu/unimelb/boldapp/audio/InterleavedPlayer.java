@@ -61,9 +61,9 @@ public class InterleavedPlayer implements PlayerInterface {
 		player.start();
 	}
 
-	private void playFinalOriginalSegment() {
+	private void playFinalOriginalSegment(Segment segment) {
 		Log.i("segments", "playing final original segment");
-		original.seekTo(original.sampleToMsec(currentOriginalSegment.getEndSample()));
+		original.seekTo(original.sampleToMsec(segment.getStartSample()));
 		original.start();
 	}
 
@@ -134,8 +134,20 @@ public class InterleavedPlayer implements PlayerInterface {
 	 */
 	public void setOnCompletionListener(
 			MediaPlayer.OnCompletionListener listener) {
-		original.setOnCompletionListener(listener);
-		respeaking.setOnCompletionListener(listener);
+		MediaPlayer.OnCompletionListener bothCompletedListener = new
+		MediaPlayer.OnCompletionListener() {
+			boolean completedOnce = false;
+			@Override
+			public void onCompletion(MediaPlayer _mp) {
+				if (completedOnce) {
+					listener.onCompletion(_mp);
+				} else {
+					completedOnce = true;
+				}
+			}
+		};
+		original.setOnCompletionListener(bothCompletedListener);
+		respeaking.setOnCompletionListener(bothCompletedListener);
 	}
 
 	/**
@@ -188,7 +200,9 @@ public class InterleavedPlayer implements PlayerInterface {
 			original.setNotificationMarkerPosition(0);
 			// If we're not playing the final segment, then play the
 			// corresponding respeaking segment.
-			playSegment(segments.getRespeakingSegment(currentOriginalSegment), respeaking);
+			if (currentOriginalSegment != null) {
+				playSegment(segments.getRespeakingSegment(currentOriginalSegment), respeaking);
+			}
 		}
 	}
 
@@ -206,7 +220,9 @@ public class InterleavedPlayer implements PlayerInterface {
 				playSegment(currentOriginalSegment, original);
 			} else {
 				Log.i("segments", "else");
-				playFinalOriginalSegment();
+				playFinalOriginalSegment(new
+						Segment(currentOriginalSegment.getEndSample(), 0l));
+				currentOriginalSegment = null;
 			}
 		}
 	}
