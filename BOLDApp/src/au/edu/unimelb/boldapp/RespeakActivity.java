@@ -108,6 +108,7 @@ public class RespeakActivity extends Activity {
 
 		this.uuid = UUID.randomUUID();
 
+    Toast.makeText(this, "Please be quiet!", Toast.LENGTH_SHORT).show();
     BackgroundNoise analyzers = new BackgroundNoise(50);
     int threshold = analyzers.getThreshold();
 		Toast.makeText(this, "Threshold: " + threshold, Toast.LENGTH_SHORT).show();
