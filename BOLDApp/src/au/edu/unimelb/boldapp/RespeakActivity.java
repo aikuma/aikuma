@@ -104,13 +104,17 @@ public class RespeakActivity extends Activity {
 		startedRespeaking = false;
 		respeaking = false;
 		respeaker = new Respeaker(new ThresholdSpeechAnalyzer(88, 3,
-				new AverageRecognizer(60, 60)), false);
+				new AverageRecognizer(32768/60, 32768/60)), false);
 
 		this.uuid = UUID.randomUUID();
 
+    BackgroundNoise analyzers = new BackgroundNoise(50);
+    int threshold = analyzers.getThreshold();
+		Toast.makeText(this, "Threshold: " + threshold, Toast.LENGTH_SHORT).show();
+
 		this.sensitivitySlider = (SeekBar)
 				findViewById(R.id.SensitivitySlider);
-		this.sensitivitySlider.setMax(100);
+    this.sensitivitySlider.setMax(threshold*2);
 		sensitivitySlider.setOnSeekBarChangeListener(
 			new OnSeekBarChangeListener() {
 				public void onProgressChanged(SeekBar sensitivitySlider,
@@ -127,11 +131,9 @@ public class RespeakActivity extends Activity {
 				public void onStopTrackingTouch(SeekBar seekBar) {
 				}
 			});
-		sensitivitySlider.setProgress(50);
+		sensitivitySlider.setProgress(threshold);
     
-    BackgroundNoise analyzers = new BackgroundNoise(50);
-    int threshold = analyzers.getThreshold();
-		Toast.makeText(this, "Threshold: " + threshold, Toast.LENGTH_SHORT).show();
+    respeaker.setSensitivity(threshold);
     
 		respeaker.prepare(
 				new File(FileIO.getRecordingsPath(), originalUUID.toString() +
