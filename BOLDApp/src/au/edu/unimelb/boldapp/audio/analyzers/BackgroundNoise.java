@@ -22,7 +22,7 @@ public class BackgroundNoise {
   public BackgroundNoise(int duration) {
     this.thresholder = new au.edu.unimelb.aikuma.audio.thresholders.BackgroundNoise(duration);
     this.microphone = new Microphone();
-    this.factor     = 2.0f;
+    this.factor     = 1.5f;
   }
   
   /**
