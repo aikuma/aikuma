@@ -33,8 +33,6 @@ public class Microphone {
 	/** AudioRecord listens to the microphone */
 	protected AudioRecord physicalMicrophone;
   
-  protected MicrophoneListener callback;
-  
 	public Microphone() {
 		physicalMicrophone = getListener(Constants.SAMPLE_RATE,
 				AudioFormat.ENCODING_PCM_16BIT,
@@ -88,9 +86,7 @@ public class Microphone {
 	}
 
 	/** Start listening. */
-	public void listen(MicrophoneListener callback) {
-    this.callback = callback;
-
+	public void listen(final MicrophoneListener callback) {
 		// If there is already a thread listening then kill it and ensure it's
 		// dead before creating a new thread.
     //
@@ -104,14 +100,14 @@ public class Microphone {
 		t = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				read();
+				read(callback);
 			}
 		});
 		t.start();
 	}
 
 	/** Read from the listener's buffer and call the callback. */
-	protected void read() {
+	protected void read(MicrophoneListener callback) {
 		physicalMicrophone.startRecording();
 
 		// Wait until something is heard.

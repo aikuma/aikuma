@@ -24,6 +24,7 @@ import au.edu.unimelb.aikuma.audio.Audio;
 import au.edu.unimelb.aikuma.audio.Respeaker;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
+import au.edu.unimelb.aikuma.audio.analyzer.BackgroundNoise;
 import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
 import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
 
@@ -127,7 +128,11 @@ public class RespeakActivity extends Activity {
 				}
 			});
 		sensitivitySlider.setProgress(50);
-
+    
+    BackgroundNoise analyzers = new BackgroundNoise(50);
+    int threshold = analyzers.getThreshold();
+		Toast.makeText(this, "Threshold: " + threshold, Toast.LENGTH_SHORT).show();
+    
 		respeaker.prepare(
 				new File(FileIO.getRecordingsPath(), originalUUID.toString() +
 				".wav").toString(),
