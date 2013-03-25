@@ -38,7 +38,7 @@ public class BackgroundNoise {
       // Log.i("avg*1.2", "" + average*1.2);
       // Log.i("min", "" + getMin());
       // Log.i("avg*0.9", "" + average*0.9);
-      if (getMax() <= average*1.2 && getMin() >= average*0.9) {
+      if (getMax() <= average*1.3 && getMin() >= average*0.8) {
         return average;
       }
     }
