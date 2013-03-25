@@ -25,7 +25,7 @@ public class BackgroundNoise {
   }
   
   /**
-   *
+   * @return A positive number if threshold is found, else if not.
    */
   public short getThreshold(short[] buffer) {
     short average = getAverage();
