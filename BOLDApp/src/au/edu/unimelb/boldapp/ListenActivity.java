@@ -126,7 +126,9 @@ public class ListenActivity extends Activity
 
 		// The code that is to be run when the player is complete.
 		if (player != null) {
-			player.setOnCompletionListener(new OnCompletionListener() {
+			player.setOnCompletionListener(
+					new InterleavedPlayerOnCompletionListener());
+				/*
 				@Override
 				public void onCompletion(MediaPlayer _player) {
 					Log.i("segments", "on completion hit!");
@@ -140,9 +142,45 @@ public class ListenActivity extends Activity
 					if (seekBarThread != null) {
 						seekBarThread.interrupt();
 					}
+					try {
+						ListenActivity.this.player =
+								new InterleavedPlayer(ListenActivity.this.recording.getUuid());
+					} catch (Exception e) {
+						//Why is this a pokemon exception handler?... interleaved should
+						//not be throwing those.
+					}
 					seekBar.setProgress(seekBar.getMax());
 				}
 			});
+			*/
+		}
+	}
+
+	private class InterleavedPlayerOnCompletionListener implements
+			OnCompletionListener {
+		@Override
+		public void onCompletion(MediaPlayer _) {
+			Log.i("segments", "on completion hit!");
+			// Reset the play button
+			ImageButton button = (ImageButton) 
+					findViewById(R.id.Play);
+			button.setImageResource(R.drawable.button_play);
+			// Adjust relevant booleans
+			startedPlaying = false;
+			// Stop the seekBarThread and set the progress to max.
+			if (seekBarThread != null) {
+				seekBarThread.interrupt();
+			}
+			try {
+				ListenActivity.this.player =
+						new InterleavedPlayer(ListenActivity.this.recording.getUuid());
+				ListenActivity.this.player.setOnCompletionListener(new
+						InterleavedPlayerOnCompletionListener());
+			} catch (Exception e) {
+				//Why is this a pokemon exception handler?... interleaved should
+				//not be throwing those.
+			}
+			seekBar.setProgress(seekBar.getMax());
 		}
 	}
 

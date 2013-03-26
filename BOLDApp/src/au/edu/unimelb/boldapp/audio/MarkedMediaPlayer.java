@@ -19,6 +19,7 @@ public class MarkedMediaPlayer {
 
 	public void start() {
 		mediaPlayer.start();
+		Log.i("segments", "threads: " + Thread.activeCount());
 	}
 
 	public int getCurrentPosition() {
@@ -91,6 +92,7 @@ public class MarkedMediaPlayer {
 
 	public void pause() {
 		mediaPlayer.pause();
+		Log.i("segments", "threads: " + Thread.activeCount());
 	}
 
 	public void setOnCompletionListener(
@@ -166,8 +168,13 @@ public class MarkedMediaPlayer {
 				} catch (InterruptedException e) {
 					// The player is being released so this thread should end.
 					Log.e("segments", "Exception thingo", e);
-					onMarkerReachedListener.onMarkerReached(
-							MarkedMediaPlayer.this);
+					try {
+						onMarkerReachedListener.onMarkerReached(
+								MarkedMediaPlayer.this);
+					} catch (IllegalStateException ise) {
+						// If we're getting this, then the player is just
+						// releasing so we don't do anything.
+					}
 					return;
 				}
 				// If the marker is at zero, it's trivially low and the
@@ -191,6 +198,13 @@ public class MarkedMediaPlayer {
 		}
 	}
 
+	private void startNotificationMarkerLoop() {
+		notificationMarkerLoop = new Thread(
+				new NotificationMarkerLoop(),
+				"NotificationMarkerLoop");
+		notificationMarkerLoop.start();
+	}
+
 	/**
 	 * Standard constructor that starts a NotificationMarkerLoop once the
 	 * MarkedMediaPlayer is prepared.
@@ -200,11 +214,14 @@ public class MarkedMediaPlayer {
 		setOnMarkerReachedListener(onMarkerReachedListener);
 		setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 			public void onPrepared(MediaPlayer _) {
+				startNotificationMarkerLoop();
+				/*
 				notificationMarkerLoop = new Thread(
 						new NotificationMarkerLoop(),
 						"NotificationMarkerLoop");
 				Log.i("segments", "starting the notification marker loop");
 				notificationMarkerLoop.start();
+				*/
 			}
 		});
 	}

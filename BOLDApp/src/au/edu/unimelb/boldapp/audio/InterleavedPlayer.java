@@ -62,7 +62,8 @@ public class InterleavedPlayer implements PlayerInterface {
 	}
 
 	private void playFinalOriginalSegment(Segment segment) {
-		Log.i("segments", "playing final original segment");
+		//Log.i("segments", "playing final original segment from " +
+		//segment.getStartSample() + " to " + original.getDuration());
 		original.seekTo(original.sampleToMsec(segment.getStartSample()));
 		original.start();
 	}
