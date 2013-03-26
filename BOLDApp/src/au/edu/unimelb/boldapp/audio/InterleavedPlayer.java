@@ -77,7 +77,8 @@ public class InterleavedPlayer implements PlayerInterface {
 		this.segments = new NewSegments(respeakingUUID);
 		Log.i("segments", respeakingUUID.toString());
 		Log.i("segments", segments.toString());
-		Log.i("segments", " " + respeaking.msecToSample(respeaking.getDuration()));
+		/*Log.i("segments", " " +
+		 * respeaking.msecToSample(respeaking.getDuration()));*/
 		this.originalSegmentIterator = segments.getOriginalSegmentIterator();
 		toPlayOriginal = true;
 		currentOriginalSegment = originalSegmentIterator.next();
@@ -133,7 +134,7 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * @param	listener	the callback that will be run.
 	 */
 	public void setOnCompletionListener(
-			MediaPlayer.OnCompletionListener listener) {
+			final MediaPlayer.OnCompletionListener listener) {
 		MediaPlayer.OnCompletionListener bothCompletedListener = new
 		MediaPlayer.OnCompletionListener() {
 			boolean completedOnce = false;
