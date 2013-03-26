@@ -108,10 +108,7 @@ public class RespeakActivity extends Activity {
 
 		this.uuid = UUID.randomUUID();
 
-    Toast.makeText(this, "Please be quiet!", Toast.LENGTH_SHORT).show();
-    BackgroundNoise analyzers = new BackgroundNoise(30);
-    int threshold = analyzers.getThreshold();
-		Toast.makeText(this, "Threshold: " + threshold, Toast.LENGTH_SHORT).show();
+    int threshold = getBackgroundNoiseThreshold();
 
 		this.sensitivitySlider = (SeekBar)
 				findViewById(R.id.SensitivitySlider);
@@ -160,7 +157,13 @@ public class RespeakActivity extends Activity {
 		});
 	}
 
-
+  protected int getBackgroundNoiseThreshold() {
+    Toast.makeText(this, "Please be quiet!", Toast.LENGTH_SHORT).show();
+    BackgroundNoise analyzers = new BackgroundNoise(30);
+    int threshold = analyzers.getThreshold();
+    Toast.makeText(this, "Threshold: " + threshold, Toast.LENGTH_SHORT).show();
+    return threshold;
+  };
 
 	/**
 	 * Called when the activity goes completely out of view
