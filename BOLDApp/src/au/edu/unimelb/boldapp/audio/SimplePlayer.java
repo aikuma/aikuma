@@ -29,7 +29,6 @@ public class SimplePlayer extends MarkedMediaPlayer
 			setDataSource(new File(FileIO.getRecordingsPath(),
 					uuid.toString() + ".wav").toString());
 			prepare();
-			Log.i("segments2", "prepared");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -50,7 +49,6 @@ public class SimplePlayer extends MarkedMediaPlayer
 			setDataSource(new File(FileIO.getRecordingsPath(),
 					uuid.toString() + ".wav").toString());
 			prepare();
-			Log.i("threads", "prepared");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
