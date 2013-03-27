@@ -172,10 +172,12 @@ public class ListenActivity extends Activity
 				seekBarThread.interrupt();
 			}
 			try {
+				/*
 				ListenActivity.this.player =
 						new InterleavedPlayer(ListenActivity.this.recording.getUuid());
 				ListenActivity.this.player.setOnCompletionListener(new
 						InterleavedPlayerOnCompletionListener());
+				*/
 			} catch (Exception e) {
 				//Why is this a pokemon exception handler?... interleaved should
 				//not be throwing those.
@@ -291,7 +293,7 @@ public class ListenActivity extends Activity
 		ImageButton button = (ImageButton) findViewById(R.id.Play);
 		button.setImageResource(R.drawable.button_play);
 		player.pause();
-		updateProgress();
+		//updateProgress();
 	}
 
 	/**

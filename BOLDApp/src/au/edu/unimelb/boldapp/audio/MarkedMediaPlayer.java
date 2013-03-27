@@ -19,7 +19,7 @@ public class MarkedMediaPlayer {
 
 	public void start() {
 		mediaPlayer.start();
-		Log.i("segments", "threads: " + Thread.activeCount());
+		Log.i("segments", "threads (at start): " + Thread.activeCount());
 	}
 
 	public int getCurrentPosition() {
@@ -100,8 +100,9 @@ public class MarkedMediaPlayer {
 		mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _mp) {
+				Log.i("segments2", " " + _mp.getCurrentPosition());
 				notificationMarkerLoop.interrupt();
-				listener.onCompletion(mediaPlayer);
+				//listener.onCompletion(mediaPlayer);
 			}
 		});
 	}
@@ -180,12 +181,12 @@ public class MarkedMediaPlayer {
 				// If the marker is at zero, it's trivially low and the
 				// callback shouldn't be called.
 				if (notificationMarkerPosition != 0) {
-					Log.i("segments", " " +
-							msecToSample(getNotificationMarkerPosition()) + " " +
-							msecToSample(getCurrentPosition()) + " "
-							/*msecToSample(getDuration())*/);
+							/*msecToSample(getDuration()));*/
 					if (getCurrentPosition() >= 
 							getNotificationMarkerPosition()) {
+						Log.i("segments", " " +
+								msecToSample(getNotificationMarkerPosition()) + " " +
+								msecToSample(getCurrentPosition()) + " ");
 						Log.i("segments", "marker reached");
 						if(onMarkerReachedListener != null) {
 							Log.i("segCount", " " + count++);

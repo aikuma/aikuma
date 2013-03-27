@@ -54,7 +54,11 @@ public class InterleavedPlayer implements PlayerInterface {
 
 	private void playSegment(
 			Segment segment, SimplePlayer player) {
-		Log.i("segments", "playing segment: " + segment);
+		if (player == original) {
+			Log.i("segments2", "playing segment on original: " + segment);
+		} else if (player == respeaking) {
+			Log.i("segments2", "playing segment on respeaking: " + segment);
+		}
 		player.seekTo(player.sampleToMsec(segment.getStartSample()));
 		player.setNotificationMarkerPosition(
 				player.sampleToMsec(segment.getEndSample()));
@@ -77,7 +81,7 @@ public class InterleavedPlayer implements PlayerInterface {
 		this.initializePlayers(respeakingUUID);
 		this.segments = new NewSegments(respeakingUUID);
 		Log.i("segments", respeakingUUID.toString());
-		Log.i("segments", segments.toString());
+		Log.i("segments2", "New InterleavedPlayer, segments:\n" + segments.toString());
 		/*Log.i("segments", " " +
 		 * respeaking.msecToSample(respeaking.getDuration()));*/
 		this.originalSegmentIterator = segments.getOriginalSegmentIterator();
@@ -141,6 +145,14 @@ public class InterleavedPlayer implements PlayerInterface {
 			boolean completedOnce = false;
 			@Override
 			public void onCompletion(MediaPlayer _mp) {
+				Log.i("segments2", "completedonce: " + completedOnce);
+				if (_mp == original.mediaPlayer) {
+					Log.i("segments2", "mp in bothCompletedListener: original");
+				} else if (_mp == respeaking.mediaPlayer) {
+					Log.i("segments2", "mp in bothCompletedListener: respeaking");
+				} else {
+					Log.i("segments2", " " + _mp);
+				}
 				if (completedOnce) {
 					listener.onCompletion(_mp);
 				} else {
@@ -164,6 +176,7 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * Pauses playback; call start() to resume.
 	 */
 	public void pause() {
+		Log.i("segments", "pausing some stuff");
 		original.pause();
 		respeaking.pause();
 	}
