@@ -1,4 +1,5 @@
-package au.edu.unimelb.aikuma; 
+package au.edu.unimelb.aikuma;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -6,11 +7,15 @@ import java.util.Date;
 import java.util.UUID;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.util.Log;
@@ -20,12 +25,15 @@ import android.widget.Toast;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
+import java.util.concurrent.ExecutionException;
+
 import au.edu.unimelb.aikuma.audio.Audio;
 import au.edu.unimelb.aikuma.audio.Respeaker;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
-import au.edu.unimelb.aikuma.audio.analyzer.BackgroundNoise;
+import au.edu.unimelb.aikuma.audio.analyzers.BackgroundNoise;
 import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
+import au.edu.unimelb.aikuma.audio.analyzers.BackgroundNoiseQualityListener;
 import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
 
 /**
@@ -94,12 +102,12 @@ public class RespeakActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-
 		//Get the original from the intent
 		Intent intent = getIntent();
 		UUID originalUUID = (UUID) intent.getExtras().get("recordingUUID");
 		this.original = GlobalState.getRecordingMap().get(originalUUID);
-		setContentView(R.layout.respeak);
+    
+    setContentView(R.layout.respeak);
 
 		startedRespeaking = false;
 		respeaking = false;
@@ -107,31 +115,6 @@ public class RespeakActivity extends Activity {
 				new AverageRecognizer(32768/60, 32768/60)), false);
 
 		this.uuid = UUID.randomUUID();
-
-    int threshold = getBackgroundNoiseThreshold();
-
-		this.sensitivitySlider = (SeekBar)
-				findViewById(R.id.SensitivitySlider);
-    this.sensitivitySlider.setMax(threshold*2);
-		sensitivitySlider.setOnSeekBarChangeListener(
-			new OnSeekBarChangeListener() {
-				public void onProgressChanged(SeekBar sensitivitySlider,
-						int sensitivity, boolean fromUser) {
-					Log.i("issue35", "sensitivity: " + sensitivity);
-					if (sensitivity == 0) {
-						respeaker.setSensitivity(1);
-					} else {
-						respeaker.setSensitivity(sensitivity);
-					}
-				}
-				public void onStartTrackingTouch(SeekBar seekBar) {
-				}
-				public void onStopTrackingTouch(SeekBar seekBar) {
-				}
-			});
-		sensitivitySlider.setProgress(threshold);
-    
-    respeaker.setSensitivity(threshold);
     
 		respeaker.prepare(
 				new File(FileIO.getRecordingsPath(), originalUUID.toString() +
@@ -156,13 +139,81 @@ public class RespeakActivity extends Activity {
 			}
 		});
 	}
+    
+  class BackgroundNoiseThresholdTask extends AsyncTask<Object, Float, Integer> {
+    
+    protected View view;
+    
+    public BackgroundNoiseThresholdTask(View view) {
+      this.view = view;
+    }
 
-  protected int getBackgroundNoiseThreshold() {
-    Toast.makeText(this, "Please be quiet!", Toast.LENGTH_SHORT).show();
-    BackgroundNoise analyzers = new BackgroundNoise(30);
-    int threshold = analyzers.getThreshold();
-    Toast.makeText(this, "Threshold: " + threshold, Toast.LENGTH_SHORT).show();
-    return threshold;
+    @Override
+    protected Integer doInBackground(Object... steps) {
+      view.setVisibility(View.INVISIBLE);
+      BackgroundNoise analyzers = new BackgroundNoise((Integer) steps[0]);
+      int threshold = analyzers.getThreshold(new BackgroundNoiseQualityListener() {
+        public void noiseLevelQualityUpdated(float quality) {
+          Log.i("noiseLevelQualityUpdated", "" + quality);
+          publishProgress(quality);
+        }
+      });
+      return threshold;
+    }
+
+    @Override
+    protected void onProgressUpdate(Float... quality) {
+        // progressDialog.setMessage("Quality: " + quality[0]);
+        // progressDialog.show();
+    }
+    
+    @Override
+    protected void onPostExecute(Integer threshold) {
+      // progressDialog.dismiss();
+      view.setVisibility(View.VISIBLE);
+      Toast.makeText(RespeakActivity.this, "Threshold: " + threshold, Toast.LENGTH_SHORT).show();
+    }
+  }
+
+  protected void extractBackgroundNoiseThreshold() {
+    ProgressDialog progressDialog = new ProgressDialog(this);
+    progressDialog.setCancelable(true);
+    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    progressDialog.setMessage("Quality");
+    progressDialog.show();
+      
+    AsyncTask task = new BackgroundNoiseThresholdTask(progressDialog);
+    task.execute(30);
+    int threshold = 32768;
+    try {
+      threshold = (Integer) task.get();
+    } catch (ExecutionException e) {
+      
+    } catch(InterruptedException e) {
+        
+    }
+    
+		this.sensitivitySlider = (SeekBar)
+				findViewById(R.id.SensitivitySlider);
+    this.sensitivitySlider.setMax(threshold*2);
+		sensitivitySlider.setOnSeekBarChangeListener(
+			new OnSeekBarChangeListener() {
+				public void onProgressChanged(SeekBar sensitivitySlider,
+						int sensitivity, boolean fromUser) {
+					Log.i("issue35", "sensitivity: " + sensitivity);
+					if (sensitivity == 0) {
+						respeaker.setSensitivity(1);
+					} else {
+						respeaker.setSensitivity(sensitivity);
+					}
+				}
+				public void onStartTrackingTouch(SeekBar seekBar) {
+				}
+				public void onStopTrackingTouch(SeekBar seekBar) {
+				}
+			});
+		sensitivitySlider.setProgress(threshold);
+    respeaker.setSensitivity(threshold);
   };
 
 	/**
@@ -187,8 +238,16 @@ public class RespeakActivity extends Activity {
 	public void onResume() {
 		super.onResume();
     
+    Handler handler = new Handler();
+    handler.postDelayed(new Runnable() {
+      public void run() {
+        RespeakActivity.this.extractBackgroundNoiseThreshold();
+      }
+    }, 500);
+    
+    // extractBackgroundNoiseThreshold();
+    
 		Audio.playThroughEarpiece(this, false);
-		//respeaker.playThroughEarpiece();
 
 		this.proximityDetector =
 				new ProximityDetector( RespeakActivity.this, 2.0f) {

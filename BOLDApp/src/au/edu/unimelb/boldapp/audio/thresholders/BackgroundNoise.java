@@ -15,6 +15,7 @@ public class BackgroundNoise {
   protected Processor processor = new Processor();
   protected int[] averages;
   protected int currentAverage = -1;
+  protected float currentQuality;
   
   public BackgroundNoise() {
     this(20);
@@ -22,27 +23,31 @@ public class BackgroundNoise {
   
   public BackgroundNoise(int windowSize) {
     this.averages = new int[windowSize];
+    this.currentQuality = -1;
   }
   
   /**
    * @return A positive number if threshold is found, else if not.
    */
-  public int getThreshold(short[] buffer) {
+  public float getThreshold(short[] buffer) {
     addBuffer(buffer);
-    if (!isBufferFilled()) { return -1; }
-    int average = getAverage();
-    if (average > 0) {
-      // If there are no exceptional values, we return a threshold.
-      //
-      // Log.i("max", "" + getMax());
-      // Log.i("avg*1.2", "" + average*1.2);
-      // Log.i("min", "" + getMin());
-      // Log.i("avg*0.9", "" + average*0.9);
-      if (getMax() <= average*1.3 && getMin() >= average*0.8) {
-        return average;
+    if (isBufferFilled()) {
+      float average = getAverage();
+      if (average > 0) {
+        // If there are no exceptional values, we return a threshold.
+        //
+        int min = getMin();
+        float minThreshold = average*0.8f;
+        int max = getMax();
+        float maxThreshold = average*1.3f;
+        if (minThreshold <= min && max <= maxThreshold) {
+          return average;
+        } else {
+          currentQuality = -(minThreshold/min)-(max/maxThreshold);
+        }
       }
     }
-    return -1;
+    return currentQuality;
   }
   
   protected boolean isBufferFilled() {
@@ -58,10 +63,10 @@ public class BackgroundNoise {
     averages[currentAverage] = processor.getAverage(buffer);
   }
   
-  protected int getAverage() {
-    int sum = 0;
+  protected float getAverage() {
+    float sum = 0;
     for (int i = 0; i < averages.length; i++) {
-      int average = averages[i];
+      float average = averages[i];
       if (average == 0) {
         return -1;
       } else {
