@@ -54,22 +54,17 @@ public class InterleavedPlayer implements PlayerInterface {
 
 	private void playSegment(
 			Segment segment, SimplePlayer player) {
-		if (player == original) {
-			Log.i("segments2", "playing segment on original: " + segment);
-		} else if (player == respeaking) {
-			Log.i("segments2", "playing segment on respeaking: " + segment);
+		if (segment != null) {
+			if (player == original) {
+				Log.i("segments2", "playing segment on original: " + segment);
+			} else if (player == respeaking) {
+				Log.i("segments2", "playing segment on respeaking: " + segment);
+			}
+			player.seekTo(player.sampleToMsec(segment.getStartSample()));
+			player.setNotificationMarkerPosition(
+					player.sampleToMsec(segment.getEndSample()));
+			player.start();
 		}
-		player.seekTo(player.sampleToMsec(segment.getStartSample()));
-		player.setNotificationMarkerPosition(
-				player.sampleToMsec(segment.getEndSample()));
-		player.start();
-	}
-
-	private void playFinalOriginalSegment(Segment segment) {
-		//Log.i("segments", "playing final original segment from " +
-		//segment.getStartSample() + " to " + original.getDuration());
-		original.seekTo(original.sampleToMsec(segment.getStartSample()));
-		original.start();
 	}
 
 	/**
@@ -78,15 +73,8 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * @param	respeakingUUID	The UUID of the respeaking.
 	 */
 	public InterleavedPlayer(UUID respeakingUUID) throws Exception {
-		this.initializePlayers(respeakingUUID);
+		initializePlayers(respeakingUUID);
 		this.segments = new NewSegments(respeakingUUID);
-		Log.i("segments", respeakingUUID.toString());
-		Log.i("segments2", "New InterleavedPlayer, segments:\n" + segments.toString());
-		/*Log.i("segments", " " +
-		 * respeaking.msecToSample(respeaking.getDuration()));*/
-		this.originalSegmentIterator = segments.getOriginalSegmentIterator();
-		toPlayOriginal = true;
-		currentOriginalSegment = originalSegmentIterator.next();
 	}
 
 	private void initializePlayers(UUID respeakingUUID) throws IOException {
@@ -116,13 +104,44 @@ public class InterleavedPlayer implements PlayerInterface {
 		return original.isPlaying() || respeaking.isPlaying();
 	}
 
+	public Iterator<Segment> getOriginalSegmentIterator() {
+		if (originalSegmentIterator == null) {
+			originalSegmentIterator = segments.getOriginalSegmentIterator();
+		}
+		return originalSegmentIterator;
+	}
+
+	private Segment getCurrentOriginalSegment() {
+		if (currentOriginalSegment == null) {
+			advanceSegment();
+		}
+		return currentOriginalSegment;
+	}
+
+	// This should only ever be called from the respeaking notification marker
+	// listener
+	private void advanceSegment() {
+		if (getOriginalSegmentIterator().hasNext()) {
+			currentOriginalSegment = getOriginalSegmentIterator().next();
+		} else {
+			long startSample;
+			if (currentOriginalSegment != null) {
+				startSample = currentOriginalSegment.getEndSample();
+			} else {
+				startSample = 0l;
+			}
+			currentOriginalSegment = new Segment(startSample, Long.MAX_VALUE);
+		}
+	}
+
 	/**
 	 * Starts and resumes playback; if playback had previously been paused,
 	 * playback will resume from where it was paused; if playback had been
 	 * stopped, or never started before, playback will start at the beginning.
 	 */
 	public void start() {
-		playSegment(currentOriginalSegment, original);
+		playOriginal();
+		// playSegment(getCurrentOriginalSegment(), original);
 		/*
 		if (toPlayOriginal) {
 			original.start();
@@ -154,7 +173,7 @@ public class InterleavedPlayer implements PlayerInterface {
 					Log.i("segments2", " " + _mp);
 				}
 				if (completedOnce) {
-					listener.onCompletion(_mp);
+					//listener.onCompletion(_mp);
 				} else {
 					completedOnce = true;
 				}
@@ -209,36 +228,35 @@ public class InterleavedPlayer implements PlayerInterface {
 	private class OriginalMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
-			original.pause();
-			// Set notification marker back to zero so that the callback
-			// doesn't repeatedly get triggered
-			original.setNotificationMarkerPosition(0);
-			// If we're not playing the final segment, then play the
-			// corresponding respeaking segment.
-			if (currentOriginalSegment != null) {
-				playSegment(segments.getRespeakingSegment(currentOriginalSegment), respeaking);
-			}
+			playRespeaking();
 		}
+	}
+
+	private void playRespeaking() {
+		// Set notification marker back to zero so that the callback
+		// doesn't repeatedly get triggered
+		original.setNotificationMarkerPosition(0);
+		original.pause();
+		// If we're not playing the final segment, then play the
+		// corresponding respeaking segment.
+		Log.i("respeakingSegment", " " +
+		segments.getRespeakingSegment(getCurrentOriginalSegment()));
+		playSegment(segments.getRespeakingSegment(getCurrentOriginalSegment()), respeaking);
 	}
 
 	private class RespeakingMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
-			respeaking.pause();
-			Log.i("segments", "MADE IT OMG");
-			// Set notification marker back to zero so that the callback
-			// doesn't repeatedly get triggered
-			respeaking.setNotificationMarkerPosition(0);
-			if (originalSegmentIterator.hasNext()) {
-				Log.i("segments", "hasnext");
-				currentOriginalSegment = originalSegmentIterator.next();
-				playSegment(currentOriginalSegment, original);
-			} else {
-				Log.i("segments", "else");
-				playFinalOriginalSegment(new
-						Segment(currentOriginalSegment.getEndSample(), 0l));
-				currentOriginalSegment = null;
-			}
+			advanceSegment();
+			playOriginal();
 		}
+	}
+
+	private void playOriginal() {
+		// Set notification marker back to zero so that the callback
+		// doesn't repeatedly get triggered
+		respeaking.setNotificationMarkerPosition(0);
+		respeaking.pause();
+		playSegment(getCurrentOriginalSegment(), original);
 	}
 }

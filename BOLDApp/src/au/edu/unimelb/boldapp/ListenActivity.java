@@ -107,7 +107,6 @@ public class ListenActivity extends Activity
 					Toast.makeText(this, 
 							e.getMessage(),
 							Toast.LENGTH_LONG).show();
-					Log.e("ListenActivity", "fine dime brizzle", e);
 					ListenActivity.this.finish();
 				}
 			} else {
