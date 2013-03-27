@@ -22,23 +22,23 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * The object that represents the mapping between segments of the original
 	 * and the respeaking.
 	 */
-	protected NewSegments segments;
+	private NewSegments segments;
 
 	/**
 	 * The Player for the original audio.
 	 */
-	protected SimplePlayer original;
+	private SimplePlayer original;
 
 	/**
 	 * The Player for the respeaking audio.
 	 */
-	protected SimplePlayer respeaking;
+	private SimplePlayer respeaking;
 
-	protected Iterator<Segment> originalSegmentIterator;
+	private Iterator<Segment> originalSegmentIterator;
 
-	protected Segment currentOriginalSegment;
+	private Segment currentOriginalSegment;
 	
-	protected MediaPlayer.OnCompletionListener onCompletionListener;
+	private MediaPlayer.OnCompletionListener onCompletionListener;
 
 	/**
 	 * Standard Constructor; takes the UUID of the respeaking.
@@ -130,7 +130,7 @@ public class InterleavedPlayer implements PlayerInterface {
 		respeaking.release();
 	}
 	
-	protected void initializePlayers(UUID respeakingUUID) throws IOException {
+	private void initializePlayers(UUID respeakingUUID) throws IOException {
 		Recording respeakingMeta = FileIO.readRecording(respeakingUUID);
 		UUID originalUUID = respeakingMeta.getOriginalUUID();
 		original = new SimplePlayer(originalUUID, new
@@ -139,11 +139,11 @@ public class InterleavedPlayer implements PlayerInterface {
 				RespeakingMarkerReachedListener());
 	}
 	
-	protected void initializeSegments(UUID respeakingUUID) {
+	private void initializeSegments(UUID respeakingUUID) {
 		this.segments = new NewSegments(respeakingUUID);
 	}
 	
-	protected void initializeListeners() {
+	private void initializeListeners() {
 		MediaPlayer.OnCompletionListener bothCompletedListener = new
 		MediaPlayer.OnCompletionListener() {
 			boolean completedOnce = false;
@@ -163,19 +163,19 @@ public class InterleavedPlayer implements PlayerInterface {
 		respeaking.setOnCompletionListener(bothCompletedListener);
 	}
 
-	protected void playOriginal() {
+	private void playOriginal() {
 		playSegment(getCurrentOriginalSegment(), original);
 	}
 	
-	protected void playRespeaking() {
+	private void playRespeaking() {
 		playSegment(getCurrentRespeakingSegment(), respeaking);
 	}
 	
-	protected Segment getCurrentRespeakingSegment() {
+	private Segment getCurrentRespeakingSegment() {
 		return segments.getRespeakingSegment(getCurrentOriginalSegment());
 	}
 	
-	protected class OriginalMarkerReachedListener extends
+	private class OriginalMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
 			original.pause();
@@ -183,7 +183,7 @@ public class InterleavedPlayer implements PlayerInterface {
 		}
 	}
 
-	protected class RespeakingMarkerReachedListener extends
+	private class RespeakingMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
 			respeaking.pause();
@@ -192,7 +192,7 @@ public class InterleavedPlayer implements PlayerInterface {
 		}
 	}
 	
-	protected void playSegment(
+	private void playSegment(
 			Segment segment, SimplePlayer player) {
 		if (segment != null) {
 			player.seekTo(segment);
@@ -201,7 +201,7 @@ public class InterleavedPlayer implements PlayerInterface {
 		}
 	}
 	
-	protected void advanceOriginalSegment() {
+	private void advanceOriginalSegment() {
 		if (getOriginalSegmentIterator().hasNext()) {
 			currentOriginalSegment = getOriginalSegmentIterator().next();
 		} else {
@@ -215,14 +215,14 @@ public class InterleavedPlayer implements PlayerInterface {
 		}
 	}
 	
-	protected Segment getCurrentOriginalSegment() {
+	private Segment getCurrentOriginalSegment() {
 		if (currentOriginalSegment == null) {
 			advanceOriginalSegment();
 		}
 		return currentOriginalSegment;
 	}
 	
-	protected Iterator<Segment> getOriginalSegmentIterator() {
+	private Iterator<Segment> getOriginalSegmentIterator() {
 		if (originalSegmentIterator == null) {
 			originalSegmentIterator = segments.getOriginalSegmentIterator();
 		}
