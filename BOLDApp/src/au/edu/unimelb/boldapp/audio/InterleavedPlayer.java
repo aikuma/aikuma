@@ -174,7 +174,10 @@ public class InterleavedPlayer implements PlayerInterface {
 					Log.i("segments2", " " + _mp);
 				}
 				if (completedOnce) {
-					//listener.onCompletion(_mp);
+					listener.onCompletion(_mp);
+					currentOriginalSegment = null;
+					originalSegmentIterator = segments.getOriginalSegmentIterator();
+					completedOnce = false;
 				} else {
 					completedOnce = true;
 				}

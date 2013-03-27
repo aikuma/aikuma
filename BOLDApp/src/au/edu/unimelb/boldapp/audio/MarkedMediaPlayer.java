@@ -101,8 +101,12 @@ public class MarkedMediaPlayer {
 			@Override
 			public void onCompletion(MediaPlayer _mp) {
 				Log.i("segments2", " " + _mp.getCurrentPosition());
-				notificationMarkerLoop.interrupt();
-				//listener.onCompletion(mediaPlayer);
+				if (_mp.getCurrentPosition() > 0) {
+					//notificationMarkerLoop.interrupt();
+					//onMarkerReachedListener.onMarkerReached(
+					//		MarkedMediaPlayer.this);
+					listener.onCompletion(mediaPlayer);
+				}
 			}
 		});
 	}
@@ -157,7 +161,6 @@ public class MarkedMediaPlayer {
 	 * if a previously set marker has been reache
 	 */
 	private class NotificationMarkerLoop implements Runnable {
-		private int position;
 
 		public void run() {
 			//while (getCurrentPosition() < getDuration()) {
@@ -169,8 +172,6 @@ public class MarkedMediaPlayer {
 					// The player is being released so this thread should end.
 					Log.e("segments", "Exception thingo", e);
 					try {
-						onMarkerReachedListener.onMarkerReached(
-								MarkedMediaPlayer.this);
 					} catch (IllegalStateException ise) {
 						// If we're getting this, then the player is just
 						// releasing so we don't do anything.
