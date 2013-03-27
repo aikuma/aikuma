@@ -141,6 +141,12 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * stopped, or never started before, playback will start at the beginning.
 	 */
 	public void start() {
+		original.mediaPlayer.setOnErrorListener(new
+		MediaPlayer.OnErrorListener() {
+			public void onError(MediaPlayer _mp) {
+				// TODO
+			}
+		}
 		playOriginal();
 		// playSegment(getCurrentOriginalSegment(), original);
 		/*

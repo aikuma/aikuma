@@ -13,13 +13,16 @@ import java.io.IOException;
  */
 public class MarkedMediaPlayer {
 
+	private boolean hasStartedPlaying = false;
+
 	public void seekTo(int msec) {
 		mediaPlayer.seekTo(msec);
 	}
 
 	public void start() {
+		startNotificationMarkerLoop();
 		mediaPlayer.start();
-		Log.i("segments", "threads (at start): " + Thread.activeCount());
+		if (!hasStartedPlaying) { hasStartedPlaying = true; }
 	}
 
 	public int getCurrentPosition() {
@@ -91,8 +94,10 @@ public class MarkedMediaPlayer {
 	*/
 
 	public void pause() {
-		mediaPlayer.pause();
-		Log.i("segments", "threads: " + Thread.activeCount());
+		if (hasStartedPlaying) {
+			stopNotificationMarkerLoop();
+			mediaPlayer.pause();
+		}
 	}
 
 	public void setOnCompletionListener(
@@ -102,31 +107,14 @@ public class MarkedMediaPlayer {
 			public void onCompletion(MediaPlayer _mp) {
 				Log.i("segments2", " " + _mp.getCurrentPosition());
 				if (_mp.getCurrentPosition() > 0) {
-					//notificationMarkerLoop.interrupt();
-					//onMarkerReachedListener.onMarkerReached(
-					//		MarkedMediaPlayer.this);
+					stopNotificationMarkerLoop();
+					onMarkerReachedListener.onMarkerReached(
+							MarkedMediaPlayer.this);
 					listener.onCompletion(mediaPlayer);
 				}
 			}
 		});
 	}
-
-	/*
-	@Override
-	public void setOnCompletionListener(final
-			MediaPlayer.OnCompletionListener listener) {
-
-		super.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-			@Override
-			public void onCompletion(MediaPlayer _mp) {
-				Log.i("segments", "COMPLETION");
-				notificationMarkerLoop.interrupt();
-				onMarkerReachedListener.onMarkerReached(MarkedMediaPlayer.this);
-				listener.onCompletion(_mp);
-			}
-		});
-	}
-	*/
 
 	/**
 	 * Sets the listener the MarkedMediaPlayer notifies when a previously set
@@ -206,6 +194,12 @@ public class MarkedMediaPlayer {
 		notificationMarkerLoop.start();
 	}
 
+	private void stopNotificationMarkerLoop() {
+		if (notificationMarkerLoop != null) {
+			notificationMarkerLoop.interrupt();
+		}
+	}
+
 	/**
 	 * Standard constructor that starts a NotificationMarkerLoop once the
 	 * MarkedMediaPlayer is prepared.
@@ -215,7 +209,6 @@ public class MarkedMediaPlayer {
 		setOnMarkerReachedListener(onMarkerReachedListener);
 		setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 			public void onPrepared(MediaPlayer _) {
-				startNotificationMarkerLoop();
 				/*
 				notificationMarkerLoop = new Thread(
 						new NotificationMarkerLoop(),
@@ -239,10 +232,7 @@ public class MarkedMediaPlayer {
 
 
 	public void release() {
-		// Destroy the notificationMarkerLoop thread.
-		if (this.notificationMarkerLoop != null) {
-			this.notificationMarkerLoop.interrupt();
-		}
+		stopNotificationMarkerLoop();
 		mediaPlayer.release();
 	}
 
