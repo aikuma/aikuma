@@ -60,10 +60,11 @@ public class InterleavedPlayer implements PlayerInterface {
 			} else if (player == respeaking) {
 				Log.i("segments2", "playing segment on respeaking: " + segment);
 			}
-			player.seekTo(player.sampleToMsec(segment.getStartSample()));
-			player.setNotificationMarkerPosition(
-					player.sampleToMsec(segment.getEndSample()));
+			player.seekTo(segment);
+			player.setNotificationMarkerPosition(segment);
 			player.start();
+		} else {
+			Log.i("segments2", " " + segment);
 		}
 	}
 
@@ -228,35 +229,25 @@ public class InterleavedPlayer implements PlayerInterface {
 	private class OriginalMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
+			original.pause();
 			playRespeaking();
 		}
 	}
 
 	private void playRespeaking() {
-		// Set notification marker back to zero so that the callback
-		// doesn't repeatedly get triggered
-		original.setNotificationMarkerPosition(0);
-		original.pause();
-		// If we're not playing the final segment, then play the
-		// corresponding respeaking segment.
-		Log.i("respeakingSegment", " " +
-		segments.getRespeakingSegment(getCurrentOriginalSegment()));
 		playSegment(segments.getRespeakingSegment(getCurrentOriginalSegment()), respeaking);
 	}
 
 	private class RespeakingMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
+			respeaking.pause();
 			advanceSegment();
 			playOriginal();
 		}
 	}
 
 	private void playOriginal() {
-		// Set notification marker back to zero so that the callback
-		// doesn't repeatedly get triggered
-		respeaking.setNotificationMarkerPosition(0);
-		respeaking.pause();
 		playSegment(getCurrentOriginalSegment(), original);
 	}
 }

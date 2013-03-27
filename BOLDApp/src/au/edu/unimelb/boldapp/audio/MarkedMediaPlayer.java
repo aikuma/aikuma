@@ -143,7 +143,6 @@ public class MarkedMediaPlayer {
 		public abstract void onMarkerReached(MarkedMediaPlayer p);
 	}
 	
-	private static int count;
 
 	/**
 	 * THIS IS TEMPORARY FOR DEBUGGING
@@ -180,18 +179,18 @@ public class MarkedMediaPlayer {
 				}
 				// If the marker is at zero, it's trivially low and the
 				// callback shouldn't be called.
-				if (notificationMarkerPosition != 0) {
+				if (notificationMarkerPosition > 0) {
 							/*msecToSample(getDuration()));*/
 					if (getCurrentPosition() >= 
 							getNotificationMarkerPosition()) {
-						Log.i("segments", " " +
+						Log.i("segments2", " " +
 								msecToSample(getNotificationMarkerPosition()) + " " +
-								msecToSample(getCurrentPosition()) + " ");
-						Log.i("segments", "marker reached");
+								msecToSample(getCurrentPosition()));
+						Log.i("segments2", "marker reached");
 						if(onMarkerReachedListener != null) {
-							Log.i("segCount", " " + count++);
 							onMarkerReachedListener.onMarkerReached(
 									MarkedMediaPlayer.this);
+							unsetNotificationMarkerPosition();
 						}
 					}
 				}
@@ -244,5 +243,9 @@ public class MarkedMediaPlayer {
 			this.notificationMarkerLoop.interrupt();
 		}
 		mediaPlayer.release();
+	}
+
+	public void unsetNotificationMarkerPosition() {
+		setNotificationMarkerPosition(-1);
 	}
 }

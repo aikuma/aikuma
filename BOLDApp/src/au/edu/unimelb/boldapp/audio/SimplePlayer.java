@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.util.Log;
 
 import au.edu.unimelb.aikuma.FileIO;
+import static au.edu.unimelb.aikuma.audio.NewSegments.Segment;
 
 /**
  * A player that allows individual audio files to be played.
@@ -101,4 +102,13 @@ public class SimplePlayer extends MarkedMediaPlayer
 		}
 		seekTo(targetPosition);
 	}
+
+	public void seekTo(Segment segment) {
+		super.seekTo(sampleToMsec(segment.getStartSample()));
+	}
+
+	public void setNotificationMarkerPosition(Segment segment) {
+		super.setNotificationMarkerPosition(sampleToMsec(segment.getEndSample()));
+	}
+
 }
