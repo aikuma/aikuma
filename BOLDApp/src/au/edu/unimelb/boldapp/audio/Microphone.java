@@ -48,9 +48,10 @@ public class Microphone {
 	 * We get about 44 buffers per second.
 	 */
 	private void initializeBuffer() {
-		int size = Math.round(1000f*physicalMicrophone.getSampleRate()/44100);
-		Log.i("SIZE", " " + size);
-		this.buffer = new short[size];
+		this.buffer = new short[getBufferSize()];
+	}
+	private int getBufferSize() {
+		return Math.round(1000f*physicalMicrophone.getSampleRate()/44100);
 	}
 	
 	public int getSampleRate() { return physicalMicrophone.getSampleRate(); }
