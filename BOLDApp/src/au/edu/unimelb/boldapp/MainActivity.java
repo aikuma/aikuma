@@ -35,8 +35,16 @@ public class MainActivity extends Activity {
 		super.onResume();
 		setContentView(R.layout.main);
 		TextView nameView = (TextView) findViewById(R.id.UserName);
-		assert nameView != null;
-		assert GlobalState.getCurrentUser() != null;
+		if (nameView == null) {
+			throw new NullPointerException("nameView is null");
+		}
+		if (GlobalState.getCurrentUser() == null ) {
+			throw new NullPointerException("GlobalState.getCurrentUser() is null");
+		}
+		if (GlobalState.getCurrentUser().getName() == null ) {
+			throw new
+			NullPointerException("GlobalState.getCurrentUser().getName() is null");
+		}
 		nameView.setText(GlobalState.getCurrentUser().getName());
 
 		if (GlobalState.getCurrentUser().getUuid() != this.uuid) {
