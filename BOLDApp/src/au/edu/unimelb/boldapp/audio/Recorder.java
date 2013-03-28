@@ -27,21 +27,13 @@ import au.edu.unimelb.aikuma.audio.analyzers.SimpleAnalyzer;
  *
  *  Note that stopping the recorder closes and finalizes the WAV file.
  */
-public class Recorder implements AudioHandler {
-
-	protected Thread t;
-
-	/** Recording buffer.
-	 *
-	 *  Used to ferry samples to a PCM based file/consumer.
-	 */
-	protected short[] buffer = new short[1000];
-
-	/** AudioRecord listens to the microphone */
-	protected AudioRecord listener;
+public class Recorder implements AudioHandler, MicrophoneListener {
 
 	/** File to write to. */
 	protected PCMWriter file;
+	
+	/** Microphone input */
+	Microphone microphone;
 
 	/** Analyzer that analyzes the incoming data. */
 	Analyzer analyzer;
@@ -73,79 +65,32 @@ public class Recorder implements AudioHandler {
 	public Recorder(Analyzer analyzer) {
 		this.analyzer = analyzer;
 
-		setUpListener();
+		setUpMicrophone();
 		setUpFile();
 	}
 
 	public Recorder(Analyzer analyzer, Context appContext) {
 		this.analyzer = analyzer;
 
-		setUpListener();
+		setUpMicrophone();
 		setUpFile();
 
 		beepPlayer = MediaPlayer.create(appContext, R.raw.beeps);
 		beepPlayer.setVolume(.10f, .10f);
 	}
 
-	/** Sets up the listening device. Eg. the microphone. */
-	protected void setUpListener() {
-		waitForAudioRecord();
+	protected void setUpMicrophone() {
+		this.microphone = new Microphone();
 	}
 
 	/** Sets the file up for writing. */
 	protected void setUpFile() {
-		file = PCMWriter.getInstance(listener.getSampleRate(),
-				listener.getChannelConfiguration(), listener.getAudioFormat());
+		file = PCMWriter.getInstance(
+				microphone.getSampleRate(),
+				microphone.getChannelConfiguration(),
+				microphone.getAudioFormat()
+		);
   }
-
-	/** Waits for the listening device. */
-	public void waitForAudioRecord() {
-		listener = getListener(Constants.SAMPLE_RATE,
-				AudioFormat.ENCODING_PCM_16BIT,
-				AudioFormat.CHANNEL_CONFIGURATION_MONO);
-		do {
-		} while (listener.getState() != AudioRecord.STATE_INITIALIZED);
-	}
-
-	/** Tries to get a listening device for the built-in/external microphone.
-	 *
-	 * Note: It converts the Android parameters into
-	 * parameters that are useful for AudioRecord.
-	 */
-	protected static AudioRecord getListener(
-			int sampleRate, int audioFormat, int channelConfig) {
-
-		// Sample size.
-		//
-		int sampleSize;
-		if (audioFormat == AudioFormat.ENCODING_PCM_16BIT) {
-			sampleSize = 16;
-		} else {
-			sampleSize = 8;
-		}
-
-		// Channels.
-		//
-		int numberOfChannels;
-		if (channelConfig == AudioFormat.CHANNEL_CONFIGURATION_MONO) {
-			numberOfChannels = 1;
-		} else {
-			numberOfChannels = 2;
-		}
-		
-		// Calculate buffer size.
-		//
-
-		/** The period used for callbacks to onBufferFull. */
-		int framePeriod = sampleRate * 120 / 1000;
-
-		/** The buffer needed for the above period */
-		int bufferSize = framePeriod * 2 * sampleSize * numberOfChannels / 8;
-
-		return new AudioRecord(MediaRecorder.AudioSource.MIC,
-				sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO,
-				AudioFormat.ENCODING_PCM_16BIT, bufferSize);
-	}
 
 	/**
 	 * Prepares the recorder for recording.
@@ -156,35 +101,7 @@ public class Recorder implements AudioHandler {
 
 	/** Start listening. */
 	public void listen() {
-
-		if (beepPlayer != null) {
-			beepPlayer.start();
-			try {
-				Thread.sleep(500);
-			} catch (Exception e) {
-				Log.i("issue30", "hit");
-			}
-		}
-
-		// If there is already a thread listening then kill it and ensure it's
-		// dead before creating a new thread.
-		if (t != null) {
-			t.interrupt();
-			while (t.isAlive()) {
-			}
-		}
-
-		Log.i("sick", "new stuff");
-
-		// Simply reads and reads...
-		//
-		t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				read();
-			}
-		});
-		t.start();
+		microphone.listen(this);
 	}
 
 	/** Stop listening to the microphone and close the file.
@@ -192,68 +109,23 @@ public class Recorder implements AudioHandler {
 	 * Note: Once stopped you cannot restart the recorder.
 	 */
 	public void stop() {
-		listener.stop();
-		do {
-		} while (listener.getState() != AudioRecord.RECORDSTATE_STOPPED);
+		microphone.stop();
 		file.close();
 	}
 
 	/** Pause listening to the microphone. */
 	public void pause() {
-		listener.stop();
-		do {
-		} while (listener.getState() != AudioRecord.RECORDSTATE_STOPPED);
+		microphone.stop();
 	}
 
-	protected int speedCount;
-
-	/** Read from the listener's buffer and call the callback. */
-	protected void read() {
-		// Start listening to the audio device.
-		listener.startRecording();
-
-		long startTime = 0l;
-		long endTime = 0l;
-		int numRead;
-
-		// Wait until something is heard.
-		while (true) {
-			startTime = System.nanoTime();
-			numRead = listener.read(buffer, 0, buffer.length);
-			Log.i("numRead", "numRead: " + numRead);
-			if (!(numRead > 0)) {
-				break;
-			}
-			endTime = System.nanoTime();
-			Log.i("sick", "itertime: " + ((endTime - startTime)/1000000f));
-			
-			// Hand in a copy of the buffer.
-			//
-			if (Thread.interrupted()) {
-				Log.i("sick", "woah there");
-				return;
-			}
-			Log.i("meAndMyBassGuitar", "speedCount " + speedCount++);
-			Log.i("meAndMyBassGuitar", "threadCount " + Thread.activeCount());
-			onBufferFull(Arrays.copyOf(buffer, buffer.length));
-		}
-	}
-
-	/** As soon as enough data has been read, this method
-	 *  will be called, allowing the recorder to handle
-	 *  the incoming data using an analyzer.
-	 */
-	protected void onBufferFull(short[] buffer) {
+	/** Callback for the microphone */
+	public void onBufferFull(short[] buffer) {
 		// This will call back the methods:
 		//  * silenceTriggered
 		//  * audioTriggered
 		//
-		long startTime = System.nanoTime();
 		analyzer.analyze(this, buffer);
-		long endTime = System.nanoTime();
-		Log.i("sick", "analyze time: " + (endTime - startTime));
 	}
-
 
 	//The following two methods handle silences/speech
 	// discovered in the input data.
