@@ -34,23 +34,57 @@ public class Microphone {
 	protected AudioRecord physicalMicrophone;
   
 	public Microphone() {
-		physicalMicrophone = getListener(Constants.SAMPLE_RATE,
+		physicalMicrophone = getListener(
+				Constants.SAMPLE_RATE,
 				AudioFormat.ENCODING_PCM_16BIT,
-				AudioFormat.CHANNEL_CONFIGURATION_MONO);
+				AudioFormat.CHANNEL_CONFIGURATION_MONO
+		);
 		waitForPhysicalMicrophone();
 	}
+	
+	public int getSampleRate() { return physicalMicrophone.getSampleRate(); }
+	public int getChannelConfiguration() { return physicalMicrophone.getChannelConfiguration(); }
+	public int getAudioFormat() { return physicalMicrophone.getAudioFormat(); }
 
+	/** Start listening. */
+	public void listen(final MicrophoneListener callback) {
+		// If there is already a thread listening then kill it and ensure it's
+		// dead before creating a new thread.
+    //
+		if (t != null) {
+			t.interrupt();
+			while (t.isAlive()) {}
+		}
+
+		// Simply reads and reads...
+		//
+		t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				read(callback);
+			}
+		});
+		t.start();
+	}
+  
+	/** Stop listening to the microphone. */
+	public void stop() {
+		physicalMicrophone.stop();
+		do {
+		} while (physicalMicrophone.getState() != AudioRecord.RECORDSTATE_STOPPED);
+	}
+	
 	/** Waits for the listening device. */
-	public void waitForPhysicalMicrophone() {
+	private void waitForPhysicalMicrophone() {
 		do {} while (physicalMicrophone.getState() != AudioRecord.STATE_INITIALIZED);
 	}
-
+	
 	/** Tries to get a listening device for the built-in/external microphone.
 	 *
 	 * Note: It converts the Android parameters into
 	 * parameters that are useful for AudioRecord.
 	 */
-	protected static AudioRecord getListener(
+	private static AudioRecord getListener(
 			int sampleRate, int audioFormat, int channelConfig) {
 
 		// Sample size.
@@ -84,30 +118,9 @@ public class Microphone {
 				sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO,
 				AudioFormat.ENCODING_PCM_16BIT, bufferSize);
 	}
-
-	/** Start listening. */
-	public void listen(final MicrophoneListener callback) {
-		// If there is already a thread listening then kill it and ensure it's
-		// dead before creating a new thread.
-    //
-		if (t != null) {
-			t.interrupt();
-			while (t.isAlive()) {}
-		}
-
-		// Simply reads and reads...
-		//
-		t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				read(callback);
-			}
-		});
-		t.start();
-	}
-
+	
 	/** Read from the listener's buffer and call the callback. */
-	protected void read(MicrophoneListener callback) {
+	private void read(MicrophoneListener callback) {
 		physicalMicrophone.startRecording();
 
 		// Wait until something is heard.
@@ -127,12 +140,5 @@ public class Microphone {
         callback.onBufferFull(Arrays.copyOf(buffer, buffer.length));
       }
 		}
-	}
-  
-	/** Stop listening to the microphone. */
-	public void stop() {
-		physicalMicrophone.stop();
-		do {
-		} while (physicalMicrophone.getState() != AudioRecord.RECORDSTATE_STOPPED);
 	}
 }
