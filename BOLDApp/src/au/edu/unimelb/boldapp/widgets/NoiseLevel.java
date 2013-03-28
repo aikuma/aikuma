@@ -32,6 +32,7 @@ public class NoiseLevel {
 	
 	private RespeakActivity activity;
 	private int signalsSampled;
+	private BackgroundNoise backgroundNoiseAnalyzer;
 	
 	public NoiseLevel(RespeakActivity activity, int signalsSampled) {
 		this.activity = activity;
@@ -44,6 +45,7 @@ public class NoiseLevel {
 		final Dialog dialog = new Dialog(activity) {
 			@Override
 			public void onBackPressed() {
+				NoiseLevel.this.backgroundNoiseAnalyzer.stop();
 				setSensitivity(50);
 				super.onBackPressed();
 			}
@@ -63,7 +65,8 @@ public class NoiseLevel {
 		
 		final Paint paint = new Paint();
 		
-		new BackgroundNoise(signalsSampled).getThreshold(new BackgroundNoiseListener() {
+		backgroundNoiseAnalyzer = new BackgroundNoise(signalsSampled);
+		backgroundNoiseAnalyzer.getThreshold(new BackgroundNoiseListener() {
 			public void noiseLevelQualityUpdated(final Noise.Information information) {
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
