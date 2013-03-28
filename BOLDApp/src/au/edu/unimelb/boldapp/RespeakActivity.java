@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -31,10 +29,9 @@ import au.edu.unimelb.aikuma.audio.Audio;
 import au.edu.unimelb.aikuma.audio.Respeaker;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
-import au.edu.unimelb.aikuma.audio.analyzers.BackgroundNoise;
 import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
-import au.edu.unimelb.aikuma.audio.analyzers.BackgroundNoiseQualityListener;
 import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
+import au.edu.unimelb.aikuma.audio.widgets.NoiseLevel;
 
 /**
  * The activity that allows one to respeak audio.
@@ -78,18 +75,10 @@ public class RespeakActivity extends Activity {
 	 * Sensitivity Slider
 	 */
 	protected SeekBar sensitivitySlider;
-
-	/**
-	 * Indicates whether audio is being recorded
-	 */
-	//private Boolean recording;
-	/**
-	 * Instance of the recorder class that offers methods to record.
-	 */
-	//private Recorder recorder;
-	//private Boolean alreadyStarted;
-
-
+	
+	public SeekBar getSensitivitySlider() { return this.sensitivitySlider; }
+	public Respeaker getRespeaker() { return this.respeaker; }
+	
 	/**
 	 * Called when the activity starts.
 	 *
@@ -139,81 +128,14 @@ public class RespeakActivity extends Activity {
 			}
 		});
 	}
-    
-  class BackgroundNoiseThresholdTask extends AsyncTask<Object, Float, Integer> {
-    
-    protected View view;
-    
-    public BackgroundNoiseThresholdTask(View view) {
-      this.view = view;
-    }
-
-    @Override
-    protected Integer doInBackground(Object... steps) {
-      view.setVisibility(View.INVISIBLE);
-      BackgroundNoise analyzers = new BackgroundNoise((Integer) steps[0]);
-      int threshold = analyzers.getThreshold(new BackgroundNoiseQualityListener() {
-        public void noiseLevelQualityUpdated(float quality) {
-          Log.i("noiseLevelQualityUpdated", "" + quality);
-          publishProgress(quality);
-        }
-      });
-      return threshold;
-    }
-
-    @Override
-    protected void onProgressUpdate(Float... quality) {
-        // progressDialog.setMessage("Quality: " + quality[0]);
-        // progressDialog.show();
-    }
-    
-    @Override
-    protected void onPostExecute(Integer threshold) {
-      // progressDialog.dismiss();
-      view.setVisibility(View.VISIBLE);
-      Toast.makeText(RespeakActivity.this, "Threshold: " + threshold, Toast.LENGTH_SHORT).show();
-    }
-  }
 
   protected void extractBackgroundNoiseThreshold() {
-    ProgressDialog progressDialog = new ProgressDialog(this);
-    progressDialog.setCancelable(true);
-    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-    progressDialog.setMessage("Quality");
-    progressDialog.show();
-      
-    AsyncTask task = new BackgroundNoiseThresholdTask(progressDialog);
-    task.execute(30);
-    int threshold = 32768;
-    try {
-      threshold = (Integer) task.get();
-    } catch (ExecutionException e) {
-      
-    } catch(InterruptedException e) {
-        
-    }
-    
-		this.sensitivitySlider = (SeekBar)
-				findViewById(R.id.SensitivitySlider);
-    this.sensitivitySlider.setMax(threshold*2);
-		sensitivitySlider.setOnSeekBarChangeListener(
-			new OnSeekBarChangeListener() {
-				public void onProgressChanged(SeekBar sensitivitySlider,
-						int sensitivity, boolean fromUser) {
-					Log.i("issue35", "sensitivity: " + sensitivity);
-					if (sensitivity == 0) {
-						respeaker.setSensitivity(1);
-					} else {
-						respeaker.setSensitivity(sensitivity);
-					}
-				}
-				public void onStartTrackingTouch(SeekBar seekBar) {
-				}
-				public void onStopTrackingTouch(SeekBar seekBar) {
-				}
-			});
-		sensitivitySlider.setProgress(threshold);
-    respeaker.setSensitivity(threshold);
+    Handler handler = new Handler();
+    handler.postDelayed(new Runnable() {
+      public void run() {
+        new NoiseLevel(RespeakActivity.this).find();
+      }
+    }, 500);
   };
 
 	/**
@@ -238,14 +160,23 @@ public class RespeakActivity extends Activity {
 	public void onResume() {
 		super.onResume();
     
-    Handler handler = new Handler();
-    handler.postDelayed(new Runnable() {
-      public void run() {
-        RespeakActivity.this.extractBackgroundNoiseThreshold();
-      }
-    }, 500);
-    
-    // extractBackgroundNoiseThreshold();
+		sensitivitySlider = (SeekBar) findViewById(R.id.SensitivitySlider);
+		sensitivitySlider.setOnSeekBarChangeListener(
+			new OnSeekBarChangeListener() {
+				public void onProgressChanged(SeekBar sensitivitySlider,
+						int sensitivity, boolean fromUser) {
+					if (sensitivity == 0) {
+						respeaker.setSensitivity(1);
+					} else {
+						respeaker.setSensitivity(sensitivity);
+					}
+				}
+				public void onStartTrackingTouch(SeekBar seekBar) {}
+				public void onStopTrackingTouch(SeekBar seekBar) {}
+			}
+		);
+		
+		extractBackgroundNoiseThreshold();
     
 		Audio.playThroughEarpiece(this, false);
 

@@ -4,6 +4,7 @@ import android.util.Log;
 import au.edu.unimelb.aikuma.audio.Microphone;
 import au.edu.unimelb.aikuma.audio.MicrophoneListener;
 import au.edu.unimelb.aikuma.audio.Processor;
+import au.edu.unimelb.aikuma.audio.thresholders.Noise;
 
 /** 
  * Tries to extract the level of background noise
@@ -14,13 +15,12 @@ import au.edu.unimelb.aikuma.audio.Processor;
  */
 public class BackgroundNoise {
   
-  protected au.edu.unimelb.aikuma.audio.thresholders.BackgroundNoise thresholder;
+  protected Noise thresholder;
   protected Microphone microphone;
-  protected float threshold = -1;
   protected float factor;
   
   public BackgroundNoise(int duration) {
-    this.thresholder = new au.edu.unimelb.aikuma.audio.thresholders.BackgroundNoise(duration);
+    this.thresholder = new Noise(duration);
     this.microphone = new Microphone();
     this.factor     = 1.5f;
   }
@@ -28,34 +28,19 @@ public class BackgroundNoise {
   /**
    * Tries to find a threshold value.
    */
-  public int getThreshold() {
-    return getThreshold(new BackgroundNoiseQualityListener() {
-      public void noiseLevelQualityUpdated(float quality) {
-        // Nothing.
-      }
-    });
-  }
-  public int getThreshold(final BackgroundNoiseQualityListener listener) {
+  public void getThreshold(final BackgroundNoiseListener listener) {
     // Try finding a stable background noise.
     //
     microphone.listen(new MicrophoneListener() {
       public void onBufferFull(short[] buffer) {
-        BackgroundNoise.this.threshold = BackgroundNoise.this.thresholder.getThreshold(buffer);
-        Log.i("Quality: ", "" + BackgroundNoise.this.threshold);
-        listener.noiseLevelQualityUpdated(BackgroundNoise.this.threshold);
-        if (BackgroundNoise.this.threshold >= 0) {
+        Noise.Information information = BackgroundNoise.this.thresholder.getInformation(buffer);
+        listener.noiseLevelQualityUpdated(information);
+        if (information.getQuality() >= 0) {
           microphone.stop();
+					listener.noiseLevelFound(information);
         }
       }
     });
-    
-    // Blocking.
-    //
-    while (threshold < 0) {};
-    
-    // How much more sensitive?
-    //
-    return Math.round(threshold * factor);
   }
 
 }
