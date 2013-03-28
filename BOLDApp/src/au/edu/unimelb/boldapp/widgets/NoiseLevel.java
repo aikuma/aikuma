@@ -55,7 +55,6 @@ public class NoiseLevel {
 			    return false;
 			}
 		};
-		// dialog FLAG_KEEP_SCREEN_ON FLAG_NOT_TOUCHABLE TYPE_APPLICATION
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		final ImageView imageView = new ImageView(activity);
 		final Bitmap bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
