@@ -1,7 +1,9 @@
 package au.edu.unimelb.aikuma.audio;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 
 import android.content.Context;
@@ -16,8 +18,12 @@ import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
 import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
 import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
 
+import au.edu.unimelb.aikuma.FileIO;
+
+import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
+
 /** Respeaker used to get input from eg. a microphone and
- *  output into a file. In addition, it also 
+ *  output into a file.tIn addition, it also 
  * 
  *  Usage:
  *    Respeaker respeaker = new Respeaker();
@@ -50,6 +56,15 @@ public class Respeaker extends Recorder {
 	/** Player to play the original with. */
 	public Player player;
 
+	private NewSegments segments;
+
+	private Long originalStartOfSegment;
+	private Long originalEndOfSegment;
+	private Long respeakingStartOfSegment;
+	private Long respeakingEndOfSegment;
+
+	private String mappingFilename;
+
 	/**
 	 * finishedPlaying mutator
 	 */
@@ -75,6 +90,7 @@ public class Respeaker extends Recorder {
 		super();
 		setFinishedPlaying(false);
 		this.player = new Player();
+		segments = new NewSegments();
 		//0.18 is the highest volume that can be set without causing the
 		//feedback problem for the respeak activity on the cheap huawei phones.
 		//this.player.setVolume(0.18f,0.18f);
@@ -84,6 +100,7 @@ public class Respeaker extends Recorder {
 		super(context);
 		setFinishedPlaying(false);
 		this.player = new Player();
+		segments = new NewSegments();
 		//0.18 is the highest volume that can be set without causing the
 		//feedback problem for the respeak activity on the cheap huawei phones.
 		//this.player.setVolume(0.18f,0.18f);
@@ -100,6 +117,7 @@ public class Respeaker extends Recorder {
 		} else {
 			this.playThroughEarpiece();
 		}
+		segments = new NewSegments();
 		//0.18 is the highest volume that can be set without causing the
 		//feedback problem for the respeak activity on the cheap huawei phones.
 		//this.player.setVolume(0.18f,0.18f);
@@ -109,6 +127,7 @@ public class Respeaker extends Recorder {
 		super(analyzer, context);
 		setFinishedPlaying(false);
 		this.player = new Player();
+		segments = new NewSegments();
 		//0.18 is the highest volume that can be set without causing the
 		//feedback problem for the respeak activity on the cheap huawei phones.
 		//this.player.setVolume(0.18f,0.18f);
@@ -117,11 +136,12 @@ public class Respeaker extends Recorder {
   
 	/** Prepare the respeaker by setting a source file and a target file. */
 	public void prepare(String sourceFilename, String targetFilename,
-			String samplesFilename) {
+			String mappingFilename) {
 		player.prepare(sourceFilename);
 		super.prepare(targetFilename);
+		this.mappingFilename = mappingFilename;
 		try {
-			writer = new BufferedWriter(new FileWriter(samplesFilename));
+			writer = new BufferedWriter(new FileWriter(mappingFilename + "old"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -131,6 +151,8 @@ public class Respeaker extends Recorder {
 	public void listen() {
 		super.listen();
 		player.play();
+		originalStartOfSegment = player.getCurrentSample();
+		Log.i("segments", "originalStartOfSegment: " + originalStartOfSegment);
 		try {
 			long originalCurrentSample = player.getCurrentSample();
 			//writer.write(originalCurrentSample + ",");
@@ -161,6 +183,22 @@ public class Respeaker extends Recorder {
 	public void stop() {
 		super.stop();
 		player.stop();
+		if (respeakingStartOfSegment != null) {
+			Segment originalSegment = new Segment(
+				originalStartOfSegment,
+				originalEndOfSegment);
+			Segment respeakingSegment = new Segment(
+					respeakingStartOfSegment,
+					file.getCurrentSample());
+			segments.put(originalSegment, respeakingSegment);
+		}
+		try {
+			Log.i("segments", "Samples file name: " + mappingFilename);
+			segments.write(new File(mappingFilename));
+		} catch (IOException e) {
+			// Couldn't write mapping.
+			Log.e("segments", "couldn't write mapping", e);
+		}
 		try {
 			writer.close();
 		} catch (Exception e) {
@@ -181,27 +219,47 @@ public class Respeaker extends Recorder {
 	/** Resume playing. */
 	public void resume() {
 		super.listen();
+		originalStartOfSegment = player.getCurrentSample();
+		Log.i("segments", "originalStartOfSegment: " + originalStartOfSegment);
 		switchToPlay();
 	}
 
 	/** Rewinds the player. */
-	public void rewind(int miliseconds) {
-		player.rewind(miliseconds);
+	public void rewind(int milliseconds) {
+		player.rewind(milliseconds);
 	}
   
 	/*
 	 * Switches the mode to play mode.
 	 *
-	 * TODO Play a quick beep to inform user.
 	 */
 	protected void switchToPlay() {
 		rewind(650);
+		respeakingEndOfSegment = file.getCurrentSample();
+		Segment originalSegment = new Segment(
+				originalStartOfSegment, originalEndOfSegment);
+		Segment respeakingSegment = new Segment(
+				respeakingStartOfSegment, respeakingEndOfSegment);
+		Log.i("segments", "putting: " + originalStartOfSegment + "," +
+				originalEndOfSegment + ":" + respeakingStartOfSegment + "," +
+				respeakingEndOfSegment);
+		segments.put(originalSegment, respeakingSegment);
+		respeakingStartOfSegment = null;
+		respeakingEndOfSegment = null;
+		Log.i("segments", "respeakingEndOfSegment: " + respeakingEndOfSegment);
+		originalStartOfSegment = player.getCurrentSample();
+		Log.i("segments", "originalStartOfSegment: " + originalStartOfSegment);
 		player.resume();
 	}
 
 	/** Switches the mode to record mode. */
 	protected void switchToRecord() {
 		player.pause();
+		originalEndOfSegment = player.getCurrentSample();
+		Log.i("segments", "originalEndOfSegment: " + originalEndOfSegment);
+		respeakingStartOfSegment = file.getCurrentSample();
+		Log.i("segments", "respeakingStartOfSegment: " +
+					respeakingStartOfSegment);
 	}
 
 	@Override
@@ -217,6 +275,7 @@ public class Respeaker extends Recorder {
 		if (justChanged) {
 			try {
 				writer.write(originalCurrentSample + ",");
+				respeakingStartOfSegment = currentSample;
 				Log.i("issue37mapping", "original: " + originalCurrentSample);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -241,10 +300,20 @@ public class Respeaker extends Recorder {
 			try {
 				Log.i("issue37mapping", "respeaking: " + currentSample);
 				writer.write(currentSample + "\n");
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			if (getFinishedPlaying()) {
+				respeakingEndOfSegment = file.getCurrentSample();
+				Segment originalSegment = new Segment(
+						originalStartOfSegment, originalEndOfSegment);
+				Segment respeakingSegment = new Segment(
+						respeakingStartOfSegment, respeakingEndOfSegment);
+				Log.i("segments", "putting: " + originalStartOfSegment + "," +
+						originalEndOfSegment + ":" + respeakingStartOfSegment + "," +
+						respeakingEndOfSegment);
+				segments.put(originalSegment, respeakingSegment);
 				super.stop();
 				try {
 					writer.close();

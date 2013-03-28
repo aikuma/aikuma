@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.util.Log;
 
 import au.edu.unimelb.aikuma.FileIO;
+import static au.edu.unimelb.aikuma.audio.NewSegments.Segment;
 
 /**
  * A player that allows individual audio files to be played.
@@ -28,7 +29,6 @@ public class SimplePlayer extends MarkedMediaPlayer
 			setDataSource(new File(FileIO.getRecordingsPath(),
 					uuid.toString() + ".wav").toString());
 			prepare();
-			Log.i("threads", "prepared");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -49,7 +49,6 @@ public class SimplePlayer extends MarkedMediaPlayer
 			setDataSource(new File(FileIO.getRecordingsPath(),
 					uuid.toString() + ".wav").toString());
 			prepare();
-			Log.i("threads", "prepared");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -82,6 +81,11 @@ public class SimplePlayer extends MarkedMediaPlayer
 		return (int) sample / (getSampleRate() / 1000);
 	}
 
+	public long msecToSample(int msec) {
+		double sample = msec * (getSampleRate() / (float) 1000);
+		return (long) sample;
+	}
+
 
 	/**
 	 * Rewind the player a number of milliseconds.
@@ -96,4 +100,13 @@ public class SimplePlayer extends MarkedMediaPlayer
 		}
 		seekTo(targetPosition);
 	}
+
+	public void seekTo(Segment segment) {
+		super.seekTo(sampleToMsec(segment.getStartSample()));
+	}
+
+	public void setNotificationMarkerPosition(Segment segment) {
+		super.setNotificationMarkerPosition(sampleToMsec(segment.getEndSample()));
+	}
+
 }

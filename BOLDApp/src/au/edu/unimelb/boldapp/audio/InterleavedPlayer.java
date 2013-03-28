@@ -2,11 +2,14 @@ package au.edu.unimelb.aikuma.audio;
 
 import android.media.MediaPlayer;
 import android.util.Log;
-import android.util.Pair;
 import au.edu.unimelb.aikuma.FileIO;
 import au.edu.unimelb.aikuma.Recording;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.HashMap;
 import java.util.UUID;
+
+import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
 
 /**
  * Offers functionality to play a respeaking interleaved with the original.
@@ -19,7 +22,7 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * The object that represents the mapping between segments of the original
 	 * and the respeaking.
 	 */
-	private Segments segments;
+	private NewSegments segments;
 
 	/**
 	 * The Player for the original audio.
@@ -31,19 +34,11 @@ public class InterleavedPlayer implements PlayerInterface {
 	 */
 	private SimplePlayer respeaking;
 
-	/**
-	 * Boolean that indicates whether to play the original or not; used when
-	 * the InterleavedPlayer is to start playing after being paused to
-	 * determine which player to use.
-	 */
-	private boolean toPlayOriginal;
+	private Iterator<Segment> originalSegmentIterator;
 
-	/**
-	 * Counter which indicates which segment in the original and respeaking the
-	 * player is up to; is incremented after both the original and respeaking
-	 * have been played for a given segment.
-	 */
-	private int segmentCount;
+	private Segment currentOriginalSegment;
+	
+	private MediaPlayer.OnCompletionListener onCompletionListener;
 
 	/**
 	 * Standard Constructor; takes the UUID of the respeaking.
@@ -51,34 +46,9 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * @param	respeakingUUID	The UUID of the respeaking.
 	 */
 	public InterleavedPlayer(UUID respeakingUUID) throws Exception {
-		this.initializePlayers(respeakingUUID);
-		this.segments = new Segments(respeakingUUID);
-		toPlayOriginal = true;
-		segmentCount = 0;
-		original.setNotificationMarkerPosition(original.sampleToMsec(
-				segments.getOriginalSegments().get(segmentCount)));
-		respeaking.setNotificationMarkerPosition(respeaking.sampleToMsec(
-				segments.getRespeakingSegments().get(segmentCount)));
-		//Log.i("issue37", "segments original: " + this.segments.getOriginalSegments());
-		//Log.i("issue37", "segments respeaking: " + this.segments.getRespeakingSegments());
-	}
-
-	private void initializePlayers(UUID respeakingUUID) throws IOException {
-		Recording respeakingMeta = FileIO.readRecording(respeakingUUID);
-		UUID originalUUID = respeakingMeta.getOriginalUUID();
-		original = new SimplePlayer(originalUUID, new
-				OriginalMarkerReachedListener());
-		respeaking = new SimplePlayer(respeakingUUID, new
-				RespeakingMarkerReachedListener());
-	}
-
-	/**
-	 * Gets the current playback position.
-	 *
-	 * @return the current position in milliseconds.
-	 */
-	public int getCurrentPosition() {
-		return original.getCurrentPosition() + respeaking.getCurrentPosition();
+		initializePlayers(respeakingUUID);
+		initializeSegments(respeakingUUID);
+		initializeListeners();
 	}
 
 	/**
@@ -96,12 +66,7 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * stopped, or never started before, playback will start at the beginning.
 	 */
 	public void start() {
-		if (toPlayOriginal) {
-			Log.i("InterleavedPlayer", "starting original");
-			original.start();
-		} else {
-			respeaking.start();
-		}
+		playOriginal();
 	}
 
 	/**
@@ -111,37 +76,16 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * @param	listener	the callback that will be run.
 	 */
 	public void setOnCompletionListener(
-			MediaPlayer.OnCompletionListener listener) {
-		original.setOnCompletionListener(listener);
-		respeaking.setOnCompletionListener(listener);
-	}
-
-	/**
-	 * Releases resources associated with this Player.
-	 */
-	public void release() {
-		original.release();
-		respeaking.release();
+			final MediaPlayer.OnCompletionListener onCompletionListener) {
+		this.onCompletionListener = onCompletionListener;
 	}
 
 	/**
 	 * Pauses playback; call start() to resume.
 	 */
 	public void pause() {
-		if (original.isPlaying()) {
-			original.pause();
-		} else {
-			respeaking.pause();
-		}
-	}
-
-	/**
-	 * Gets the duration of the file.
-	 *
-	 * @return	the duration of the file in milliseconds.
-	 */
-	public int getDuration() {
-		return original.getDuration() + respeaking.getDuration();
+		original.pause();
+		respeaking.pause();
 	}
 
 	/**
@@ -159,43 +103,130 @@ public class InterleavedPlayer implements PlayerInterface {
 	 */
 	public void rewind(int msec) {
 	}
+	
+	/**
+	 * Gets the current playback position.
+	 *
+	 * @return the current position in milliseconds.
+	 */
+	public int getCurrentPosition() {
+		return original.getCurrentPosition() + respeaking.getCurrentPosition();
+	}
+	
+	/**
+	 * Gets the duration of the file.
+	 *
+	 * @return	the duration of the file in milliseconds.
+	 */
+	public int getDuration() {
+		return original.getDuration() + respeaking.getDuration();
+	}
+	
+	/**
+	 * Releases resources associated with this Player.
+	 */
+	public void release() {
+		original.release();
+		respeaking.release();
+	}
+	
+	private void initializePlayers(UUID respeakingUUID) throws IOException {
+		Recording respeakingMeta = FileIO.readRecording(respeakingUUID);
+		UUID originalUUID = respeakingMeta.getOriginalUUID();
+		original = new SimplePlayer(originalUUID, new
+				OriginalMarkerReachedListener());
+		respeaking = new SimplePlayer(respeakingUUID, new
+				RespeakingMarkerReachedListener());
+	}
+	
+	private void initializeSegments(UUID respeakingUUID) {
+		this.segments = new NewSegments(respeakingUUID);
+	}
+	
+	private void initializeListeners() {
+		MediaPlayer.OnCompletionListener bothCompletedListener = new
+		MediaPlayer.OnCompletionListener() {
+			boolean completedOnce = false;
+			@Override
+			public void onCompletion(MediaPlayer _mp) {
+				if (completedOnce) {
+					if (onCompletionListener != null) { onCompletionListener.onCompletion(_mp); }
+					currentOriginalSegment = null;
+					originalSegmentIterator = segments.getOriginalSegmentIterator();
+					completedOnce = false;
+				} else {
+					completedOnce = true;
+				}
+			}
+		};
+		original.setOnCompletionListener(bothCompletedListener);
+		respeaking.setOnCompletionListener(bothCompletedListener);
+	}
 
+	private void playOriginal() {
+		playSegment(getCurrentOriginalSegment(), original);
+	}
+	
+	private void playRespeaking() {
+		playSegment(getCurrentRespeakingSegment(), respeaking);
+	}
+	
+	private Segment getCurrentRespeakingSegment() {
+		return segments.getRespeakingSegment(getCurrentOriginalSegment());
+	}
+	
 	private class OriginalMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
-			Log.i("issue37", "original marker reached");
 			original.pause();
-			try {
-				original.setNotificationMarkerPosition(original.sampleToMsec(
-						segments.getOriginalSegments().get(segmentCount+1)));
-				Log.i("issue37", "set original notifcation marker position: " +
-						(segmentCount+1) + " " + segments.getOriginalSegments().get(segmentCount+1));
-			} catch (IndexOutOfBoundsException e) {
-				respeaking.start();
-				original.setNotificationMarkerPosition(0);
-				return;
-			}
-			Log.i("InterleavedPlayer", "about to start respeaking");
-			respeaking.start();
+			playRespeaking();
 		}
 	}
 
 	private class RespeakingMarkerReachedListener extends
 			MarkedMediaPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedMediaPlayer p) {
-			Log.i("issue37", "respeaking marker reached");
 			respeaking.pause();
-			segmentCount++;
-			try {
-				respeaking.setNotificationMarkerPosition(respeaking.sampleToMsec(
-						segments.getRespeakingSegments().get(segmentCount)));
-				Log.i("issue37", "set respeaking notifcation marker position: " +
-						segmentCount + " " + segments.getRespeakingSegments().get(segmentCount));
-			} catch (IndexOutOfBoundsException e) {
-				respeaking.setNotificationMarkerPosition(0);
-				return;
-			}
-			original.start();
+			advanceOriginalSegment();
+			playOriginal();
 		}
 	}
+	
+	private void playSegment(
+			Segment segment, SimplePlayer player) {
+		if (segment != null) {
+			player.seekTo(segment);
+			player.setNotificationMarkerPosition(segment);
+			player.start();
+		}
+	}
+	
+	private void advanceOriginalSegment() {
+		if (getOriginalSegmentIterator().hasNext()) {
+			currentOriginalSegment = getOriginalSegmentIterator().next();
+		} else {
+			long startSample;
+			if (currentOriginalSegment != null) {
+				startSample = currentOriginalSegment.getEndSample();
+			} else {
+				startSample = 0l;
+			}
+			currentOriginalSegment = new Segment(startSample, Long.MAX_VALUE);
+		}
+	}
+	
+	private Segment getCurrentOriginalSegment() {
+		if (currentOriginalSegment == null) {
+			advanceOriginalSegment();
+		}
+		return currentOriginalSegment;
+	}
+	
+	private Iterator<Segment> getOriginalSegmentIterator() {
+		if (originalSegmentIterator == null) {
+			originalSegmentIterator = segments.getOriginalSegmentIterator();
+		}
+		return originalSegmentIterator;
+	}
+	
 }

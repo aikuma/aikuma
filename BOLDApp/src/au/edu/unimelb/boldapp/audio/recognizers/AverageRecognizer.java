@@ -1,6 +1,7 @@
 package au.edu.unimelb.aikuma.audio.recognizers;
 
 import android.util.Log;
+import au.edu.unimelb.aikuma.audio.Processor;
 import au.edu.unimelb.aikuma.audio.recognizers.Recognizer;
 
 /** 
@@ -9,9 +10,10 @@ import au.edu.unimelb.aikuma.audio.recognizers.Recognizer;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  */
 public class AverageRecognizer extends Recognizer {
-
+  
 	protected int silenceThreshold;
 	protected int speechThreshold;
+  protected Processor processor = new Processor();
   
   /** Default Constructor.
    *
@@ -49,7 +51,7 @@ public class AverageRecognizer extends Recognizer {
    */
 	@Override
 	public boolean isSilence(short[] buffer) {
-		int reading = getAverageAmplitude(buffer);
+		int reading = processor.getAverage(buffer);
 		
 		Log.i("Bra", "is silence " + (reading < silenceThreshold));
 		return reading < silenceThreshold;
@@ -61,28 +63,8 @@ public class AverageRecognizer extends Recognizer {
    */
 	@Override
 	public boolean isSpeech(short[] buffer) {
-		int reading = getAverageAmplitude(buffer);
+		int reading = processor.getAverage(buffer);
 
 		return reading > speechThreshold;
-	}
-  
-  /** Evaluates the average amplitude.
-   *
-   * @return Average amplitude of the buffer.
-   */
-	protected int getAverageAmplitude(short[] buffer) {
-		int sum = 0;
-		int amount = 0;
-
-		for (int i = 0; i < buffer.length; i++) {
-			short value = buffer[i];
-			
-			if (value >= 0) { 
-				sum += value;
-				amount += 1;
-			}
-		}
-
-		return amount == 0 ? sum : sum / amount;
 	}
 }

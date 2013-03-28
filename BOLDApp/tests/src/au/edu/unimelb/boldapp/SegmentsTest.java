@@ -1,6 +1,7 @@
 package au.edu.unimelb.aikuma;
 
 import android.util.Log;
+import android.util.Pair;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -11,10 +12,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import junit.framework.TestCase;
-import au.edu.unimelb.aikuma.audio.Segments;
+import au.edu.unimelb.aikuma.audio.NewSegments;
 
 public class SegmentsTest extends TestCase {
 
+	public void testReadSegments() throws Exception {
+		UUID uuid = UUID.randomUUID();
+		String mapping = "0,10:0,5\n10,12:5,9";
+		File mappingFile = new File(FileIO.getRecordingsPath(), "mapping.map");
+		FileIO.write(mappingFile, mapping);
+		NewSegments segments = new NewSegments(uuid);
+		segments.readSegments(mappingFile);
+		assertEquals(
+				new Pair<Long, Long>(5l,9l), segments.get(new Pair<Long,
+				Long>(10l,12l)));
+		assertEquals(
+				new Pair<Long, Long>(0l,5l), segments.get(new Pair<Long,
+				Long>(0l,10l)));
+	}
+
+	/*
 	public void testReadSegments1() throws Exception {
 
 		UUID uuid = UUID.randomUUID();
@@ -131,4 +148,5 @@ public class SegmentsTest extends TestCase {
 				".map");
 		assertTrue(file.delete());
 	}
+	*/
 }
