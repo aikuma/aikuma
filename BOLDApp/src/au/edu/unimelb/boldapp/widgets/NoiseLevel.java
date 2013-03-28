@@ -36,7 +36,14 @@ public class NoiseLevel {
 	}
 	
 	public void find() {
-		final Dialog dialog = new Dialog(activity);
+		// Set up a dialog.
+		//
+		final Dialog dialog = new Dialog(activity) {
+			public void onBackPressed() {
+				setSensitivity(50);
+				super.onBackPressed();
+			}
+		};
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		final ImageView imageView = new ImageView(activity);
 		final Bitmap bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
@@ -79,10 +86,7 @@ public class NoiseLevel {
 				});
 			}
 			public void noiseLevelFound(final Noise.Information information) {
-				int level = information.getRecommendedRecordingLevel();
-				activity.getSensitivitySlider().setMax(level*2);
-				activity.getSensitivitySlider().setProgress(level);
-				activity.getRespeaker().setSensitivity(level);
+				setSensitivity(information.getRecommendedRecordingLevel());
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
 						dialog.dismiss();
@@ -90,6 +94,12 @@ public class NoiseLevel {
 				});
 			}
 		});
+	}
+	
+	private void setSensitivity(int level) {
+		activity.getSensitivitySlider().setMax(level*2);
+		activity.getSensitivitySlider().setProgress(level);
+		activity.getRespeaker().setSensitivity(level);
 	}
 	
 }
