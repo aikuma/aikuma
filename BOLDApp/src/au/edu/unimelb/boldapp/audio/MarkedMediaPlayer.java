@@ -96,8 +96,10 @@ public class MarkedMediaPlayer {
 			public void onCompletion(MediaPlayer _mp) {
 				if (_mp.getCurrentPosition() > 0) {
 					stopNotificationMarkerLoop();
-					onMarkerReachedListener.onMarkerReached(
-							MarkedMediaPlayer.this);
+					if (onMarkerReachedListener != null) {
+						onMarkerReachedListener.onMarkerReached(
+								MarkedMediaPlayer.this);
+					}
 					listener.onCompletion(mediaPlayer);
 				}
 			}

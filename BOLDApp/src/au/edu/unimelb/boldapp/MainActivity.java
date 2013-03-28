@@ -39,11 +39,8 @@ public class MainActivity extends Activity {
 			throw new NullPointerException("nameView is null");
 		}
 		if (GlobalState.getCurrentUser() == null ) {
-			throw new NullPointerException("GlobalState.getCurrentUser() is null");
-		}
-		if (GlobalState.getCurrentUser().getName() == null ) {
-			throw new
-			NullPointerException("GlobalState.getCurrentUser().getName() is null");
+			// Drop back to initialUserSelectionActivity
+			this.finish();
 		}
 		nameView.setText(GlobalState.getCurrentUser().getName());
 
