@@ -133,7 +133,7 @@ public class RespeakActivity extends Activity {
     Handler handler = new Handler();
     handler.postDelayed(new Runnable() {
       public void run() {
-        new NoiseLevel(RespeakActivity.this).find();
+        new NoiseLevel(RespeakActivity.this, 20).find();
       }
     }, 500);
   };

@@ -40,6 +40,17 @@ public class Microphone {
 				AudioFormat.CHANNEL_CONFIGURATION_MONO
 		);
 		waitForPhysicalMicrophone();
+		initializeBuffer();
+	}
+	
+	/**
+	 * The buffer is duration-constant. Length equals a certain time.
+	 * We get about 44 buffers per second.
+	 */
+	private void initializeBuffer() {
+		int size = Math.round(1000f*physicalMicrophone.getSampleRate()/44100);
+		Log.i("SIZE", " " + size);
+		this.buffer = new short[size];
 	}
 	
 	public int getSampleRate() { return physicalMicrophone.getSampleRate(); }
@@ -113,9 +124,6 @@ public class Microphone {
 
 		/** The buffer needed for the above period */
 		int bufferSize = framePeriod * 2 * sampleSize * numberOfChannels / 8;
-		
-		/** The internal buffer used for callbacks */
-		buffer = new short[1000];
 		
 		return new AudioRecord(MediaRecorder.AudioSource.MIC,
 				sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO,

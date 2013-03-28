@@ -42,8 +42,11 @@ public class Noise {
 			this.quality = quality;
 		}
 		
+		/**
+		 * One needs to speak about three times as loud as the background noise.
+		 */
 		public int getRecommendedRecordingLevel() {
-			return (int) Math.round(getAverage()*1.5);
+			return (int) Math.round(getAverage()*3);
 		}
 		
 		public int getAverage() { return this.average; }
@@ -79,7 +82,6 @@ public class Noise {
 				}
 			}
 		}
-		Log.i("getInformation", " " + average + " " + min + " " + max);
 		return new Information(Math.round(average), min, max, quality);
 	}
 	
@@ -106,7 +108,6 @@ public class Noise {
 				sum += averages[i];
 			}
 		}
-		Log.i("Current average: ", "" + (sum / averages.length));
 		return sum / averages.length;
 	};
 	

@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 
+import android.view.MotionEvent;
 import android.view.Window;
 
 import android.widget.ImageView;
@@ -30,20 +31,29 @@ import au.edu.unimelb.aikuma.audio.thresholders.Noise;
 public class NoiseLevel {
 	
 	private RespeakActivity activity;
+	private int signalsSampled;
 	
-	public NoiseLevel(RespeakActivity activity) {
+	public NoiseLevel(RespeakActivity activity, int signalsSampled) {
 		this.activity = activity;
+		this.signalsSampled = signalsSampled;
 	}
 	
 	public void find() {
 		// Set up a dialog.
 		//
 		final Dialog dialog = new Dialog(activity) {
+			@Override
 			public void onBackPressed() {
 				setSensitivity(50);
 				super.onBackPressed();
 			}
+			
+			@Override
+			public boolean dispatchTouchEvent(MotionEvent ev) {
+			    return false;
+			}
 		};
+		// dialog FLAG_KEEP_SCREEN_ON FLAG_NOT_TOUCHABLE TYPE_APPLICATION
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		final ImageView imageView = new ImageView(activity);
 		final Bitmap bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
@@ -53,7 +63,7 @@ public class NoiseLevel {
 		
 		final Paint paint = new Paint();
 		
-		new BackgroundNoise(50).getThreshold(new BackgroundNoiseListener() {
+		new BackgroundNoise(signalsSampled).getThreshold(new BackgroundNoiseListener() {
 			public void noiseLevelQualityUpdated(final Noise.Information information) {
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
@@ -65,7 +75,6 @@ public class NoiseLevel {
 						float factor = 0f;
 						if (maximum > 0) { factor = 1f*minimum / maximum; }
 						long padding = Math.round(1f*factor*(size/2));
-						Log.i("getInformation", " " + ((int) Math.round(255/divisor)) + " " + minimum + " " + maximum + " " + factor + " " + (1.0-factor)*(size/2));
 						
 						// Draw a black background.
 						//
