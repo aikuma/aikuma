@@ -48,7 +48,6 @@ public class AverageRecognizer extends Recognizer {
 	public boolean isSilence(short[] buffer) {
 		int reading = processor.getAverage(buffer);
 		
-		Log.i("Bra", "is silence " + (reading < silenceThreshold));
 		return reading < silenceThreshold;
 	}
 
