@@ -100,8 +100,7 @@ public class RespeakActivity extends Activity {
 
 		startedRespeaking = false;
 		respeaking = false;
-		respeaker = new Respeaker(new ThresholdSpeechAnalyzer(88, 3,
-				new AverageRecognizer(32768/60, 32768/60)), false);
+		respeaker = new Respeaker(new ThresholdSpeechAnalyzer(88, 3), false);
 
 		this.uuid = UUID.randomUUID();
     
