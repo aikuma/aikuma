@@ -159,7 +159,7 @@ public class MarkedMediaPlayer {
 				}
 				// If the marker is at zero, it's trivially low and the
 				// callback shouldn't be called.
-				if (notificationMarkerPosition > 0) {
+				if (notificationMarkerPosition >= 0) {
 					if (getCurrentPosition() >= getNotificationMarkerPosition()) {
 						if(onMarkerReachedListener != null) {
 							onMarkerReachedListener.onMarkerReached(
