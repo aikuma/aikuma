@@ -20,9 +20,9 @@ public class AverageRecognizer extends Recognizer {
   //    *  Default silence is less than 1/32 of the maximum.
   //    *  Default speech is more than 1/32 of the maximum.
   //    */
-  // public AverageRecognizer() {
-  //   this(32, 32);
-  // }
+  public AverageRecognizer() {
+    this(32768/32, 32768/32); // MediaRecorder.getAudioSourceMax();
+  }
   
   /** Constructor.
    *
@@ -30,19 +30,14 @@ public class AverageRecognizer extends Recognizer {
    *  @param speechDivisor  Speech is more than 1/speechDivisor of the maximum.
    */
 	public AverageRecognizer(int silenceThreshold, int speechThreshold) {
-		// MediaRecorder.getAudioSourceMax();
-		// TODO Make dynamic depending on phone.
-		//
-    // int maxAmplitude = 32768;
-
 		// Silence is less than
 		// 1/n of max amplitude.
 		//
-		this.silenceThreshold = silenceThreshold; // maxAmplitude / silenceDivisor;
+		this.silenceThreshold = silenceThreshold;
 
 		// Speech is more than 1/m of max amplitude.
 		//
-		this.speechThreshold = speechThreshold; // maxAmplitude / speechDivisor;
+		this.speechThreshold = speechThreshold;
 	}
   
   /** Is the given buffer silent?
