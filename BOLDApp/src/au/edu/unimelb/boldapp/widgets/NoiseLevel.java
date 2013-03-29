@@ -46,7 +46,7 @@ public class NoiseLevel {
 			@Override
 			public void onBackPressed() {
 				NoiseLevel.this.backgroundNoiseAnalyzer.stop();
-				setSensitivity(50);
+				setSensitivity(32768/32);
 				super.onBackPressed();
 			}
 			
