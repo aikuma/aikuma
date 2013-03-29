@@ -49,6 +49,7 @@ public class InterleavedPlayer implements PlayerInterface {
 		initializePlayers(respeakingUUID);
 		initializeSegments(respeakingUUID);
 		initializeListeners();
+		reset();
 	}
 
 	/**
@@ -129,6 +130,11 @@ public class InterleavedPlayer implements PlayerInterface {
 		original.release();
 		respeaking.release();
 	}
+
+	public void reset() {
+		originalSegmentIterator = null;
+		currentOriginalSegment = null;
+	}
 	
 	private void initializePlayers(UUID respeakingUUID) throws IOException {
 		Recording respeakingMeta = FileIO.readRecording(respeakingUUID);
@@ -151,8 +157,7 @@ public class InterleavedPlayer implements PlayerInterface {
 			public void onCompletion(MediaPlayer _mp) {
 				if (completedOnce) {
 					if (onCompletionListener != null) { onCompletionListener.onCompletion(_mp); }
-					currentOriginalSegment = null;
-					originalSegmentIterator = segments.getOriginalSegmentIterator();
+					reset();
 					completedOnce = false;
 				} else {
 					completedOnce = true;
@@ -162,6 +167,7 @@ public class InterleavedPlayer implements PlayerInterface {
 		original.setOnCompletionListener(bothCompletedListener);
 		respeaking.setOnCompletionListener(bothCompletedListener);
 	}
+
 
 	private void playOriginal() {
 		playSegment(getCurrentOriginalSegment(), original);
