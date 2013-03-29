@@ -35,6 +35,10 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	/** Microphone input */
 	Microphone microphone;
 
+	public long getCurrentSample() {
+		return file.getCurrentSample();
+	}
+
 	/** Analyzer that analyzes the incoming data. */
 	Analyzer analyzer;
 

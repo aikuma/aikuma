@@ -90,6 +90,12 @@ public class NewSegments {
 		private Pair<Long, Long> pair;
 
 		public Segment(Long startSample, Long endSample) {
+			if (startSample == null) {
+				throw new IllegalArgumentException("Null start of sample");
+			}
+			if (endSample == null) {
+				throw new IllegalArgumentException("Null end of sample");
+			}
 			this.pair = new Pair<Long, Long>(startSample, endSample);
 		}
 

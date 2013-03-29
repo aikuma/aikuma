@@ -17,7 +17,7 @@ import android.content.Intent;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import au.edu.unimelb.aikuma.audio.Respeaker;
+import au.edu.unimelb.aikuma.audio.ThumbRespeaker;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
 
@@ -54,7 +54,7 @@ public class RespeakActivity2 extends Activity {
 	/**
 	 * Instance of the respeaker class that offers methods to respeak
 	 */
-	protected Respeaker respeaker;
+	protected ThumbRespeaker respeaker;
 
 	/**
 	 * Called when the activity starts.
@@ -76,7 +76,7 @@ public class RespeakActivity2 extends Activity {
 
 		startedRespeaking = false;
 		respeaking = false;
-		respeaker = new Respeaker(getApplicationContext());
+		respeaker = new ThumbRespeaker();
 
 		this.uuid = UUID.randomUUID();
 
@@ -90,7 +90,7 @@ public class RespeakActivity2 extends Activity {
 
 		installBehaviour(savedInstanceState);
 
-		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
+		respeaker.setOnCompletionListener(new OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _player) {
 				Log.i("brazil", "onCompletionListener called.");
@@ -100,7 +100,7 @@ public class RespeakActivity2 extends Activity {
 						findViewById(R.id.PlayButton);
 				playButton.setVisibility(View.INVISIBLE);
 				respeaker.setFinishedPlaying(true);
-				respeaker.listenAfterFinishedPlaying();
+				//respeaker.listenAfterFinishedPlaying();
 			}
 		});
 
@@ -117,11 +117,11 @@ public class RespeakActivity2 extends Activity {
 			public boolean onTouch(View view, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					if (!respeaker.getFinishedPlaying()) {
-						respeaker.play();
+						respeaker.playOriginal();
 					}
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					respeaker.pause();
+					respeaker.pauseOriginal();
 				}
 				return false;
 			}
@@ -131,10 +131,10 @@ public class RespeakActivity2 extends Activity {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					respeaker.listenToSpeaker();
+					respeaker.recordRespeaking();
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					respeaker.pause();
+					respeaker.pauseRespeaking();
 				}
 				return false;
 			}
