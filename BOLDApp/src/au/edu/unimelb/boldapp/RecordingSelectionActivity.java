@@ -61,21 +61,19 @@ public class RecordingSelectionActivity extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		Intent intent = new Intent(this, InterleavedChoiceActivity.class);
+		if (recording.isOriginal() && nextActivityName.equals("ListenActivity")) {
+			intent = new Intent(this, ListenActivity.class);
+		}
 		if (nextActivityName.equals("RespeakActivity")) {
 			intent = new Intent(this, RespeakActivity.class);
-			this.finish();
 		}
 		if (nextActivityName.equals("RespeakActivity2")) {
 			intent = new Intent(this, RespeakActivity2.class);
-			this.finish();
-		}
-		if (recording.isOriginal()) {
-			intent = new Intent(this, ListenActivity.class);
-			this.finish();
 		}
 		//Otherwise it is listen
 		intent.putExtra("recordingUUID", recording.getUUID());
 		startActivity(intent);
+		this.finish();
 	}
 
 	/**
