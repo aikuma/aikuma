@@ -1,4 +1,4 @@
-package au.edu.unimelb.aikuma.util;
+package org.lp20.aikuma.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

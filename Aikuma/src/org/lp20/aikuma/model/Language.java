@@ -1,4 +1,4 @@
-package au.edu.unimelb.aikuma.model;
+package org.lp20.aikuma.model;
 
 import android.os.Parcelable;
 import android.os.Parcel;

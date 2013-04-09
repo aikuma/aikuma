@@ -1,8 +1,8 @@
-package au.edu.unimelb.aikuma.util;
+package org.lp20.aikuma.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import au.edu.unimelb.aikuma.R;
+import org.lp20.aikuma.R;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;

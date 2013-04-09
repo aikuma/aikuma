@@ -1,4 +1,4 @@
-package au.edu.unimelb.aikuma.model;
+package org.lp20.aikuma.model;
 
 import java.util.ArrayList;
 import java.util.List;

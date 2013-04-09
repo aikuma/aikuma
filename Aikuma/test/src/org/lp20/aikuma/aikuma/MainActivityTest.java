@@ -1,4 +1,4 @@
-package au.edu.unimelb.aikuma;
+package org.lp20.aikuma;
 
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -9,13 +9,13 @@ import android.test.ActivityInstrumentationTestCase2;
  * <p/>
  * To run this test, you can type:
  * adb shell am instrument -w \
- * -e class au.edu.unimelb.aikuma.MainActivityTest \
- * au.edu.unimelb.aikuma.tests/android.test.InstrumentationTestRunner
+ * -e class org.lp20.aikuma.MainActivityTest \
+ * org.lp20.aikuma.tests/android.test.InstrumentationTestRunner
  */
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
     public MainActivityTest() {
-        super("au.edu.unimelb.aikuma", MainActivity.class);
+        super("org.lp20.aikuma", MainActivity.class);
     }
 
 }

@@ -1,8 +1,8 @@
-package au.edu.unimelb.aikuma.util;
+package org.lp20.aikuma.util;
 
 import android.content.res.Resources;
 import android.os.Environment;
-import au.edu.unimelb.aikuma.R;
+import org.lp20.aikuma.R;
 import com.google.common.base.Charsets;
 import java.io.File;
 import java.io.InputStream;

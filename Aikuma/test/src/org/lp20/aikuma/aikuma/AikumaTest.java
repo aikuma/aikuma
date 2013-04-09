@@ -1,4 +1,4 @@
-package au.edu.unimelb.aikuma;
+package org.lp20.aikuma;
 
 import android.test.AndroidTestCase;
 import android.util.Log;

@@ -1,7 +1,7 @@
-package au.edu.unimelb.aikuma.model;
+package org.lp20.aikuma.model;
 
 import android.test.AndroidTestCase;
-import au.edu.unimelb.aikuma.util.FileIO;
+import org.lp20.aikuma.util.FileIO;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

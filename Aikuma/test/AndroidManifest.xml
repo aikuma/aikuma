@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- package name must be unique so suffix with "tests" so package loader doesn't ignore us -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="au.edu.unimelb.aikuma.tests"
-          android:versionCode="1"
+          package="org.lp20.aikuma.tests"
+          android:versionCode="010000"
           android:versionName="1.0">
     <!-- We add an application tag here just so that we can indicate that
          this package needs to link against the android.test library,
@@ -16,6 +16,6 @@
     "adb shell am instrument -w au.edu.unimelb.aikuma.tests/android.test.InstrumentationTestRunner"
     -->
     <instrumentation android:name="android.test.InstrumentationTestRunner"
-                     android:targetPackage="au.edu.unimelb.aikuma"
-                     android:label="Tests for au.edu.unimelb.aikuma"/>
+                     android:targetPackage="org.lp20.aikuma"
+                     android:label="Tests for org.lp20.aikuma"/>
 </manifest>
