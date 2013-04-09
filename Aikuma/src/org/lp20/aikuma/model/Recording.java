@@ -91,6 +91,11 @@ public class Recording {
 		return uuid;
 	}
 
+	/** Returns a File that refers to the actual recording file. */
+	public File getFile() {
+		return new File(getRecordingsPath(), getUUID() + ".wav");
+	}
+
 	/**
 	 * Name accessor.
 	 */
