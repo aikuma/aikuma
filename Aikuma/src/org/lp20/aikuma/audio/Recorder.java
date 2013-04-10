@@ -11,6 +11,7 @@ import java.util.Set;
 import org.lp20.aikuma.audio.analyzers.Analyzer;
 import org.lp20.aikuma.audio.analyzers.SimpleAnalyzer;
 import org.lp20.aikuma.R;
+import static org.lp20.aikuma.audio.Microphone.MicException;
 
 /**
  *  A Recorder used to get input from a microphone and output into a file.
@@ -31,7 +32,7 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	 * Creates a Recorder that uses an analyzer which tells the recorder to
 	 * always record regardless of input.
 	 */
-	public Recorder(int sampleRate) {
+	public Recorder(int sampleRate) throws MicException {
 		this(sampleRate, new SimpleAnalyzer());
 	}
 
@@ -42,10 +43,14 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	 * @param Pass in an analyzer which decides whether
 	 *        the recorder should record or ignore the input.
 	 */
-	public Recorder(int sampleRate, Analyzer analyzer) {
+	public Recorder(int sampleRate, Analyzer analyzer) throws MicException {
 		this.analyzer = analyzer;
+		Log.i("Recorder", "about to set up microphone");
 		setUpMicrophone(sampleRate);
+		Log.i("Recorder", "finished seting up microphone");
+		Log.i("Recorder", "about to set up file");
 		setUpFile();
+		Log.i("Recorder", "finished seting up file");
 	}
 
 	/** Start listening. */
@@ -72,7 +77,7 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	}
 
 	/** Sets up the micrphone for recording */
-	private void setUpMicrophone(int sampleRate) {
+	private void setUpMicrophone(int sampleRate) throws MicException {
 		this.microphone = new Microphone(sampleRate);
 	}
 
@@ -89,13 +94,13 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	 *
 	 * Note: Once stopped you cannot restart the recorder.
 	 */
-	public void stop() {
+	public void stop() throws MicException {
 		microphone.stop();
 		file.close();
 	}
 
 	/** Pause listening to the microphone. */
-	public void pause() {
+	public void pause() throws MicException {
 		microphone.stop();
 	}
 

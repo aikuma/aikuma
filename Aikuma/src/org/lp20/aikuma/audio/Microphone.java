@@ -22,6 +22,23 @@ import android.util.Log;
  */
 public class Microphone {
 
+	public Microphone(int sampleRate) throws MicException {
+		Log.i("Recorder", "microphone constructor start");
+		physicalMicrophone = getListener(
+				sampleRate,
+				AudioFormat.ENCODING_PCM_16BIT,
+				AudioFormat.CHANNEL_CONFIGURATION_MONO
+		);
+		Log.i("Recorder", "done getting listener");
+		Log.i("Recorder", "waiting for physical microphone");
+		if (physicalMicrophone.getState() != AudioRecord.STATE_INITIALIZED) {
+			throw new MicException("Microphone failed to initialize");
+		};
+		Log.i("Recorder", "done waiting for physical microphone. Initializing buffer");
+		initializeBuffer();
+		Log.i("Recorder", "done Initializing buffer");
+	}
+
 	private Thread t;
 
 	/** Microphone buffer.
@@ -33,15 +50,6 @@ public class Microphone {
 	/** AudioRecord listens to the microphone */
 	private AudioRecord physicalMicrophone;
   
-	public Microphone(int sampleRate) {
-		physicalMicrophone = getListener(
-				sampleRate,
-				AudioFormat.ENCODING_PCM_16BIT,
-				AudioFormat.CHANNEL_CONFIGURATION_MONO
-		);
-		waitForPhysicalMicrophone();
-		initializeBuffer();
-	}
 	
 	/**
 	 * The buffer is duration-constant. Length equals a certain time.
@@ -80,15 +88,11 @@ public class Microphone {
 	}
   
 	/** Stop listening to the microphone. */
-	public void stop() {
+	public void stop() throws MicException {
 		physicalMicrophone.stop();
-		do {
-		} while (physicalMicrophone.getState() != AudioRecord.RECORDSTATE_STOPPED);
-	}
-	
-	/** Waits for the listening device. */
-	private void waitForPhysicalMicrophone() {
-		do {} while (physicalMicrophone.getState() != AudioRecord.STATE_INITIALIZED);
+		if (physicalMicrophone.getState() != AudioRecord.RECORDSTATE_STOPPED) {
+			throw new MicException("Failed to stop the microphone.");
+		}
 	}
 	
 	/** Tries to get a listening device for the built-in/external microphone.
@@ -151,6 +155,12 @@ public class Microphone {
 			if (callback != null) {
         callback.onBufferFull(Arrays.copyOf(buffer, buffer.length));
       }
+		}
+	}
+
+	public static class MicException extends Exception {
+		public MicException(String message) {
+			super(message);
 		}
 	}
 }
