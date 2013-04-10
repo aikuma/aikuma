@@ -1,4 +1,4 @@
-package org.lp20.aikuma.audio;
+package org.lp20.aikuma.audio.record;
 
 import android.content.Context;
 import android.media.AudioFormat;
@@ -8,10 +8,10 @@ import android.media.MediaPlayer;
 import android.util.Log;
 import java.util.Arrays;
 import java.util.Set;
-import org.lp20.aikuma.audio.analyzers.Analyzer;
-import org.lp20.aikuma.audio.analyzers.SimpleAnalyzer;
+import org.lp20.aikuma.audio.record.analyzers.Analyzer;
+import org.lp20.aikuma.audio.record.analyzers.SimpleAnalyzer;
 import org.lp20.aikuma.R;
-import static org.lp20.aikuma.audio.Microphone.MicException;
+import static org.lp20.aikuma.audio.record.Microphone.MicException;
 
 /**
  *  A Recorder used to get input from a microphone and output into a file.

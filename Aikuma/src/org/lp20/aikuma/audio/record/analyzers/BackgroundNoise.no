@@ -1,10 +1,10 @@
-package au.edu.unimelb.aikuma.audio.analyzers;
+package au.edu.unimelb.aikuma.audio.record.analyzers;
 
 import android.util.Log;
-import au.edu.unimelb.aikuma.audio.Microphone;
-import au.edu.unimelb.aikuma.audio.MicrophoneListener;
-import au.edu.unimelb.aikuma.audio.Processor;
-import au.edu.unimelb.aikuma.audio.thresholders.Noise;
+import au.edu.unimelb.aikuma.audio.record.Microphone;
+import au.edu.unimelb.aikuma.audio.record.MicrophoneListener;
+import au.edu.unimelb.aikuma.audio.record.Processor;
+import au.edu.unimelb.aikuma.audio.record.thresholders.Noise;
 
 /** 
  * Tries to extract the level of background noise

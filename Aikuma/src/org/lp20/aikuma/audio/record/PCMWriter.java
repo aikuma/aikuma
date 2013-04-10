@@ -1,4 +1,4 @@
-package org.lp20.aikuma.audio;
+package org.lp20.aikuma.audio.record;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

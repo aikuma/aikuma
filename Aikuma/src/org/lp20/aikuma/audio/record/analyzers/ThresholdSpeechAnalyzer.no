@@ -1,13 +1,13 @@
-package au.edu.unimelb.aikuma.audio.analyzers;
+package au.edu.unimelb.aikuma.audio.record.analyzers;
 
 import java.util.Arrays;
 
 import android.util.Log;
 
-import au.edu.unimelb.aikuma.audio.AudioHandler;
-import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
-import au.edu.unimelb.aikuma.audio.recognizers.Recognizer;
-import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
+import au.edu.unimelb.aikuma.audio.record.AudioHandler;
+import au.edu.unimelb.aikuma.audio.record.analyzers.Analyzer;
+import au.edu.unimelb.aikuma.audio.record.recognizers.Recognizer;
+import au.edu.unimelb.aikuma.audio.record.recognizers.AverageRecognizer;
 
 /** Analyzes the samples given to it.
  *
