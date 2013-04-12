@@ -33,7 +33,7 @@ public class Microphone {
 		physicalMicrophone = getListener(
 				sampleRate,
 				AudioFormat.ENCODING_PCM_16BIT,
-				AudioFormat.CHANNEL_CONFIGURATION_MONO
+				AudioFormat.CHANNEL_IN_MONO
 		);
 		if (physicalMicrophone.getState() != AudioRecord.STATE_INITIALIZED) {
 			throw new MicException("Microphone failed to initialize");
@@ -103,7 +103,7 @@ public class Microphone {
 
 		// Channels.
 		int numberOfChannels;
-		if (channelConfig == AudioFormat.CHANNEL_CONFIGURATION_MONO) {
+		if (channelConfig == AudioFormat.CHANNEL_IN_MONO) {
 			numberOfChannels = 1;
 		} else {
 			numberOfChannels = 2;
@@ -116,7 +116,7 @@ public class Microphone {
 		int bufferSize = framePeriod * 2 * sampleSize * numberOfChannels / 8;
 		
 		return new AudioRecord(MediaRecorder.AudioSource.MIC,
-				sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO,
+				sampleRate, AudioFormat.CHANNEL_IN_MONO,
 				AudioFormat.ENCODING_PCM_16BIT, bufferSize);
 	}
 

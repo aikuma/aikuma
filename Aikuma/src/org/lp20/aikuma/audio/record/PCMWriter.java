@@ -147,7 +147,7 @@ public class PCMWriter {
 
 			// Channels.
 			//
-			if (channelConfig == AudioFormat.CHANNEL_CONFIGURATION_MONO) {
+			if (channelConfig == AudioFormat.CHANNEL_IN_MONO) {
 				numberOfChannels = 1;
 			} else {
 				numberOfChannels = 2;
