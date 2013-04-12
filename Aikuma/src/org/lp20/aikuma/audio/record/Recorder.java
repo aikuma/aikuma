@@ -46,12 +46,8 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	 */
 	public Recorder(File path, int sampleRate, Analyzer analyzer) throws MicException {
 		this.analyzer = analyzer;
-		Log.i("Recorder", "about to set up microphone");
 		setUpMicrophone(sampleRate);
-		Log.i("Recorder", "finished seting up microphone");
-		Log.i("Recorder", "about to set up file");
 		setUpFile();
-		Log.i("Recorder", "finished seting up file");
 		this.prepare(path.getPath());
 	}
 
