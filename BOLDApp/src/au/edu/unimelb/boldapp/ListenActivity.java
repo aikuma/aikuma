@@ -259,17 +259,22 @@ public class ListenActivity extends Activity
 	 * @param	view	The button that was clicked.
 	 */
 	public void goBack(View view){
+		Log.i("email1", "point1");
 		player.release();
+		Log.i("email1", "point2");
 		if (this.seekBarThread != null) {
 			this.seekBarThread.interrupt();
 		}
+		Log.i("email1", "point3");
 		ListenActivity.this.finish();
+		Log.i("email1", "point4");
 	}
 
 	/**
 	 * Play the audio
 	 */
 	public void play() {
+		Log.i("email1", "startedPlaying = " + startedPlaying);
 		ImageButton button = (ImageButton) findViewById(R.id.Play);
 		button.setImageResource(R.drawable.button_pause);
 		player.start();
@@ -282,6 +287,7 @@ public class ListenActivity extends Activity
 			this.seekBarThread = new Thread(this);
 			this.seekBarThread.start();
 			startedPlaying = true;
+			Log.i("email1", "set startedPlaying");
 		}
 	}
 

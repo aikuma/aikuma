@@ -49,6 +49,7 @@ public class MarkedMediaPlayer {
 	}
 
 	public void start() {
+		stopNotificationMarkerLoop();
 		startNotificationMarkerLoop();
 		mediaPlayer.start();
 		if (!hasStartedPlaying) { hasStartedPlaying = true; }
@@ -151,6 +152,7 @@ public class MarkedMediaPlayer {
 
 		public void run() {
 			while (true) {
+				//Log.i("email1", Thread.currentThread().getId() + "runnin runnin runnin");
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -191,6 +193,10 @@ public class MarkedMediaPlayer {
 	private void stopNotificationMarkerLoop() {
 		if (notificationMarkerLoop != null) {
 			notificationMarkerLoop.interrupt();
+			//If the thread is still alive, wait. This method should block
+			//until the job is done.
+			while (notificationMarkerLoop.isAlive()) {}
 		}
+		Log.i("email1", "stopped notificationMarkerLoop");
 	}
 }
