@@ -42,8 +42,8 @@ public class RecordingComparator implements Comparator<Recording> {
 		if (compareBy.equals("alphabetical")) {
 			return lhs.getName().compareTo(rhs.getName());
 		} else if (compareBy.equals("date")) {
-			// Else compare by date
-			return lhs.getDate().compareTo(rhs.getDate());
+			// Else compare by date reverse chronologically
+			return rhs.getDate().compareTo(lhs.getDate());
 		} else if (compareBy.equals("likes")) {
 			// rhs - lhs because we want to order from most likes to least
 			return rhs.getLikes() - lhs.getLikes();
