@@ -75,7 +75,9 @@ public class ListenActivity extends Activity
 	 */
 	protected ShakeDetector shakeDetector;
 
-  protected File likeFile;
+	protected File likeFile;
+
+	private boolean playingByButton;
 
 	/**
 	 * Initialization when the activity starts.
@@ -220,11 +222,18 @@ public class ListenActivity extends Activity
 		this.proximityDetector = new ProximityDetector(ListenActivity.this, 2.0f) {
 		  public void near(float distance) {
 			Audio.playThroughEarpiece(ListenActivity.this, true);
-				play();
+				if (!player.isPlaying()) {
+					play();
+					playingByButton = false;
+				}
 		  }
 		  public void far(float distance) {
 			Audio.playThroughSpeaker(ListenActivity.this);
-				pause();
+				if (player.isPlaying()) {
+					if (!playingByButton) {
+						pause();
+					}
+				}
 		  }
 		};
 		this.proximityDetector.start();
@@ -309,8 +318,10 @@ public class ListenActivity extends Activity
 	public void handlePlayButton(View view) {
 		if (!player.isPlaying()) {
 			play();
+			playingByButton = true;
 		} else {
 			pause();
+			playingByButton = false;
 		}
 	}
   
