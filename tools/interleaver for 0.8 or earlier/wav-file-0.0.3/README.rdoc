@@ -1,0 +1,96 @@
+= wav-file
+
+* http://github.com/shokai/ruby-wav-file
+
+== DESCRIPTION:
+
+Read wav file format and Edit data chunk.
+
+
+== ENVIRONMENT:
+
+* Ruby 1.8.7
+* Ruby 1.9.2
+* JRuby 1.6.0
+
+
+== INSTALL:
+
+* gem install wav-file
+
+== TIPS:
+
+To run samples, you need wav file.
+"ffmpeg" is good tool for making wav file from mp3.
+
+    % ffmpeg -i input.mp3 output.wav
+
+Wav-file gem cannot convert format of wav file.
+Before edit data-chunk of wav files, you should adjust them using ffmpeg.
+
+
+== SYNOPSIS:
+   
+
+Read format and chunks
+
+    require 'rubygems'
+    require 'wav-file'
+    
+    f = open("input.wav")
+    format = WavFile::readFormat(f)
+    dataChunk = WavFile::readDataChunk(f)
+    f.close
+    
+    puts format
+
+
+Extract wav from binary    
+
+    bit = 's*' if format.bitPerSample == 16 # int16_t
+    bit = 'c*' if format.bitPerSample == 8 # signed char
+    wavs = dataChunk.data.unpack(bit) # read binary
+
+
+Change volume half
+
+    wavs = wavs.map{|w| w/2}
+
+
+Reverse wav and encode to binary
+
+    dataChunk.data = wavs.reverse.pack(bit) # reverse
+    
+    
+Save to file
+
+    open("output.wav", "w"){|out|
+      WavFile::write(out, format, [dataChunk])
+    }
+
+See "samples" directory.
+
+== LICENSE:
+
+(The MIT License)
+
+Copyright (c) 2010 Sho Hashimoto
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

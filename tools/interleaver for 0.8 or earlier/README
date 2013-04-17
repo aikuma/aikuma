@@ -1,0 +1,26 @@
+Install:
+1. Unzip the attached somewhere findable (for example right next to a directory with recordings).
+Needs command-line ruby.
+
+Usage:
+# Give the Ruby script a path containing these files.
+ruby relative/path/to/interleave.rb relative/path/to/directory/recordings/
+
+Example:
+ruby interleave.rb ./recordings/
+
+Will output something like:
+
+Processing respeaking #1:
+/Users/hanke/temp/aikuma-experiments/interleaver/recordings/43d1e60d-0501-44e7-85a0-452730d339b3.wav
++
+/Users/hanke/temp/aikuma-experiments/interleaver/recordings/30e33421-46b8-44b5-8d20-35d1c2e36918.wav
+=
+/Users/hanke/temp/aikuma-experiments/interleaver/30e33421-46b8-44b5-8d20-35d1c2e36918.interleaved.wav
+
+Processing respeaking #2:
+[… and so on]
+
+The first file is the original, the second the respeaking, the result is after the = and contains interleaved in its filename.
+
+Note that it only works on originals created on Aikuma.
