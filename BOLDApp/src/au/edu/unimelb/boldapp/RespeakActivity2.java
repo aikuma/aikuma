@@ -115,14 +115,15 @@ public class RespeakActivity2 extends Activity {
 		playButton.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				Log.i("email2", "playButton: " + event);
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					if (!respeaker.getFinishedPlaying()) {
 						respeaker.playOriginal();
 					}
+					respeakButton.setVisibility(View.INVISIBLE);
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					respeaker.pauseOriginal();
+					respeakButton.setVisibility(View.VISIBLE);
 				}
 				return false;
 			}
@@ -131,13 +132,14 @@ public class RespeakActivity2 extends Activity {
 		respeakButton.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				Log.i("email2", "respeakButton " + event);
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					respeaker.pauseOriginal();
 					respeaker.recordRespeaking();
+					playButton.setVisibility(View.INVISIBLE);
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					respeaker.pauseRespeaking();
+					playButton.setVisibility(View.VISIBLE);
 				}
 				return false;
 			}
