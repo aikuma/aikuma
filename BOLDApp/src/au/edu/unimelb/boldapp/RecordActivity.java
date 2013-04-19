@@ -75,8 +75,11 @@ public class RecordActivity extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
+		/*
 		//Pause the recording and adjust the buttons accordingly.
 		pause(findViewById(R.id.Pause));
+		*/
+		recorder.stop();
 	}
 
 	@Override 
