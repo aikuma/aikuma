@@ -80,6 +80,13 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 		setUpFile();
 
 		beepPlayer = MediaPlayer.create(appContext, R.raw.beeps);
+		beepPlayer.setOnCompletionListener(
+				new MediaPlayer.OnCompletionListener() {
+					public void onCompletion(MediaPlayer _) {
+						Log.i("beeps", "completed!");
+						microphone.listen(Recorder.this);
+					}
+				});
 		beepPlayer.setVolume(.10f, .10f);
 	}
 
@@ -105,7 +112,13 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 
 	/** Start listening. */
 	public void listen() {
-		microphone.listen(this);
+		if (beepPlayer != null) {
+			// microphone.listen will get called by the beepPlayer
+			// OnCompletionListener
+			beepPlayer.start();
+		} else {
+			microphone.listen(this);
+		}
 	}
 
 	/** Stop listening to the microphone and close the file.

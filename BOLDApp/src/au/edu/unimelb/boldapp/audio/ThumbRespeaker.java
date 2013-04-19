@@ -33,6 +33,14 @@ public class ThumbRespeaker {
 		playThroughSpeaker();
 	}
 
+	public ThumbRespeaker(Context context) {
+		recorder = new Recorder(context);
+		player = new Player();
+		segments = new NewSegments();
+		setFinishedPlaying(false);
+		playThroughSpeaker();
+	}
+
 	/** Prepare the respeaker by setting a source file and a target file. */
 	public void prepare(String sourceFilename, String targetFilename,
 			String mappingFilename) {
