@@ -45,7 +45,12 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	/**
 	 * Plays beeps when recording starts
 	 */
-	protected MediaPlayer beepPlayer;
+	private MediaPlayer startBeepPlayer;
+
+	/**
+	 * Plays beeps when recording starts
+	 */
+	private MediaPlayer endBeepPlayer;
 
 	/** Default constructor.
 	 *
@@ -79,15 +84,17 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 		setUpMicrophone();
 		setUpFile();
 
-		beepPlayer = MediaPlayer.create(appContext, R.raw.beeps);
-		beepPlayer.setOnCompletionListener(
+		startBeepPlayer = MediaPlayer.create(appContext, R.raw.beeps);
+		startBeepPlayer.setOnCompletionListener(
 				new MediaPlayer.OnCompletionListener() {
 					public void onCompletion(MediaPlayer _) {
 						Log.i("beeps", "completed!");
 						microphone.listen(Recorder.this);
 					}
 				});
-		beepPlayer.setVolume(.10f, .10f);
+		startBeepPlayer.setVolume(.10f, .10f);
+		endBeepPlayer = MediaPlayer.create(appContext, R.raw.beep);
+		endBeepPlayer.setVolume(.10f, .10f);
 	}
 
 	protected void setUpMicrophone() {
@@ -112,10 +119,10 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 
 	/** Start listening. */
 	public void listen() {
-		if (beepPlayer != null) {
-			// microphone.listen will get called by the beepPlayer
+		if (startBeepPlayer != null) {
+			// microphone.listen will get called by the startBeepPlayer
 			// OnCompletionListener
-			beepPlayer.start();
+			startBeepPlayer.start();
 		} else {
 			microphone.listen(this);
 		}
@@ -133,6 +140,7 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	/** Pause listening to the microphone. */
 	public void pause() {
 		microphone.stop();
+		endBeepPlayer.start();
 	}
 
 	/** Callback for the microphone */
