@@ -40,7 +40,9 @@ public class InterleavedPlayer implements PlayerInterface {
 	
 	private MediaPlayer.OnCompletionListener onCompletionListener;
 	
-	private boolean pausedOnRespeaking;
+	private boolean pausedOnRespeaking = false;
+
+	private boolean previouslyStarted = false;
 
 	/**
 	 * Standard Constructor; takes the UUID of the respeaking.
@@ -69,11 +71,16 @@ public class InterleavedPlayer implements PlayerInterface {
 	 * stopped, or never started before, playback will start at the beginning.
 	 */
 	public void start() {
-		if (pausedOnRespeaking) {
-			playRespeaking();
-		} else {
+		if (!previouslyStarted) {
 			playOriginal();
+		} else {
+			if (pausedOnRespeaking) {
+				respeaking.start();
+			} else {
+				original.start();
+			}
 		}
+		previouslyStarted = true;
 	}
 
 	/**
