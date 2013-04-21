@@ -44,9 +44,12 @@ public class RecordingSelectionActivity extends ListActivity {
 		super.onStart();
 		GlobalState.loadRecordings();
 		GlobalState.loadUsers();
+		/*
 		ArrayAdapter adapter = new RecordingArrayAdapter(this,
 				GlobalState.getRecordings().toArray(new Recording[0]));
 		setListAdapter(adapter);
+		*/
+		sortDate();
 	}
 
 	/**
@@ -103,6 +106,10 @@ public class RecordingSelectionActivity extends ListActivity {
 	 * @param	view	the button that was pressed.
 	 */
 	public void sortDate(View view) {
+		sortDate();
+	}
+
+	public void sortDate() {
 		ArrayAdapter adapter = new RecordingArrayAdapter(this,
 				GlobalState.getRecordings("date").toArray(new Recording[0]));
 		setListAdapter(adapter);
