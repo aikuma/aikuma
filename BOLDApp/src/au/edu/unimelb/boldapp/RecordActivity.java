@@ -26,10 +26,6 @@ import android.media.MediaPlayer;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class RecordActivity extends Activity {
-	/**
-	 * Indicates whether audio is being recorded
-	 */
-	private Boolean recording;
 
 	/**
 	 * Instance of the recorder class that offers methods to record.
@@ -58,7 +54,6 @@ public class RecordActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
-		recording = false;
 		recorder = new Recorder(getApplicationContext());
 
 		this.uuid = UUID.randomUUID();
@@ -148,11 +143,12 @@ public class RecordActivity extends Activity {
 	public void record() {
 		ImageButton recordButton = (ImageButton) findViewById(R.id.Record);
 		//Toggle the recording Boolean.
-		recording = true;
 		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
 		pauseButton.setVisibility(View.VISIBLE);
 		recordButton.setVisibility(View.INVISIBLE);
-		recorder.listen();
+		if (!recorder.isRecording()) {
+			recorder.listen();
+		}
 	}
 
 	/**
@@ -163,7 +159,6 @@ public class RecordActivity extends Activity {
 	public void pause() {
 		ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
 		//Toggle the recording Boolean.
-		recording = false;
 		ImageButton recordButton = (ImageButton) findViewById(R.id.Record);
 		recordButton.setVisibility(View.VISIBLE);
 		pauseButton.setVisibility(View.INVISIBLE);
