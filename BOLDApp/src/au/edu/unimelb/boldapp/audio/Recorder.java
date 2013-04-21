@@ -52,6 +52,9 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	 */
 	private MediaPlayer endBeepPlayer;
 
+	private boolean recording = false;
+
+
 	/** Default constructor.
 	 *
 	 *Note: Uses an analyzer which tells the recorder to always record.
@@ -97,6 +100,10 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 		endBeepPlayer.setVolume(.10f, .10f);
 	}
 
+	public boolean isRecording() {
+		return recording;
+	}
+
 	protected void setUpMicrophone() {
 		this.microphone = new Microphone();
 	}
@@ -119,6 +126,7 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 
 	/** Start listening. */
 	public void listen() {
+		recording = true;
 		if (startBeepPlayer != null) {
 			// microphone.listen will get called by the startBeepPlayer
 			// OnCompletionListener
@@ -133,12 +141,14 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	 * Note: Once stopped you cannot restart the recorder.
 	 */
 	public void stop() {
+		recording = false;
 		microphone.stop();
 		file.close();
 	}
 
 	/** Pause listening to the microphone. */
 	public void pause() {
+		recording = false;
 		microphone.stop();
 		endBeepPlayer.start();
 	}
