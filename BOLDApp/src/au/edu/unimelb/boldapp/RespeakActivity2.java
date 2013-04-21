@@ -98,7 +98,7 @@ public class RespeakActivity2 extends Activity {
 						findViewById(R.id.RespeakButton);
 				ImageButton playButton = (ImageButton) 
 						findViewById(R.id.PlayButton);
-				playButton.setVisibility(View.INVISIBLE);
+				//playButton.setVisibility(View.INVISIBLE);
 				respeaker.setFinishedPlaying(true);
 				//respeaker.listenAfterFinishedPlaying();
 			}
@@ -116,9 +116,9 @@ public class RespeakActivity2 extends Activity {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					if (!respeaker.getFinishedPlaying()) {
+					//if (!respeaker.getFinishedPlaying()) {
 						respeaker.playOriginal();
-					}
+					//}
 					respeakButton.setVisibility(View.INVISIBLE);
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {

@@ -53,14 +53,21 @@ public class ThumbRespeaker {
 		// If we have already specified an end of the segment then we're
 		// starting a new one. Otherwise just continue with the old
 		// originalStartOfSegment
-		if (originalStartOfSegment == null || originalEndOfSegment != null) {
+		if (originalStartOfSegment == null) {
 			originalStartOfSegment = player.getCurrentSample();
+		} else if (originalEndOfSegment != null) {
+			originalStartOfSegment = player.getCurrentSample();
+		} else {
+			Log.i("email3", "else seeking to start of sample: " +
+					originalStartOfSegment);
+			player.seekTo(player.sampleToMsec(originalStartOfSegment));
 		}
 		Log.i("ThumbRespeaking", "originalStartOfSegment " + originalStartOfSegment);
 		player.play();
 	}
 
 	public void pauseOriginal() {
+		Log.i("email3", "pause currentSample: " + player.getCurrentSample());
 		player.pause();
 	}
 

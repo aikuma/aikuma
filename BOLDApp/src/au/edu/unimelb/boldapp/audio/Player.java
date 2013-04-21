@@ -35,6 +35,17 @@ public class Player extends MediaPlayer{
 		return (long) sample;
 	}
 
+	public int sampleToMsec(long sample) {
+		long msec = 1000*sample / getSampleRate();
+		if (msec < Integer.MIN_VALUE || msec > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException(
+					"This sample has gotta be wrong, " +
+					"audio files aren't this long or short"
+			);
+		}
+		return (int) msec;
+	}
+
 	/**
 	 * Indicates whether the audio is currently being played
 	 */
