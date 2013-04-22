@@ -109,6 +109,8 @@ public class RespeakActivity2 extends Activity {
 				//playButton.setVisibility(View.INVISIBLE);
 				respeaker.setFinishedPlaying(true);
 				//respeaker.listenAfterFinishedPlaying();
+				playButton.getBackground().setColorFilter(
+						android.R.color.transparent, PorterDuff.Mode.DARKEN);
 			}
 		});
 
