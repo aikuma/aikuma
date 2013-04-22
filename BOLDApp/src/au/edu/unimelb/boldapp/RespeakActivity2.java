@@ -7,6 +7,10 @@ import java.util.UUID;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.PaintDrawable;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
@@ -56,6 +60,8 @@ public class RespeakActivity2 extends Activity {
 	 */
 	protected ThumbRespeaker respeaker;
 
+	Paint backgroundColor;
+
 	/**
 	 * Called when the activity starts.
 	 *
@@ -79,6 +85,8 @@ public class RespeakActivity2 extends Activity {
 		respeaker = new ThumbRespeaker(getApplicationContext());
 
 		this.uuid = UUID.randomUUID();
+		//backgroundColor = ((PaintDrawable)
+		//		findViewById(R.id.PlayButton).getBackground()).getPaint();
 
 		respeaker.prepare(
 				new File(FileIO.getRecordingsPath(), originalUUID.toString() +
@@ -119,11 +127,17 @@ public class RespeakActivity2 extends Activity {
 					//if (!respeaker.getFinishedPlaying()) {
 						respeaker.playOriginal();
 					//}
-					respeakButton.setVisibility(View.INVISIBLE);
+					//respeakButton.setVisibility(View.INVISIBLE);
+					//playButton.setBackgroundColor(0xFF00FF00);
+					playButton.getBackground().setColorFilter(
+							Color.parseColor("#00ff00"), PorterDuff.Mode.DARKEN);
+				
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					respeaker.pauseOriginal();
-					respeakButton.setVisibility(View.VISIBLE);
+					//respeakButton.setVisibility(View.VISIBLE);
+					playButton.getBackground().setColorFilter(
+							android.R.color.transparent, PorterDuff.Mode.DARKEN);
 				}
 				return false;
 			}
@@ -135,11 +149,16 @@ public class RespeakActivity2 extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					respeaker.pauseOriginal();
 					respeaker.recordRespeaking();
-					playButton.setVisibility(View.INVISIBLE);
+					//playButton.setVisibility(View.INVISIBLE);
+					respeakButton.getBackground().setColorFilter(
+							Color.parseColor("#00ff00"), PorterDuff.Mode.DARKEN);
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					respeaker.pauseRespeaking();
-					playButton.setVisibility(View.VISIBLE);
+					//playButton.setVisibility(View.VISIBLE);
+					//respeakButton.setBackgroundColor(android.R.color.transparent);
+					respeakButton.getBackground().setColorFilter(
+							android.R.color.transparent, PorterDuff.Mode.DARKEN);
 				}
 				return false;
 			}
