@@ -12,11 +12,9 @@ import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
 import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
 import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
 import au.edu.unimelb.aikuma.FileIO;
-import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -28,7 +26,7 @@ public class Respeaker {
 	public Respeaker() {
 		recorder = new Recorder();
 		player = new Player();
-		segments = new NewSegments();
+		mapper = new Mapper();
 		setFinishedPlaying(false);
 		playThroughSpeaker();
 	}
@@ -36,7 +34,7 @@ public class Respeaker {
 	public Respeaker(Context context) {
 		recorder = new Recorder(context);
 		player = new Player();
-		segments = new NewSegments();
+		mapper = new Mapper();
 		setFinishedPlaying(false);
 		playThroughSpeaker();
 	}
@@ -46,20 +44,12 @@ public class Respeaker {
 			String mappingFilename) {
 		player.prepare(sourceFilename);
 		recorder.prepare(targetFilename);
-		this.mappingFilename = mappingFilename;
+		mapper.prepare(mappingFilename);
 	}
 
 	public void playOriginal() {
-		// If we have already specified an end of the segment then we're
-		// starting a new one. Otherwise just continue with the old
-		// originalStartOfSegment
-		if (originalStartOfSegment == null) {
-			originalStartOfSegment = player.getCurrentSample();
-		} else if (originalEndOfSegment != null) {
-			originalStartOfSegment = player.getCurrentSample();
-		} else {
-			player.seekTo(player.sampleToMsec(originalStartOfSegment));
-		}
+		mapper.markOriginal(player);
+		player.seekTo(player.sampleToMsec(mapper.getOriginalStartSample()));
 		player.play();
 	}
 
@@ -68,43 +58,19 @@ public class Respeaker {
 	}
 
 	public void recordRespeaking() {
-		originalEndOfSegment = player.getCurrentSample();
-		respeakingStartOfSegment = recorder.getCurrentSample();
+		mapper.markRespeaking(player, recorder);
 		recorder.listen();
 	}
 
 	public void pauseRespeaking() {
 		recorder.pause();
-		respeakingEndOfSegment = recorder.getCurrentSample();
-		storeSegmentEntry();
-	}
-
-	private void storeSegmentEntry() {
-		Segment originalSegment;
-		try {
-			originalSegment = new Segment(originalStartOfSegment,
-					originalEndOfSegment);
-		} catch (IllegalArgumentException e) {
-			// This could only have happened if no original had been recorded at all.
-			originalSegment = new Segment(0l, 0l);
-		}
-		Segment respeakingSegment = new Segment(respeakingStartOfSegment,
-				respeakingEndOfSegment);
-		segments.put(originalSegment, respeakingSegment);
-		originalStartOfSegment = player.getCurrentSample();
-		originalEndOfSegment = null;
-		respeakingStartOfSegment = recorder.getCurrentSample();
-		respeakingEndOfSegment = null;
+		mapper.store(player, recorder);
 	}
 
 	public void stop() {
 		recorder.stop();
 		player.stop();
-		try {
-			segments.write(new File(mappingFilename));
-		} catch (IOException e) {
-			// Couldn't write mapping. Oh well!
-		}
+		mapper.stop();
 	}
 
 	public void playThroughSpeaker() {
@@ -121,30 +87,19 @@ public class Respeaker {
 		return this.finishedPlaying;
 	}
 
-	/** Player to play the original with. */
-	private Player player;
-
 	public void setOnCompletionListener(OnCompletionListener ocl) {
 		player.setOnCompletionListener(ocl);
 	}
 
+	/** Player to play the original with. */
+	private Player player;
+
 	/** The recorder used to get respeaking data. */
 	private Recorder recorder;
-
-	/** The segment mapping between the original and the respeaking. */
-	private NewSegments segments;
-
-	/**
-	 * Temporarily store the boundaries of segments before being put in
-	 * segments */
-	private Long originalStartOfSegment;
-	private Long originalEndOfSegment;
-	private Long respeakingStartOfSegment;
-	private Long respeakingEndOfSegment;
+	
+	/** The mapper used to store mapping data. */
+	private Mapper mapper;
 
 	/** Indicates whether the recording has finished playing. */
 	private boolean finishedPlaying;
-
-	/** The name of the mapping file */
-	private String mappingFilename;
 }
