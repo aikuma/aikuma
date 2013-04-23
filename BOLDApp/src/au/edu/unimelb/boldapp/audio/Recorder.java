@@ -162,26 +162,6 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 
 	/** Callback for the microphone */
 	public void onBufferFull(short[] buffer) {
-		// This will call back the methods:
-		//  * silenceTriggered
-		//  * audioTriggered
-		//
-		analyzer.analyze(this, buffer);
-	}
-
-	//The following two methods handle silences/speech
-	// discovered in the input data.
-	//
-	// If you need a different behaviour, override.
-	//
-
-	/** By default simply writes the buffer to the file. */
-	public void audioTriggered(short[] buffer, boolean justChanged) {
 		file.write(buffer);
-	}
-
-	/** Does nothing by default if silence is triggered. */
-	public void silenceTriggered(short[] buffer, boolean justChanged) {
-		// Intentionally empty.
 	}
 }
