@@ -90,9 +90,6 @@ public class Respeaker extends Recorder {
 		setFinishedPlaying(false);
 		this.player = new Player();
 		segments = new NewSegments();
-		//0.18 is the highest volume that can be set without causing the
-		//feedback problem for the respeak activity on the cheap huawei phones.
-		//this.player.setVolume(0.18f,0.18f);
 	}
 
 	public Respeaker(Context context) {
@@ -100,9 +97,6 @@ public class Respeaker extends Recorder {
 		setFinishedPlaying(false);
 		this.player = new Player();
 		segments = new NewSegments();
-		//0.18 is the highest volume that can be set without causing the
-		//feedback problem for the respeak activity on the cheap huawei phones.
-		//this.player.setVolume(0.18f,0.18f);
 	}
 
 	/** Default constructor. */
@@ -117,9 +111,6 @@ public class Respeaker extends Recorder {
 			this.playThroughEarpiece();
 		}
 		segments = new NewSegments();
-		//0.18 is the highest volume that can be set without causing the
-		//feedback problem for the respeak activity on the cheap huawei phones.
-		//this.player.setVolume(0.18f,0.18f);
 	}
 
 	public Respeaker(ThresholdSpeechAnalyzer analyzer, Context context) {
@@ -127,9 +118,6 @@ public class Respeaker extends Recorder {
 		setFinishedPlaying(false);
 		this.player = new Player();
 		segments = new NewSegments();
-		//0.18 is the highest volume that can be set without causing the
-		//feedback problem for the respeak activity on the cheap huawei phones.
-		//this.player.setVolume(0.18f,0.18f);
 	}
 
   
@@ -151,15 +139,6 @@ public class Respeaker extends Recorder {
 		super.listen();
 		player.play();
 		originalStartOfSegment = player.getCurrentSample();
-		Log.i("segments", "originalStartOfSegment: " + originalStartOfSegment);
-		try {
-			long originalCurrentSample = player.getCurrentSample();
-			//writer.write(originalCurrentSample + ",");
-			Log.i("issue37mapping", "original listen: " +
-					originalCurrentSample);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void listenToSpeaker() {
@@ -195,8 +174,7 @@ public class Respeaker extends Recorder {
 			Log.i("segments", "Samples file name: " + mappingFilename);
 			segments.write(new File(mappingFilename));
 		} catch (IOException e) {
-			// Couldn't write mapping.
-			Log.e("segments", "couldn't write mapping", e);
+			Log.e("segments", "Could not write mapping", e);
 		}
 		try {
 			writer.close();
@@ -219,7 +197,6 @@ public class Respeaker extends Recorder {
 	public void resume() {
 		super.listen();
 		originalStartOfSegment = player.getCurrentSample();
-		Log.i("segments", "originalStartOfSegment: " + originalStartOfSegment);
 		switchToPlay();
 	}
 
@@ -239,15 +216,10 @@ public class Respeaker extends Recorder {
 				originalStartOfSegment, originalEndOfSegment);
 		Segment respeakingSegment = new Segment(
 				respeakingStartOfSegment, respeakingEndOfSegment);
-		Log.i("segments", "putting: " + originalStartOfSegment + "," +
-				originalEndOfSegment + ":" + respeakingStartOfSegment + "," +
-				respeakingEndOfSegment);
 		segments.put(originalSegment, respeakingSegment);
 		respeakingStartOfSegment = null;
 		respeakingEndOfSegment = null;
-		Log.i("segments", "respeakingEndOfSegment: " + respeakingEndOfSegment);
 		originalStartOfSegment = player.getCurrentSample();
-		Log.i("segments", "originalStartOfSegment: " + originalStartOfSegment);
 		player.resume();
 	}
 
@@ -255,27 +227,17 @@ public class Respeaker extends Recorder {
 	protected void switchToRecord() {
 		player.pause();
 		originalEndOfSegment = player.getCurrentSample();
-		Log.i("segments", "originalEndOfSegment: " + originalEndOfSegment);
 		respeakingStartOfSegment = file.getCurrentSample();
-		Log.i("segments", "respeakingStartOfSegment: " +
-					respeakingStartOfSegment);
 	}
 
 	@Override
 	public void audioTriggered(short[] buffer, boolean justChanged) {
-		Log.i("Bra", "trigga!");
-		Log.i("Bra", "trigga!-");
 		long currentSample = file.getCurrentSample();
 		long originalCurrentSample = player.getCurrentSample();
-		if (currentSample % 10000 == 0) {
-			Log.i("issue37mapping", "r: " + currentSample + " o: " +
-					originalCurrentSample);
-		}
 		if (justChanged) {
 			try {
 				writer.write(originalCurrentSample + ",");
 				respeakingStartOfSegment = currentSample;
-				Log.i("issue37mapping", "original: " + originalCurrentSample);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
