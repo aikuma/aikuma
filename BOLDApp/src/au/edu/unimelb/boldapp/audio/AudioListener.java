@@ -1,15 +1,15 @@
 package au.edu.unimelb.aikuma.audio;
 
 /**
- * Interface for anything that listens to microphone data.
+ * Interface for anything that listens to audio buffer data.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public interface MicrophoneListener {
+public interface AudioListener {
 
 	/**
-	 * The microphone has picked up something.
+	 * The microphone/etc. has picked up something.
 	 *
 	 * @param buffer An array of samples.
 	 */

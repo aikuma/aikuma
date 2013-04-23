@@ -102,10 +102,8 @@ public class AudioRespeaker implements MicrophoneListener {
 			segments.put(originalSegment, respeakingSegment);
 		}
 		try {
-			Log.i("segments", "Samples file name: " + mappingFilename);
 			segments.write(new File(mappingFilename));
 		} catch (IOException e) {
-			Log.e("segments", "Could not write mapping", e);
 		}
 		try {
 			writer.close();
