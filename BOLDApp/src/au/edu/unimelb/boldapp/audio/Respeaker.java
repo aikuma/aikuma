@@ -58,24 +58,19 @@ public class Respeaker {
 		} else if (originalEndOfSegment != null) {
 			originalStartOfSegment = player.getCurrentSample();
 		} else {
-			Log.i("email3", "else seeking to start of sample: " +
 					originalStartOfSegment);
 			player.seekTo(player.sampleToMsec(originalStartOfSegment));
 		}
-		Log.i("ThumbRespeaking", "originalStartOfSegment " + originalStartOfSegment);
 		player.play();
 	}
 
 	public void pauseOriginal() {
-		Log.i("email3", "pause currentSample: " + player.getCurrentSample());
 		player.pause();
 	}
 
 	public void recordRespeaking() {
 		originalEndOfSegment = player.getCurrentSample();
-		Log.i("ThumbRespeaking", "originalEndOfSegment " + originalEndOfSegment);
 		respeakingStartOfSegment = recorder.getCurrentSample();
-		Log.i("ThumbRespeaking", "respeakingStartOfSegment " +
 				respeakingStartOfSegment);
 		recorder.listen();
 	}
@@ -83,7 +78,6 @@ public class Respeaker {
 	public void pauseRespeaking() {
 		recorder.pause();
 		respeakingEndOfSegment = recorder.getCurrentSample();
-		Log.i("ThumbRespeaking", "respeakingEndOfSegment " + respeakingEndOfSegment);
 		storeSegmentEntry();
 	}
 
@@ -110,7 +104,6 @@ public class Respeaker {
 		player.stop();
 		try {
 			segments.write(new File(mappingFilename));
-			Log.i("ThumbRespeaking", segments.toString());
 		} catch (IOException e) {
 			// Couldn't write mapping. Oh well!
 		}
