@@ -12,7 +12,7 @@ import android.media.MediaPlayer;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class Player extends MediaPlayer{
+public class Player extends MediaPlayer implements Sampler {
 
 	/**
 	 * returns the sample rate of the file being played

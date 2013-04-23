@@ -27,7 +27,7 @@ import au.edu.unimelb.aikuma.audio.analyzers.SimpleAnalyzer;
  *
  *  Note that stopping the recorder closes and finalizes the WAV file.
  */
-public class Recorder implements AudioHandler, MicrophoneListener {
+public class Recorder implements MicrophoneListener, Sampler {
 
 	/** File to write to. */
 	protected PCMFile file;
