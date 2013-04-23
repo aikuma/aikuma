@@ -53,7 +53,6 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 	/** Indicates whether the recording has finished playing. */
 	private boolean finishedPlaying = false;
 	
-	
 	/** Default constructor. */
 	public AudioRespeaker(ThresholdSpeechAnalyzer analyzer, boolean
 			shouldPlayThroughSpeaker) {
@@ -116,7 +115,9 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 	}
 	
 	public void rewindToSegmentStart() {
-		player.seekTo(player.sampleToMsec(mapper.getOriginalStartSample()));
+		int msecs = player.sampleToMsec(mapper.getOriginalStartSample());
+		msecs = msecs - getRewindAmount();
+		player.seekTo(msecs >= 0 ? msecs : 0);
 	}
   
 	/*
@@ -149,7 +150,7 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 				stop();
 			} else {
 				mapper.store(player, file);
-				player.rewind(650);
+				player.rewind(getRewindAmount());
 				switchToPlay();
 			}
 		}
@@ -173,6 +174,10 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 	
 	public void setFinishedPlaying(boolean finishedPlaying) {
 		this.finishedPlaying = finishedPlaying;
+	}
+	
+	public int getRewindAmount() {
+		return 650;
 	}
 	
 }
