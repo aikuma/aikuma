@@ -20,9 +20,9 @@ import java.util.Arrays;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class Respeaker {
+public class ThumbRespeaker {
 
-	public Respeaker() {
+	public ThumbRespeaker() {
 		recorder = new Recorder();
 		player = new Player();
 		mapper = new Mapper();
@@ -30,7 +30,7 @@ public class Respeaker {
 		playThroughSpeaker();
 	}
 
-	public Respeaker(Context context) {
+	public ThumbRespeaker(Context context) {
 		recorder = new Recorder(context);
 		player = new Player();
 		mapper = new Mapper();

@@ -21,7 +21,7 @@ import android.content.Intent;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import au.edu.unimelb.aikuma.audio.Respeaker;
+import au.edu.unimelb.aikuma.audio.ThumbRespeaker;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
 
@@ -58,7 +58,7 @@ public class ThumbRespeakActivity extends Activity {
 	/**
 	 * Instance of the respeaker class that offers methods to respeak
 	 */
-	protected Respeaker respeaker;
+	protected ThumbRespeaker respeaker;
 
 	Paint backgroundColor;
 
@@ -82,7 +82,7 @@ public class ThumbRespeakActivity extends Activity {
 
 		startedRespeaking = false;
 		respeaking = false;
-		respeaker = new Respeaker(getApplicationContext());
+		respeaker = new ThumbRespeaker(getApplicationContext());
 
 		this.uuid = UUID.randomUUID();
 		//backgroundColor = ((PaintDrawable)
