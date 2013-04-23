@@ -43,10 +43,10 @@ public class Noise {
 		}
 		
 		/**
-		 * One needs to speak about three times as loud as the background noise.
+		 * One needs to speak about x times as loud as the background noise.
 		 */
 		public int getRecommendedRecordingLevel() {
-			return (int) Math.round(getAverage()*3);
+			return (int) Math.round(getAverage()*5);
 		}
 		
 		public int getAverage() { return this.average; }
