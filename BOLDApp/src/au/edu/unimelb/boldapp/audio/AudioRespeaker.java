@@ -13,6 +13,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
+import au.edu.unimelb.aikuma.audio.Respeaker;
 import au.edu.unimelb.aikuma.audio.Player;
 import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
 import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
@@ -41,108 +42,38 @@ import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class AudioRespeaker extends Recorder {
-
-	/**
-	 * The writer used to write the sample mappings file
-	 */
-	private BufferedWriter writer;
-
-	/**
-	 * Indicates whether the recording has finished playing
-	 */
-	private boolean finishedPlaying;
-
-	/** Player to play the original with. */
-	public Player player;
-
-	private NewSegments segments;
-
-	private Long originalStartOfSegment;
-	private Long originalEndOfSegment;
-	private Long respeakingStartOfSegment;
-	private Long respeakingEndOfSegment;
-
-	private String mappingFilename;
-
-	/**
-	 * finishedPlaying mutator
-	 */
-	 public void setFinishedPlaying(boolean finishedPlaying) {
-	 	this.finishedPlaying = finishedPlaying;
-	 }
-
-	/**
-	 * finishedPlaying accessor
-	 */
-	public boolean getFinishedPlaying() {
-		return this.finishedPlaying;
-	}
-
-	public void setSensitivity(int threshold) {
-		this.analyzer = new ThresholdSpeechAnalyzer(88, 3,
-				new AverageRecognizer(threshold, threshold));
-	}
-
-	/** Default constructor. */
-	public AudioRespeaker() {
-		super();
-		setFinishedPlaying(false);
-		this.player = new Player();
-		segments = new NewSegments();
-	}
-
-	public AudioRespeaker(Context context) {
-		super(context);
-		setFinishedPlaying(false);
-		this.player = new Player();
-		segments = new NewSegments();
-	}
-
+public class AudioRespeaker implements MicrophoneListener {
+	
+	private Respeaker respeaker;
+	
 	/** Default constructor. */
 	public AudioRespeaker(ThresholdSpeechAnalyzer analyzer, boolean
 			shouldPlayThroughSpeaker) {
-		super(analyzer);
 		setFinishedPlaying(false);
-		this.player = new Player();
+		
 		if (shouldPlayThroughSpeaker) {
 			this.playThroughSpeaker();
 		} else {
 			this.playThroughEarpiece();
 		}
-		segments = new NewSegments();
+		
+		this.respeaker = new Respeaker(new Microphone(this));
 	}
-
-	public AudioRespeaker(ThresholdSpeechAnalyzer analyzer, Context context) {
-		super(analyzer, context);
-		setFinishedPlaying(false);
-		this.player = new Player();
-		segments = new NewSegments();
+	
+	public void setSensitivity(int threshold) {
+		this.analyzer = new ThresholdSpeechAnalyzer(88, 3,
+				new AverageRecognizer(threshold, threshold));
 	}
-
   
 	/** Prepare the respeaker by setting a source file and a target file. */
 	public void prepare(String sourceFilename, String targetFilename,
 			String mappingFilename) {
-		player.prepare(sourceFilename);
-		super.prepare(targetFilename);
-		this.mappingFilename = mappingFilename;
-		try {
-			writer = new BufferedWriter(new FileWriter(mappingFilename + "old"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		this.respeaker.prepare(sourceFilename, targetFilename, mappingFilename);
 	}
 
 	@Override
 	public void listen() {
-		super.listen();
-		player.play();
-		originalStartOfSegment = player.getCurrentSample();
-	}
-
-	public void listenToSpeaker() {
-		super.listen();
+		respeaker.recordRespeaking();
 	}
 
 	/**
@@ -150,11 +81,11 @@ public class AudioRespeaker extends Recorder {
 	 * has been completed.
 	 */
 	public void listenAfterFinishedPlaying() {
-		super.listen();
+		listen();
 	}
 
 	public void play() {
-		player.play();
+		player.playOriginal();
 	}
 
 	@Override

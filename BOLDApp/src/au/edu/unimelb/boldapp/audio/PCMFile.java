@@ -20,7 +20,9 @@ import android.util.Log;
  *
  * Note: The file cannot be reopened.
  */
-public class PCMWriter {
+public class PCMFile {
+	
+	private File file;
 
 	/**
 	 * The current sample, which represents where in the recording we are.
@@ -33,18 +35,25 @@ public class PCMWriter {
 	public long getCurrentSample(){
 		return this.currentSample;
 	}
-
-	String fullFilename;
+	
 	/**
 	 * @param	sampleRate		Eg. 1000
 	 * @param	channelConfig	Eg. AudioFormat.CHANNEL_IN_MONO
 	 * @param	audioFormat		Eg. AudioFormat.ENCODING_PCM_16BIT
 	 *
-	 * @return an instance of a PCMWriter.
+	 * @return an instance of a PCMFile.
 	 */
-	public static PCMWriter getInstance(int sampleRate, int channelConfig,
+	public static PCMFile getInstance(int sampleRate, int channelConfig,
 			int audioFormat) {
-		return new PCMWriter(sampleRate, channelConfig, audioFormat);
+		return new PCMFile(sampleRate, channelConfig, audioFormat);
+	}
+	
+	public static PCMFile getInstance(Microphone microphone) {
+		return getInstance(
+				microphone.getSampleRate(),
+				microphone.getChannelConfiguration(),
+				microphone.getAudioFormat()
+		);
 	}
 
 	/**
@@ -96,7 +105,7 @@ public class PCMWriter {
 			//
 			payloadSize += buffer.length;
 		} catch (IOException e) {
-			Log.e(PCMWriter.class.getName(),
+			Log.e(PCMFile.class.getName(),
 					"Error occured in updateListener, recording is aborted");
 		}
 
@@ -122,6 +131,8 @@ public class PCMWriter {
 
 		write(byteBuffer);
 	}
+	
+	public PCMFile(String filename, Microphone microphone
 
 	/** Default constructor.
 	 *
@@ -129,9 +140,9 @@ public class PCMWriter {
 	 *  @param channelConfig Eg. AudioFormat.CHANNEL_IN_MONO
 	 *  @param audioFormat   Eg. AudioFormat.ENCODING_PCM_16BIT
 	 *
-	 *  @return an instance of a PCMWriter.
+	 *  @return an instance of a PCMFile.
 	 */
-	public PCMWriter(int sampleRate, int channelConfig, int audioFormat) {
+	public PCMFile(int sampleRate, int channelConfig, int audioFormat) {
 		currentSample = 0;
 		try {
 			// Convert the Android attributes to internal attributes.
@@ -173,14 +184,14 @@ public class PCMWriter {
 				framePeriod = bufferSize
 						/ (2 * sampleSize * numberOfChannels / 8);
 
-				Log.w(PCMWriter.class.getName(), "Increasing buffer size to "
+				Log.w(PCMFile.class.getName(), "Increasing buffer size to "
 						+ Integer.toString(bufferSize));
 			}
 		} catch (Exception e) {
 			if (e.getMessage() != null) {
-				Log.e(PCMWriter.class.getName(), e.getMessage());
+				Log.e(PCMFile.class.getName(), e.getMessage());
 			} else {
-				Log.e(PCMWriter.class.getName(),
+				Log.e(PCMFile.class.getName(),
 						"Unknown error occured while initializing recording");
 			}
 		}
@@ -191,16 +202,17 @@ public class PCMWriter {
 	 *
 	 * @param fullFilename The full path of the file to write.
 	 */
-	private void createRandomAccessFile(String fullFilename) {
+	private void createRandomAccessFile(File file) {
+		this.file = file;
+		
 		try {
 			// Random access file.
 			//
-			File file = new File(this.fullFilename);
 			file.getParentFile().mkdirs();
 			randomAccessWriter = new RandomAccessFile(file, "rw");
 		} catch (FileNotFoundException e) {
-			Log.e(PCMWriter.class.getName(),
-					"Could not create RandomAccessFile: " + this.fullFilename);
+			Log.e(PCMFile.class.getName(),
+					"Could not create RandomAccessFile: " + file.getCanonicalPath());
 		}
 	}
 
@@ -208,11 +220,9 @@ public class PCMWriter {
 	 *
 	 * @param fullFilename The full path of the file to write.
 	 */
-	public void prepare(String fullFilename) {
-		this.fullFilename = fullFilename;
-		
+	public void prepare(File file) {
 		try {
-			createRandomAccessFile(fullFilename);
+			createRandomAccessFile(file);
 
 			// Write the full WAV PCM file header.
 			//
@@ -283,9 +293,9 @@ public class PCMWriter {
 			//
 		} catch (Exception e) {
 			if (e.getMessage() != null) {
-				Log.e(PCMWriter.class.getName(), e.getMessage());
+				Log.e(PCMFile.class.getName(), e.getMessage());
 			} else {
-				Log.e(PCMWriter.class.getName(),
+				Log.e(PCMFile.class.getName(),
 						"Unknown error occurred in prepare()");
 			}
 		}
@@ -302,7 +312,7 @@ public class PCMWriter {
 		// This is only necessary as the randomAccessWriter
 		// might have been closed.
 		//
-		createRandomAccessFile(fullFilename);
+		createRandomAccessFile(file);
 		
 		try {
 			// Write size to RIFF header.
@@ -318,7 +328,7 @@ public class PCMWriter {
 
 			randomAccessWriter.close();
 		} catch (IOException e) {
-			Log.e(PCMWriter.class.getName(),
+			Log.e(PCMFile.class.getName(),
 					"I/O exception occured while closing output file");
 		}
 	}

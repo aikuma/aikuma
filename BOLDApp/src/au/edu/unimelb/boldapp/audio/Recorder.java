@@ -30,7 +30,7 @@ import au.edu.unimelb.aikuma.audio.analyzers.SimpleAnalyzer;
 public class Recorder implements AudioHandler, MicrophoneListener {
 
 	/** File to write to. */
-	protected PCMWriter file;
+	protected PCMFile file;
 	
 	/** Microphone input */
 	Microphone microphone;
@@ -110,11 +110,7 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 
 	/** Sets the file up for writing. */
 	protected void setUpFile() {
-		file = PCMWriter.getInstance(
-				microphone.getSampleRate(),
-				microphone.getChannelConfiguration(),
-				microphone.getAudioFormat()
-		);
+		file = PCMFile.getInstance(microphone);
   }
 
 	/**
