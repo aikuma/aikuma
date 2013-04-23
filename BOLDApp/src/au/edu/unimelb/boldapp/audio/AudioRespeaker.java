@@ -132,16 +132,19 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 	/** Resume playing. */
 	public void resume() {
 		microphone.listen(this);
+		rewindToSegmentStart();
 		mapper.markOriginal(player);
 		switchToPlay();
+	}
+	
+	public void rewindToSegmentStart() {
+		player.seekTo(player.sampleToMsec(mapper.getOriginalStartSample()));
 	}
   
 	/*
 	 * Switches the mode to play mode.
 	 */
 	protected void switchToPlay() {
-		mapper.store(player, file);
-		player.rewind(650);
 		player.resume();
 	}
 
@@ -167,6 +170,8 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 			if (getFinishedPlaying()) {
 				stop();
 			} else {
+				mapper.store(player, file);
+				player.rewind(650);
 				switchToPlay();
 			}
 		}
