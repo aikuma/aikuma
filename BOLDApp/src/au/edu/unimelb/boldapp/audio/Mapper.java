@@ -14,9 +14,9 @@ public class Mapper {
 	/**
 	 * Temporarily store the boundaries of segments before being put in
 	 * segments */
-	private Long originalStartOfSegment;
+	private Long originalStartOfSegment = 0L;
 	private Long originalEndOfSegment;
-	private Long respeakingStartOfSegment;
+	private Long respeakingStartOfSegment = 0L;
 	private Long respeakingEndOfSegment;
 	
 	/** The name of the mapping file */
@@ -40,16 +40,18 @@ public class Mapper {
 	}
 	
 	public Long getOriginalStartSample() {
-		return originalStartOfSegment;
+		if (originalStartOfSegment != null) {
+			return originalStartOfSegment;
+		} else {
+			return 0L;
+		}
 	}
 	
 	public void markOriginal(Sampler original) {
 		// If we have already specified an end of the segment then we're
 		// starting a new one. Otherwise just continue with the old
 		// originalStartOfSegment
-		if (originalStartOfSegment == null) {
-			originalStartOfSegment = original.getCurrentSample();
-		} else if (originalEndOfSegment != null) {
+		if (originalEndOfSegment != null) {
 			originalStartOfSegment = original.getCurrentSample();
 		}
 	}
@@ -74,8 +76,8 @@ public class Mapper {
 				respeakingEndOfSegment);
 		segments.put(originalSegment, respeakingSegment);
 		originalStartOfSegment = original.getCurrentSample();
-		originalEndOfSegment = null;
 		respeakingStartOfSegment = respoken.getCurrentSample();
+		originalEndOfSegment = null;
 		respeakingEndOfSegment = null;
 	}
 	
