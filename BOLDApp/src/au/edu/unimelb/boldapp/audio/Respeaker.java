@@ -47,8 +47,8 @@ public class Respeaker {
 	}
 
 	public void playOriginal() {
-		mapper.markOriginal(player);
 		player.seekTo(player.sampleToMsec(mapper.getOriginalStartSample()));
+		mapper.markOriginal(player);
 		player.play();
 	}
 
