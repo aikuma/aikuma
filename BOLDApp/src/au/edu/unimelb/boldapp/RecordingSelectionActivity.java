@@ -67,11 +67,11 @@ public class RecordingSelectionActivity extends ListActivity {
 		if (recording.isOriginal() && nextActivityName.equals("ListenActivity")) {
 			intent = new Intent(this, ListenActivity.class);
 		}
-		if (nextActivityName.equals("RespeakActivity")) {
-			intent = new Intent(this, RespeakActivity.class);
+		if (nextActivityName.equals("AudioRespeakActivity")) {
+			intent = new Intent(this, AudioRespeakActivity.class);
 		}
-		if (nextActivityName.equals("RespeakActivity2")) {
-			intent = new Intent(this, RespeakActivity2.class);
+		if (nextActivityName.equals("ThumbRespeakActivity")) {
+			intent = new Intent(this, ThumbRespeakActivity.class);
 		}
 		//Otherwise it is listen
 		intent.putExtra("recordingUUID", recording.getUUID());

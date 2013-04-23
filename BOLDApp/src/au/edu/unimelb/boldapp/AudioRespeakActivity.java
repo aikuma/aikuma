@@ -26,7 +26,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import java.util.concurrent.ExecutionException;
 
 import au.edu.unimelb.aikuma.audio.Audio;
-import au.edu.unimelb.aikuma.audio.Respeaker;
+import au.edu.unimelb.aikuma.audio.AudioRespeaker;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
 import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
@@ -39,7 +39,7 @@ import au.edu.unimelb.aikuma.audio.widgets.NoiseLevel;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class RespeakActivity extends Activity {
+public class AudioRespeakActivity extends Activity {
 
 	/**
 	 * Indicates whether the respeaking has been started already
@@ -64,7 +64,7 @@ public class RespeakActivity extends Activity {
 	/**
 	 * Instance of the respeaker class that offers methods to respeak
 	 */
-	protected Respeaker respeaker;
+	protected AudioRespeaker respeaker;
 
 	/**
 	 * Proximity detector.
@@ -77,7 +77,7 @@ public class RespeakActivity extends Activity {
 	protected SeekBar sensitivitySlider;
 	
 	public SeekBar getSensitivitySlider() { return this.sensitivitySlider; }
-	public Respeaker getRespeaker() { return this.respeaker; }
+	public AudioRespeaker getRespeaker() { return this.respeaker; }
 	
 	/**
 	 * Called when the activity starts.
@@ -100,7 +100,7 @@ public class RespeakActivity extends Activity {
 
 		startedRespeaking = false;
 		respeaking = false;
-		respeaker = new Respeaker(new ThresholdSpeechAnalyzer(88, 3), false);
+		respeaker = new AudioRespeaker(new ThresholdSpeechAnalyzer(88, 3), false);
 
 		this.uuid = UUID.randomUUID();
     
@@ -132,7 +132,7 @@ public class RespeakActivity extends Activity {
     Handler handler = new Handler();
     handler.postDelayed(new Runnable() {
       public void run() {
-        new NoiseLevel(RespeakActivity.this, 20).find();
+        new NoiseLevel(AudioRespeakActivity.this, 20).find();
       }
     }, 500);
   };
@@ -144,13 +144,13 @@ public class RespeakActivity extends Activity {
 	public void onStop() {
 		//recorder.stop();
 		super.onStop();
-		Log.i("RespeakActivity", "onStop");
+		Log.i("AudioRespeakActivity", "onStop");
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		Log.i("RespeakActivity", "onpause");
+		Log.i("AudioRespeakActivity", "onpause");
 		this.proximityDetector.stop();
 		Audio.reset(this); 
 	}
@@ -180,7 +180,7 @@ public class RespeakActivity extends Activity {
 		Audio.playThroughEarpiece(this, false);
 
 		this.proximityDetector =
-				new ProximityDetector( RespeakActivity.this, 2.0f) {
+				new ProximityDetector( AudioRespeakActivity.this, 2.0f) {
 					public void near(float distance) {
 							respeak();
 					}
@@ -200,9 +200,9 @@ public class RespeakActivity extends Activity {
 		respeaker.stop();
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".map");
-		RespeakActivity.this.finish();
+		AudioRespeakActivity.this.finish();
 		Intent intent = new Intent(this, RecordingSelectionActivity.class);
-		intent.putExtra("activity", "RespeakActivity");
+		intent.putExtra("activity", "AudioRespeakActivity");
 		startActivity(intent);
 	}
 

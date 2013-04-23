@@ -88,7 +88,7 @@ public class MainActivity extends Activity {
 	 */
 	public void goToRespeak(View view) {
 		Intent intent = new Intent(this, RecordingSelectionActivity.class);
-		intent.putExtra("activity", "RespeakActivity");
+		intent.putExtra("activity", "AudioRespeakActivity");
 		startActivity(intent);
 	}
 
@@ -122,7 +122,7 @@ public class MainActivity extends Activity {
 	public void goToRespeak2(View view) {
 		//SyncForActivity.sync(this);
 		Intent intent = new Intent(this, RecordingSelectionActivity.class);
-		intent.putExtra("activity", "RespeakActivity2");
+		intent.putExtra("activity", "ThumbRespeakActivity");
 		startActivity(intent);
 
 	}

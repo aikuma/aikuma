@@ -1,298 +1,159 @@
 package au.edu.unimelb.aikuma.audio;
 
+import android.content.Context;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioRecord;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaRecorder;
+import android.util.Log;
+import au.edu.unimelb.aikuma.audio.Player;
+import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
+import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
+import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
+import au.edu.unimelb.aikuma.FileIO;
+import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
-import android.content.Context;
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioRecord;
-import android.media.MediaRecorder;
-import android.util.Log;
-
-import au.edu.unimelb.aikuma.audio.Player;
-import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
-import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
-import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
-
-import au.edu.unimelb.aikuma.FileIO;
-
-import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
-
-/** Respeaker used to get input from eg. a microphone and
- *  output into a file.tIn addition, it also 
- * 
- *  Usage:
- *    Respeaker respeaker = new Respeaker();
- *    respeaker.prepare(
- *      "/mnt/sdcard/bold/recordings/source_file.wav",
- *      "/mnt/sdcard/bold/recordings/target_file.wav"
- *    );
- *    respeaker.listen();
- *    respeaker.pause();
- *    respeaker.resume();
- *    respeaker.stop();
- *
- *  Note that stopping the respeaker closes and finalizes the WAV file.
- *
+/**
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class Respeaker extends Recorder {
+public class Respeaker {
 
-	/**
-	 * The writer used to write the sample mappings file
-	 */
-	private BufferedWriter writer;
-
-	/**
-	 * Indicates whether the recording has finished playing
-	 */
-	private boolean finishedPlaying;
-
-	/** Player to play the original with. */
-	public Player player;
-
-	private NewSegments segments;
-
-	private Long originalStartOfSegment;
-	private Long originalEndOfSegment;
-	private Long respeakingStartOfSegment;
-	private Long respeakingEndOfSegment;
-
-	private String mappingFilename;
-
-	/**
-	 * finishedPlaying mutator
-	 */
-	 public void setFinishedPlaying(boolean finishedPlaying) {
-	 	this.finishedPlaying = finishedPlaying;
-	 }
-
-	/**
-	 * finishedPlaying accessor
-	 */
-	public boolean getFinishedPlaying() {
-		return this.finishedPlaying;
-	}
-
-	public void setSensitivity(int threshold) {
-		this.analyzer = new ThresholdSpeechAnalyzer(88, 3,
-				new AverageRecognizer(threshold, threshold));
-	}
-
-	/** Default constructor. */
 	public Respeaker() {
-		super();
-		setFinishedPlaying(false);
-		this.player = new Player();
+		recorder = new Recorder();
+		player = new Player();
 		segments = new NewSegments();
+		setFinishedPlaying(false);
+		playThroughSpeaker();
 	}
 
 	public Respeaker(Context context) {
-		super(context);
-		setFinishedPlaying(false);
-		this.player = new Player();
+		recorder = new Recorder(context);
+		player = new Player();
 		segments = new NewSegments();
+		setFinishedPlaying(false);
+		playThroughSpeaker();
 	}
 
-	/** Default constructor. */
-	public Respeaker(ThresholdSpeechAnalyzer analyzer, boolean
-			shouldPlayThroughSpeaker) {
-		super(analyzer);
-		setFinishedPlaying(false);
-		this.player = new Player();
-		if (shouldPlayThroughSpeaker) {
-			this.playThroughSpeaker();
-		} else {
-			this.playThroughEarpiece();
-		}
-		segments = new NewSegments();
-	}
-
-	public Respeaker(ThresholdSpeechAnalyzer analyzer, Context context) {
-		super(analyzer, context);
-		setFinishedPlaying(false);
-		this.player = new Player();
-		segments = new NewSegments();
-	}
-
-  
 	/** Prepare the respeaker by setting a source file and a target file. */
 	public void prepare(String sourceFilename, String targetFilename,
 			String mappingFilename) {
 		player.prepare(sourceFilename);
-		super.prepare(targetFilename);
+		recorder.prepare(targetFilename);
 		this.mappingFilename = mappingFilename;
-		try {
-			writer = new BufferedWriter(new FileWriter(mappingFilename + "old"));
-		} catch (Exception e) {
-			e.printStackTrace();
+	}
+
+	public void playOriginal() {
+		// If we have already specified an end of the segment then we're
+		// starting a new one. Otherwise just continue with the old
+		// originalStartOfSegment
+		if (originalStartOfSegment == null) {
+			originalStartOfSegment = player.getCurrentSample();
+		} else if (originalEndOfSegment != null) {
+			originalStartOfSegment = player.getCurrentSample();
+		} else {
+			Log.i("email3", "else seeking to start of sample: " +
+					originalStartOfSegment);
+			player.seekTo(player.sampleToMsec(originalStartOfSegment));
 		}
-	}
-
-	@Override
-	public void listen() {
-		super.listen();
-		player.play();
-		originalStartOfSegment = player.getCurrentSample();
-	}
-
-	public void listenToSpeaker() {
-		super.listen();
-	}
-
-	/**
-	 * To listen to the final piece of annotation after playing of the original
-	 * has been completed.
-	 */
-	public void listenAfterFinishedPlaying() {
-		super.listen();
-	}
-
-	public void play() {
+		Log.i("ThumbRespeaking", "originalStartOfSegment " + originalStartOfSegment);
 		player.play();
 	}
 
-	@Override
-	public void stop() {
-		super.stop();
-		player.stop();
-		if (respeakingStartOfSegment != null) {
-			Segment originalSegment = new Segment(
-				originalStartOfSegment,
-				originalEndOfSegment);
-			Segment respeakingSegment = new Segment(
-					respeakingStartOfSegment,
-					file.getCurrentSample());
-			segments.put(originalSegment, respeakingSegment);
-		}
-		try {
-			Log.i("segments", "Samples file name: " + mappingFilename);
-			segments.write(new File(mappingFilename));
-		} catch (IOException e) {
-			Log.e("segments", "Could not write mapping", e);
-		}
-		try {
-			writer.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/** Pause listening to the microphone. */
-	@Override
-	public void pause() {
-		super.pause();
+	public void pauseOriginal() {
+		Log.i("email3", "pause currentSample: " + player.getCurrentSample());
 		player.pause();
-		// Reset the analyzer to default values so it doesn't assume speech on
-		// resuming.
-		analyzer.reset();
 	}
 
-	/** Resume playing. */
-	public void resume() {
-		super.listen();
-		originalStartOfSegment = player.getCurrentSample();
-		switchToPlay();
-	}
-
-	/** Rewinds the player. */
-	public void rewind(int milliseconds) {
-		player.rewind(milliseconds);
-	}
-  
-	/*
-	 * Switches the mode to play mode.
-	 *
-	 */
-	protected void switchToPlay() {
-		rewind(650);
-		respeakingEndOfSegment = file.getCurrentSample();
-		Segment originalSegment = new Segment(
-				originalStartOfSegment, originalEndOfSegment);
-		Segment respeakingSegment = new Segment(
-				respeakingStartOfSegment, respeakingEndOfSegment);
-		segments.put(originalSegment, respeakingSegment);
-		respeakingStartOfSegment = null;
-		respeakingEndOfSegment = null;
-		originalStartOfSegment = player.getCurrentSample();
-		player.resume();
-	}
-
-	/** Switches the mode to record mode. */
-	protected void switchToRecord() {
-		player.pause();
+	public void recordRespeaking() {
 		originalEndOfSegment = player.getCurrentSample();
-		respeakingStartOfSegment = file.getCurrentSample();
+		Log.i("ThumbRespeaking", "originalEndOfSegment " + originalEndOfSegment);
+		respeakingStartOfSegment = recorder.getCurrentSample();
+		Log.i("ThumbRespeaking", "respeakingStartOfSegment " +
+				respeakingStartOfSegment);
+		recorder.listen();
 	}
 
-	@Override
-	public void audioTriggered(short[] buffer, boolean justChanged) {
-		long currentSample = file.getCurrentSample();
-		long originalCurrentSample = player.getCurrentSample();
-		if (justChanged) {
-			try {
-				writer.write(originalCurrentSample + ",");
-				respeakingStartOfSegment = currentSample;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			switchToRecord();
-		}
-		file.write(buffer);
+	public void pauseRespeaking() {
+		recorder.pause();
+		respeakingEndOfSegment = recorder.getCurrentSample();
+		Log.i("ThumbRespeaking", "respeakingEndOfSegment " + respeakingEndOfSegment);
+		storeSegmentEntry();
 	}
 
-	@Override
-	public void silenceTriggered(short[] buffer, boolean justChanged) {
-		Log.i("Bra", "no dice.");
-		long currentSample = file.getCurrentSample();
-		long originalCurrentSample = player.getCurrentSample();
-		if (currentSample % 10000 == 0) {
-			Log.i("issue37mapping", "r: " + currentSample + " o: " +
-					originalCurrentSample);
+	private void storeSegmentEntry() {
+		Segment originalSegment;
+		try {
+			originalSegment = new Segment(originalStartOfSegment,
+					originalEndOfSegment);
+		} catch (IllegalArgumentException e) {
+			// This could only have happened if no original had been recorded at all.
+			originalSegment = new Segment(0l, 0l);
 		}
-		if (justChanged) {
-			//If the recording has finished playing and we're just annotating
-			//at the end, then we're finished and can stop the respeaking.
-			try {
-				Log.i("issue37mapping", "respeaking: " + currentSample);
-				writer.write(currentSample + "\n");
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			if (getFinishedPlaying()) {
-				respeakingEndOfSegment = file.getCurrentSample();
-				Segment originalSegment = new Segment(
-						originalStartOfSegment, originalEndOfSegment);
-				Segment respeakingSegment = new Segment(
-						respeakingStartOfSegment, respeakingEndOfSegment);
-				Log.i("segments", "putting: " + originalStartOfSegment + "," +
-						originalEndOfSegment + ":" + respeakingStartOfSegment + "," +
-						respeakingEndOfSegment);
-				segments.put(originalSegment, respeakingSegment);
-				super.stop();
-				try {
-					writer.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else {
-				switchToPlay();
-			}
-		}
+		Segment respeakingSegment = new Segment(respeakingStartOfSegment,
+				respeakingEndOfSegment);
+		segments.put(originalSegment, respeakingSegment);
+		originalStartOfSegment = player.getCurrentSample();
+		originalEndOfSegment = null;
+		respeakingStartOfSegment = recorder.getCurrentSample();
+		respeakingEndOfSegment = null;
 	}
 
-	public void playThroughEarpiece() {
-		player.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
-
+	public void stop() {
+		recorder.stop();
+		player.stop();
+		try {
+			segments.write(new File(mappingFilename));
+			Log.i("ThumbRespeaking", segments.toString());
+		} catch (IOException e) {
+			// Couldn't write mapping. Oh well!
+		}
 	}
 
 	public void playThroughSpeaker() {
 		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 	}
+
+	/** finishedPlaying mutator */
+	 public void setFinishedPlaying(boolean finishedPlaying) {
+	 	this.finishedPlaying = finishedPlaying;
+	 }
+
+	/** finishedPlaying accessor */
+	public boolean getFinishedPlaying() {
+		return this.finishedPlaying;
+	}
+
+	/** Player to play the original with. */
+	private Player player;
+
+	public void setOnCompletionListener(OnCompletionListener ocl) {
+		player.setOnCompletionListener(ocl);
+	}
+
+	/** The recorder used to get respeaking data. */
+	private Recorder recorder;
+
+	/** The segment mapping between the original and the respeaking. */
+	private NewSegments segments;
+
+	/**
+	 * Temporarily store the boundaries of segments before being put in
+	 * segments */
+	private Long originalStartOfSegment;
+	private Long originalEndOfSegment;
+	private Long respeakingStartOfSegment;
+	private Long respeakingEndOfSegment;
+
+	/** Indicates whether the recording has finished playing. */
+	private boolean finishedPlaying;
+
+	/** The name of the mapping file */
+	private String mappingFilename;
 }

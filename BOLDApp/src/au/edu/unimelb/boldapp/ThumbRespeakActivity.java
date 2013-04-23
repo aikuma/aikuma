@@ -21,7 +21,7 @@ import android.content.Intent;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import au.edu.unimelb.aikuma.audio.ThumbRespeaker;
+import au.edu.unimelb.aikuma.audio.Respeaker;
 
 import au.edu.unimelb.aikuma.sensors.ProximityDetector;
 
@@ -33,7 +33,7 @@ import au.edu.unimelb.aikuma.audio.Player;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class RespeakActivity2 extends Activity {
+public class ThumbRespeakActivity extends Activity {
 
 	/**
 	 * Indicates whether the respeaking has been started already
@@ -58,7 +58,7 @@ public class RespeakActivity2 extends Activity {
 	/**
 	 * Instance of the respeaker class that offers methods to respeak
 	 */
-	protected ThumbRespeaker respeaker;
+	protected Respeaker respeaker;
 
 	Paint backgroundColor;
 
@@ -82,7 +82,7 @@ public class RespeakActivity2 extends Activity {
 
 		startedRespeaking = false;
 		respeaking = false;
-		respeaker = new ThumbRespeaker(getApplicationContext());
+		respeaker = new Respeaker(getApplicationContext());
 
 		this.uuid = UUID.randomUUID();
 		//backgroundColor = ((PaintDrawable)
@@ -195,9 +195,9 @@ public class RespeakActivity2 extends Activity {
 		respeaker.stop();
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".wav");
 		FileIO.delete(FileIO.getRecordingsPath() + uuid.toString() + ".map");
-		RespeakActivity2.this.finish();
+		ThumbRespeakActivity.this.finish();
 		Intent intent = new Intent(this, RecordingSelectionActivity.class);
-		intent.putExtra("activity", "RespeakActivity2");
+		intent.putExtra("activity", "ThumbRespeakActivity");
 		startActivity(intent);
 	}
 

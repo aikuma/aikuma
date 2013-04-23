@@ -14,7 +14,7 @@ import android.view.Window;
 
 import android.widget.ImageView;
 
-import au.edu.unimelb.aikuma.RespeakActivity;
+import au.edu.unimelb.aikuma.AudioRespeakActivity;
 
 import au.edu.unimelb.aikuma.audio.analyzers.BackgroundNoise;
 import au.edu.unimelb.aikuma.audio.analyzers.BackgroundNoiseListener;
@@ -23,18 +23,18 @@ import au.edu.unimelb.aikuma.audio.thresholders.Noise;
 /** 
  * Tries to extract the level of background noise.
  *
- * This is currently very specific on the RespeakActivity.
+ * This is currently very specific on the AudioRespeakActivity.
  *
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  */
 public class NoiseLevel {
 	
-	private RespeakActivity activity;
+	private AudioRespeakActivity activity;
 	private int signalsSampled;
 	private BackgroundNoise backgroundNoiseAnalyzer;
 	
-	public NoiseLevel(RespeakActivity activity, int signalsSampled) {
+	public NoiseLevel(AudioRespeakActivity activity, int signalsSampled) {
 		this.activity = activity;
 		this.signalsSampled = signalsSampled;
 	}
