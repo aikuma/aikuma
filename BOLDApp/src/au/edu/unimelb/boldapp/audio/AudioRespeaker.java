@@ -66,7 +66,6 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 	/** Default constructor. */
 	public AudioRespeaker(ThresholdSpeechAnalyzer analyzer, boolean
 			shouldPlayThroughSpeaker) {
-		
 		this.analyzer = analyzer;
 		
 		microphone = new Microphone();
@@ -96,7 +95,7 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 
 	public void listen() {
 		mapper.markRespeaking(player, file);
-		microphone.listen(this);
+		microphone.listen(this); // This object's onBufferFull() is called.
 	}
 
 	/**
@@ -117,31 +116,12 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 		microphone.stop();
 		mapper.store(player, file);
 		player.stop();
-		// if (respeakingStartOfSegment != null) {
-		// 	Segment originalSegment = new Segment(
-		// 		originalStartOfSegment,
-		// 		originalEndOfSegment);
-		// 	Segment respeakingSegment = new Segment(
-		// 			respeakingStartOfSegment,
-		// 			file.getCurrentSample());
-		// 	segments.put(originalSegment, respeakingSegment);
-		// }
 		mapper.stop();
-		// try {
-		// 	segments.write(new File(mappingFilename));
-		// } catch (IOException e) {
-		// }
 		file.close();
-		// try {
-		// 	writer.close();
-		// } catch (Exception e) {
-		// 	e.printStackTrace();
-		// }
 	}
 
 	/** Pause listening to the microphone. */
 	public void pause() {
-		// super.pause();
 		microphone.stop();
 		player.pause();
 		// Reset the analyzer to default values so it doesn't assume speech on
@@ -151,9 +131,7 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 
 	/** Resume playing. */
 	public void resume() {
-		// super.listen();
 		microphone.listen(this);
-		// originalStartOfSegment = player.getCurrentSample();
 		mapper.markOriginal(player);
 		switchToPlay();
 	}
@@ -163,19 +141,7 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 	 */
 	protected void switchToPlay() {
 		mapper.store(player, file);
-		
 		player.rewind(650);
-		
-		// respeakingEndOfSegment = file.getCurrentSample();
-		// Segment originalSegment = new Segment(
-		// 		originalStartOfSegment, originalEndOfSegment);
-		// Segment respeakingSegment = new Segment(
-		// 		respeakingStartOfSegment, respeakingEndOfSegment);
-		// segments.put(originalSegment, respeakingSegment);
-		// respeakingStartOfSegment = null;
-		// respeakingEndOfSegment = null;
-		// originalStartOfSegment = player.getCurrentSample();
-		
 		player.resume();
 	}
 
@@ -191,40 +157,14 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 
 	public void audioTriggered(short[] buffer, boolean justChanged) {
 		if (justChanged) {
-			// long currentSample = file.getCurrentSample();
-			// long originalCurrentSample = player.getCurrentSample();
-			// mapper.markRespeaking(player, file);
-			// try {
-			// 	writer.write(originalCurrentSample + ",");
-			// 	respeakingStartOfSegment = currentSample;
-			// } catch (Exception e) {
-			// 	e.printStackTrace();
-			// }
 			switchToRecord();
 		}
 		file.write(buffer);
 	}
 
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
-		// long currentSample = file.getCurrentSample();
-		// long originalCurrentSample = player.getCurrentSample();
 		if (justChanged) {
-			//If the recording has finished playing and we're just annotating
-			//at the end, then we're finished and can stop the respeaking.
-			// try {
-			// 	Log.i("issue37mapping", "respeaking: " + currentSample);
-			// 	writer.write(currentSample + "\n");
-			// 
-			// } catch (Exception e) {
-			// 	e.printStackTrace();
-			// }
 			if (getFinishedPlaying()) {
-				// respeakingEndOfSegment = file.getCurrentSample();
-				// Segment originalSegment = new Segment(
-				// 		originalStartOfSegment, originalEndOfSegment);
-				// Segment respeakingSegment = new Segment(
-				// 		respeakingStartOfSegment, respeakingEndOfSegment);
-				// segments.put(originalSegment, respeakingSegment);
 				stop();
 			} else {
 				switchToPlay();
