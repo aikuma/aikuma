@@ -84,25 +84,6 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 		mapper.prepare(mappingFilename);
 	}
 
-	public void listen() {
-		mapper.markRespeaking(player, file);
-		microphone.listen(this); // This object's onBufferFull() is called.
-	}
-
-	/**
-	 * To listen to the final piece of annotation after playing of the original
-	 * has been completed.
-	 */
-	public void listenAfterFinishedPlaying() {
-		listen();
-	}
-
-	public void play() {
-		mapper.markOriginal(player);
-		player.seekTo(player.sampleToMsec(mapper.getOriginalStartSample()));
-		player.play();
-	}
-
 	public void stop() {
 		microphone.stop();
 		mapper.store(player, file);
@@ -118,6 +99,12 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 		// Reset the analyzer to default values so it doesn't assume speech on
 		// resuming.
 		analyzer.reset();
+	}
+	
+	/** Wait for a respeaking. */
+	public void listen() {
+		mapper.markRespeaking(player, file);
+		microphone.listen(this); // This object's onBufferFull() is called.
 	}
 
 	/** Resume playing. */

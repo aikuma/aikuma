@@ -123,7 +123,7 @@ public class AudioRespeakActivity extends Activity {
 				respeakButton.setVisibility(View.INVISIBLE);
 				//respeaker.stop();
 				respeaker.setFinishedPlaying(true);
-				respeaker.listenAfterFinishedPlaying();
+				respeaker.listen(); // For the last time.
 			}
 		});
 	}
@@ -236,12 +236,7 @@ public class AudioRespeakActivity extends Activity {
 			ImageButton pauseButton = (ImageButton) findViewById(R.id.Pause);
 			pauseButton.setVisibility(View.VISIBLE);
 			respeakButton.setVisibility(View.INVISIBLE);
-			if (startedRespeaking) {
-				respeaker.resume();
-			} else {
-				startedRespeaking = true;
-				respeaker.listen();
-			}
+			respeaker.resume();
 		}
 	}
 
