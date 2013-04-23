@@ -20,7 +20,7 @@ import android.util.Log;
  *
  * Note: The file cannot be reopened.
  */
-public class PCMFile {
+public class PCMFile implements AudioListener, Sampler {
 	
 	private File file;
 
@@ -208,9 +208,13 @@ public class PCMFile {
 			//
 			file.getParentFile().mkdirs();
 			randomAccessWriter = new RandomAccessFile(file, "rw");
-		} catch (FileNotFoundException e) {
-			Log.e(PCMFile.class.getName(),
+		} catch (FileNotFoundException fnfe) {
+			try {
+				Log.e(PCMFile.class.getName(),
 					"Could not create RandomAccessFile: " + file.getCanonicalPath());
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
 		}
 	}
 
@@ -329,6 +333,12 @@ public class PCMFile {
 			Log.e(PCMFile.class.getName(),
 					"I/O exception occured while closing output file");
 		}
+	}
+	
+	/** The PCMFile itself is a AudioListener */
+	/** Callback for the microphone */
+	public void onBufferFull(short[] buffer) {
+		write(buffer);
 	}
 
 }
