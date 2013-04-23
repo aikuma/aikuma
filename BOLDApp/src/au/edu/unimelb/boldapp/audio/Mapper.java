@@ -1,8 +1,10 @@
 package au.edu.unimelb.aikuma.audio;
 
 import android.util.Log;
-import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
 import java.io.IOException;
+import java.io.File;
+
+import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
 
 public class Mapper {
 	
@@ -28,6 +30,7 @@ public class Mapper {
 		this.mappingFilename = mappingFilename;
 	}
 	
+	// TODO Does this need to store, also?
 	public void stop() {
 		try {
 			segments.write(new File(mappingFilename));

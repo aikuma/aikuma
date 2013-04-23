@@ -2,7 +2,7 @@ package au.edu.unimelb.aikuma.audio.analyzers;
 
 import android.util.Log;
 import au.edu.unimelb.aikuma.audio.Microphone;
-import au.edu.unimelb.aikuma.audio.MicrophoneListener;
+import au.edu.unimelb.aikuma.audio.AudioListener;
 import au.edu.unimelb.aikuma.audio.Processor;
 import au.edu.unimelb.aikuma.audio.thresholders.Noise;
 
@@ -31,7 +31,7 @@ public class BackgroundNoise {
 	public void getThreshold(final BackgroundNoiseListener listener) {
 		// Try finding a stable background noise.
 		//
-		microphone.listen(new MicrophoneListener() {
+		microphone.listen(new AudioListener() {
 			public void onBufferFull(short[] buffer) {
 				Noise.Information information = BackgroundNoise.this.thresholder.getInformation(buffer);
 				listener.noiseLevelQualityUpdated(information);

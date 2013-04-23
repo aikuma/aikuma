@@ -13,7 +13,6 @@ import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
 import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
 import au.edu.unimelb.aikuma.FileIO;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.util.Arrays;
 

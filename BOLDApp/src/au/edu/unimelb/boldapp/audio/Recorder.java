@@ -1,5 +1,6 @@
 package au.edu.unimelb.aikuma.audio;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -11,8 +12,6 @@ import android.media.MediaPlayer;
 import android.util.Log;
 
 import au.edu.unimelb.aikuma.R;
-import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
-import au.edu.unimelb.aikuma.audio.analyzers.SimpleAnalyzer;
 
 /** A Recorder is used to get input from eg. a microphone and
  *  output into a file.
@@ -27,7 +26,7 @@ import au.edu.unimelb.aikuma.audio.analyzers.SimpleAnalyzer;
  *
  *  Note that stopping the recorder closes and finalizes the WAV file.
  */
-public class Recorder implements MicrophoneListener, Sampler {
+public class Recorder implements Sampler {
 
 	/** File to write to. */
 	protected PCMFile file;
@@ -38,9 +37,6 @@ public class Recorder implements MicrophoneListener, Sampler {
 	public long getCurrentSample() {
 		return file.getCurrentSample();
 	}
-
-	/** Analyzer that analyzes the incoming data. */
-	Analyzer analyzer;
 
 	/**
 	 * Plays beeps when recording starts
@@ -53,37 +49,13 @@ public class Recorder implements MicrophoneListener, Sampler {
 	private MediaPlayer endBeepPlayer;
 
 	private boolean recording = false;
-
-
-	/** Default constructor.
-	 *
-	 *Note: Uses an analyzer which tells the recorder to always record.
-	 */
+	
 	public Recorder() {
-		this(new SimpleAnalyzer());
-	}
-
-	public Recorder(Context appContext) {
-		this(new SimpleAnalyzer(), appContext);
-	}
-
-	/** Default constructor.
-	 *
-	 * @param Pass in an analyzer which decides whether
-	 *        the recorder should record or ignore the input.
-	 *
-	 * Note: Uses default recording parameters.
-	 */
-	public Recorder(Analyzer analyzer) {
-		this.analyzer = analyzer;
-
 		setUpMicrophone();
 		setUpFile();
 	}
-
-	public Recorder(Analyzer analyzer, Context appContext) {
-		this.analyzer = analyzer;
-
+	
+	public Recorder(Context appContext) {
 		setUpMicrophone();
 		setUpFile();
 
@@ -92,7 +64,7 @@ public class Recorder implements MicrophoneListener, Sampler {
 				new MediaPlayer.OnCompletionListener() {
 					public void onCompletion(MediaPlayer _) {
 						Log.i("beeps", "completed!");
-						microphone.listen(Recorder.this);
+						microphone.listen(file);
 					}
 				});
 		startBeepPlayer.setVolume(.10f, .10f);
@@ -117,7 +89,7 @@ public class Recorder implements MicrophoneListener, Sampler {
 	 * Prepares the recorder for recording.
 	 */
 	public void prepare(String targetFilename) {
-		file.prepare(targetFilename);
+		file.prepare(new File(targetFilename));
 	}
 
 	/** Start listening. */
@@ -133,7 +105,7 @@ public class Recorder implements MicrophoneListener, Sampler {
 			//
 			startBeepPlayer.start();
 		} else {
-			microphone.listen(this);
+			microphone.listen(file);
 		}
 	}
 
@@ -154,10 +126,5 @@ public class Recorder implements MicrophoneListener, Sampler {
 		if (endBeepPlayer != null) {
 			endBeepPlayer.start();
 		}
-	}
-
-	/** Callback for the microphone */
-	public void onBufferFull(short[] buffer) {
-		file.write(buffer);
 	}
 }

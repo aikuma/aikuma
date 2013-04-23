@@ -9,6 +9,7 @@ import java.util.Arrays;
 import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
@@ -42,22 +43,42 @@ import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class AudioRespeaker implements MicrophoneListener {
+public class AudioRespeaker implements AudioListener, AudioHandler {
 	
-	private Respeaker respeaker;
+	private Analyzer analyzer;
+	
+	/** The microphone used to get respeaking data. */
+	private Microphone microphone;
+	
+	/** Player to play the original with. */
+	private Player player;
+	
+	/** File to write to */
+	private PCMFile file;
+	
+	/** The mapper used to store mapping data. */
+	private Mapper mapper;
+
+	/** Indicates whether the recording has finished playing. */
+	private boolean finishedPlaying = false;
+	
 	
 	/** Default constructor. */
 	public AudioRespeaker(ThresholdSpeechAnalyzer analyzer, boolean
 			shouldPlayThroughSpeaker) {
-		setFinishedPlaying(false);
+		
+		this.analyzer = analyzer;
+		
+		microphone = new Microphone();
+		player = new Player();
+		file = PCMFile.getInstance(microphone);
+		mapper = new Mapper();
 		
 		if (shouldPlayThroughSpeaker) {
 			this.playThroughSpeaker();
 		} else {
 			this.playThroughEarpiece();
 		}
-		
-		this.respeaker = new Respeaker(new Microphone(this));
 	}
 	
 	public void setSensitivity(int threshold) {
@@ -68,12 +89,14 @@ public class AudioRespeaker implements MicrophoneListener {
 	/** Prepare the respeaker by setting a source file and a target file. */
 	public void prepare(String sourceFilename, String targetFilename,
 			String mappingFilename) {
-		this.respeaker.prepare(sourceFilename, targetFilename, mappingFilename);
+		player.prepare(sourceFilename);
+		file.prepare(new File(targetFilename));
+		mapper.prepare(mappingFilename);
 	}
 
-	@Override
 	public void listen() {
-		respeaker.recordRespeaking();
+		mapper.markRespeaking(player, file);
+		microphone.listen(this);
 	}
 
 	/**
@@ -85,37 +108,41 @@ public class AudioRespeaker implements MicrophoneListener {
 	}
 
 	public void play() {
-		player.playOriginal();
+		mapper.markOriginal(player);
+		player.seekTo(player.sampleToMsec(mapper.getOriginalStartSample()));
+		player.play();
 	}
 
-	@Override
 	public void stop() {
-		super.stop();
+		microphone.stop();
+		mapper.store(player, file);
 		player.stop();
-		if (respeakingStartOfSegment != null) {
-			Segment originalSegment = new Segment(
-				originalStartOfSegment,
-				originalEndOfSegment);
-			Segment respeakingSegment = new Segment(
-					respeakingStartOfSegment,
-					file.getCurrentSample());
-			segments.put(originalSegment, respeakingSegment);
-		}
-		try {
-			segments.write(new File(mappingFilename));
-		} catch (IOException e) {
-		}
-		try {
-			writer.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// if (respeakingStartOfSegment != null) {
+		// 	Segment originalSegment = new Segment(
+		// 		originalStartOfSegment,
+		// 		originalEndOfSegment);
+		// 	Segment respeakingSegment = new Segment(
+		// 			respeakingStartOfSegment,
+		// 			file.getCurrentSample());
+		// 	segments.put(originalSegment, respeakingSegment);
+		// }
+		mapper.stop();
+		// try {
+		// 	segments.write(new File(mappingFilename));
+		// } catch (IOException e) {
+		// }
+		file.close();
+		// try {
+		// 	writer.close();
+		// } catch (Exception e) {
+		// 	e.printStackTrace();
+		// }
 	}
 
 	/** Pause listening to the microphone. */
-	@Override
 	public void pause() {
-		super.pause();
+		// super.pause();
+		microphone.stop();
 		player.pause();
 		// Reset the analyzer to default values so it doesn't assume speech on
 		// resuming.
@@ -124,104 +151,105 @@ public class AudioRespeaker implements MicrophoneListener {
 
 	/** Resume playing. */
 	public void resume() {
-		super.listen();
-		originalStartOfSegment = player.getCurrentSample();
+		// super.listen();
+		microphone.listen(this);
+		// originalStartOfSegment = player.getCurrentSample();
+		mapper.markOriginal(player);
 		switchToPlay();
-	}
-
-	/** Rewinds the player. */
-	public void rewind(int milliseconds) {
-		player.rewind(milliseconds);
 	}
   
 	/*
 	 * Switches the mode to play mode.
-	 *
 	 */
 	protected void switchToPlay() {
-		rewind(650);
-		respeakingEndOfSegment = file.getCurrentSample();
-		Segment originalSegment = new Segment(
-				originalStartOfSegment, originalEndOfSegment);
-		Segment respeakingSegment = new Segment(
-				respeakingStartOfSegment, respeakingEndOfSegment);
-		segments.put(originalSegment, respeakingSegment);
-		respeakingStartOfSegment = null;
-		respeakingEndOfSegment = null;
-		originalStartOfSegment = player.getCurrentSample();
+		mapper.store(player, file);
+		
+		player.rewind(650);
+		
+		// respeakingEndOfSegment = file.getCurrentSample();
+		// Segment originalSegment = new Segment(
+		// 		originalStartOfSegment, originalEndOfSegment);
+		// Segment respeakingSegment = new Segment(
+		// 		respeakingStartOfSegment, respeakingEndOfSegment);
+		// segments.put(originalSegment, respeakingSegment);
+		// respeakingStartOfSegment = null;
+		// respeakingEndOfSegment = null;
+		// originalStartOfSegment = player.getCurrentSample();
+		
 		player.resume();
 	}
 
 	/** Switches the mode to record mode. */
 	protected void switchToRecord() {
 		player.pause();
-		originalEndOfSegment = player.getCurrentSample();
-		respeakingStartOfSegment = file.getCurrentSample();
+		mapper.markRespeaking(player, file);
+	}
+	
+	public void onBufferFull(short[] buffer) {
+		analyzer.analyze(this, buffer);
 	}
 
-	@Override
 	public void audioTriggered(short[] buffer, boolean justChanged) {
-		long currentSample = file.getCurrentSample();
-		long originalCurrentSample = player.getCurrentSample();
 		if (justChanged) {
-			try {
-				writer.write(originalCurrentSample + ",");
-				respeakingStartOfSegment = currentSample;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			// long currentSample = file.getCurrentSample();
+			// long originalCurrentSample = player.getCurrentSample();
+			// mapper.markRespeaking(player, file);
+			// try {
+			// 	writer.write(originalCurrentSample + ",");
+			// 	respeakingStartOfSegment = currentSample;
+			// } catch (Exception e) {
+			// 	e.printStackTrace();
+			// }
 			switchToRecord();
 		}
 		file.write(buffer);
 	}
 
-	@Override
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
-		Log.i("Bra", "no dice.");
-		long currentSample = file.getCurrentSample();
-		long originalCurrentSample = player.getCurrentSample();
-		if (currentSample % 10000 == 0) {
-			Log.i("issue37mapping", "r: " + currentSample + " o: " +
-					originalCurrentSample);
-		}
+		// long currentSample = file.getCurrentSample();
+		// long originalCurrentSample = player.getCurrentSample();
 		if (justChanged) {
 			//If the recording has finished playing and we're just annotating
 			//at the end, then we're finished and can stop the respeaking.
-			try {
-				Log.i("issue37mapping", "respeaking: " + currentSample);
-				writer.write(currentSample + "\n");
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			// try {
+			// 	Log.i("issue37mapping", "respeaking: " + currentSample);
+			// 	writer.write(currentSample + "\n");
+			// 
+			// } catch (Exception e) {
+			// 	e.printStackTrace();
+			// }
 			if (getFinishedPlaying()) {
-				respeakingEndOfSegment = file.getCurrentSample();
-				Segment originalSegment = new Segment(
-						originalStartOfSegment, originalEndOfSegment);
-				Segment respeakingSegment = new Segment(
-						respeakingStartOfSegment, respeakingEndOfSegment);
-				Log.i("segments", "putting: " + originalStartOfSegment + "," +
-						originalEndOfSegment + ":" + respeakingStartOfSegment + "," +
-						respeakingEndOfSegment);
-				segments.put(originalSegment, respeakingSegment);
-				super.stop();
-				try {
-					writer.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				// respeakingEndOfSegment = file.getCurrentSample();
+				// Segment originalSegment = new Segment(
+				// 		originalStartOfSegment, originalEndOfSegment);
+				// Segment respeakingSegment = new Segment(
+				// 		respeakingStartOfSegment, respeakingEndOfSegment);
+				// segments.put(originalSegment, respeakingSegment);
+				stop();
 			} else {
 				switchToPlay();
 			}
 		}
 	}
+	
+	public void setOnCompletionListener(OnCompletionListener ocl) {
+		player.setOnCompletionListener(ocl);
+	}
 
 	public void playThroughEarpiece() {
 		player.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
-
 	}
 
 	public void playThroughSpeaker() {
 		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 	}
+
+	public boolean getFinishedPlaying() {
+		return finishedPlaying;
+	}
+	
+	public void setFinishedPlaying(boolean finishedPlaying) {
+		this.finishedPlaying = finishedPlaying;
+	}
+	
 }

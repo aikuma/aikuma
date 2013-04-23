@@ -13,7 +13,7 @@ import android.util.Log;
  * 
  *  Usage:
  *    Microphone microphone = new Microphone();
- *    microphone.listen(new MicrophoneListener() {
+ *    microphone.listen(new AudioListener() {
  *      protected void onBufferFull(short[] buffer) {
  *        // ...
  *      }
@@ -59,7 +59,7 @@ public class Microphone {
 	public int getAudioFormat() { return physicalMicrophone.getAudioFormat(); }
 
 	/** Start listening. */
-	public void listen(final MicrophoneListener callback) {
+	public void listen(final AudioListener callback) {
 		// If there is already a thread listening then kill it and ensure it's
 		// dead before creating a new thread.
     //
@@ -132,7 +132,7 @@ public class Microphone {
 	}
 	
 	/** Read from the listener's buffer and call the callback. */
-	private void read(MicrophoneListener callback) {
+	private void read(AudioListener callback) {
 		physicalMicrophone.startRecording();
 
 		// Wait until something is heard.

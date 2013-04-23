@@ -112,7 +112,7 @@ public class AudioRespeakActivity extends Activity {
 				new File(FileIO.getRecordingsPath(), uuid.toString() +
 				".map").toString());
 
-		respeaker.player.setOnCompletionListener(new OnCompletionListener() {
+		respeaker.setOnCompletionListener(new OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _player) {
 				ImageButton respeakButton = (ImageButton) 
