@@ -108,9 +108,7 @@ public class NoiseLevel {
 	}
 	
 	private void setSensitivity(int level) {
-		activity.getSensitivitySlider().setMax(level*2);
-		activity.getSensitivitySlider().setProgress(level);
-		activity.getRespeaker().setSensitivity(level);
+		activity.setSensitivity(level);
 	}
 	
 }

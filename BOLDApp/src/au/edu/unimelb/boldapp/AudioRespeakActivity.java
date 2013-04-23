@@ -121,7 +121,6 @@ public class AudioRespeakActivity extends Activity {
 						findViewById(R.id.Pause);
 				pauseButton.setVisibility(View.INVISIBLE);
 				respeakButton.setVisibility(View.INVISIBLE);
-				//respeaker.stop();
 				respeaker.setFinishedPlaying(true);
 				respeaker.listen(); // For the last time.
 			}
@@ -136,21 +135,28 @@ public class AudioRespeakActivity extends Activity {
       }
     }, 500);
   };
+	public void setSensitivity(int level) {
+		getSensitivitySlider().setMax(level*2);
+		getSensitivitySlider().setProgress(level);
+		getRespeaker().setSensitivity(level);
+		
+		// Now that we have the sensitivity,
+		// we can start the proximity detector
+		//
+		this.proximityDetector.start();
+	}
 
 	/**
 	 * Called when the activity goes completely out of view
 	 */
 	@Override
 	public void onStop() {
-		//recorder.stop();
 		super.onStop();
-		Log.i("AudioRespeakActivity", "onStop");
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		Log.i("AudioRespeakActivity", "onpause");
 		this.proximityDetector.stop();
 		Audio.reset(this); 
 	}
@@ -175,20 +181,18 @@ public class AudioRespeakActivity extends Activity {
 			}
 		);
 		
-		extractBackgroundNoiseThreshold();
-    
-		Audio.playThroughEarpiece(this, false);
-
 		this.proximityDetector =
-				new ProximityDetector( AudioRespeakActivity.this, 2.0f) {
-					public void near(float distance) {
-							respeak();
-					}
-					public void far(float distance) {
-							pause();
-					}
-				};
-		this.proximityDetector.start();
+		new ProximityDetector( AudioRespeakActivity.this, 2.0f) {
+			public void near(float distance) {
+					respeak();
+			}
+			public void far(float distance) {
+					pause();
+			}
+		};
+		Audio.playThroughEarpiece(this, false);
+		
+		extractBackgroundNoiseThreshold();
 	}
 
 	/**
@@ -267,6 +271,5 @@ public class AudioRespeakActivity extends Activity {
 			return super.dispatchTouchEvent(event);
 		}
 	}
-
-
+	
 }
