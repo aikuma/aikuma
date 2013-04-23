@@ -130,6 +130,11 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 		if (startBeepPlayer != null) {
 			// microphone.listen will get called by the startBeepPlayer
 			// OnCompletionListener
+			//
+			// Florian: I'd pass in the OnCompletionListener here,
+			// so it's obvious what is happening. If you need a
+			// comment, the code is not clear.
+			//
 			startBeepPlayer.start();
 		} else {
 			microphone.listen(this);
@@ -150,7 +155,9 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	public void pause() {
 		recording = false;
 		microphone.stop();
-		endBeepPlayer.start();
+		if (endBeepPlayer != null) {
+			endBeepPlayer.start();
+		}
 	}
 
 	/** Callback for the microphone */
