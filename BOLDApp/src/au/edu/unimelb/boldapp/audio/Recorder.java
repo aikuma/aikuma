@@ -37,16 +37,8 @@ public class Recorder implements Sampler {
 	public long getCurrentSample() {
 		return file.getCurrentSample();
 	}
-
-	/**
-	 * Plays beeps when recording starts
-	 */
-	private MediaPlayer startBeepPlayer;
-
-	/**
-	 * Plays beeps when recording starts
-	 */
-	private MediaPlayer endBeepPlayer;
+	
+	private Beeper beeper;
 
 	private boolean recording = false;
 	
@@ -55,21 +47,11 @@ public class Recorder implements Sampler {
 		setUpFile();
 	}
 	
-	public Recorder(Context appContext) {
+	public Recorder(Context context) {
 		setUpMicrophone();
 		setUpFile();
 
-		startBeepPlayer = MediaPlayer.create(appContext, R.raw.beeps);
-		startBeepPlayer.setOnCompletionListener(
-				new MediaPlayer.OnCompletionListener() {
-					public void onCompletion(MediaPlayer _) {
-						Log.i("beeps", "completed!");
-						microphone.listen(file);
-					}
-				});
-		startBeepPlayer.setVolume(.10f, .10f);
-		endBeepPlayer = MediaPlayer.create(appContext, R.raw.beep);
-		endBeepPlayer.setVolume(.10f, .10f);
+		beeper = new Beeper(context);
 	}
 
 	public boolean isRecording() {
@@ -95,15 +77,12 @@ public class Recorder implements Sampler {
 	/** Start listening. */
 	public void listen() {
 		recording = true;
-		if (startBeepPlayer != null) {
-			// microphone.listen will get called by the startBeepPlayer
-			// OnCompletionListener
-			//
-			// Florian: I'd pass in the OnCompletionListener here,
-			// so it's obvious what is happening. If you need a
-			// comment, the code is not clear.
-			//
-			startBeepPlayer.start();
+		if (beeper != null) {
+			beeper.beepBeep(new MediaPlayer.OnCompletionListener() {
+				public void onCompletion(MediaPlayer _) {
+					microphone.listen(file);
+				}
+			});
 		} else {
 			microphone.listen(file);
 		}
@@ -123,8 +102,8 @@ public class Recorder implements Sampler {
 	public void pause() {
 		recording = false;
 		microphone.stop();
-		if (endBeepPlayer != null) {
-			endBeepPlayer.start();
+		if (beeper != null) {
+			beeper.beep();
 		}
 	}
 }
