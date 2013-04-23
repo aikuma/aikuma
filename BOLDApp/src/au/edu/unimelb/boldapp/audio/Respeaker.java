@@ -58,7 +58,6 @@ public class Respeaker {
 		} else if (originalEndOfSegment != null) {
 			originalStartOfSegment = player.getCurrentSample();
 		} else {
-					originalStartOfSegment);
 			player.seekTo(player.sampleToMsec(originalStartOfSegment));
 		}
 		player.play();
@@ -71,7 +70,6 @@ public class Respeaker {
 	public void recordRespeaking() {
 		originalEndOfSegment = player.getCurrentSample();
 		respeakingStartOfSegment = recorder.getCurrentSample();
-				respeakingStartOfSegment);
 		recorder.listen();
 	}
 
