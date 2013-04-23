@@ -131,8 +131,6 @@ public class PCMFile {
 
 		write(byteBuffer);
 	}
-	
-	public PCMFile(String filename, Microphone microphone
 
 	/** Default constructor.
 	 *
