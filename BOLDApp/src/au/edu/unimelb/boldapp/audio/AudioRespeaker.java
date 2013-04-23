@@ -6,23 +6,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
-import android.content.Context;
-import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.media.AudioRecord;
-import android.media.MediaRecorder;
 import android.util.Log;
 
-import au.edu.unimelb.aikuma.audio.Respeaker;
 import au.edu.unimelb.aikuma.audio.Player;
 import au.edu.unimelb.aikuma.audio.analyzers.Analyzer;
 import au.edu.unimelb.aikuma.audio.analyzers.ThresholdSpeechAnalyzer;
 import au.edu.unimelb.aikuma.audio.recognizers.AverageRecognizer;
-
-import au.edu.unimelb.aikuma.FileIO;
-
-import au.edu.unimelb.aikuma.audio.NewSegments.Segment;
 
 /** Respeaker used to get input from eg. a microphone and
  *  output into a file.tIn addition, it also 
