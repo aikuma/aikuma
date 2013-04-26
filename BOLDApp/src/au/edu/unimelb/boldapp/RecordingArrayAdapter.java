@@ -67,14 +67,6 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 			GlobalState.getUserMap().get(recording.getCreatorUUID()).getName()
 			+ " on " + recording.getDate());
 		} else {
-			/*
-			Log.i("nullp", "recording.getCreatorUUID " + recording.getCreatorUUID());
-			Log.i("nullp", "map element " +
-					GlobalState.getUserMap().get(recording.getCreatorUUID()).getName());
-			Log.i("nullp", "recording.getName() " + recording.getName());
-			Log.i("nullp", "recording.getLikes() " + recording.getLikes());
-			Log.i("nullp", "recording.getDate() " + recording.getDate());
-			*/
 			if (GlobalState.getUserMap().keySet().contains(recording.getCreatorUUID())) {
 				recordingView.setText(recording.getName() + " (" +
 				recording.getLikes() + " likes) by " +

@@ -29,8 +29,6 @@ public class Segments {
 		originalSegments = new ArrayList<Integer>();
 		respeakingSegments = new ArrayList<Integer>();
 		readSegments();
-		Log.i("issue37stuff", " " + originalSegments);
-		Log.i("issue37stuff", " " + respeakingSegments);
 	}
 
 	private void readSegments() throws Exception {

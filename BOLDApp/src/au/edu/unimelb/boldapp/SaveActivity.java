@@ -67,8 +67,6 @@ public class SaveActivity extends Activity {
 			String originalName = intent.getStringExtra("originalName");
 			EditText recordingNameEditText = (EditText)
 					findViewById(R.id.edit_recording_name);
-			Log.i("issue1", recordingNameEditText + " ");
-			Log.i("issue1", originalName + " ");
 			recordingNameEditText.setText(
 					originalName + " (Respeaking)", TextView.BufferType.EDITABLE);
 		}
@@ -98,7 +96,6 @@ public class SaveActivity extends Activity {
 		if (requestCode == SELECT_LANGUAGE) {
 			if (resultCode == RESULT_OK) {
 				setLanguage((Language) intent.getParcelableExtra("language"));
-				Log.i("selectLanguage", " " + resultCode);
 			}
 		}
 	}

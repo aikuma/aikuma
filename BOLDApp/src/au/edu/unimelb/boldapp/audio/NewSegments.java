@@ -37,7 +37,6 @@ public class NewSegments {
 			readSegments(new File(
 					FileIO.getRecordingsPath(), respeakingUUID + ".map"));
 		} catch (Exception e) {
-			Log.i("segments", "caught exception");
 			//Issue with reading mapping. Maybe throw an exception?
 		}
 	}
@@ -80,7 +79,6 @@ public class NewSegments {
 
 	public void write(File path) throws IOException {
 		FileIO.write(path, toString());
-		Log.i("segments", "path: " + path + " mapstring: " + toString());
 	}
 
 	/**

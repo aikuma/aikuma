@@ -101,7 +101,6 @@ public class ThumbRespeakActivity extends Activity {
 		respeaker.setOnCompletionListener(new OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer _player) {
-				Log.i("brazil", "onCompletionListener called.");
 				ImageButton respeakButton = (ImageButton) 
 						findViewById(R.id.RespeakButton);
 				ImageButton playButton = (ImageButton) 

@@ -71,10 +71,8 @@ public class Client {
 			try {
 				apacheClient.connect(serverURI);
 			} catch (SocketException e) {
-				Log.i("sync", "socketexception");
 				return false;
 			} catch (IOException e) {
-				Log.i("sync", "firstIOException");
 				return false;
 			}
 		}
@@ -83,7 +81,6 @@ public class Client {
 				result = apacheClient.login(username, password);
 				loggedIn = result;
 			} catch (IOException e) {
-				Log.i("sync", "secondIOException");
 				return false;
 			}
 		}
@@ -92,18 +89,15 @@ public class Client {
 			// documentation ever says that.
 			result = apacheClient.setFileType(FTP.BINARY_FILE_TYPE);
 			if (!result) {
-				Log.i("sync", "setFileType returned false");
 				return false;
 			}
 		} catch (IOException e) {
-			//Log.i("sync", "thirdIOException");
 			return false;
 		}
 		// Change to appropriate working directory
 		if (loggedIn) {
 			//try {
 				String serverBaseDir = findServerBaseDir();
-				Log.i("ftp", "serverBaseDir " + serverBaseDir);
 				if (serverBaseDir == null) {
 					logout();
 					return false;
@@ -112,13 +106,10 @@ public class Client {
 					result = cdServerBaseDir();
 				}
 				//result = true;
-				//Log.i("sync", "cdServerBaseDir result: " + result);
 			//} catch (IOException e ) {
-			//	Log.i("sync", "fourthIOException");
 			//	return false;
 			//}
 		}
-		//Log.i("sync", "final");
 		return result;
 	}
 
@@ -151,8 +142,6 @@ public class Client {
 	public boolean sync() {
 		boolean pushResult = push();
 		boolean pullResult = pull();
-		Log.i("zxcv", "pushResult: " + pushResult);
-		Log.i("zxcv", "pullResult: " + pullResult);
 		return pushResult && pullResult;
 	}
 
@@ -188,7 +177,6 @@ public class Client {
 			clientDir = new File(clientBaseDir + "/" + directoryPath);
 		}
 		if (!clientDir.isDirectory()) {
-			Log.i("ftp", "1");
 			return false;
 		}
 
@@ -199,10 +187,7 @@ public class Client {
 					serverBaseDir + "/" + directoryPath);
 			apacheClient.changeWorkingDirectory(
 					serverBaseDir + "/" + directoryPath);
-			Log.i("ftp", "now in " + serverBaseDir + "/" + directoryPath);
-			Log.i("ftp", "pwd1: " + apacheClient.printWorkingDirectory());
 		} catch (IOException e) {
-			Log.i("ftp", "2");
 			return false;
 		}
 
@@ -219,8 +204,6 @@ public class Client {
 						if (!serverFilenames.contains(filename)) {
 							result = pushFile(directoryPath, file);
 							if (!result) {
-								Log.i("ftp", "3: " + directoryPath + ", " +
-								file);
 								return false;
 							}
 						}
@@ -230,7 +213,6 @@ public class Client {
 						apacheClient.changeWorkingDirectory(
 								serverBaseDir + "/" + directoryPath);
 						if (!result) {
-							Log.i("ftp", "4");
 							return false;
 						}
 					}
@@ -238,7 +220,6 @@ public class Client {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			Log.i("ftp", "5");
 			return false;
 		}
 
@@ -266,7 +247,6 @@ public class Client {
 							".inprogress",
 					serverBaseDir + "/" + directoryPath + "/" + file.getName());
 		} catch (IOException e) {
-			Log.e("ftp", "exception for 3", e);
 			return false;
 		}
 		return result;
@@ -279,23 +259,19 @@ public class Client {
 	 * @return	true if successful; false otherwise.
 	 */
 	public boolean pullFile(String directoryPath, File file) {
-		Log.i("zxcv", "pullFile: " + directoryPath + " " + file.getName());
 		boolean result = false;
 		try {
 			File inProgressFile = new File(file.getPath() + ".inprogress");
 					/*clientBaseDir + directoryPath + "/" + file.getName() +
 							".inprogress");*/
-			Log.i("zxcv", "inprogressfilename  " + inProgressFile.getPath());
 			OutputStream stream = new FileOutputStream(inProgressFile);
 			result = apacheClient.retrieveFile(
 					serverBaseDir + "/" + directoryPath + "/" +
 							file.getName(),
 					stream);
 			stream.close();
-			Log.i("zxcv", "blah: " + inProgressFile.getName() + " " + result);
 			inProgressFile.renameTo(file);
 		} catch (IOException e) {
-			Log.e("zxcv", "borg" , e);
 			return false;
 		}
 		return result;
@@ -433,7 +409,6 @@ public class Client {
 
 	public String findServerBaseDir() {
 		String dir = findWritableDir("/");
-		Log.i("ftp", "findServerBaseDir returning: " + dir);
 		return dir;
 	}
 

@@ -33,24 +33,20 @@ public class SyncSplashActivity extends Activity {
 				//client.setServerBaseDir("/part0/share/bold/");
 				if (!client.login(server.getIPAddress(), server.getUsername(),
 						server.getPassword())) {
-					Log.i("1234", "here2");
 					Toast.makeText(SyncSplashActivity.this, "Login failed." + 
 					" Are you connected to a wireless network?",
 							Toast.LENGTH_LONG).show();
 					finish();
 				} else if (!client.sync()) {
-					Log.i("1234", "here3");
 					Toast.makeText(SyncSplashActivity.this, "Sync failed.",
 							Toast.LENGTH_LONG).show();
 					finish();
 				} else if (!client.logout()) {
-					Log.i("1234", "here4");
 					Toast.makeText(SyncSplashActivity.this, "Logout failed.",
 							Toast.LENGTH_LONG).show();
 					finish();
 				} else {
 					
-					Log.i("1234", "here");
 					Toast.makeText(SyncSplashActivity.this, "Syncing Complete.",
 							Toast.LENGTH_LONG).show();
 				}

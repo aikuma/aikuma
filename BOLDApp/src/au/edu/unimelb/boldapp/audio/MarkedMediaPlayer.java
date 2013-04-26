@@ -152,7 +152,6 @@ public class MarkedMediaPlayer {
 
 		public void run() {
 			while (true) {
-				//Log.i("email1", Thread.currentThread().getId() + "runnin runnin runnin");
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -197,6 +196,5 @@ public class MarkedMediaPlayer {
 			//until the job is done.
 			//while (notificationMarkerLoop.isAlive()) {}
 		}
-		Log.i("email1", "stopped notificationMarkerLoop");
 	}
 }

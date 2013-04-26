@@ -68,9 +68,6 @@ public class UserArrayAdapter extends ArrayAdapter<User> {
 				userView.findViewById(R.id.UserImage);
 		TextView userNameView = (TextView) userView.findViewById(R.id.UserName);
 
-		Log.i("UserArrayAdapter", " " + user);
-		Log.i("UserArrayAdapter", " " + user.getSmallImage());
-
 		Bitmap userImage = user.getSmallImage();
 		if (userImage != null) {
 			userImageView.setImageBitmap(userImage);

@@ -291,7 +291,6 @@ public abstract class FileIO {
 			user = new User(
 					UUID.fromString(jsonObj.get("uuid").toString()),
 					jsonObj.get("name").toString(), languages);
-			Log.i("readUser", "loaded " + user.getLanguages().toString());
 		} catch (org.json.simple.parser.ParseException e) {
 			throw new IOException(e);
 		}

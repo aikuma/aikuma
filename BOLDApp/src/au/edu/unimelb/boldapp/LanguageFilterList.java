@@ -38,8 +38,6 @@ public class LanguageFilterList extends ListActivity {
 		langCodeMap = GlobalState.getLangCodeMap(getResources());
 		filterText = (EditText) findViewById(R.id.search_box);
 		filterText.addTextChangedListener(filterTextWatcher);
-		//Log.i("sick", " " + new ArrayList<String>(langCodeMap.values()).size() + 
-		//		new ArrayList<String>(new HashSet<String>(langCodeMap.values())).size());
 		names = new ArrayList<String>(langCodeMap.keySet());
 		List<String> codes = new ArrayList<String>(langCodeMap.values());
 		List<Language> languages = new ArrayList<Language>();
@@ -57,7 +55,6 @@ public class LanguageFilterList extends ListActivity {
 		//Intent intent = new Intent(this, SaveActivity.class);
 		Intent intent = new Intent();
 		intent.putExtra("language", (Language)l.getItemAtPosition(position));
-		Log.i("positions", position + " " + names.get(position) );
 		setResult(RESULT_OK, intent);
 		this.finish();
 	}

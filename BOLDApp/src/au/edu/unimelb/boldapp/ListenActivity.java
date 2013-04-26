@@ -104,7 +104,6 @@ public class ListenActivity extends Activity
 			if (intent.getBooleanExtra("interleavedChoice", true)) {
 				try {
 					this.player = new InterleavedPlayer(this.recording.getUuid());
-					Log.i("segments", "using interleaved player");
 				} catch (Exception e) {
 					Toast.makeText(this, 
 							e.getMessage(),
@@ -120,7 +119,6 @@ public class ListenActivity extends Activity
 		this.seekBar.setOnSeekBarChangeListener(this);
 		if (!this.recording.isOriginal()) {
 			if (intent.getBooleanExtra("interleavedChoice", true)) {
-				Log.i("ListenActivity", "interleavedChoice");
 				this.seekBar.setVisibility(View.INVISIBLE);
 			}
 		}
@@ -132,7 +130,6 @@ public class ListenActivity extends Activity
 				/*
 				@Override
 				public void onCompletion(MediaPlayer _player) {
-					Log.i("segments", "on completion hit!");
 					// Reset the play button
 					ImageButton button = (ImageButton) 
 							findViewById(R.id.Play);
@@ -161,7 +158,6 @@ public class ListenActivity extends Activity
 			OnCompletionListener {
 		@Override
 		public void onCompletion(MediaPlayer _) {
-			Log.i("segments", "on completion hit!");
 			// Reset the play button
 			ImageButton button = (ImageButton) 
 					findViewById(R.id.Play);
@@ -268,22 +264,17 @@ public class ListenActivity extends Activity
 	 * @param	view	The button that was clicked.
 	 */
 	public void goBack(View view){
-		Log.i("email1", "point1");
 		player.release();
-		Log.i("email1", "point2");
 		if (this.seekBarThread != null) {
 			this.seekBarThread.interrupt();
 		}
-		Log.i("email1", "point3");
 		ListenActivity.this.finish();
-		Log.i("email1", "point4");
 	}
 
 	/**
 	 * Play the audio
 	 */
 	public void play() {
-		Log.i("email1", "startedPlaying = " + startedPlaying);
 		ImageButton button = (ImageButton) findViewById(R.id.Play);
 		button.setImageResource(R.drawable.button_pause);
 		player.start();
@@ -296,7 +287,6 @@ public class ListenActivity extends Activity
 			this.seekBarThread = new Thread(this);
 			this.seekBarThread.start();
 			startedPlaying = true;
-			Log.i("email1", "set startedPlaying");
 		}
 	}
 
@@ -347,7 +337,6 @@ public class ListenActivity extends Activity
 					currentPosition = total;
 				} else {
 					currentPosition = player.getCurrentPosition();
-					//Log.i("segCount", "current pos: " + currentPosition);
 				}
 			} catch (InterruptedException e) {
 				return;
