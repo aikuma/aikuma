@@ -73,8 +73,8 @@ public class Noise {
 			if (average > 0) {
 				// If there are no exceptional values, we return a threshold.
 				//
-				float minThreshold = average*0.8f;
-				float maxThreshold = average*1.3f;
+				float minThreshold = average*0.75f;
+				float maxThreshold = average*1.33f;
 				if (minThreshold <= min && max <= maxThreshold) {
 					quality = 0;
 				} else {
