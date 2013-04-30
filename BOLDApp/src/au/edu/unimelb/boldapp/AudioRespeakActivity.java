@@ -131,7 +131,7 @@ public class AudioRespeakActivity extends Activity {
     Handler handler = new Handler();
     handler.postDelayed(new Runnable() {
       public void run() {
-        new NoiseLevel(AudioRespeakActivity.this, 20).find();
+        new NoiseLevel(AudioRespeakActivity.this, 18).find();
       }
     }, 500);
   };
