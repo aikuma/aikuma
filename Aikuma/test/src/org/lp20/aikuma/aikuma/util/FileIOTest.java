@@ -19,9 +19,12 @@ public class FileIOTest extends AndroidTestCase {
 	 * Ensures that FileIO.getAppRootPath returns the appropriate absolute
 	 * path.
 	 */
+	/*
+	Commented out because not all phones use /mnt/sdcard
 	public void testGetAppRootPath() throws Exception {
 		assertEquals(new File("/mnt/sdcard/aikuma"), FileIO.getAppRootPath());
 	}
+	*/
 
 	/**
 	 * Ensure that write and read balance and ensure that the test file is in

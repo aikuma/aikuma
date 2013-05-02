@@ -1,6 +1,7 @@
 package org.lp20.aikuma.model;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.ImageUtils;
 import java.io.File;
@@ -12,6 +13,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 /**
  * The class that stores the data about a speaker.
@@ -114,6 +116,43 @@ public class Speaker {
 		encodedSpeaker.put("uuid", this.uuid.toString());
 		encodedSpeaker.put("languages", Language.encodeList(languages));
 		return encodedSpeaker;
+	}
+
+	/**
+	 * Encodes a list of speakers as a corresponding JSONArray object.
+	 *
+	 * @param	speakers	A list of speakers to be encoded
+	 * @return	A JSONArray object.
+	 */
+	public static JSONArray encodeList(List<Speaker> speakers) {
+		JSONArray speakerArray = new JSONArray();
+		for (Speaker speaker : speakers) {
+			speakerArray.add(speaker.encode());
+		}
+		return speakerArray;
+	}
+
+	/**
+	 * Decodes a list of speakers from a JSONArray
+	 *
+	 * @param	speakerArray	A JSONArray object containing the speakers.
+	 * @return	A list of the speakers in the JSONArray
+	 */
+	public static List<Speaker> decodeJSONArray(JSONArray speakerArray) {
+		List<Speaker> speakers = new ArrayList<Speaker>();
+		if (speakerArray != null) {
+			for (Object speakerObj : speakerArray) {
+				JSONValue jsonSpeakerObj = (JSONValue) speakerObj;
+				Log.i("json", " " + jsonSpeakerObj);
+				/*
+				Speaker speaker = new Speaker(
+						jsonSpeakerObj.get("name").toString(),
+						jsonLangObj.get("code").toString());
+				languages.add(lang);
+				*/
+			}
+		}
+		return speakers;
 	}
 
 	/**
