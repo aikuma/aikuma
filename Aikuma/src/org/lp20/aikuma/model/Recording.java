@@ -28,6 +28,7 @@ public class Recording {
 	 * The minimal constructor
 	 */
 	public Recording() {
+		setName("Look at me");
 		setUUID(UUID.randomUUID());
 		setDate(new Date());
 		setLanguages(new ArrayList<Language>());
