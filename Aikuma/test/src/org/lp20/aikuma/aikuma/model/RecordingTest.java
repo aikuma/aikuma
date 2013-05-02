@@ -80,11 +80,11 @@ public class RecordingTest extends AndroidTestCase {
 		UUID uuid = UUID.randomUUID();
 		String name = null;
 		Date date = new Date();
-		List<Speaker> speakers = new ArrayList<Speaker>();
+		List<UUID> speakersUUIDs = new ArrayList<UUID>();
 		boolean caught = false;
 		try {
 			Recording recording = new Recording(uuid, name, date, null,
-					speakers, Aikuma.getAndroidID());
+					speakersUUIDs, Aikuma.getAndroidID());
 		} catch (IllegalArgumentException e) {
 			caught = true;
 			assertEquals("Recording languages cannot be null. " +
@@ -101,11 +101,12 @@ public class RecordingTest extends AndroidTestCase {
 		String name = null;
 		Date date = new Date();
 		List<Language> languages = new ArrayList<Language>();
-		List<Speaker> speakers = new ArrayList<Speaker>();
+		List<UUID> speakersUUIDs = new ArrayList<UUID>();
 		boolean caught = false;
 		try {
+			Log.i("json", speakersUUIDs + " ");
 			Recording recording = new Recording(uuid, name, date, languages,
-					speakers, null);
+					speakersUUIDs, null);
 		} catch (IllegalArgumentException e) {
 			caught = true;
 			assertEquals("The androidID for the recording cannot be null",
@@ -121,10 +122,10 @@ public class RecordingTest extends AndroidTestCase {
 		UUID uuid = UUID.randomUUID();
 		Date date = new Date();
 		List<Language> languages = new ArrayList<Language>();
-		List<Speaker> speakers = new ArrayList<Speaker>();
+		List<UUID> speakersUUIDs = new ArrayList<UUID>();
 		String androidID = Aikuma.getAndroidID();
 		Recording recording =
-				new Recording(uuid, null, date, languages, speakers, androidID,
+				new Recording(uuid, null, date, languages, speakersUUIDs, androidID,
 					null);
 		recording.write();
 		assertEquals(recording, Recording.read(uuid));
@@ -139,14 +140,14 @@ public class RecordingTest extends AndroidTestCase {
 		UUID uuid = UUID.randomUUID();
 		Date date = new Date();
 		List<Language> languages = new ArrayList<Language>();
-		List<Speaker> speakers = new ArrayList<Speaker>();
+		List<UUID> speakersUUIDs = new ArrayList<UUID>();
 		Language lang1 = new Language("Usarufa", "usa");
 		Language lang2 = new Language("English", "eng");
 		languages.add(lang1);
 		languages.add(lang2);
 		String androidID = Aikuma.getAndroidID();
 		Recording recording =
-				new Recording(uuid, null, date, languages, speakers, androidID,
+				new Recording(uuid, null, date, languages, speakersUUIDs, androidID,
 						null);
 		recording.write();
 		assertEquals(recording, Recording.read(uuid));
@@ -161,14 +162,14 @@ public class RecordingTest extends AndroidTestCase {
 		UUID uuid = UUID.randomUUID();
 		Date date = new Date();
 		List<Language> languages = new ArrayList<Language>();
-		List<Speaker> speakers = new ArrayList<Speaker>();
+		List<UUID> speakersUUIDs = new ArrayList<UUID>();
 		Language lang1 = new Language("Usarufa", "usa");
 		Language lang2 = new Language("English", "eng");
 		languages.add(lang1);
 		languages.add(lang2);
 		String androidID = Aikuma.getAndroidID();
 		Recording recording = new Recording(
-				uuid, "A name", date, languages, speakers, androidID,
+				uuid, "A name", date, languages, speakersUUIDs, androidID,
 				UUID.randomUUID());
 		FileUtils.deleteDirectory(
 				new File(FileIO.getAppRootPath(), "recordings/" + uuid));
@@ -182,10 +183,10 @@ public class RecordingTest extends AndroidTestCase {
 		UUID uuid = UUID.randomUUID();
 		Date date = new Date();
 		List<Language> languages = new ArrayList<Language>();
-		List<Speaker> speakers = new ArrayList<Speaker>();
+		List<UUID> speakersUUIDs = new ArrayList<UUID>();
 		String androidID = Aikuma.getAndroidID();
 		Recording recording1 =
-				new Recording(uuid, null, date, languages, speakers, androidID,
+				new Recording(uuid, null, date, languages, speakersUUIDs, androidID,
 						null);
 		recording1.write();
 
@@ -199,7 +200,7 @@ public class RecordingTest extends AndroidTestCase {
 		languages.add(lang2);
 		androidID = Aikuma.getAndroidID();
 		Recording recording2 = new Recording(
-				uuid, "A name", date, languages, speakers, androidID,
+				uuid, "A name", date, languages, speakersUUIDs, androidID,
 						UUID.randomUUID());
 		recording2.write();
 

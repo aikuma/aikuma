@@ -1,13 +1,16 @@
 package org.lp20.aikuma.model;
 
 import android.test.AndroidTestCase;
-import org.lp20.aikuma.util.FileIO;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.lp20.aikuma.util.FileIO;
 
 /**
  * Tests for model.Speaker, the class that represents the speaker of a
@@ -201,5 +204,18 @@ public class SpeakerTest extends AndroidTestCase {
 				speaker1.getUUID() + "/metadata.json").getParentFile());
 		FileUtils.deleteDirectory(new File(FileIO.getAppRootPath(), "speakers/" + 
 				speaker2.getUUID() + "/metadata.json").getParentFile());
+	}
+
+	public void testDecodeJSONArray() throws Exception {
+		UUID uuid1 = UUID.randomUUID();
+		UUID uuid2 = UUID.randomUUID();
+		String jsonStr = "{\"uuid_array\": [ \""+uuid1+"\", \""+uuid2+"\" ]}";
+		JSONParser parser = new JSONParser();
+		JSONObject jsonObj = (JSONObject) parser.parse(jsonStr);
+		JSONArray speakerArray = (JSONArray) jsonObj.get("uuid_array");
+		List<UUID> speakerUUIDs = Speaker.decodeJSONArray(speakerArray);
+		assertEquals(2, speakerUUIDs.size());
+		assertEquals(uuid1, speakerUUIDs.get(0));
+		assertEquals(uuid2, speakerUUIDs.get(1));
 	}
 }

@@ -119,7 +119,8 @@ public class Speaker {
 	}
 
 	/**
-	 * Encodes a list of speakers as a corresponding JSONArray object.
+	 * Encodes a list of speakers as a corresponding JSONArray object of their
+	 * UUIDs.
 	 *
 	 * @param	speakers	A list of speakers to be encoded
 	 * @return	A JSONArray object.
@@ -127,7 +128,7 @@ public class Speaker {
 	public static JSONArray encodeList(List<Speaker> speakers) {
 		JSONArray speakerArray = new JSONArray();
 		for (Speaker speaker : speakers) {
-			speakerArray.add(speaker.encode());
+			speakerArray.add(speaker.getUUID().toString());
 		}
 		return speakerArray;
 	}
@@ -138,21 +139,15 @@ public class Speaker {
 	 * @param	speakerArray	A JSONArray object containing the speakers.
 	 * @return	A list of the speakers in the JSONArray
 	 */
-	public static List<Speaker> decodeJSONArray(JSONArray speakerArray) {
-		List<Speaker> speakers = new ArrayList<Speaker>();
+	public static List<UUID> decodeJSONArray(JSONArray speakerArray) {
+		List<UUID> speakerUUIDs = new ArrayList<UUID>();
 		if (speakerArray != null) {
 			for (Object speakerObj : speakerArray) {
-				JSONValue jsonSpeakerObj = (JSONValue) speakerObj;
-				Log.i("json", " " + jsonSpeakerObj);
-				/*
-				Speaker speaker = new Speaker(
-						jsonSpeakerObj.get("name").toString(),
-						jsonLangObj.get("code").toString());
-				languages.add(lang);
-				*/
+				UUID speakerUUID = UUID.fromString((String) speakerObj);
+				speakerUUIDs.add(speakerUUID);
 			}
 		}
-		return speakers;
+		return speakerUUIDs;
 	}
 
 	/**
