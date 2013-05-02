@@ -18,19 +18,16 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 
 	@Override
 	public View getView(int position, View _, ViewGroup parent) {
-		TextView recordingView =
-				(TextView) inflater.inflate(listItemLayout, parent, false);
+		View recordingView =
+				(View) inflater.inflate(listItemLayout, parent, false);
 		Recording recording = getItem(position);
-		/*
 		TextView recordingNameView = 
-				(TextView) recordingView.findViewByID(R.id.name);
-				*/
-		recordingView.setText(recording.getName());
+				(TextView) recordingView.findViewById(R.id.recordingName);
+		recordingNameView.setText(recording.getName());
 		return recordingView;
 	}
 
-	private static final int listItemLayout =
-			android.R.layout.simple_list_item_1;
+	private static final int listItemLayout = R.layout.recording_list_item;
 	private LayoutInflater inflater;
 
 }
