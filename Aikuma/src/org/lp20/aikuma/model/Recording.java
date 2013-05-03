@@ -31,6 +31,7 @@ public class Recording {
 		setUUID(UUID.randomUUID());
 		setDate(new Date());
 		setLanguages(new ArrayList<Language>());
+		setSpeakersUUIDs(new ArrayList<UUID>());
 		setAndroidID(Aikuma.getAndroidID());
 	}
 
@@ -46,23 +47,26 @@ public class Recording {
 		setName(name);
 		setDate(date);
 		setLanguages(new ArrayList<Language>());
+		setSpeakersUUIDs(new ArrayList<UUID>());
 		setAndroidID(Aikuma.getAndroidID());
 	}
 
 	/**
 	 * Constructs a new Recording using a specified UUID, name, date,
-	 * languages and android ID
+	 * languages, speakersUUIDs and android ID
 	 *
 	 * @param	uuid	the recording's UUID.
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
 	 */
 	public Recording(UUID uuid, String name, Date date,
-			List<Language> languages, String androidID) {
+			List<Language> languages, List<UUID> speakersUUIDs,
+			String androidID) {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
 		setLanguages(languages);
+		setSpeakersUUIDs(speakersUUIDs);
 		setAndroidID(androidID);
 	}
 
@@ -75,11 +79,13 @@ public class Recording {
 	 * @param	date	The date of creation.
 	 */
 	public Recording(UUID uuid, String name, Date date,
-			List<Language> languages, String androidID, UUID originalUUID) {
+			List<Language> languages, List<UUID> speakersUUIDs,
+			String androidID, UUID originalUUID) {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
 		setLanguages(languages);
+		setSpeakersUUIDs(speakersUUIDs);
 		setAndroidID(androidID);
 		setOriginalUUID(originalUUID);
 	}
@@ -119,6 +125,13 @@ public class Recording {
 	 */
 	public List<Language> getLanguages() {
 		return languages;
+	}
+
+	/**
+	 * speakersUUIDs accessor.
+	 */
+	public List<UUID> getSpeakersUUIDs() {
+		return speakersUUIDs;
 	}
 
 	/**
@@ -176,6 +189,11 @@ public class Recording {
 		encodedRecording.put("name", this.name);
 		encodedRecording.put("date", new StandardDateFormat().format(this.date));
 		encodedRecording.put("languages", Language.encodeList(languages));
+		JSONArray speakersUUIDsArray = new JSONArray();
+		for (UUID uuid : speakersUUIDs) {
+			speakersUUIDsArray.add(uuid.toString());
+		}
+		encodedRecording.put("speakersUUIDs", speakersUUIDsArray);
 		encodedRecording.put("androidID", this.androidID);
 		if (this.originalUUID == null) {
 			encodedRecording.put("originalUUID", null);
@@ -230,6 +248,11 @@ public class Recording {
 			throw new IOException("Null languages in the JSON file.");
 		}
 		List<Language> languages = Language.decodeJSONArray(languageArray);
+		JSONArray speakerUUIDArray = (JSONArray) jsonObj.get("speakersUUIDs");
+		if (speakerUUIDArray == null) {
+			throw new IOException("Null speakersUUIDs in the JSON file.");
+		}
+		List<UUID> speakersUUIDs = Speaker.decodeJSONArray(speakerUUIDArray);
 		String androidID = (String) jsonObj.get("androidID");
 		if (androidID == null) {
 			throw new IOException("Null androidID in the JSON file.");
@@ -242,7 +265,7 @@ public class Recording {
 			originalUUID = UUID.fromString((String) jsonObj.get("originalUUID"));
 		}
 		Recording recording = new Recording(
-				uuid, name, date, languages, androidID, originalUUID);
+				uuid, name, date, languages, speakersUUIDs, androidID, originalUUID);
 		return recording;
 	}
 
@@ -288,6 +311,7 @@ public class Recording {
 				.append(name, rhs.name)
 				.append(date, rhs.date)
 				.append(languages, rhs.languages)
+				.append(speakersUUIDs, rhs.speakersUUIDs)
 				.append(androidID, rhs.androidID)
 				.append(originalUUID, rhs.originalUUID)
 				.isEquals();
@@ -350,6 +374,32 @@ public class Recording {
 	}
 
 	/**
+	 * Speakers mutator.
+	 */
+	private void setSpeakersUUIDs(List<UUID> speakersUUIDs) {
+		if (speakersUUIDs == null) {
+			throw new IllegalArgumentException(
+					"Recording speakersUUIDs cannot be null. " +
+					"Set as an empty List<UUID> instead.");
+		}
+		this.speakersUUIDs = speakersUUIDs;
+	}
+
+	/**
+	 * Add's another speaker to the Recording's speaker list
+	 *
+	 * @param	speaker	The speaker to be added to the Recording's list of
+	 * speaker.
+	 */
+	private void addSpeakerUUID(Speaker speaker) {
+		if (speaker == null) {
+			throw new IllegalArgumentException(
+					"A speaker for the recording cannot be null");
+		}
+		this.speakersUUIDs.add(speaker.getUUID());
+	}
+
+	/**
 	 * androidID mutator
 	 */
 	private void setAndroidID(String androidID) {
@@ -400,6 +450,11 @@ public class Recording {
 	private List<Language> languages;
 
 	/**
+	 * The speakers of the recording.
+	 */
+	private List<UUID> speakersUUIDs;
+
+	/**
 	 * The Android ID of the device that the recording was made on.
 	 */
 	private String androidID;
@@ -408,6 +463,5 @@ public class Recording {
 	 * The UUID of the original of the recording if it is a respeaking.
 	 */
 	private UUID originalUUID;
-
 
 }

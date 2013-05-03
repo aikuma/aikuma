@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/sync"
+		android:icon="@drawable/wi_fi"
+		android:title="@string/sync"
+		android:showAsAction="always" />
+	<item android:id="@+id/search"
+		android:icon="@drawable/search"
+		android:title="@string/search"
+		android:showAsAction="always" />
+	<item android:id="@+id/settings"
+		android:icon="@drawable/settings"
+		android:title="@string/settings"
+		android:showAsAction="always" />
+</menu>
