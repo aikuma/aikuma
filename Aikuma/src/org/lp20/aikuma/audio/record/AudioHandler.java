@@ -1,4 +1,4 @@
-package org.lp20.aikuma.audio;
+package org.lp20.aikuma.audio.record;
 
 /**
  * Interface for anything that handles (saves/processes) audio.

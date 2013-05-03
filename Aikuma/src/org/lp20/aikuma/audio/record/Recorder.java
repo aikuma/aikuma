@@ -1,4 +1,4 @@
-package org.lp20.aikuma.audio;
+package org.lp20.aikuma.audio.record;
 
 import android.content.Context;
 import android.media.AudioFormat;
@@ -6,11 +6,13 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.media.MediaPlayer;
 import android.util.Log;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Set;
-import org.lp20.aikuma.audio.analyzers.Analyzer;
-import org.lp20.aikuma.audio.analyzers.SimpleAnalyzer;
+import org.lp20.aikuma.audio.record.analyzers.Analyzer;
+import org.lp20.aikuma.audio.record.analyzers.SimpleAnalyzer;
 import org.lp20.aikuma.R;
+import static org.lp20.aikuma.audio.record.Microphone.MicException;
 
 /**
  *  A Recorder used to get input from a microphone and output into a file.
@@ -31,8 +33,8 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	 * Creates a Recorder that uses an analyzer which tells the recorder to
 	 * always record regardless of input.
 	 */
-	public Recorder(int sampleRate) {
-		this(sampleRate, new SimpleAnalyzer());
+	public Recorder(File path, int sampleRate) throws MicException {
+		this(path, sampleRate, new SimpleAnalyzer());
 	}
 
 	/**
@@ -42,10 +44,11 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	 * @param Pass in an analyzer which decides whether
 	 *        the recorder should record or ignore the input.
 	 */
-	public Recorder(int sampleRate, Analyzer analyzer) {
+	public Recorder(File path, int sampleRate, Analyzer analyzer) throws MicException {
 		this.analyzer = analyzer;
 		setUpMicrophone(sampleRate);
 		setUpFile();
+		this.prepare(path.getPath());
 	}
 
 	/** Start listening. */
@@ -72,7 +75,7 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	}
 
 	/** Sets up the micrphone for recording */
-	private void setUpMicrophone(int sampleRate) {
+	private void setUpMicrophone(int sampleRate) throws MicException {
 		this.microphone = new Microphone(sampleRate);
 	}
 
@@ -89,13 +92,13 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	 *
 	 * Note: Once stopped you cannot restart the recorder.
 	 */
-	public void stop() {
+	public void stop() throws MicException {
 		microphone.stop();
 		file.close();
 	}
 
 	/** Pause listening to the microphone. */
-	public void pause() {
+	public void pause() throws MicException {
 		microphone.stop();
 	}
 

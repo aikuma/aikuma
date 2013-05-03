@@ -1,4 +1,4 @@
-package org.lp20.aikuma.audio;
+package org.lp20.aikuma.audio.record;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -147,7 +147,7 @@ public class PCMWriter {
 
 			// Channels.
 			//
-			if (channelConfig == AudioFormat.CHANNEL_CONFIGURATION_MONO) {
+			if (channelConfig == AudioFormat.CHANNEL_IN_MONO) {
 				numberOfChannels = 1;
 			} else {
 				numberOfChannels = 2;
