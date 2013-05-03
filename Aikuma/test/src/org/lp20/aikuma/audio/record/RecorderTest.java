@@ -2,10 +2,13 @@ package org.lp20.aikuma.audio.record;
 
 import android.media.MediaPlayer;
 import android.test.AndroidTestCase;
+import java.util.Date;
+import java.util.UUID;
 import android.util.Log;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
+import org.lp20.aikuma.model.Recording;
 
 /**
  * Tests for Recorder.
@@ -20,7 +23,10 @@ public class RecorderTest extends AndroidTestCase {
 	}
 
 	public void recorderTest(int sampleRate) throws Exception {
-		File f = new File("/mnt/sdcard/aikuma/testrecordings/testrecord1.wav");
+		UUID uuid = UUID.randomUUID();
+		File f = new File("/mnt/sdcard/aikuma/recordings/" + uuid + ".wav");
+		Recording testRecording =
+				new Recording(uuid, "Test recording", new Date());
 		Recorder recorder = new Recorder(f, sampleRate);
 		//recorder.prepare(path);
 		recorder.listen();
@@ -35,6 +41,8 @@ public class RecorderTest extends AndroidTestCase {
 		mediaPlayer.start();
 		Log.i("ManualTesting", "Playback started at " + sampleRate + ".");
 		TimeUnit.SECONDS.sleep(10);
+		/*
 		FileUtils.deleteDirectory(f.getParentFile());
+		*/
 	}
 }

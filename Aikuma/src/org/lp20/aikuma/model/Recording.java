@@ -4,6 +4,7 @@ import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.StandardDateFormat;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -277,7 +278,11 @@ public class Recording {
 	public static List<Recording> readAll() {
 		// Get a list of all the UUIDs of users in the "recordings" directory.
 		List<String> recordingUUIDs =
-				Arrays.asList(getRecordingsPath().list());
+				Arrays.asList(getRecordingsPath().list(new FilenameFilter() {
+					public boolean accept(File dir, String filename) {
+						return filename.endsWith(".json");
+					}
+				}));
 
 		// Get the recordings data from the metadata.json files.
 		List<Recording> recordings = new ArrayList<Recording>();

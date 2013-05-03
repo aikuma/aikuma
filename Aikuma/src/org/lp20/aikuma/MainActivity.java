@@ -22,11 +22,7 @@ public class MainActivity extends ListActivity
 		//actionBar.setDisplayShowHomeEnabled(false);
 		//actionBar.setDisplayShowTitleEnabled(false);
 
-		List<Recording> recordings = new ArrayList<Recording>();
-		recordings.add(new Recording());
-		recordings.add(new Recording());
-		recordings.add(new Recording());
-
+		List<Recording> recordings = Recording.readAll();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this, recordings);
 		setListAdapter(adapter);
     }
