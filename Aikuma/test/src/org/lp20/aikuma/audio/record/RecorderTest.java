@@ -5,6 +5,7 @@ import android.test.AndroidTestCase;
 import android.util.Log;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Tests for Recorder.
@@ -34,5 +35,6 @@ public class RecorderTest extends AndroidTestCase {
 		mediaPlayer.start();
 		Log.i("ManualTesting", "Playback started at " + sampleRate + ".");
 		TimeUnit.SECONDS.sleep(10);
+		FileUtils.deleteDirectory(f.getParentFile());
 	}
 }
