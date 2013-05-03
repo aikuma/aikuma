@@ -104,7 +104,6 @@ public class RecordingTest extends AndroidTestCase {
 		List<UUID> speakersUUIDs = new ArrayList<UUID>();
 		boolean caught = false;
 		try {
-			Log.i("json", speakersUUIDs + " ");
 			Recording recording = new Recording(uuid, name, date, languages,
 					speakersUUIDs, null);
 		} catch (IllegalArgumentException e) {
