@@ -10,6 +10,7 @@
 		android:layout_height="32dp"
 		android:src="@drawable/play"
 		android:onClick="play"
+		android:background="@null"
 	/>
 	<SeekBar
 		style="@android:style/Widget.ProgressBar.Horizontal"
