@@ -35,6 +35,18 @@ public class Player {
 		return mediaPlayer.isPlaying();
 	}
 
+	public int getCurrentMsec() {
+		return mediaPlayer.getCurrentPosition();
+	}
+
+	public int getDurationMsec() {
+		return mediaPlayer.getDuration();
+	}
+
+	public void seekToMsec(int msec) {
+		mediaPlayer.seekTo(msec);
+	}
+
 	public void setOnCompletionListener(final OnCompletionListener listener) {
 		mediaPlayer.setOnCompletionListener(
 				new MediaPlayer.OnCompletionListener() {
