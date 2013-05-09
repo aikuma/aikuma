@@ -39,7 +39,6 @@ public class Player {
 		mediaPlayer.setOnCompletionListener(
 				new MediaPlayer.OnCompletionListener() {
 					public void onCompletion(MediaPlayer _mp) {
-						Log.i("ListenFragment", "onCompletionMP");
 						listener.onCompletion(Player.this);
 					}
 				});

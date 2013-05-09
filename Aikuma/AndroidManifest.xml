@@ -15,6 +15,7 @@
             </intent-filter>
         </activity>
 		<activity android:name="org.lp20.aikuma.ui.ListenActivity"
+				android:configChanges="orientation"
 				android:label="@string/app_name">
 		</activity>
     </application>

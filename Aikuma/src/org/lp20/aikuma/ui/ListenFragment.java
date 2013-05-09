@@ -29,10 +29,6 @@ public class ListenFragment extends Fragment implements OnClickListener {
 			Player.OnCompletionListener listener =
 					new Player.OnCompletionListener() {
 						public void onCompletion(Player _player) {
-							Log.i("ListenFragment", "onCompletion");
-							ImageButton playPauseButton = (ImageButton)
-									getActivity().findViewById(
-									R.id.PlayPauseButton);
 							playPauseButton.setImageResource(R.drawable.play);
 						}
 					};
@@ -50,25 +46,43 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.listen_fragment, container, false);
-		ImageButton b = (ImageButton) v.findViewById(R.id.PlayPauseButton);
-		b.setOnClickListener(this);
+		playPauseButton = (ImageButton) v.findViewById(R.id.PlayPauseButton);
+		playPauseButton.setOnClickListener(this);
 		return v;
 	}
 
 	@Override
+	public void onPause() {
+		super.onPause();
+		pause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+	}
+
+	@Override
 	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.PlayPauseButton:
-				if (player.isPlaying()) {
-					player.pause();
-					((ImageButton) v).setImageResource(R.drawable.play);
-				} else {
-					player.play();
-					((ImageButton) v).setImageResource(R.drawable.pause);
-				}
-				break;
+		if (v == playPauseButton) {
+			if (player.isPlaying()) {
+				pause();
+			} else {
+				play();
+			}
 		}
 	}
 
+	private void pause() {
+		player.pause();
+		playPauseButton.setImageResource(R.drawable.play);
+	}
+
+	private void play() {
+		player.play();
+		playPauseButton.setImageResource(R.drawable.pause);
+	}
+
 	private Player player;
+	private ImageButton playPauseButton;
 }

@@ -1,5 +1,6 @@
 package org.lp20.aikuma.ui;
 
+import android.util.Log;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
