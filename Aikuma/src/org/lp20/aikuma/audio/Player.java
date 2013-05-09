@@ -17,7 +17,7 @@ public class Player {
 	 */
 	public Player(Recording recording) throws IOException {
 		mediaPlayer = new MediaPlayer();
-		mediaPlayer.setDataSource(recording.getFile().getName());
+		mediaPlayer.setDataSource(recording.getFile().getCanonicalPath());
 		mediaPlayer.prepare();
 	}
 

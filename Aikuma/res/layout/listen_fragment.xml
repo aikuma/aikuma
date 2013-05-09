@@ -5,9 +5,11 @@
 		android:layout_height="fill_parent"
 	>
 	<ImageButton
+		android:id="@+id/PlayButton"
 		android:layout_width="wrap_content"
 		android:layout_height="32dp"
 		android:src="@drawable/play"
+		android:onClick="play"
 	/>
 	<SeekBar
 		style="@android:style/Widget.ProgressBar.Horizontal"
