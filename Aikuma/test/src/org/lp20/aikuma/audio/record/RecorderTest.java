@@ -19,7 +19,7 @@ import org.lp20.aikuma.model.Recording;
 public class RecorderTest extends AndroidTestCase {
 	public void testRecorder() throws Exception {
 		recorderTest(16000);
-		recorderTest(44100);
+		//recorderTest(44100);
 	}
 
 	public void recorderTest(int sampleRate) throws Exception {
@@ -27,6 +27,7 @@ public class RecorderTest extends AndroidTestCase {
 		File f = new File("/mnt/sdcard/aikuma/recordings/" + uuid + ".wav");
 		Recording testRecording =
 				new Recording(uuid, "Test recording", new Date());
+		testRecording.write();
 		Recorder recorder = new Recorder(f, sampleRate);
 		//recorder.prepare(path);
 		recorder.listen();
@@ -44,5 +45,6 @@ public class RecorderTest extends AndroidTestCase {
 		/*
 		FileUtils.deleteDirectory(f.getParentFile());
 		*/
+
 	}
 }

@@ -128,8 +128,8 @@ public class RecordingTest extends AndroidTestCase {
 					null);
 		recording.write();
 		assertEquals(recording, Recording.read(uuid));
-		FileUtils.deleteDirectory(
-				new File(FileIO.getAppRootPath(), "recordings/" + uuid));
+		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
+				".json").delete();
 	}
 
 	/**
@@ -150,8 +150,8 @@ public class RecordingTest extends AndroidTestCase {
 						null);
 		recording.write();
 		assertEquals(recording, Recording.read(uuid));
-		FileUtils.deleteDirectory(
-				new File(FileIO.getAppRootPath(), "recordings/" + uuid));
+		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
+				".json").delete();
 	}
 
 	/**
@@ -170,8 +170,8 @@ public class RecordingTest extends AndroidTestCase {
 		Recording recording = new Recording(
 				uuid, "A name", date, languages, speakersUUIDs, androidID,
 				UUID.randomUUID());
-		FileUtils.deleteDirectory(
-				new File(FileIO.getAppRootPath(), "recordings/" + uuid));
+		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
+				".json").delete();
 	}
 
 	/**
@@ -207,12 +207,10 @@ public class RecordingTest extends AndroidTestCase {
 		assertTrue(recordings.contains(recording1));
 		assertTrue(recordings.contains(recording2));
 
-		FileUtils.deleteDirectory(
-				new File(FileIO.getAppRootPath(), "recordings/" +
-				recording1.getUUID()));
-		FileUtils.deleteDirectory(
-				new File(FileIO.getAppRootPath(), "recordings/" +
-				recording2.getUUID()));
+		new File(FileIO.getAppRootPath(), "recordings/" +
+				recording1.getUUID() + ".json").delete();
+		new File(FileIO.getAppRootPath(), "recordings/" +
+				recording2.getUUID() + ".json").delete();
 	}
 
 }

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
@@ -212,7 +213,7 @@ public class Recording {
 		JSONObject encodedRecording = this.encode();
 
 		FileIO.writeJSONObject(new File(
-				getRecordingsPath(), this.getUUID().toString() + "/metadata.json"),
+				getRecordingsPath(), this.getUUID().toString() + ".json"),
 				encodedRecording);
 	}
 
@@ -223,7 +224,7 @@ public class Recording {
 	 */
 	public static Recording read(UUID uuid) throws IOException {
 		JSONObject jsonObj = FileIO.readJSONObject(
-				new File(getRecordingsPath(), uuid.toString() + "/metadata.json"));
+				new File(getRecordingsPath(), uuid.toString() + ".json"));
 		String uuidString = (String) jsonObj.get("uuid");
 		if (uuidString == null) {
 			throw new IOException("Null UUID in the JSON file.");
@@ -283,6 +284,11 @@ public class Recording {
 						return filename.endsWith(".json");
 					}
 				}));
+
+		for (int i = 0; i < recordingUUIDs.size(); i++) {
+			recordingUUIDs.set(i,
+					FilenameUtils.removeExtension(recordingUUIDs.get(i)));
+		}
 
 		// Get the recordings data from the metadata.json files.
 		List<Recording> recordings = new ArrayList<Recording>();
