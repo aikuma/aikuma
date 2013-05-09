@@ -26,6 +26,17 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		try {
 			player = new Player(
 					((ListenActivity) getActivity()).getRecording());
+			Player.OnCompletionListener listener =
+					new Player.OnCompletionListener() {
+						public void onCompletion(Player _player) {
+							Log.i("ListenFragment", "onCompletion");
+							ImageButton playPauseButton = (ImageButton)
+									getActivity().findViewById(
+									R.id.PlayPauseButton);
+							playPauseButton.setImageResource(R.drawable.play);
+						}
+					};
+			player.setOnCompletionListener(listener);
 		} catch (IOException e) {
 			getActivity().finish();
 			Toast.makeText(getActivity(), 
@@ -39,7 +50,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.listen_fragment, container, false);
-		ImageButton b = (ImageButton) v.findViewById(R.id.PlayButton);
+		ImageButton b = (ImageButton) v.findViewById(R.id.PlayPauseButton);
 		b.setOnClickListener(this);
 		return v;
 	}
@@ -47,12 +58,17 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-			case R.id.PlayButton:
-				player.play();
+			case R.id.PlayPauseButton:
+				if (player.isPlaying()) {
+					player.pause();
+					((ImageButton) v).setImageResource(R.drawable.play);
+				} else {
+					player.play();
+					((ImageButton) v).setImageResource(R.drawable.pause);
+				}
 				break;
 		}
 	}
 
 	private Player player;
-
 }

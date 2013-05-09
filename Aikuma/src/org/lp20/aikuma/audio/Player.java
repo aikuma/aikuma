@@ -1,5 +1,6 @@
 package org.lp20.aikuma.audio;
 
+import android.util.Log;
 import android.media.MediaPlayer;
 import java.io.IOException;
 import org.lp20.aikuma.model.Recording;
@@ -24,6 +25,28 @@ public class Player {
 	/** * Starts or resumes playback of the recording. */
 	public void play() {
 		mediaPlayer.start();
+	}
+
+	public void pause() {
+		mediaPlayer.pause();
+	}
+
+	public boolean isPlaying() {
+		return mediaPlayer.isPlaying();
+	}
+
+	public void setOnCompletionListener(final OnCompletionListener listener) {
+		mediaPlayer.setOnCompletionListener(
+				new MediaPlayer.OnCompletionListener() {
+					public void onCompletion(MediaPlayer _mp) {
+						Log.i("ListenFragment", "onCompletionMP");
+						listener.onCompletion(Player.this);
+					}
+				});
+	}
+
+	public static abstract class OnCompletionListener {
+		public abstract void onCompletion(Player player);
 	}
 
 	/** The MediaPlayer used to play the recording. **/

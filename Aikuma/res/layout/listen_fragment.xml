@@ -5,7 +5,7 @@
 		android:layout_height="fill_parent"
 	>
 	<ImageButton
-		android:id="@+id/PlayButton"
+		android:id="@+id/PlayPauseButton"
 		android:layout_width="wrap_content"
 		android:layout_height="32dp"
 		android:src="@drawable/play"
