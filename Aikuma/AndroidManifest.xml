@@ -14,7 +14,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-		<activity android:name="ListenActivity"
+		<activity android:name="org.lp20.aikuma.ui.ListenActivity"
 				android:label="@string/app_name">
 		</activity>
     </application>

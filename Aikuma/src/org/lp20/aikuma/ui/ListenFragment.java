@@ -19,7 +19,7 @@ public class ListenFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		Recording recording = ((ListenActivity) getActivity()).getRecording();
-		Log.i("listening", "recording name: " + recording.getName());
+		super.onActivityCreated(savedInstanceState);
 	}
 
 	@Override
