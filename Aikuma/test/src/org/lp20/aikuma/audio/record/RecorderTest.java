@@ -75,6 +75,7 @@ public class RecorderTest extends AndroidTestCase {
 		Log.i("ManualTesting", "Playing for five seconds.");
 		markedPlayer.play();
 		TimeUnit.SECONDS.sleep(15);
+		markedPlayer.release();
 	}
 
 	private Recording testRecording;
