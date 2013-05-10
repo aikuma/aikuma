@@ -13,6 +13,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
+import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.R;
 
 public class ListenFragment extends Fragment implements OnClickListener {
@@ -25,7 +26,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		try {
-			player = new Player(
+			player = new SimplePlayer(
 					((ListenActivity) getActivity()).getRecording());
 			Player.OnCompletionListener listener =
 					new Player.OnCompletionListener() {
