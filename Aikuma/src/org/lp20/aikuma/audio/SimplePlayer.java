@@ -38,7 +38,7 @@ public class SimplePlayer extends Player {
 	}
 
 	/** Get current point in the recording in milliseconds. */
-	public int getCurrentMsec() {
+	public int getCurrentPositionMsec() {
 		return mediaPlayer.getCurrentPosition();
 	}
 
@@ -50,6 +50,11 @@ public class SimplePlayer extends Player {
 	/** Seek to a given point in the recording in milliseconds. */
 	public void seekToMsec(int msec) {
 		mediaPlayer.seekTo(msec);
+	}
+
+	/** Releases the resources associated with the SimplePlayer */
+	public void release() {
+		mediaPlayer.release();
 	}
 
 	/** Set the callback to be run when the recording completes playing. */

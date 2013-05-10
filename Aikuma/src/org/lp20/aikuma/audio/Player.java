@@ -28,6 +28,6 @@ public abstract class Player {
 	public abstract void play();
 
 	/** Get current point in the recording in milliseconds. */
-	public abstract int getCurrentMsec();
+	public abstract int getCurrentPositionMsec();
 
 }
