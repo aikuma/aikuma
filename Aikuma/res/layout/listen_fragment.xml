@@ -17,5 +17,6 @@
 		android:id="@+id/SeekBar"
 		android:layout_width="match_parent"
 		android:layout_height="32dp"
+		android:maxHeight="3dp"
 	/>
 </LinearLayout>
