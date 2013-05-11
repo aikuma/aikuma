@@ -12,7 +12,7 @@
 		android:onClick="play"
 		android:background="@null"
 	/>
-	<SeekBar
+	<view class="org.lp20.aikuma.ui.CustomSeekBar"
 		style="@android:style/Widget.ProgressBar.Horizontal"
 		android:id="@+id/SeekBar"
 		android:layout_width="match_parent"
