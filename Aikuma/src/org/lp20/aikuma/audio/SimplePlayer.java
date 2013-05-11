@@ -52,6 +52,26 @@ public class SimplePlayer extends Player {
 		mediaPlayer.seekTo(msec);
 	}
 
+	public int getSampleRate() {
+		//Deadly In future the approach should be: Check
+		//Recording.getSampleRate(). If that is null (perhaps the file was
+		//imported and not recorded using Aikuma), then perhaps back off to
+		//44100Hz
+		return 16000;
+	}
+
+	public int sampleToMsec(long sample) {
+		long msec = sample / (getSampleRate() / 1000);
+		if (msec > Integer.MAX_VALUE) {
+			return Integer.MAX_VALUE;
+		}
+		return (int) sample / (getSampleRate() / 1000);
+	}
+
+	public void seekToSample(long sample) {
+		seekToMsec(sampleToMsec(sample));
+	}
+
 	/** Releases the resources associated with the SimplePlayer */
 	public void release() {
 		mediaPlayer.release();

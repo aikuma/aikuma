@@ -14,6 +14,7 @@ import java.io.IOException;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
+import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.R;
 
 public class ListenFragment extends Fragment implements OnClickListener {
@@ -26,8 +27,19 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		try {
-			player = new SimplePlayer(
-					((ListenActivity) getActivity()).getRecording());
+			Recording recording = 
+					((ListenActivity) getActivity()).getRecording();
+			if (recording.isOriginal()) {
+				player = new SimplePlayer(recording);
+			} else {
+				try {
+					player = new InterleavedPlayer(recording);
+				} catch (Exception e) {
+					//URGENT. quit the pokemon exceptions and write a new class
+					//that should get thrown by getOriginalUUID.
+					getActivity().finish();
+				}
+			}
 			Player.OnCompletionListener listener =
 					new Player.OnCompletionListener() {
 						public void onCompletion(Player _player) {

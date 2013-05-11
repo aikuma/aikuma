@@ -3,6 +3,7 @@ package org.lp20.aikuma.audio;
 import android.util.Log;
 import java.io.IOException;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Segments.Segment;
 
 /**
  * Extends android.media.MediaPlayer to allow for the use of notification
@@ -37,7 +38,22 @@ public class MarkedPlayer extends SimplePlayer {
 	 * @param	notificationMarkerPosition	marker in milliseconds
 	 */
 	public void setNotificationMarkerPositionMsec(int notificationMarkerPosition) {
+		if (notificationMarkerPosition == 0) {
+			for (StackTraceElement e : Thread.currentThread().getStackTrace()) {
+				Log.i("InterleavedPlayer", " " + e);
+			}
+		}
+		Log.i("InterleavedPlayer", "ok: " +
+				notificationMarkerPosition);
 		this.notificationMarkerPosition = notificationMarkerPosition;
+		Log.i("InterleavedPlayer", "ok: " +
+				this.notificationMarkerPosition);
+	}
+
+	/** Sets the notification marker to be at the end of the supplied segment */
+	public void setNotificationMarkerPosition(Segment segment) {
+		setNotificationMarkerPositionMsec(
+				sampleToMsec(segment.getEndSample()));
 	}
 
 	public void unsetNotificationMarkerPosition() {
@@ -47,6 +63,10 @@ public class MarkedPlayer extends SimplePlayer {
 	public void release() {
 		super.release();
 		stopNotificationMarkerLoop();
+	}
+
+	public void seekTo(Segment segment) {
+		super.seekToSample(segment.getStartSample());
 	}
 
 	/**
@@ -94,9 +114,16 @@ public class MarkedPlayer extends SimplePlayer {
 				if (notificationMarkerPosition >= 0) {
 					if (getCurrentPositionMsec() >=
 							getNotificationMarkerPositionMsec()) {
+							Log.i("InterleavedPlayer", "currentPosition: " +
+									getCurrentPositionMsec());
+							Log.i("InterleavedPlayer", "notificationMarkerPos:"
+									+ getNotificationMarkerPositionMsec());
 						onMarkerReachedListener.onMarkerReached(
 								MarkedPlayer.this);
 						unsetNotificationMarkerPosition();
+						Log.i("InterleavedPlayer", "just unset" +
+								"notificationmarkerpos to: " +
+								getNotificationMarkerPositionMsec());
 					}
 				}
 			}

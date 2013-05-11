@@ -1,8 +1,12 @@
 package org.lp20.aikuma.audio;
 
 import android.media.MediaPlayer;
+import android.util.Log;
 import java.io.IOException;
+import java.util.Iterator;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Segments;
+import org.lp20.aikuma.model.Segments.Segment;
 
 /**
  * @author	Oliver Adams	<oliver.adams@gmail.com>
@@ -16,24 +20,57 @@ public class InterleavedPlayer extends Player {
 	 *
 	 * @param	recording	The metadata of the recording to play.
 	 */
-	public InterleavedPlayer(Recording respeaking) throws IOException {
+	public InterleavedPlayer(Recording recording) throws Exception {
 		if (recording.isOriginal()) {
 			throw new IllegalArgumentException("The supplied Recording is " +
 					"not a respeaking. Use SimplePlayer instead.");
 		}
 		original = new MarkedPlayer(
-				new Recording.read(respeaking.getOriginalUUID()),
+				Recording.read(recording.getOriginalUUID()),
 				new OriginalMarkerReachedListener());
-		respeaking = new MarkedPlayer(respeaking,
+		respeaking = new MarkedPlayer(recording,
 				new RespeakingMarkerReachedListener());
-		segments = new Segments(respeaking.getUUID());
+		segments = new Segments(recording.getUUID());
 	}
 
 	public void play() {
 		playOriginal();
 	}
 
+	/** Indicates whether the recording is currently being played. */
+	public boolean isPlaying() {
+		return original.isPlaying() || respeaking.isPlaying();
+	}
+
+	/** Pauses the playback. */
+	public void pause() {
+		if (original.isPlaying()) {
+			original.pause();
+		} else if (respeaking.isPlaying()) {
+			respeaking.pause();
+		}
+	}
+
+	/** Get current point in the recording in milliseconds. */
+	public int getCurrentPositionMsec() {
+		return original.getCurrentPositionMsec() +
+				respeaking.getCurrentPositionMsec();
+	}
+
+	/** Get the duration of the recording in milliseconds. */
+	public int getDurationMsec() {
+		return original.getDurationMsec() + respeaking.getDurationMsec();
+	}
+
+	/** Releases resources associated with the InterleavedPlayer. */
+	public void release() {
+		original.release();
+		respeaking.release();
+	}
+
 	private void playOriginal() {
+		Log.i("InterleavedPlayer", "playOriginal: " +
+				getCurrentOriginalSegment());
 		playSegment(getCurrentOriginalSegment(), original);
 	}
 
@@ -45,6 +82,8 @@ public class InterleavedPlayer extends Player {
 	}
 
 	private void playRespeaking() {
+		Log.i("InterleavedPlayer", "playRespeaking: " +
+				getCurrentRespeakingSegment());
 		playSegment(getCurrentRespeakingSegment(), respeaking);
 	}
 
@@ -56,7 +95,7 @@ public class InterleavedPlayer extends Player {
 		if (segment != null) {
 			player.seekTo(segment);
 			player.setNotificationMarkerPosition(segment);
-			player.start();
+			player.play();
 		}
 	}
 
@@ -81,15 +120,17 @@ public class InterleavedPlayer extends Player {
 		return originalSegmentIterator;
 	}
 
-	private SimplePlayer original;
-	private SimplePlayer respeaking;
+	private MarkedPlayer original;
+	private MarkedPlayer respeaking;
 	private Segments segments;
 	private Segment currentOriginalSegment;
 	private Iterator<Segment> originalSegmentIterator;
+	private Player.OnCompletionListener onCompletionListener;
 
 	private class OriginalMarkerReachedListener extends
 			MarkedPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedPlayer p) {
+			Log.i("InterleavedPlayer", "original marker reached");
 			original.pause();
 			playRespeaking();
 		}
@@ -98,6 +139,7 @@ public class InterleavedPlayer extends Player {
 	private class RespeakingMarkerReachedListener extends
 			MarkedPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedPlayer p) {
+			Log.i("InterleavedPlayer", "respeaking marker reached");
 			respeaking.pause();
 			advanceOriginalSegment();
 			playOriginal();
@@ -105,30 +147,6 @@ public class InterleavedPlayer extends Player {
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-
-	/** Pauses the playback. */
-	public void pause() {
-		if (original.isPlaying()) {
-			original.pause();
-		} else if (respeaking.isPlaying()) {
-			respeaking.pause();
-		}
-	}
-
-	/** Indicates whether the recording is currently being played. */
-	public boolean isPlaying() {
-		return original.isPlaying() || respeaking.isPlaying();
-	}
-
-	/** Get current point in the recording in milliseconds. */
-	public int getCurrentPositionMsec() {
-		return original.getCurrentPosition() + respeaking.getCurrentPosition();
-	}
-
-	/** Get the duration of the recording in milliseconds. */
-	public int getDurationMsec() {
-		return original.getDurationMsec() + respeaking.getDurationMsec();
-	}
 
 	/** Seek to a given point in the recording in milliseconds. */
 	public void seekToMsec(int msec) {
