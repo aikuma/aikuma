@@ -21,6 +21,7 @@ public class MarkedPlayer extends SimplePlayer {
 		notificationMarkerLoop = new Thread(new NotificationMarkerLoop());
 		notificationMarkerLoop.start();
 		unsetNotificationMarkerPosition();
+		count++;
 	}
 
 	/**
@@ -37,17 +38,9 @@ public class MarkedPlayer extends SimplePlayer {
 	 *
 	 * @param	notificationMarkerPosition	marker in milliseconds
 	 */
-	public void setNotificationMarkerPositionMsec(int notificationMarkerPosition) {
-		if (notificationMarkerPosition == 0) {
-			for (StackTraceElement e : Thread.currentThread().getStackTrace()) {
-				Log.i("InterleavedPlayer", " " + e);
-			}
-		}
-		Log.i("InterleavedPlayer", "ok: " +
-				notificationMarkerPosition);
+	public void setNotificationMarkerPositionMsec(
+			int notificationMarkerPosition) {
 		this.notificationMarkerPosition = notificationMarkerPosition;
-		Log.i("InterleavedPlayer", "ok: " +
-				this.notificationMarkerPosition);
 	}
 
 	/** Sets the notification marker to be at the end of the supplied segment */
@@ -77,6 +70,17 @@ public class MarkedPlayer extends SimplePlayer {
 		public abstract void onMarkerReached(MarkedPlayer p);
 	}
 
+	public void setOnCompletionListener(final OnCompletionListener listener) {
+		super.setOnCompletionListener(
+				new Player.OnCompletionListener() {
+					public void onCompletion(Player _p) {
+						MarkedPlayer.this.onMarkerReachedListener.
+								onMarkerReached(MarkedPlayer.this);
+						listener.onCompletion(MarkedPlayer.this);
+					}
+				});
+	}
+
 
 	/**
 	 * Sets the listener the MarkedPlayer notifies when a previously set
@@ -98,6 +102,8 @@ public class MarkedPlayer extends SimplePlayer {
 		}
 	}
 
+	private static int count = 0;
+
 	/**
 	 * Implements a run that polls the current position to check
 	 * if a previously set marker has been reache
@@ -114,16 +120,9 @@ public class MarkedPlayer extends SimplePlayer {
 				if (notificationMarkerPosition >= 0) {
 					if (getCurrentPositionMsec() >=
 							getNotificationMarkerPositionMsec()) {
-							Log.i("InterleavedPlayer", "currentPosition: " +
-									getCurrentPositionMsec());
-							Log.i("InterleavedPlayer", "notificationMarkerPos:"
-									+ getNotificationMarkerPositionMsec());
 						onMarkerReachedListener.onMarkerReached(
 								MarkedPlayer.this);
 						unsetNotificationMarkerPosition();
-						Log.i("InterleavedPlayer", "just unset" +
-								"notificationmarkerpos to: " +
-								getNotificationMarkerPositionMsec());
 					}
 				}
 			}

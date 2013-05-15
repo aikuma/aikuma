@@ -31,10 +31,37 @@ public class InterleavedPlayer extends Player {
 		respeaking = new MarkedPlayer(recording,
 				new RespeakingMarkerReachedListener());
 		segments = new Segments(recording.getUUID());
+		initializeCompletionListeners();
+	}
+
+	private void initializeCompletionListeners() {
+		Player.OnCompletionListener bothCompletedListener = new 
+				Player.OnCompletionListener() {
+			boolean completedOnce = false;
+			@Override
+			public void onCompletion(Player p) {
+				if (completedOnce) {
+					if (onCompletionListener != null) {
+						onCompletionListener.onCompletion(p);
+					}
+					reset();
+					completedOnce = false;
+				} else {
+					completedOnce = true;
+				}
+			}
+		};
+		original.setOnCompletionListener(bothCompletedListener);
+		respeaking.setOnCompletionListener(bothCompletedListener);
 	}
 
 	public void play() {
 		playOriginal();
+	}
+
+	public void reset() {
+		originalSegmentIterator = null;
+		currentOriginalSegment = null;
 	}
 
 	/** Indicates whether the recording is currently being played. */
@@ -69,8 +96,6 @@ public class InterleavedPlayer extends Player {
 	}
 
 	private void playOriginal() {
-		Log.i("InterleavedPlayer", "playOriginal: " +
-				getCurrentOriginalSegment());
 		playSegment(getCurrentOriginalSegment(), original);
 	}
 
@@ -82,8 +107,6 @@ public class InterleavedPlayer extends Player {
 	}
 
 	private void playRespeaking() {
-		Log.i("InterleavedPlayer", "playRespeaking: " +
-				getCurrentRespeakingSegment());
 		playSegment(getCurrentRespeakingSegment(), respeaking);
 	}
 
@@ -130,7 +153,6 @@ public class InterleavedPlayer extends Player {
 	private class OriginalMarkerReachedListener extends
 			MarkedPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedPlayer p) {
-			Log.i("InterleavedPlayer", "original marker reached");
 			original.pause();
 			playRespeaking();
 		}
@@ -139,7 +161,6 @@ public class InterleavedPlayer extends Player {
 	private class RespeakingMarkerReachedListener extends
 			MarkedPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedPlayer p) {
-			Log.i("InterleavedPlayer", "respeaking marker reached");
 			respeaking.pause();
 			advanceOriginalSegment();
 			playOriginal();
