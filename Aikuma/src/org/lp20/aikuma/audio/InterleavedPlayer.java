@@ -62,6 +62,8 @@ public class InterleavedPlayer extends Player {
 	public void reset() {
 		originalSegmentIterator = null;
 		currentOriginalSegment = null;
+		original.seekToSample(0l);
+		respeaking.seekToSample(0l);
 	}
 
 	/** Indicates whether the recording is currently being played. */
