@@ -124,8 +124,8 @@ public class RecordingTest extends AndroidTestCase {
 		List<UUID> speakersUUIDs = new ArrayList<UUID>();
 		String androidID = Aikuma.getAndroidID();
 		Recording recording =
-				new Recording(uuid, null, date, languages, speakersUUIDs, androidID,
-					null);
+				new Recording(uuid, null, date, languages, 
+						speakersUUIDs, androidID, null, 16000);
 		recording.write();
 		assertEquals(recording, Recording.read(uuid));
 		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
@@ -146,8 +146,8 @@ public class RecordingTest extends AndroidTestCase {
 		languages.add(lang2);
 		String androidID = Aikuma.getAndroidID();
 		Recording recording =
-				new Recording(uuid, null, date, languages, speakersUUIDs, androidID,
-						null);
+				new Recording(uuid, null, date, languages,
+						speakersUUIDs, androidID, null, 16000);
 		recording.write();
 		assertEquals(recording, Recording.read(uuid));
 		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
@@ -169,7 +169,7 @@ public class RecordingTest extends AndroidTestCase {
 		String androidID = Aikuma.getAndroidID();
 		Recording recording = new Recording(
 				uuid, "A name", date, languages, speakersUUIDs, androidID,
-				UUID.randomUUID());
+				UUID.randomUUID(), 16000);
 		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
 				".json").delete();
 	}
@@ -185,8 +185,8 @@ public class RecordingTest extends AndroidTestCase {
 		List<UUID> speakersUUIDs = new ArrayList<UUID>();
 		String androidID = Aikuma.getAndroidID();
 		Recording recording1 =
-				new Recording(uuid, null, date, languages, speakersUUIDs, androidID,
-						null);
+				new Recording(uuid, null, date, languages, 
+						speakersUUIDs, androidID, null, 16000);
 		recording1.write();
 
 		// Create the second Recording.
@@ -200,7 +200,7 @@ public class RecordingTest extends AndroidTestCase {
 		androidID = Aikuma.getAndroidID();
 		Recording recording2 = new Recording(
 				uuid, "A name", date, languages, speakersUUIDs, androidID,
-						UUID.randomUUID());
+						UUID.randomUUID(), 16000);
 		recording2.write();
 
 		List<Recording> recordings = Recording.readAll();

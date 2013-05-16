@@ -74,7 +74,7 @@ public class Recording {
 
 	/**
 	 * Constructs a new Recording using a specified UUID, name, date,
-	 * languages and UUID.
+	 * languages, originalUUID and sample rate.
 	 *
 	 * @param	uuid	the recording's UUID.
 	 * @param	name	The recording's name.
@@ -82,7 +82,7 @@ public class Recording {
 	 */
 	public Recording(UUID uuid, String name, Date date,
 			List<Language> languages, List<UUID> speakersUUIDs,
-			String androidID, UUID originalUUID) {
+			String androidID, UUID originalUUID, int sampleRate) {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
@@ -90,6 +90,7 @@ public class Recording {
 		setSpeakersUUIDs(speakersUUIDs);
 		setAndroidID(androidID);
 		setOriginalUUID(originalUUID);
+		setSampleRate(sampleRate);
 	}
 
 	/**
@@ -168,6 +169,13 @@ public class Recording {
 	}
 
 	/**
+	 * sampleRate accessor
+	 */
+	public int getSampleRate() {
+		return sampleRate;
+	}
+
+	/**
 	 * Returns true if the Recording is an original; false if respeaking
 	 *
 	 * @return	True if the recording is an original.
@@ -197,6 +205,7 @@ public class Recording {
 		}
 		encodedRecording.put("speakersUUIDs", speakersUUIDsArray);
 		encodedRecording.put("androidID", this.androidID);
+		encodedRecording.put("sampleRate", getSampleRate());
 		if (this.originalUUID == null) {
 			encodedRecording.put("originalUUID", null);
 		} else {
@@ -266,8 +275,17 @@ public class Recording {
 		} else {
 			originalUUID = UUID.fromString((String) jsonObj.get("originalUUID"));
 		}
+
+		int sampleRate;
+		if (jsonObj.get("sampleRate") == null) {
+			sampleRate = 0;
+		} else {
+			long ok = (Long) jsonObj.get("sampleRate");
+			sampleRate = (int) ok;
+		}
 		Recording recording = new Recording(
-				uuid, name, date, languages, speakersUUIDs, androidID, originalUUID);
+				uuid, name, date, languages, speakersUUIDs, androidID,
+				originalUUID, sampleRate);
 		return recording;
 	}
 
@@ -429,6 +447,13 @@ public class Recording {
 	}
 
 	/**
+	 * sampleRate mutator
+	 */
+	private void setSampleRate(int sampleRate) {
+		this.sampleRate = sampleRate;
+	}
+
+	/**
 	 * Get the applications recordings directory
 	 *
 	 * @return	A File representing the path of the recordings directory
@@ -474,5 +499,10 @@ public class Recording {
 	 * The UUID of the original of the recording if it is a respeaking.
 	 */
 	private UUID originalUUID;
+
+	/**
+	 * The sample rate of the recording in Hz
+	 */
+	private int sampleRate;
 
 }
