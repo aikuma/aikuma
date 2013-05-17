@@ -33,13 +33,12 @@ def generate_name(filename, user_map):
     json_str = open(filename).read()
     obj = json.loads(json_str)
     name = obj["languages"][0]["code"] + "-"
-    name = re.sub(" ", "_", name)
     name += user_map[obj["creator_uuid"]] + "-"
+    name = re.sub(" ", "_", name)
     name += obj["date_string"] + "-"
     name = re.sub(" ", "T", name)
     name += obj["recording_name"]
     name = re.sub(" ", "_", name)
-    name += ".wav"
     return name
 
 def sample_to_sec(sample):
@@ -67,9 +66,10 @@ def generate_textgrid(filename,tgfilename):
         print("", file=tgfile)
         print("xmin = 0", file=tgfile)
         print("xmax = {0}".format(intervals[-1][0][1]), file=tgfile)
+        print("tiers? <exists>", file=tgfile)
         print("size = 1", file=tgfile)
-        print("size = []:", file=tgfile)
-        print("\tsize = [1]:", file=tgfile)
+        print("item = []:", file=tgfile)
+        print("\titem = [1]:", file=tgfile)
         print("\t\tclass = \"IntervalTier\"", file=tgfile)
         print("\t\tname = \"target\"", file=tgfile)
         print("\t\txmin = 0", file=tgfile)
@@ -79,7 +79,7 @@ def generate_textgrid(filename,tgfilename):
             print("\t\tintervals [" + str(i+1) + "]:", file=tgfile)
             print("\t\t\txmin = {0}".format(intervals[i][0][0]), file=tgfile)
             print("\t\t\txmax = {0}".format(intervals[i][0][1]), file=tgfile)
-            print("\t\t\ttext = {0}, {1}".format(intervals[i][1][0],
+            print("\t\t\ttext = \"{0}, {1}\"".format(intervals[i][1][0],
                     intervals[i][1][1]), file=tgfile)
 
 
@@ -103,8 +103,9 @@ for filename in os.listdir(recording_path):
     if filename.endswith(".json"):
         source = re.sub("\.json", ".wav", filename)
         target = os.path.join(
-                args.export_dir, generate_name(filename, user_map))
+                args.export_dir, generate_name(filename, user_map)+".wav")
         shutil.copyfile(source, target)
-        strippedfilename = os.path.splitext(os.path.basename(filename))[0]
-        tgfilename = os.path.join(args.export_dir, strippedfilename+".TextGrid")
+        #strippedfilename = os.path.splitext(os.path.basename(filename))[0]
+        tgfilename = os.path.join(args.export_dir,
+                generate_name(filename, user_map)+".TextGrid")
         generate_textgrid(filename, tgfilename)
