@@ -4,11 +4,14 @@
 with human-readable file names.
 """
 
+from __future__ import print_function
 import argparse
 import json
 import os
 import re
 import shutil
+
+SAMPLE_RATE = 16000
 
 def gen_user_map(users_path):
     """Given the path to a directory of users, creates a dictionary that maps
@@ -39,6 +42,47 @@ def generate_name(filename, user_map):
     name += ".wav"
     return name
 
+def sample_to_sec(sample):
+    sample = float(sample)
+    return sample / SAMPLE_RATE
+
+def generate_textgrid(filename,tgfilename):
+    print(filename, tgfilename)
+    obj = json.loads(open(filename).read())
+    if "original_uuid" in obj:
+        tgfile = open(tgfilename, "w")
+        mapfilename = os.path.splitext(filename)[0] + ".map"
+        mappingdata = open(mapfilename).readlines()
+        intervals = []
+        for line in mappingdata:
+            interval = line.split(":")
+            s1 = interval[0].split(",")[0]
+            s2 = interval[0].split(",")[1]
+            t1 = interval[1].split(",")[0]
+            t2 = interval[1].split(",")[1]
+            intervals.append(((sample_to_sec(s1), sample_to_sec(s2)),
+                    (sample_to_sec(t1),sample_to_sec(t2))))
+        print("File type = \"ooTextFile\"", file=tgfile)
+        print("Object class = \"TextGrid\"", file=tgfile)
+        print("", file=tgfile)
+        print("xmin = 0", file=tgfile)
+        print("xmax = {0}".format(intervals[-1][0][1]), file=tgfile)
+        print("size = 1", file=tgfile)
+        print("size = []:", file=tgfile)
+        print("\tsize = [1]:", file=tgfile)
+        print("\t\tclass = \"IntervalTier\"", file=tgfile)
+        print("\t\tname = \"target\"", file=tgfile)
+        print("\t\txmin = 0", file=tgfile)
+        print("\t\txmax = {0}".format(intervals[-1][0][1]), file=tgfile)
+        print("\t\tintervals: size = " + str(len(intervals)), file=tgfile)
+        for i in range(0,len(intervals)):
+            print("\t\tintervals [" + str(i+1) + "]:", file=tgfile)
+            print("\t\t\txmin = {0}".format(intervals[i][0][0]), file=tgfile)
+            print("\t\t\txmax = {0}".format(intervals[i][0][1]), file=tgfile)
+            print("\t\t\ttext = {0}, {1}".format(intervals[i][1][0],
+                    intervals[i][1][1]), file=tgfile)
+
+
 parser = argparse.ArgumentParser(description=
         "Export wav files from an Aikuma directory")
 parser.add_argument("aikuma_dir", metavar="SRC", type=str,
@@ -61,3 +105,6 @@ for filename in os.listdir(recording_path):
         target = os.path.join(
                 args.export_dir, generate_name(filename, user_map))
         shutil.copyfile(source, target)
+        strippedfilename = os.path.splitext(os.path.basename(filename))[0]
+        tgfilename = os.path.join(args.export_dir, strippedfilename+".TextGrid")
+        generate_textgrid(filename, tgfilename)
