@@ -37,7 +37,7 @@ public class InterleavedPlayer extends Player {
 	private void initializeCompletionListeners() {
 		Player.OnCompletionListener bothCompletedListener = new 
 				Player.OnCompletionListener() {
-			boolean completedOnce = false;
+			//boolean completedOnce = false;
 			@Override
 			public void onCompletion(Player p) {
 				if (completedOnce) {
@@ -75,7 +75,8 @@ public class InterleavedPlayer extends Player {
 	public void pause() {
 		if (original.isPlaying()) {
 			original.pause();
-		} else if (respeaking.isPlaying()) {
+		}
+		if (respeaking.isPlaying()) {
 			respeaking.pause();
 		}
 	}
@@ -164,10 +165,14 @@ public class InterleavedPlayer extends Player {
 			MarkedPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedPlayer p) {
 			respeaking.pause();
-			advanceOriginalSegment();
-			playOriginal();
+			if (!completedOnce) {
+				advanceOriginalSegment();
+				playOriginal();
+			}
 		}
 	}
+
+	private static boolean completedOnce = false;
 
 	//////////////////////////////////////////////////////////////////////////
 
