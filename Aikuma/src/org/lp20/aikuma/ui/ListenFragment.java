@@ -95,6 +95,17 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	}
 
 	@Override
+	public void onStop() {
+		super.onStop();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		player.release();
+	}
+
+	@Override
 	public void onClick(View v) {
 		if (v == playPauseButton) {
 			if (player.isPlaying()) {
@@ -104,6 +115,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 			}
 		}
 	}
+
 
 	private void pause() {
 		player.pause();

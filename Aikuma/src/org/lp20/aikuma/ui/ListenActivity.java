@@ -29,6 +29,26 @@ public class ListenActivity extends Activity {
 		}
 	}
 
+	@Override
+	public void onStop() {
+		super.onStop();
+	}
+
+	@Override
+	public void onResume() {
+		super.onStop();
+	}
+
+	@Override
+	public void onRestart() {
+		super.onStop();
+	}
+
+	@Override
+	public void onPause() {
+		super.onStop();
+	}
+
 	public Recording getRecording() {
 		return this.recording;
 	}
