@@ -65,7 +65,7 @@ public class SimplePlayer extends Player {
 		if (msec > Integer.MAX_VALUE) {
 			return Integer.MAX_VALUE;
 		}
-		return (int) sample / (getSampleRate() / 1000);
+		return (int) msec;
 	}
 
 	public void seekToSample(long sample) {

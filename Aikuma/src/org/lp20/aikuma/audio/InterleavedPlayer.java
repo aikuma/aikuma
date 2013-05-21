@@ -178,7 +178,49 @@ public class InterleavedPlayer extends Player {
 
 	/** Seek to a given point in the recording in milliseconds. */
 	public void seekToMsec(int msec) {
-		//Do nothing for now.
+		Log.i("InterleavedSeekTo", "Target: " + msec);
+		Iterator<Segment> originalSegmentIterator =
+				segments.getOriginalSegmentIterator();
+		int total = 0;
+		int prev_total = 0;
+		Segment segment;
+		while (originalSegmentIterator.hasNext()) {
+			segment = originalSegmentIterator.next();
+			prev_total = total;
+			total += original.sampleToMsec(segment.getDuration());
+			if (total > msec) {
+				Log.i("InterleavedSeekTo", "Ending at original" +
+						"segment.getEndSample: " +
+						segment.getEndSample() + ", total: " + total +
+						", segment.getStartSample: " +
+						segment.getStartSample() + ", prev_total: " +
+						prev_total + ", seeking to: " +
+						(original.sampleToMsec(segment.getStartSample()) + 
+						(msec - prev_total)));
+				original.seekToMsec(
+						original.sampleToMsec(segment.getStartSample()) + 
+						(msec - prev_total));
+				break;
+			}
+			segment = segments.getRespeakingSegment(segment);
+			prev_total = total;
+			total += respeaking.sampleToMsec(segment.getDuration());
+			if (total > msec) {
+				Log.i("InterleavedSeekTo", "Ending at respeaking" +
+						"segment.getEndSample: " +
+						segment.getEndSample() + ", total: " + total +
+						", segment.getStartSample: " +
+						segment.getStartSample() + ", prev_total: " +
+						prev_total + ", seeking to: " +
+						(respeaking.sampleToMsec(segment.getStartSample()) + 
+						(msec - prev_total)));
+				respeaking.seekToMsec(
+						respeaking.sampleToMsec(segment.getStartSample()) + 
+						(msec - prev_total));
+				break;
+			}
+		}
+
 	}
 
 	/** Set the callback to be run when the recording completes playing. */

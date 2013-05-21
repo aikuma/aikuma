@@ -91,6 +91,10 @@ public class Segments {
 			return this.pair.second;
 		}
 
+		public Long getDuration() {
+			return this.pair.second - this.pair.first;
+		}
+
 		public String toString() {
 			return getStartSample() + "," + getEndSample();
 		}
