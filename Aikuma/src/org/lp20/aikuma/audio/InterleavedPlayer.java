@@ -183,7 +183,9 @@ public class InterleavedPlayer extends Player {
 				segments.getOriginalSegmentIterator();
 		int total = 0;
 		int prev_total = 0;
-		Segment segment;
+		//Initialized so that it has some value if we fail to get any
+		//iterations of the loop
+		Segment segment = new Segment(0l, 0l);
 		while (originalSegmentIterator.hasNext()) {
 			segment = originalSegmentIterator.next();
 			prev_total = total;
@@ -200,7 +202,7 @@ public class InterleavedPlayer extends Player {
 				original.seekToMsec(
 						original.sampleToMsec(segment.getStartSample()) + 
 						(msec - prev_total));
-				break;
+				return;
 			}
 			segment = segments.getRespeakingSegment(segment);
 			prev_total = total;
@@ -217,10 +219,14 @@ public class InterleavedPlayer extends Player {
 				respeaking.seekToMsec(
 						respeaking.sampleToMsec(segment.getStartSample()) + 
 						(msec - prev_total));
-				break;
+				return;
 			}
 		}
-
+		original.seekToMsec(
+				original.sampleToMsec(segment.getEndSample()) + msec - total);
+		Log.i("InterleavedSeekTo", "Ending at original, seeking to: " +
+						(respeaking.sampleToMsec(segment.getEndSample()) + 
+						(msec - total)));
 	}
 
 	/** Set the callback to be run when the recording completes playing. */
