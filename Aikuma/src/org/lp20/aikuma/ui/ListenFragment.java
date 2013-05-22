@@ -54,7 +54,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		View v = inflater.inflate(R.layout.listen_fragment, container, false);
 		playPauseButton = (ImageButton) v.findViewById(R.id.PlayPauseButton);
 		playPauseButton.setOnClickListener(this);
-		seekBar = (SeekBar) v.findViewById(R.id.SeekBar);
+		seekBar = (SeekBar) v.findViewById(R.id.InterleavedSeekBar);
 		seekBar.setOnSeekBarChangeListener(
 				new SeekBar.OnSeekBarChangeListener() {
 					public void onProgressChanged(SeekBar seekBar,
