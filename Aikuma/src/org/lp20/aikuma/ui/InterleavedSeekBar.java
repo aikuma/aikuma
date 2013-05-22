@@ -15,23 +15,28 @@ class InterleavedSeekBar extends SeekBar {
 
 	public InterleavedSeekBar(Context context) {
 		super(context);
+		Log.i("InterleavedSeekBar", "interleaved seek bar constructor 1");
 	}
 
 	public InterleavedSeekBar(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		Log.e("InterleavedSeekBar", "stack yo", new Exception());
+		Log.i("InterleavedSeekBar", "interleaved seek bar constructor 2");
 	}
 
 	public InterleavedSeekBar(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		Log.i("InterleavedSeekBar", "interleaved seek bar constructor 3");
 	}
 
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
+		Log.e("InterleavedSeekBar", "draw yo", new Exception());
 
 		Paint paint = new Paint();
 		paint.setColor(Color.rgb(142, 196, 0));
 
-		lines = new ArrayList<Float>();
+		//lines = new ArrayList<Float>();
 		addLine(0.0f);
 		addLine(50.0f);
 		addLine(100.0f);
@@ -60,5 +65,9 @@ class InterleavedSeekBar extends SeekBar {
 		lines.add(x);
 	}
 
-	private List<Float> lines;
+	public void setLines(List<Float> lines) {
+		this.lines = lines;
+	}
+
+	private List<Float> lines = new ArrayList<Float>();
 }
