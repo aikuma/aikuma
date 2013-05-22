@@ -15,7 +15,6 @@ class InterleavedSeekBar extends SeekBar {
 
 	public InterleavedSeekBar(Context context) {
 		super(context);
-		lines = new ArrayList<Float>();
 	}
 
 	public InterleavedSeekBar(Context context, AttributeSet attrs) {
@@ -27,19 +26,29 @@ class InterleavedSeekBar extends SeekBar {
 	}
 
 	protected void onDraw(Canvas canvas) {
-
 		super.onDraw(canvas);
 
 		Paint paint = new Paint();
 		paint.setColor(Color.rgb(142, 196, 0));
 
-		canvas.drawLine(0, 0, 0, 32, paintRect);
-		canvas.drawLine(16, 0, 16, 32, paintRect);
+		lines = new ArrayList<Float>();
+		addLine(0.0f);
+		addLine(50.0f);
+		addLine(100.0f);
+		drawLines(canvas, paint);
+	}
 
+	private void drawLines(Canvas canvas, Paint paint) {
+		for(Float line : lines) {
+			drawLine(line, canvas, paint);
+		}
+	}
+
+	private void drawLine(Float line, Canvas canvas, Paint paint) {
 		Rect bounds = canvas.getClipBounds();
-		canvas.drawLine(bounds.right-16, 0, bounds.right-16, 32, paintRect);
-
-		Log.i("InterleavedSeekBar", "clip bounds: " + canvas.getClipBounds());
+		int barWidth = (bounds.right-16) - (bounds.left+16);
+		float pixel = line * ((float) barWidth / 100.0f);
+		canvas.drawLine(pixel+16, 0f, pixel+16, 32f, paint);
 	}
 
 	public void addLine(Float x) {
