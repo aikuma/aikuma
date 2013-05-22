@@ -12,10 +12,11 @@
 		android:onClick="play"
 		android:background="@null"
 	/>
-	<SeekBar
+	<view class="org.lp20.aikuma.ui.InterleavedSeekBar"
 		style="@android:style/Widget.ProgressBar.Horizontal"
-		android:id="@+id/SeekBar"
+		android:id="@+id/InterleavedSeekBar"
 		android:layout_width="match_parent"
 		android:layout_height="32dp"
+		android:maxHeight="3dp"
 	/>
 </LinearLayout>
