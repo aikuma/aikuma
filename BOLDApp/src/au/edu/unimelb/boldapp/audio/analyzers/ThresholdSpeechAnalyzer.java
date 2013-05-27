@@ -124,13 +124,11 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
   
   /** Does the given buffer trigger silence? */
 	protected boolean doesTriggerSilence(short[] buffer) {
-		silenceTriggerAmount);
 		if (recognizer.isSilence(buffer)) {
 			silenceTriggers++;
 		} else {
 			silenceTriggers = 0;
 		}
-			silenceTriggerAmount));
 		return silenceTriggers > silenceTriggerAmount;
 	}
   
