@@ -11,10 +11,13 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
 import java.io.IOException;
+import java.util.Iterator;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
+import org.lp20.aikuma.model.Segments;
+import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.R;
 
 public class ListenFragment extends Fragment implements OnClickListener {
@@ -27,13 +30,22 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		try {
-			Recording recording = 
-					((ListenActivity) getActivity()).getRecording();
+			recording = ((ListenActivity) getActivity()).getRecording();
 			if (recording.isOriginal()) {
 				player = new SimplePlayer(recording);
 			} else {
 				try {
 					player = new InterleavedPlayer(recording);
+					Segments segments = new Segments(recording.getUUID());
+					Iterator<Segment> originalSegmentIterator =
+							segments.getOriginalSegmentIterator();
+					while (originalSegmentIterator.hasNext()) {
+						Segment segment = originalSegmentIterator.next();
+						float fraction =
+								player.sampleToMsec(segment.getEndSample()) /
+								(float) player.getDurationMsec();
+						seekBar.addLine(fraction*100);
+					}
 				} catch (Exception e) {
 					//URGENT. quit the pokemon exceptions and write a new class
 					//that should get thrown by getOriginalUUID.
@@ -80,7 +92,6 @@ public class ListenFragment extends Fragment implements OnClickListener {
 					public void onStopTrackingTouch(SeekBar _seekBar) {};
 					public void onStartTrackingTouch(SeekBar _seekBar) {};
 				});
-		seekBar.addLine(25f);
 		seekBar.invalidate();
 		return v;
 	}
@@ -153,4 +164,5 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	private ImageButton playPauseButton;
 	private InterleavedSeekBar seekBar;
 	private Thread seekBarThread;
+	private Recording recording;
 }

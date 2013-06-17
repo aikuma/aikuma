@@ -33,4 +33,6 @@ public abstract class Player {
 	/** Releases resources associated with the player */
 	public abstract void release();
 
+	public abstract int sampleToMsec(long sample);
+
 }
