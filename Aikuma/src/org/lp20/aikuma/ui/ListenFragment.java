@@ -56,9 +56,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 					new Player.OnCompletionListener() {
 						public void onCompletion(Player _player) {
 							playPauseButton.setImageResource(R.drawable.play);
-							if (seekBarThread != null) {
-								seekBarThread.interrupt();
-							}
+							stopThread(seekBarThread);
 							seekBar.setProgress(seekBar.getMax());
 						}
 					};
@@ -129,12 +127,15 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		}
 	}
 
+	private void stopThread(Thread thread) {
+		if (thread != null) {
+			thread.interrupt();
+		}
+	}
 
 	private void pause() {
 		player.pause();
-		if (seekBarThread != null) {
-			seekBarThread.interrupt();
-		}
+		stopThread(seekBarThread);
 		playPauseButton.setImageResource(R.drawable.play);
 	}
 
