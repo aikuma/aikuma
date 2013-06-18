@@ -25,6 +25,7 @@ public class InterleavedPlayer extends Player {
 			throw new IllegalArgumentException("The supplied Recording is " +
 					"not a respeaking. Use SimplePlayer instead.");
 		}
+		setSampleRate(recording.getSampleRate());
 		original = new MarkedPlayer(
 				Recording.read(recording.getOriginalUUID()),
 				new OriginalMarkerReachedListener());
@@ -171,12 +172,19 @@ public class InterleavedPlayer extends Player {
 		}
 	}
 
-	public int getSampleRate() {
+	public long getSampleRate() {
 		//Deadly In future the approach should be: Check
 		//Recording.getSampleRate(). If that is null (perhaps the file was
 		//imported and not recorded using Aikuma), then perhaps back off to
 		//44100Hz
+		if (sampleRate == -1l) {
+			throw new RuntimeException("sampleRate is -1");
+		}
 		return 16000;
+	}
+
+	private void setSampleRate(long sampleRate) {
+		this.sampleRate = sampleRate;
 	}
 
 	public int sampleToMsec(long sample) {
@@ -188,6 +196,7 @@ public class InterleavedPlayer extends Player {
 	}
 
 	private static boolean completedOnce = false;
+	private long sampleRate;
 
 	//////////////////////////////////////////////////////////////////////////
 

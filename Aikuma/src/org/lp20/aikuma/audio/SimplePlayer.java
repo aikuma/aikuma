@@ -20,6 +20,7 @@ public class SimplePlayer extends Player {
 		mediaPlayer = new MediaPlayer();
 		mediaPlayer.setDataSource(recording.getFile().getCanonicalPath());
 		mediaPlayer.prepare();
+		setSampleRate(recording.getSampleRate());
 	}
 
 	/** Starts or resumes playback of the recording. */
@@ -72,12 +73,19 @@ public class SimplePlayer extends Player {
 				});
 	}
 
-	public int getSampleRate() {
+	public long getSampleRate() {
 		//Deadly In future the approach should be: Check
 		//Recording.getSampleRate(). If that is null (perhaps the file was
 		//imported and not recorded using Aikuma), then perhaps back off to
 		//44100Hz
-		return 16000;
+		if (sampleRate == -1l) {
+			throw new RuntimeException("sampleRate is -1");
+		}
+		return sampleRate;
+	}
+
+	private void setSampleRate(long sampleRate) {
+		this.sampleRate = sampleRate;
 	}
 
 	public int sampleToMsec(long sample) {
@@ -90,4 +98,5 @@ public class SimplePlayer extends Player {
 
 	/** The MediaPlayer used to play the recording. **/
 	private MediaPlayer mediaPlayer;
+	private long sampleRate;
 }

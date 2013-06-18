@@ -63,13 +63,14 @@ public class Recording {
 	 */
 	public Recording(UUID uuid, String name, Date date,
 			List<Language> languages, List<UUID> speakersUUIDs,
-			String androidID) {
+			String androidID, long sampleRate) {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
 		setLanguages(languages);
 		setSpeakersUUIDs(speakersUUIDs);
 		setAndroidID(androidID);
+		setSampleRate(sampleRate);
 	}
 
 	/**
@@ -82,7 +83,7 @@ public class Recording {
 	 */
 	public Recording(UUID uuid, String name, Date date,
 			List<Language> languages, List<UUID> speakersUUIDs,
-			String androidID, UUID originalUUID) {
+			String androidID, UUID originalUUID, long sampleRate) {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
@@ -90,6 +91,7 @@ public class Recording {
 		setSpeakersUUIDs(speakersUUIDs);
 		setAndroidID(androidID);
 		setOriginalUUID(originalUUID);
+		setSampleRate(sampleRate);
 	}
 
 	/**
@@ -168,6 +170,13 @@ public class Recording {
 	}
 
 	/**
+	 * sampleRate accessor
+	 */
+	public long getSampleRate() {
+		return sampleRate;
+	}
+
+	/**
 	 * Returns true if the Recording is an original; false if respeaking
 	 *
 	 * @return	True if the recording is an original.
@@ -197,6 +206,7 @@ public class Recording {
 		}
 		encodedRecording.put("speakersUUIDs", speakersUUIDsArray);
 		encodedRecording.put("androidID", this.androidID);
+		encodedRecording.put("sampleRate", this.sampleRate);
 		if (this.originalUUID == null) {
 			encodedRecording.put("originalUUID", null);
 		} else {
@@ -266,8 +276,16 @@ public class Recording {
 		} else {
 			originalUUID = UUID.fromString((String) jsonObj.get("originalUUID"));
 		}
+
+		long sampleRate;
+		if (jsonObj.get("sampleRate") == null) {
+			sampleRate = -1;
+		} else {
+			sampleRate = (Long) jsonObj.get("sampleRate");
+		}
 		Recording recording = new Recording(
-				uuid, name, date, languages, speakersUUIDs, androidID, originalUUID);
+				uuid, name, date, languages, speakersUUIDs, androidID,
+				originalUUID, sampleRate);
 		return recording;
 	}
 
@@ -325,6 +343,7 @@ public class Recording {
 				.append(speakersUUIDs, rhs.speakersUUIDs)
 				.append(androidID, rhs.androidID)
 				.append(originalUUID, rhs.originalUUID)
+				.append(sampleRate, rhs.sampleRate)
 				.isEquals();
 	 }
 
@@ -429,6 +448,13 @@ public class Recording {
 	}
 
 	/**
+	 * sampleRate mutator.
+	 */
+	private void setSampleRate(long sampleRate) {
+		this.sampleRate = sampleRate;
+	}
+
+	/**
 	 * Get the applications recordings directory
 	 *
 	 * @return	A File representing the path of the recordings directory
@@ -474,5 +500,10 @@ public class Recording {
 	 * The UUID of the original of the recording if it is a respeaking.
 	 */
 	private UUID originalUUID;
+
+	/**
+	 * The sample rate of the recording in Hz
+	 */
+	private long sampleRate;
 
 }
