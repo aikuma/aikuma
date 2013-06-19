@@ -74,12 +74,11 @@ public class SimplePlayer extends Player {
 	}
 
 	public long getSampleRate() {
-		//Deadly In future the approach should be: Check
-		//Recording.getSampleRate(). If that is null (perhaps the file was
-		//imported and not recorded using Aikuma), then perhaps back off to
-		//44100Hz
-		if (sampleRate == -1l) {
-			throw new RuntimeException("sampleRate is -1");
+		//If the sample rate is less than zero, then this indicates that there
+		//wasn't a sample rate found in the metadata file.
+		if (sampleRate <= 0l) {
+			throw new RuntimeException(
+					"The sampleRate of the recording is not known.");
 		}
 		return sampleRate;
 	}
