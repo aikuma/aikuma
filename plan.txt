@@ -1,0 +1,31 @@
+Aikuma Mobile App Development Plan
+------------------------------------------
+
+* Action bar (including menu)
+* Recording list item
+* Settings (default language)
+* Record activity:
+* Metadata activity (language selection and add speaker and select speaker and speaker item).
+* Metadata confirmation (Ghetto)
+* Player/playing fragment.
+* Respeaker.
+* Player switching (to some capacity) / commentaries fragment.
+* Automatic syncing.
+* Settings (IP address)
+* Player cleanup
+
+* Sync "number" (All filenames that aren't in progress, all filenames in a sorted array, hash of that array)
+* Tabs (sorting/filtering, see design)
+* Audio monitor
+* Metadata confirmation (nice)
+* Speaker
+* New Search screen
+* Search Engine
+* Search Results screen
+
+After that / Future:
+
+  - 3G connection to a central server.
+  - Spoken language help.
+  - Multiple languages.
+  - Elan adapter for importing into Elan.
