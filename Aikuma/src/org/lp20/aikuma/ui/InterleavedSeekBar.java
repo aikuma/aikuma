@@ -29,7 +29,9 @@ class InterleavedSeekBar extends SeekBar {
 		super.onDraw(canvas);
 
 		Paint paint = new Paint();
-		paint.setColor(Color.rgb(142, 196, 0));
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeWidth(2);
+		paint.setColor(Color.rgb(204, 0, 0));
 
 		//lines = new ArrayList<Float>();
 		//addLine(0.0f);
@@ -48,6 +50,7 @@ class InterleavedSeekBar extends SeekBar {
 		Rect bounds = canvas.getClipBounds();
 		int barWidth = (bounds.right-16) - (bounds.left+16);
 		float pixel = line * ((float) barWidth / 100.0f);
+
 		canvas.drawLine(pixel+16, 0f, pixel+16, 32f, paint);
 	}
 
