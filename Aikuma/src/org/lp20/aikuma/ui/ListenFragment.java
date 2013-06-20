@@ -11,9 +11,13 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
 import java.io.IOException;
+import java.util.Iterator;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
+import org.lp20.aikuma.audio.InterleavedPlayer;
+import org.lp20.aikuma.model.Segments;
+import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.R;
 
 public class ListenFragment extends Fragment implements OnClickListener {
@@ -26,15 +30,33 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		try {
-			player = new SimplePlayer(
-					((ListenActivity) getActivity()).getRecording());
+			recording = ((ListenActivity) getActivity()).getRecording();
+			if (recording.isOriginal()) {
+				player = new SimplePlayer(recording);
+			} else {
+				try {
+					player = new InterleavedPlayer(recording);
+					Segments segments = new Segments(recording.getUUID());
+					Iterator<Segment> originalSegmentIterator =
+							segments.getOriginalSegmentIterator();
+					while (originalSegmentIterator.hasNext()) {
+						Segment segment = originalSegmentIterator.next();
+						float fraction =
+								player.sampleToMsec(segment.getEndSample()) /
+								(float) player.getDurationMsec();
+						seekBar.addLine(fraction*100);
+					}
+				} catch (Exception e) {
+					//URGENT. quit the pokemon exceptions and write a new class
+					//that should get thrown by getOriginalUUID.
+					getActivity().finish();
+				}
+			}
 			Player.OnCompletionListener listener =
 					new Player.OnCompletionListener() {
 						public void onCompletion(Player _player) {
 							playPauseButton.setImageResource(R.drawable.play);
-							if (seekBarThread != null) {
-								seekBarThread.interrupt();
-							}
+							stopThread(seekBarThread);
 							seekBar.setProgress(seekBar.getMax());
 						}
 					};
@@ -54,7 +76,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		View v = inflater.inflate(R.layout.listen_fragment, container, false);
 		playPauseButton = (ImageButton) v.findViewById(R.id.PlayPauseButton);
 		playPauseButton.setOnClickListener(this);
-		seekBar = (SeekBar) v.findViewById(R.id.SeekBar);
+		seekBar = (InterleavedSeekBar) v.findViewById(R.id.InterleavedSeekBar);
 		seekBar.setOnSeekBarChangeListener(
 				new SeekBar.OnSeekBarChangeListener() {
 					public void onProgressChanged(SeekBar seekBar,
@@ -68,6 +90,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 					public void onStopTrackingTouch(SeekBar _seekBar) {};
 					public void onStartTrackingTouch(SeekBar _seekBar) {};
 				});
+		seekBar.invalidate();
 		return v;
 	}
 
@@ -83,6 +106,17 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	}
 
 	@Override
+	public void onStop() {
+		super.onStop();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		player.release();
+	}
+
+	@Override
 	public void onClick(View v) {
 		if (v == playPauseButton) {
 			if (player.isPlaying()) {
@@ -93,11 +127,15 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		}
 	}
 
+	private void stopThread(Thread thread) {
+		if (thread != null) {
+			thread.interrupt();
+		}
+	}
+
 	private void pause() {
 		player.pause();
-		if (seekBarThread != null) {
-			seekBarThread.interrupt();
-		}
+		stopThread(seekBarThread);
 		playPauseButton.setImageResource(R.drawable.play);
 	}
 
@@ -125,6 +163,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 
 	private Player player;
 	private ImageButton playPauseButton;
-	private SeekBar seekBar;
+	private InterleavedSeekBar seekBar;
 	private Thread seekBarThread;
+	private Recording recording;
 }

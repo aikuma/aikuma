@@ -22,11 +22,13 @@ public class RecorderTest extends AndroidTestCase {
 		record(16000);
 		markedPlayerTest();
 		//recorderTest(44100);
+		f.delete();
 	}
 
 	public void record(int sampleRate) throws Exception {
 		UUID uuid = UUID.randomUUID();
 		f = new File("/mnt/sdcard/aikuma/recordings/" + uuid + ".wav");
+		File fmeta = new File("/mnt/sdcard/aikuma/recordings/" + uuid + ".json");
 		testRecording =
 				new Recording(uuid, "Test recording", new Date());
 		testRecording.write();
@@ -37,6 +39,7 @@ public class RecorderTest extends AndroidTestCase {
 		TimeUnit.SECONDS.sleep(10);
 		recorder.stop();
 		Log.i("ManualTesting", "Recording stopped.");
+		fmeta.delete();
 	}
 
 	public void playBackRecording() throws Exception {
@@ -75,6 +78,7 @@ public class RecorderTest extends AndroidTestCase {
 		Log.i("ManualTesting", "Playing for five seconds.");
 		markedPlayer.play();
 		TimeUnit.SECONDS.sleep(15);
+		markedPlayer.release();
 	}
 
 	private Recording testRecording;

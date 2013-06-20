@@ -84,7 +84,7 @@ public class RecordingTest extends AndroidTestCase {
 		boolean caught = false;
 		try {
 			Recording recording = new Recording(uuid, name, date, null,
-					speakersUUIDs, Aikuma.getAndroidID());
+					speakersUUIDs, Aikuma.getAndroidID(), 16000);
 		} catch (IllegalArgumentException e) {
 			caught = true;
 			assertEquals("Recording languages cannot be null. " +
@@ -105,7 +105,7 @@ public class RecordingTest extends AndroidTestCase {
 		boolean caught = false;
 		try {
 			Recording recording = new Recording(uuid, name, date, languages,
-					speakersUUIDs, null);
+					speakersUUIDs, null, 16000);
 		} catch (IllegalArgumentException e) {
 			caught = true;
 			assertEquals("The androidID for the recording cannot be null",
@@ -124,8 +124,8 @@ public class RecordingTest extends AndroidTestCase {
 		List<UUID> speakersUUIDs = new ArrayList<UUID>();
 		String androidID = Aikuma.getAndroidID();
 		Recording recording =
-				new Recording(uuid, null, date, languages, 
-						speakersUUIDs, androidID, null, 16000);
+				new Recording(uuid, null, date, languages, speakersUUIDs,
+						androidID, null, 16000);
 		recording.write();
 		assertEquals(recording, Recording.read(uuid));
 		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
@@ -146,8 +146,8 @@ public class RecordingTest extends AndroidTestCase {
 		languages.add(lang2);
 		String androidID = Aikuma.getAndroidID();
 		Recording recording =
-				new Recording(uuid, null, date, languages,
-						speakersUUIDs, androidID, null, 16000);
+				new Recording(uuid, null, date, languages, speakersUUIDs,
+						androidID, null, 16000);
 		recording.write();
 		assertEquals(recording, Recording.read(uuid));
 		new File(FileIO.getAppRootPath(), "recordings/" + uuid +
@@ -185,8 +185,8 @@ public class RecordingTest extends AndroidTestCase {
 		List<UUID> speakersUUIDs = new ArrayList<UUID>();
 		String androidID = Aikuma.getAndroidID();
 		Recording recording1 =
-				new Recording(uuid, null, date, languages, 
-						speakersUUIDs, androidID, null, 16000);
+				new Recording(uuid, null, date, languages, speakersUUIDs,
+						androidID, null, 16000);
 		recording1.write();
 
 		// Create the second Recording.

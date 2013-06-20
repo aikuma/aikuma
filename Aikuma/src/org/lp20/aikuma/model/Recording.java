@@ -63,13 +63,14 @@ public class Recording {
 	 */
 	public Recording(UUID uuid, String name, Date date,
 			List<Language> languages, List<UUID> speakersUUIDs,
-			String androidID) {
+			String androidID, long sampleRate) {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
 		setLanguages(languages);
 		setSpeakersUUIDs(speakersUUIDs);
 		setAndroidID(androidID);
+		setSampleRate(sampleRate);
 	}
 
 	/**
@@ -82,7 +83,7 @@ public class Recording {
 	 */
 	public Recording(UUID uuid, String name, Date date,
 			List<Language> languages, List<UUID> speakersUUIDs,
-			String androidID, UUID originalUUID, int sampleRate) {
+			String androidID, UUID originalUUID, long sampleRate) {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
@@ -171,7 +172,7 @@ public class Recording {
 	/**
 	 * sampleRate accessor
 	 */
-	public int getSampleRate() {
+	public long getSampleRate() {
 		return sampleRate;
 	}
 
@@ -276,12 +277,11 @@ public class Recording {
 			originalUUID = UUID.fromString((String) jsonObj.get("originalUUID"));
 		}
 
-		int sampleRate;
+		long sampleRate;
 		if (jsonObj.get("sampleRate") == null) {
-			sampleRate = 0;
+			sampleRate = -1;
 		} else {
-			long ok = (Long) jsonObj.get("sampleRate");
-			sampleRate = (int) ok;
+			sampleRate = (Long) jsonObj.get("sampleRate");
 		}
 		Recording recording = new Recording(
 				uuid, name, date, languages, speakersUUIDs, androidID,
@@ -343,6 +343,7 @@ public class Recording {
 				.append(speakersUUIDs, rhs.speakersUUIDs)
 				.append(androidID, rhs.androidID)
 				.append(originalUUID, rhs.originalUUID)
+				.append(sampleRate, rhs.sampleRate)
 				.isEquals();
 	 }
 
@@ -447,9 +448,9 @@ public class Recording {
 	}
 
 	/**
-	 * sampleRate mutator
+	 * sampleRate mutator.
 	 */
-	private void setSampleRate(int sampleRate) {
+	private void setSampleRate(long sampleRate) {
 		this.sampleRate = sampleRate;
 	}
 
@@ -503,6 +504,6 @@ public class Recording {
 	/**
 	 * The sample rate of the recording in Hz
 	 */
-	private int sampleRate;
+	private long sampleRate;
 
 }

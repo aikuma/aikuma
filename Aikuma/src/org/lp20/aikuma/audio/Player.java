@@ -30,4 +30,9 @@ public abstract class Player {
 	/** Get current point in the recording in milliseconds. */
 	public abstract int getCurrentPositionMsec();
 
+	/** Releases resources associated with the player */
+	public abstract void release();
+
+	public abstract int sampleToMsec(long sample);
+
 }

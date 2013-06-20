@@ -3,6 +3,7 @@ package org.lp20.aikuma.audio;
 import android.util.Log;
 import java.io.IOException;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Segments.Segment;
 
 /**
  * Extends android.media.MediaPlayer to allow for the use of notification
@@ -20,6 +21,7 @@ public class MarkedPlayer extends SimplePlayer {
 		notificationMarkerLoop = new Thread(new NotificationMarkerLoop());
 		notificationMarkerLoop.start();
 		unsetNotificationMarkerPosition();
+		count++;
 	}
 
 	/**
@@ -36,8 +38,15 @@ public class MarkedPlayer extends SimplePlayer {
 	 *
 	 * @param	notificationMarkerPosition	marker in milliseconds
 	 */
-	public void setNotificationMarkerPositionMsec(int notificationMarkerPosition) {
+	public void setNotificationMarkerPositionMsec(
+			int notificationMarkerPosition) {
 		this.notificationMarkerPosition = notificationMarkerPosition;
+	}
+
+	/** Sets the notification marker to be at the end of the supplied segment */
+	public void setNotificationMarkerPosition(Segment segment) {
+		setNotificationMarkerPositionMsec(
+				sampleToMsec(segment.getEndSample()));
 	}
 
 	public void unsetNotificationMarkerPosition() {
@@ -49,12 +58,27 @@ public class MarkedPlayer extends SimplePlayer {
 		stopNotificationMarkerLoop();
 	}
 
+	public void seekTo(Segment segment) {
+		super.seekToSample(segment.getStartSample());
+	}
+
 	/**
 	 * The class for listeners what would be called when set markers get
 	 * reached.
 	 */
 	public static abstract class OnMarkerReachedListener {
 		public abstract void onMarkerReached(MarkedPlayer p);
+	}
+
+	public void setOnCompletionListener(final OnCompletionListener listener) {
+		super.setOnCompletionListener(
+				new Player.OnCompletionListener() {
+					public void onCompletion(Player _p) {
+						MarkedPlayer.this.onMarkerReachedListener.
+								onMarkerReached(MarkedPlayer.this);
+						listener.onCompletion(MarkedPlayer.this);
+					}
+				});
 	}
 
 
@@ -77,6 +101,8 @@ public class MarkedPlayer extends SimplePlayer {
 			notificationMarkerLoop.interrupt();
 		}
 	}
+
+	private static int count = 0;
 
 	/**
 	 * Implements a run that polls the current position to check

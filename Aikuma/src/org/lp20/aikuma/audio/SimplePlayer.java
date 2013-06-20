@@ -20,6 +20,7 @@ public class SimplePlayer extends Player {
 		mediaPlayer = new MediaPlayer();
 		mediaPlayer.setDataSource(recording.getFile().getCanonicalPath());
 		mediaPlayer.prepare();
+		setSampleRate(recording.getSampleRate());
 	}
 
 	/** Starts or resumes playback of the recording. */
@@ -52,6 +53,11 @@ public class SimplePlayer extends Player {
 		mediaPlayer.seekTo(msec);
 	}
 
+
+	public void seekToSample(long sample) {
+		seekToMsec(sampleToMsec(sample));
+	}
+
 	/** Releases the resources associated with the SimplePlayer */
 	public void release() {
 		mediaPlayer.release();
@@ -67,7 +73,29 @@ public class SimplePlayer extends Player {
 				});
 	}
 
+	public long getSampleRate() {
+		//If the sample rate is less than zero, then this indicates that there
+		//wasn't a sample rate found in the metadata file.
+		if (sampleRate <= 0l) {
+			throw new RuntimeException(
+					"The sampleRate of the recording is not known.");
+		}
+		return sampleRate;
+	}
+
+	private void setSampleRate(long sampleRate) {
+		this.sampleRate = sampleRate;
+	}
+
+	public int sampleToMsec(long sample) {
+		long msec = sample / (getSampleRate() / 1000);
+		if (msec > Integer.MAX_VALUE) {
+			return Integer.MAX_VALUE;
+		}
+		return (int) msec;
+	}
 
 	/** The MediaPlayer used to play the recording. **/
 	private MediaPlayer mediaPlayer;
+	private long sampleRate;
 }
