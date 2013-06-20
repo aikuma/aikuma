@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="MyTheme" parent="android:style/Theme.Holo">
+    <style name="MyTheme" parent="android:style/Theme.Holo.Light">
         <item name="android:actionBarStyle">@style/MyActionBarStyle</item>
     </style>
 
