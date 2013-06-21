@@ -4,6 +4,8 @@ import android.util.Log;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
@@ -27,6 +29,13 @@ public class ListenActivity extends Activity {
 			Toast.makeText(this, "Cannot read specified recording.",
 					Toast.LENGTH_LONG).show();
 		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		return true;
 	}
 
 	@Override
