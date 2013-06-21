@@ -2,11 +2,11 @@ Aikuma Mobile App Development Plan
 ------------------------------------------
 
 * Action bar (including menu)
-* Recording list item
 * Settings (default language)
 * Record activity:
 * Metadata activity (language selection and add speaker and select speaker and speaker item).
 * Metadata confirmation (Ghetto)
+* Recording list item
 * Player/playing fragment.
 * Respeaker.
 * Player switching (to some capacity) / commentaries fragment.
