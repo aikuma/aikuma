@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/sync"
-		android:icon="@drawable/wi_fi"
-		android:title="@string/sync"
+	<item android:id="@+id/record"
+		android:icon="@drawable/record_32"
+		android:title="@string/record"
 		android:showAsAction="always" />
-	<item android:id="@+id/search"
-		android:icon="@drawable/search"
-		android:title="@string/search"
+	<item android:id="@+id/mainlist"
+		android:icon="@drawable/main_list_32"
+		android:title="@string/mainlist"
 		android:showAsAction="always" />
 	<item android:id="@+id/settings"
-		android:icon="@drawable/settings"
+		android:icon="@drawable/settings_32"
 		android:title="@string/settings"
 		android:showAsAction="always" />
 </menu>
