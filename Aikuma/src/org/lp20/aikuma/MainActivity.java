@@ -4,7 +4,9 @@ import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.ui.ListenActivity;
+import org.lp20.aikuma.ui.RecordActivity;
 
 public class MainActivity extends ListActivity
 {
@@ -36,6 +39,20 @@ public class MainActivity extends ListActivity
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Log.i("main", "id: " + item.getItemId());
+		Log.i("main", "record id: " + R.id.record);
+		switch (item.getItemId()) {
+			case R.id.record:
+				Intent intent = new Intent(this, RecordActivity.class);
+				startActivity(intent);
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override
