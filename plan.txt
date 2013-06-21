@@ -1,18 +1,26 @@
 Aikuma Mobile App Development Plan
 ------------------------------------------
 
-* Action bar (including menu)
-* Settings (default language)
-* Record activity:
-* Metadata activity (language selection and add speaker and select speaker and speaker item).
-* Metadata confirmation (Ghetto)
-* Recording list item
-* Player/playing fragment.
-* Respeaker.
-* Player switching (to some capacity) / commentaries fragment.
-* Automatic syncing.
-* Settings (IP address)
-* Player cleanup
+* Action bar (including menu) [more or less done] (took 1 day)
+* Record activity: 1 day
+* Settings (default language) 1 day
+* Metadata activity (language selection and add speaker and select speaker and
+		 speaker item). 3 days
+* Metadata confirmation (Ghetto) < 1 day
+* Recording list item 2 days
+* Player/playing fragment 1 day 
+* Respeaker. 2 days
+* Player switching (to some capacity) / commentaries fragment. 3 days
+* Automatic syncing. 3 days
+* Settings (IP address) 1 day
+* Player cleanup 3 days
+
+As it stands, the above will take 21 days. I'll multiply it by a magic factor
+of 1.5 as there will be various necessary tasks that will pop up (which I'll add
+to the list) that aren't directly related to any given task (things to do with
+ensuring code quality and such). So 32 days of work all up. If I work on it 3
+days a week, 1.0.0 will be complete late August. My estimates may be way
+off though (they usually are).
 
 * Sync "number" (All filenames that aren't in progress, all filenames in a sorted array, hash of that array)
 * Tabs (sorting/filtering, see design)
