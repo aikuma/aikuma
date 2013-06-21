@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:id="@+id/record"
-		android:icon="@drawable/record_32"
+		android:icon="@drawable/record_disabled_32"
 		android:title="@string/record"
 		android:showAsAction="always" />
 	<item android:id="@+id/mainlist"
