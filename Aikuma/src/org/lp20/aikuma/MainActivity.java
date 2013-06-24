@@ -16,6 +16,7 @@ import java.util.List;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.RecordActivity;
+import org.lp20.aikuma.ui.SettingsActivity;
 
 public class MainActivity extends ListActivity
 {
@@ -45,9 +46,14 @@ public class MainActivity extends ListActivity
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.i("main", "id: " + item.getItemId());
 		Log.i("main", "record id: " + R.id.record);
+		Intent intent;
 		switch (item.getItemId()) {
 			case R.id.record:
-				Intent intent = new Intent(this, RecordActivity.class);
+				intent = new Intent(this, RecordActivity.class);
+				startActivity(intent);
+				return true;
+			case R.id.settings:
+				intent = new Intent(this, SettingsActivity.class);
 				startActivity(intent);
 				return true;
 			default:
