@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import org.lp20.aikuma.R;
 
 /**
@@ -33,5 +34,18 @@ public class RecordActivity extends Activity {
 	public void onRecordButton(View view) {
 		ImageButton recordButton =
 				(ImageButton) findViewById(R.id.recordButton);
+		LinearLayout pauseAndStopButtons =
+				(LinearLayout) findViewById(R.id.pauseAndStopButtons);
+		recordButton.setVisibility(View.GONE);
+		pauseAndStopButtons.setVisibility(View.VISIBLE);
+	}
+
+	public void onPauseButton(View view) {
+		ImageButton recordButton =
+				(ImageButton) findViewById(R.id.recordButton);
+		LinearLayout pauseAndStopButtons =
+				(LinearLayout) findViewById(R.id.pauseAndStopButtons);
+		recordButton.setVisibility(View.VISIBLE);
+		pauseAndStopButtons.setVisibility(View.GONE);
 	}
 }
