@@ -7,4 +7,5 @@
 	<string name="record">Record</string>
 	<string name="mainlist">Main list</string>
 	<string name="addLanguage">Add Language</string>
+	<string name="recording_description">Description</string>
 </resources>

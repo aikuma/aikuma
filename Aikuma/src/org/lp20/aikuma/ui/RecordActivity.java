@@ -1,6 +1,7 @@
 package org.lp20.aikuma.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,5 +48,10 @@ public class RecordActivity extends Activity {
 				(LinearLayout) findViewById(R.id.pauseAndStopButtons);
 		recordButton.setVisibility(View.VISIBLE);
 		pauseAndStopButtons.setVisibility(View.GONE);
+	}
+
+	public void onStopButton(View view) {
+		Intent intent = new Intent(this, RecordingMetadataActivity.class);
+		startActivity(intent);
 	}
 }
