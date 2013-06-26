@@ -11,5 +11,32 @@
 		android:scaleType="centerInside"
 		android:src="@drawable/record_48"
 		android:layout_alignParentBottom="true"
+		android:onClick="onRecordButton"
 	/>
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:visibility="gone"
+		android:id="@+id/pauseAndStopButtons"
+		>
+		<ImageButton
+			android:id="@+id/pauseButton"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:src="@drawable/pause_48"
+			android:layout_weight="1"
+			android:onClick="onPauseButton"
+		/>
+		<ImageButton
+			android:id="@+id/stopButton"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:src="@drawable/stop_48"
+			android:layout_weight="1"
+		/>
+	</LinearLayout>
 </RelativeLayout>
