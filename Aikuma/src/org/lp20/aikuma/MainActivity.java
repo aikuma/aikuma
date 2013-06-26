@@ -44,8 +44,6 @@ public class MainActivity extends ListActivity
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.i("main", "id: " + item.getItemId());
-		Log.i("main", "record id: " + R.id.record);
 		Intent intent;
 		switch (item.getItemId()) {
 			case R.id.record:
