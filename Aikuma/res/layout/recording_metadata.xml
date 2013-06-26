@@ -28,7 +28,7 @@
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:scaleType="centerInside"
-				android:src="@drawable/stop_48"
+				android:src="@drawable/plus_48"
 				android:layout_weight="1"
 			/>
 		</LinearLayout>
@@ -52,7 +52,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:scaleType="centerInside"
-			android:src="@drawable/cancel_32"
+			android:src="@drawable/cancel_48"
 			android:layout_weight="1"
 		/>
 		<ImageButton
@@ -60,7 +60,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:scaleType="centerInside"
-			android:src="@drawable/ok_32"
+			android:src="@drawable/ok_48"
 			android:layout_weight="1"
 		/>
 	</LinearLayout>
