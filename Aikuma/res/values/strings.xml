@@ -8,4 +8,13 @@
 	<string name="mainlist">Main list</string>
 	<string name="addLanguage">Add Language</string>
 	<string name="recording_description">Description</string>
+	<string name="share_dialog">
+			Your recording will be shared with everybody. Share?
+	</string>
+	<string name="discard_dialog">
+			Are you sure you want to discard this recording?
+	</string>
+	<string name="share">Share</string>
+	<string name="cancel">Cancel</string>
+	<string name="discard">Discard</string>
 </resources>
