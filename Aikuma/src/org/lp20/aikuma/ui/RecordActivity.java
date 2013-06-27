@@ -79,6 +79,7 @@ public class RecordActivity extends Activity {
 									new Intent(RecordActivity.this,
 												MainActivity.class);
 								intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+								RecordActivity.this.finish();
 								startActivity(intent);
 							}
 						})

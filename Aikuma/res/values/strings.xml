@@ -17,7 +17,9 @@
 	<string name="share">Share</string>
 	<string name="cancel">Cancel</string>
 	<string name="discard">Discard</string>
-	<string name="restart_recording"> Are you sure you want to discard this 
+	<string name="restart_recording">Are you sure you want to discard this 
 			recording and start a new recording?
 	</string>
+	<string name="defaultLangHeading">Default languages used when adding a
+			speaker</string>
 </resources>

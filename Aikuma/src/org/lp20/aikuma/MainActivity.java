@@ -52,6 +52,7 @@ public class MainActivity extends ListActivity
 				return true;
 			case R.id.settings:
 				intent = new Intent(this, SettingsActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 				return true;
 			default:
