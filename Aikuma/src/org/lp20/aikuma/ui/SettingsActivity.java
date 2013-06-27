@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
+import android.view.View;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.R;
 
@@ -51,5 +52,10 @@ public class SettingsActivity extends Activity {
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+
+	public void onAddLanguageButton(View view) {
+		Intent intent = new Intent(this, LanguageFilterList.class);
+		startActivity(intent);
 	}
 }
