@@ -1,13 +1,19 @@
 package org.lp20.aikuma.ui;
 
 import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import java.util.ArrayList;
+import java.util.List;
 import org.lp20.aikuma.MainActivity;
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.R;
 
 /**
@@ -17,7 +23,7 @@ import org.lp20.aikuma.R;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends ListActivity {
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -56,6 +62,27 @@ public class SettingsActivity extends Activity {
 
 	public void onAddLanguageButton(View view) {
 		Intent intent = new Intent(this, LanguageFilterList.class);
-		startActivity(intent);
+		startActivityForResult(intent, SELECT_LANGUAGE);
 	}
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent
+			intent) {
+		Log.i("lang", "onActivityResult");
+		if (requestCode == SELECT_LANGUAGE) {
+			if (resultCode == RESULT_OK) {
+				defaultLanguages.add((Language)
+						intent.getParcelableExtra("language"));
+				ArrayAdapter<Language> adapter = new ArrayAdapter(this,
+						android.R.layout.simple_list_item_1, defaultLanguages);
+				setListAdapter(adapter);
+				Log.i("lang", "added language: " + defaultLanguages);
+			}
+		}
+	}
+
+	/**
+	 * Constant to represent the request code for the LanguageFilterList calls.
+	 */
+	static final int SELECT_LANGUAGE = 0;
+	private List<Language> defaultLanguages = new ArrayList<Language>();
 }
