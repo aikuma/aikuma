@@ -12,7 +12,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+import java.util.UUID;
+import java.io.File;
+import org.lp20.aikuma.audio.record.Microphone.MicException;
+import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.MainActivity;
+import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.R;
 
 /**
@@ -28,6 +34,43 @@ public class RecordActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
+		this.uuid = UUID.randomUUID();
+		try {
+			recorder = new Recorder(new File(Recording.getRecordingsPath(),
+					uuid.toString() + ".wav"), 16000);
+		} catch (MicException e) {
+			this.finish();
+			Toast.makeText(getApplicationContext(),
+					"Error setting up microphone.",
+					Toast.LENGTH_LONG).show();
+		}
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		try {
+			recorder.pause();
+		} catch (MicException e) {
+			// Maybe make a recording metadata file that refers to the error so
+			// that the audio can be salvaged.
+		}
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		try {
+			recorder.pause();
+		} catch (MicException e) {
+			// Maybe make a recording metadata file that refers to the error so
+			// that the audio can be salvaged.
+		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
 	}
 
 	@Override
@@ -51,14 +94,14 @@ public class RecordActivity extends Activity {
 						.setMessage(R.string.restart_recording)
 						.setPositiveButton(R.string.discard, new
 						DialogInterface.OnClickListener() {
-						
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
 								Intent intent =
 									new Intent(RecordActivity.this,
 												RecordActivity.class);
-								intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+								intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+								RecordActivity.this.finish();
 								startActivity(intent);
 							}
 						})
@@ -116,6 +159,7 @@ public class RecordActivity extends Activity {
 				(LinearLayout) findViewById(R.id.pauseAndStopButtons);
 		recordButton.setVisibility(View.GONE);
 		pauseAndStopButtons.setVisibility(View.VISIBLE);
+		recorder.listen();
 	}
 
 	public void onPauseButton(View view) {
@@ -125,10 +169,25 @@ public class RecordActivity extends Activity {
 				(LinearLayout) findViewById(R.id.pauseAndStopButtons);
 		recordButton.setVisibility(View.VISIBLE);
 		pauseAndStopButtons.setVisibility(View.GONE);
+		try {
+			recorder.pause();
+		} catch (MicException e) {
+			// Maybe make a recording metadata file that refers to the error so
+			// that the audio can be salvaged.
+		}
 	}
 
 	public void onStopButton(View view) {
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
 		startActivity(intent);
+		try {
+			recorder.stop();
+		} catch (MicException e) {
+			// Maybe make a recording metadata file that refers to the error so
+			// that the audio can be salvaged.
+		}
 	}
+
+	private Recorder recorder;
+	private UUID uuid;
 }

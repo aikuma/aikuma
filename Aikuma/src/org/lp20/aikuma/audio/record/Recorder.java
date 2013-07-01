@@ -18,8 +18,7 @@ import static org.lp20.aikuma.audio.record.Microphone.MicException;
  *  A Recorder used to get input from a microphone and output into a file.
  *
  *  Usage:
- *    Recorder recorder = new Recorder();
- *    recorder.prepare("/mnt/sdcard/bold/recordings/target_file.wav")
+ *    Recorder recorder = new Recorder(File, sampleRate [, Analyzer]);
  *    recorder.listen();
  *    recorder.pause();
  *    recorder.listen();
@@ -70,7 +69,7 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	/**
 	 * Prepares the recorder for recording.
 	 */
-	public void prepare(String targetFilename) {
+	private void prepare(String targetFilename) {
 		file.prepare(targetFilename);
 	}
 

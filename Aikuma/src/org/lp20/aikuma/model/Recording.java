@@ -459,7 +459,7 @@ public class Recording {
 	 *
 	 * @return	A File representing the path of the recordings directory
 	 */
-	static File getRecordingsPath() {
+	public static File getRecordingsPath() {
 		File path = new File(FileIO.getAppRootPath(), "recordings");
 		path.mkdirs();
 		return path;
