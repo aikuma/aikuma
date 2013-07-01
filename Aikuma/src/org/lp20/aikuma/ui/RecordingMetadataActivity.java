@@ -5,12 +5,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import java.util.UUID;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.MainActivity;
 
@@ -27,6 +29,9 @@ public class RecordingMetadataActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recording_metadata);
+		uuid = UUID.fromString(
+				getIntent().getCharSequenceExtra("uuidString").toString());
+		Log.i("rma", "uuid: " + uuid);
 	}
 
 	@Override
@@ -72,4 +77,6 @@ public class RecordingMetadataActivity extends Activity {
 				.setNegativeButton(R.string.cancel, null)
 				.show();
 	}
+
+	private UUID uuid;
 }

@@ -179,6 +179,7 @@ public class RecordActivity extends Activity {
 
 	public void onStopButton(View view) {
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
+		intent.putExtra("uuidString", uuid.toString());
 		startActivity(intent);
 		try {
 			recorder.stop();
