@@ -3,6 +3,7 @@ package org.lp20.aikuma.ui;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,9 +11,11 @@ import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.R;
@@ -32,6 +35,19 @@ public class SettingsActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings);
+		new Thread(new Runnable(){
+			public void run() {
+				try {
+					getLangCodeMap(getResources());
+				} catch (IOException e) {
+					SettingsActivity.this.finish();
+					Toast.makeText(getApplicationContext(),
+							"Error reading language codes.",
+							Toast.LENGTH_LONG).show();
+				}
+				Log.i("sa", "done");
+			}
+		}).start();
 	}
 
 	@Override
@@ -98,9 +114,28 @@ public class SettingsActivity extends ListActivity {
 		}
 	}
 
+	public static Map getLangCodeMap(final Resources resources) 
+			throws IOException {
+		if (langCodeMap == null) {
+			if (loadLangCodesThread == null || !loadLangCodesThread.isAlive()){
+				loadLangCodesThread = new Thread(new Runnable() {
+					public void run() {
+						FileIO.readLangCodes(resources);
+					}
+				});
+				loadLangCodesThread.start();
+			}
+			while (langCodeMap == null) {
+			}
+		}
+		return langCodeMap;
+	}
+
 	/**
 	 * Constant to represent the request code for the LanguageFilterList calls.
 	 */
 	static final int SELECT_LANGUAGE = 0;
-	private List<Language> defaultLanguages = new ArrayList<Language>();
+	private List<Language> defaultLanguages;
+	static Map langCodeMap;
+	static Thread loadLangCodesThread;
 }

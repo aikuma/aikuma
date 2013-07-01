@@ -26,23 +26,23 @@ public class LanguageFilterList extends ListActivity {
 		setContentView(R.layout.filter_list);
 		Map langCodeMap;
 		try {
-			langCodeMap = FileIO.readLangCodes(getResources());
-			filterText = (EditText) findViewById(R.id.search_box);
-			filterText.addTextChangedListener(filterTextWatcher);
-			List<String> names = new ArrayList<String>(langCodeMap.keySet());
-			List<String> codes = new ArrayList<String>(langCodeMap.values());
-			List<Language> languages = new ArrayList<Language>();
-			for (int i = 0; i < names.size(); i++) {
-				languages.add(new Language(names.get(i), codes.get(i)));
-			}
-			adapter = new ArrayAdapter<Language>(this,
-					android.R.layout.simple_list_item_1, languages);
-			setListAdapter(adapter);
+			langCodeMap = SettingsActivity.getLangCodeMap(getResources());
 		} catch (IOException e) {
 			LanguageFilterList.this.finish();
-			Toast.makeText(getApplicationContext(), 
-					"Error reading language codes.", Toast.LENGTH_LONG).show();
+			//Maybe pop some toast up to the user?
 		}
+		langCodeMap = SettingsActivity.langCodeMap;
+		filterText = (EditText) findViewById(R.id.search_box);
+		filterText.addTextChangedListener(filterTextWatcher);
+		List<String> names = new ArrayList<String>(langCodeMap.keySet());
+		List<String> codes = new ArrayList<String>(langCodeMap.values());
+		List<Language> languages = new ArrayList<Language>();
+		for (int i = 0; i < names.size(); i++) {
+			languages.add(new Language(names.get(i), codes.get(i)));
+		}
+		adapter = new ArrayAdapter<Language>(this,
+				android.R.layout.simple_list_item_1, languages);
+		setListAdapter(adapter);
 	}
 
 	@Override
