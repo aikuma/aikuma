@@ -66,7 +66,6 @@ public class RecordActivity extends Activity {
 						.show();
 				return true;
 			case R.id.mainlist:
-				Log.i("ra", "okyo");
 				new AlertDialog.Builder(this)
 						.setMessage(R.string.discard_dialog)
 						.setPositiveButton(R.string.discard, new
@@ -87,7 +86,6 @@ public class RecordActivity extends Activity {
 						.show();
 				return true;
 			case R.id.settings:
-				Log.i("ra", "nolo");
 				new AlertDialog.Builder(this)
 						.setMessage(R.string.discard_dialog)
 						.setPositiveButton(R.string.discard, new

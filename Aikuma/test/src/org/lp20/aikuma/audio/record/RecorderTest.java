@@ -71,7 +71,7 @@ public class RecorderTest extends AndroidTestCase {
 					}
 				};
 		if (listener == null) {
-			Log.i("ManualTesting", "WHAT");
+			Log.i("ManualTesting", "Listener is null");
 		}
 		MarkedPlayer markedPlayer = new MarkedPlayer(testRecording, listener);
 		markedPlayer.setNotificationMarkerPositionMsec(5000);

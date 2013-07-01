@@ -10,6 +10,5 @@ public class SegmentsTest extends AndroidTestCase {
 	public void testSegments() {
 		Segments segments = new Segments();
 		segments.put(new Segment(0l,100l), new Segment(0l, 200l));
-		Log.i("SegmentsTest", segments.toString());
 	}
 }

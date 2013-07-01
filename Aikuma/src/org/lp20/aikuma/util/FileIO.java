@@ -2,13 +2,20 @@ package org.lp20.aikuma.util;
 
 import android.content.res.Resources;
 import android.os.Environment;
+import android.util.Log;
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 import org.lp20.aikuma.R;
 import com.google.common.base.Charsets;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -16,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.lp20.aikuma.model.Language;
 
 /**
  * Utility class that offers various File IO related methods.
@@ -175,6 +183,30 @@ public final class FileIO {
 			map.put(elements[6].trim(), elements[0].trim());
 		}
 		return map;
+	}
+
+	public static void writeDefaultLanguages(List<Language> defaultLanguages)
+			throws IOException  {
+		CSVWriter writer = new CSVWriter(new FileWriter(
+				new File(getAppRootPath(), "default_languages.csv")), '\t');
+		String[] entry = new String[2];
+		for (Language lang : defaultLanguages) {
+			entry[0] = lang.getCode();
+			entry[1] = lang.getName();
+			writer.writeNext(entry);
+		}
+		writer.close();
+	}
+
+	public static List readDefaultLanguages() throws IOException {
+		CSVReader reader = new CSVReader(new FileReader(
+				new File(getAppRootPath(), "default_languages.csv")), '\t');
+		String[] nextLine;
+		List<Language> defaultLanguages = new ArrayList<Language>();
+		while ((nextLine = reader.readNext()) != null) {
+			defaultLanguages.add(new Language(nextLine[0], nextLine[1]));
+		}
+		return defaultLanguages;
 	}
 
 	/**
