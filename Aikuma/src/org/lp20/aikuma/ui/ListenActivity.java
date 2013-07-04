@@ -2,6 +2,8 @@ package org.lp20.aikuma.ui;
 
 import android.util.Log;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -24,6 +26,10 @@ public class ListenActivity extends Activity {
 		try {
 			setRecording(Recording.read(UUID.fromString(
 					(String) intent.getExtras().get("uuidString"))));
+			ListenFragment fragment =
+					(ListenFragment)
+					getFragmentManager().findFragmentById(R.id.ListenFragment);
+			fragment.setRecording(getRecording());
 		} catch (IOException e) {
 			this.finish();
 			Toast.makeText(this, "Cannot read specified recording.",

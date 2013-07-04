@@ -30,7 +30,6 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		try {
-			recording = ((ListenActivity) getActivity()).getRecording();
 			if (recording.isOriginal()) {
 				player = new SimplePlayer(recording);
 			} else {
@@ -159,6 +158,10 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		});
 		seekBarThread.start();
 		playPauseButton.setImageResource(R.drawable.pause);
+	}
+
+	public void setRecording(Recording recording) {
+		this.recording = recording;
 	}
 
 	private Player player;
