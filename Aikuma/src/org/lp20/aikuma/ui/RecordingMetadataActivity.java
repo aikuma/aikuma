@@ -2,6 +2,8 @@ package org.lp20.aikuma.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,9 +14,13 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.MainActivity;
+import org.lp20.aikuma.model.Recording;
 
 /**
  * The activity that allows audio to be recorded
@@ -29,9 +35,23 @@ public class RecordingMetadataActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recording_metadata);
-		uuid = UUID.fromString(
-				getIntent().getCharSequenceExtra("uuidString").toString());
-		Log.i("rma", "uuid: " + uuid);
+		Intent intent = getIntent();
+		UUID uuid = UUID.fromString(
+				(String) intent.getExtras().get("uuidString"));
+		int sampleRate = (Integer) intent.getExtras().get("sampleRate");
+		ListenFragment fragment = (ListenFragment)
+				getFragmentManager().findFragmentById(R.id.ListenFragment);
+		try {
+			setRecording(Recording.read(uuid));
+			fragment.setRecording(getRecording());
+		} catch (IOException e) {
+			//If there is an issue reading the recording metadata, then we'll
+			//just try use the wav file alone.
+			File wavFile = new File(Recording.getRecordingsPath(),
+						uuid.toString() + ".wav");
+			fragment.setUUID(uuid);
+			fragment.setSampleRate(sampleRate);
+		}
 	}
 
 	@Override
@@ -78,5 +98,14 @@ public class RecordingMetadataActivity extends Activity {
 				.show();
 	}
 
+	private void setRecording(Recording recording) {
+		this.recording = recording;
+	}
+
+	private Recording getRecording() {
+		return this.recording;
+	}
+
 	private UUID uuid;
+	private Recording recording;
 }

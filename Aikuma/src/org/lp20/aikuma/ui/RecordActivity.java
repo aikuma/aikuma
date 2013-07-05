@@ -37,7 +37,7 @@ public class RecordActivity extends Activity {
 		this.uuid = UUID.randomUUID();
 		try {
 			recorder = new Recorder(new File(Recording.getRecordingsPath(),
-					uuid.toString() + ".wav"), 16000);
+					uuid.toString() + ".wav"), sampleRate);
 		} catch (MicException e) {
 			this.finish();
 			Toast.makeText(getApplicationContext(),
@@ -180,6 +180,7 @@ public class RecordActivity extends Activity {
 	public void onStopButton(View view) {
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
 		intent.putExtra("uuidString", uuid.toString());
+		intent.putExtra("sampleRate", sampleRate);
 		startActivity(intent);
 		try {
 			recorder.stop();
@@ -191,4 +192,5 @@ public class RecordActivity extends Activity {
 
 	private Recorder recorder;
 	private UUID uuid;
+	private int sampleRate = 16000;
 }

@@ -2,6 +2,7 @@ package org.lp20.aikuma.audio;
 
 import android.util.Log;
 import android.media.MediaPlayer;
+import java.io.File;
 import java.io.IOException;
 import org.lp20.aikuma.model.Recording;
 
@@ -21,6 +22,20 @@ public class SimplePlayer extends Player {
 		mediaPlayer.setDataSource(recording.getFile().getCanonicalPath());
 		mediaPlayer.prepare();
 		setSampleRate(recording.getSampleRate());
+	}
+
+	/**
+	 * Creates a player to play the supplied recording for when no Recording
+	 * metadata file exists
+	 *
+	 * @param	file	The location of the recording as a File
+	 * @param	sampleRate	The sample rate of the recording
+	 */
+	public SimplePlayer(File recordingFile, int sampleRate) throws IOException {
+		mediaPlayer = new MediaPlayer();
+		mediaPlayer.setDataSource(recordingFile.getCanonicalPath());
+		mediaPlayer.prepare();
+		setSampleRate(sampleRate);
 	}
 
 	/** Starts or resumes playback of the recording. */

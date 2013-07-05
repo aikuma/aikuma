@@ -10,8 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
@@ -30,36 +32,44 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		try {
-			if (recording.isOriginal()) {
-				player = new SimplePlayer(recording);
+			if (recording == null) {
+				// A recording metadata file doesn't exist yet, so it must have
+				// just been recorded.
+				player = new SimplePlayer(new File(
+						Recording.getRecordingsPath(),
+						uuid.toString() + ".wav"), sampleRate);
 			} else {
-				try {
-					player = new InterleavedPlayer(recording);
-					Segments segments = new Segments(recording.getUUID());
-					Iterator<Segment> originalSegmentIterator =
-							segments.getOriginalSegmentIterator();
-					while (originalSegmentIterator.hasNext()) {
-						Segment segment = originalSegmentIterator.next();
-						float fraction =
-								player.sampleToMsec(segment.getEndSample()) /
-								(float) player.getDurationMsec();
-						seekBar.addLine(fraction*100);
-					}
-				} catch (Exception e) {
-					//URGENT. quit the pokemon exceptions and write a new class
-					//that should get thrown by getOriginalUUID.
-					getActivity().finish();
-				}
-			}
-			Player.OnCompletionListener listener =
-					new Player.OnCompletionListener() {
-						public void onCompletion(Player _player) {
-							playPauseButton.setImageResource(R.drawable.play);
-							stopThread(seekBarThread);
-							seekBar.setProgress(seekBar.getMax());
+				if (recording.isOriginal()) {
+					player = new SimplePlayer(recording);
+				} else {
+					try {
+						player = new InterleavedPlayer(recording);
+						Segments segments = new Segments(recording.getUUID());
+						Iterator<Segment> originalSegmentIterator =
+								segments.getOriginalSegmentIterator();
+						while (originalSegmentIterator.hasNext()) {
+							Segment segment = originalSegmentIterator.next();
+							float fraction =
+									player.sampleToMsec(segment.getEndSample()) /
+									(float) player.getDurationMsec();
+							seekBar.addLine(fraction*100);
 						}
-					};
-			player.setOnCompletionListener(listener);
+					} catch (Exception e) {
+						//URGENT. quit the pokemon exceptions and write a new class
+						//that should get thrown by getOriginalUUID.
+						getActivity().finish();
+					}
+				}
+				Player.OnCompletionListener listener =
+						new Player.OnCompletionListener() {
+							public void onCompletion(Player _player) {
+								playPauseButton.setImageResource(R.drawable.play);
+								stopThread(seekBarThread);
+								seekBar.setProgress(seekBar.getMax());
+							}
+						};
+				player.setOnCompletionListener(listener);
+			}
 		} catch (IOException e) {
 			getActivity().finish();
 			Toast.makeText(getActivity(), 
@@ -161,7 +171,16 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	}
 
 	public void setRecording(Recording recording) {
+		Log.i("lf", "recording: " + recording);
 		this.recording = recording;
+	}
+
+	public void setSampleRate(int sampleRate) {
+		this.sampleRate = sampleRate;
+	}
+
+	public void setUUID(UUID uuid) {
+		this.uuid = uuid;
 	}
 
 	private Player player;
@@ -169,4 +188,6 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	private InterleavedSeekBar seekBar;
 	private Thread seekBarThread;
 	private Recording recording;
+	private UUID uuid;
+	private int sampleRate;
 }
