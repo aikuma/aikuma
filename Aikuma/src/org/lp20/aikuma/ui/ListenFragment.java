@@ -60,16 +60,16 @@ public class ListenFragment extends Fragment implements OnClickListener {
 						getActivity().finish();
 					}
 				}
-				Player.OnCompletionListener listener =
-						new Player.OnCompletionListener() {
-							public void onCompletion(Player _player) {
-								playPauseButton.setImageResource(R.drawable.play);
-								stopThread(seekBarThread);
-								seekBar.setProgress(seekBar.getMax());
-							}
-						};
-				player.setOnCompletionListener(listener);
 			}
+			Player.OnCompletionListener listener =
+					new Player.OnCompletionListener() {
+						public void onCompletion(Player _player) {
+							playPauseButton.setImageResource(R.drawable.play);
+							stopThread(seekBarThread);
+							seekBar.setProgress(seekBar.getMax());
+						}
+					};
+			player.setOnCompletionListener(listener);
 		} catch (IOException e) {
 			getActivity().finish();
 			Toast.makeText(getActivity(), 
