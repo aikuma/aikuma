@@ -55,6 +55,28 @@ public class RecordingMetadataActivity extends Activity {
 	}
 
 	@Override
+	public void onBackPressed() {
+		new AlertDialog.Builder(this)
+				.setMessage(R.string.discard_dialog)
+				.setPositiveButton(R.string.discard, new
+				DialogInterface.OnClickListener() {
+				
+					@Override
+					public void onClick(DialogInterface dialog,
+							int which) {
+						Intent intent =
+							new Intent(RecordingMetadataActivity.this,
+										MainActivity.class);
+						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+						RecordingMetadataActivity.this.finish();
+						startActivity(intent);
+					}
+				})
+				.setNegativeButton(R.string.cancel, null)
+				.show();
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
