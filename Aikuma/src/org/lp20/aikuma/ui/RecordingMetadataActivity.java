@@ -76,6 +76,13 @@ public class RecordingMetadataActivity extends Activity {
 				.show();
 	}
 
+	public void onAddUserButtonPressed(View view) {
+		Intent intent =
+			new Intent(RecordingMetadataActivity.this,
+						SpeakersActivity.class);
+		startActivity(intent);
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
