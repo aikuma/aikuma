@@ -31,9 +31,11 @@ public class AddSpeakerActivity extends ListActivity {
 	public void onResume() {
 		super.onResume();
 
-		ArrayAdapter<Language> adapter = new ArrayAdapter(this,
-				android.R.layout.simple_list_item_1, languages);
+		Log.i("aa", "OKAY5");
+		ArrayAdapter<Language> adapter = 
+				new SpeakerLanguagesArrayAdapter(this, languages);
 		setListAdapter(adapter);
+		Log.i("aa", "OKAY6");
 	}
 
 	public void onAddLanguageButton(View view) {
