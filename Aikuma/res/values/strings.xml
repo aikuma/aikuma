@@ -22,4 +22,8 @@
 	</string>
 	<string name="defaultLangHeading">Default languages used when adding a
 			speaker</string>
+	<string name="speaker_name">Name
+			</string>
+	<string name="add_language">Add Language
+			</string>
 </resources>

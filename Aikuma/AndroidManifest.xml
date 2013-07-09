@@ -38,5 +38,9 @@
 				android:configChanges="orientation"
 				android:label="@string/app_name">
 		</activity>
+		<activity android:name="org.lp20.aikuma.ui.AddSpeakerActivity"
+				android:configChanges="orientation"
+				android:label="@string/app_name">
+		</activity>
     </application>
 </manifest> 
