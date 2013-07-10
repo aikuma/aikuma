@@ -49,6 +49,7 @@ public class Aikuma extends android.app.Application {
 						try {
 							languages = FileIO.readLangCodes(getContext().getResources());
 						} catch (IOException e) {
+							// This should never happen.
 							throw new RuntimeException("Cannot load languages");
 						}
 					}

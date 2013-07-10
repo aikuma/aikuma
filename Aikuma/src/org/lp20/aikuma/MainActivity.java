@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.RecordActivity;
@@ -33,6 +34,7 @@ public class MainActivity extends ListActivity
 		List<Recording> recordings = Recording.readAll();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this, recordings);
 		setListAdapter(adapter);
+		Aikuma.loadLanguages();
 	}
 
 	@Override
