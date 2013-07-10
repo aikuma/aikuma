@@ -171,18 +171,18 @@ public final class FileIO {
 	 * retrieved.
 	 * @return	a map from language names to their corresponding codes.
 	 */
-	public static Map readLangCodes(Resources resources) throws IOException {
+	public static List<Language> readLangCodes(Resources resources) throws IOException {
 		InputStream is = resources.openRawResource(R.raw.iso_639_3);
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(is, writer, Charsets.UTF_8);
 		String inputString = writer.toString();
-		Map<String,String> map = new HashMap<String,String>();
+		List<Language> languages = new ArrayList<Language>();
 		String[] lines = inputString.split("\n");
 		for (int i = 1; i < lines.length; i++) {
 			String[] elements = lines[i].split("(?=\t)");
-			map.put(elements[6].trim(), elements[0].trim());
+			languages.add(new Language(elements[6].trim(), elements[0].trim()));
 		}
-		return map;
+		return languages;
 	}
 
 	public static void writeDefaultLanguages(List<Language> defaultLanguages)

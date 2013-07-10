@@ -35,19 +35,6 @@ public class SettingsActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings);
-		new Thread(new Runnable(){
-			public void run() {
-				try {
-					getLangCodeMap(getResources());
-				} catch (IOException e) {
-					SettingsActivity.this.finish();
-					Toast.makeText(getApplicationContext(),
-							"Error reading language codes.",
-							Toast.LENGTH_LONG).show();
-				}
-				Log.i("sa", "done");
-			}
-		}).start();
 	}
 
 	@Override
@@ -112,23 +99,6 @@ public class SettingsActivity extends ListActivity {
 				}
 			}
 		}
-	}
-
-	public static Map getLangCodeMap(final Resources resources) 
-			throws IOException {
-		if (langCodeMap == null) {
-			if (loadLangCodesThread == null || !loadLangCodesThread.isAlive()){
-				loadLangCodesThread = new Thread(new Runnable() {
-					public void run() {
-						FileIO.readLangCodes(resources);
-					}
-				});
-				loadLangCodesThread.start();
-			}
-			while (langCodeMap == null) {
-			}
-		}
-		return langCodeMap;
 	}
 
 	/**
