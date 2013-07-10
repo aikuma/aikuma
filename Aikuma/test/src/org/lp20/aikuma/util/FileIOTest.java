@@ -12,6 +12,8 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.lp20.aikuma.Aikuma;
+import org.lp20.aikuma.model.Language;
 
 public class FileIOTest extends AndroidTestCase {
 
@@ -63,10 +65,8 @@ public class FileIOTest extends AndroidTestCase {
 	 * Ensure that the reading of language codes functions as expected.
 	 */
 	public void testReadLangCodes() throws Exception {
-		Map map = FileIO.readLangCodes(getContext().getResources());
-		assertEquals(7775, map.size());
-		assertEquals("usa", map.get("Usarufa"));
-		assertEquals("eng", map.get("English"));
+		List<Language> languages = Aikuma.getLanguages();
+		assertEquals(7775, languages.size());
 	}
 
 	/**
