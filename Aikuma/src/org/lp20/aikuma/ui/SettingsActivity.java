@@ -3,6 +3,7 @@ package org.lp20.aikuma.ui;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,9 +11,11 @@ import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.R;
@@ -102,5 +105,7 @@ public class SettingsActivity extends ListActivity {
 	 * Constant to represent the request code for the LanguageFilterList calls.
 	 */
 	static final int SELECT_LANGUAGE = 0;
-	private List<Language> defaultLanguages = new ArrayList<Language>();
+	private List<Language> defaultLanguages;
+	static Map langCodeMap;
+	static Thread loadLangCodesThread;
 }

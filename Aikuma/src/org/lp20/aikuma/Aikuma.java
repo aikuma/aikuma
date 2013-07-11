@@ -2,6 +2,10 @@ package org.lp20.aikuma;
 
 import android.content.Context;
 import android.provider.Settings.Secure;
+import java.util.List;
+import java.io.IOException;
+import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.util.FileIO;
 
 /**
  * Sources and caveats:
@@ -12,6 +16,7 @@ import android.provider.Settings.Secure;
 public class Aikuma extends android.app.Application {
 
 	private static Aikuma instance;
+	private static List<Language> languages;
 
 	public Aikuma() {
 		instance = this;
@@ -26,6 +31,35 @@ public class Aikuma extends android.app.Application {
 				getContext().getContentResolver(), Secure.ANDROID_ID);
 	}
 
+	public static List<Language> getLanguages() {
+		if (languages == null) {
+			loadLanguages();
+			while (languages == null) {
+				//Wait patiently.
+			}
+		}
+		return languages;
+	}
+
+	public static void loadLanguages() {
+		if (languages == null) {
+			if (loadLangCodesThread == null || !loadLangCodesThread.isAlive()) {
+				loadLangCodesThread = new Thread(new Runnable() {
+					public void run() {
+						try {
+							languages = FileIO.readLangCodes(getContext().getResources());
+						} catch (IOException e) {
+							// This should never happen.
+							throw new RuntimeException("Cannot load languages");
+						}
+					}
+				});
+				loadLangCodesThread.start();
+			}
+		}
+	}
+
+	public static Thread loadLangCodesThread;
 }
 
 /*
