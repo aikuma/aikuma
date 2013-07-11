@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 
@@ -32,7 +33,7 @@ public class AddSpeakerActivity extends ListActivity {
 		super.onResume();
 
 		Log.i("aa", "OKAY5");
-		ArrayAdapter<Language> adapter = 
+		ArrayAdapter<Language> adapter =
 				new SpeakerLanguagesArrayAdapter(this, languages);
 		setListAdapter(adapter);
 		Log.i("aa", "OKAY6");

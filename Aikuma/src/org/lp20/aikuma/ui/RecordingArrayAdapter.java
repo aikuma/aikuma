@@ -1,4 +1,4 @@
-package org.lp20.aikuma;
+package org.lp20.aikuma.ui;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,9 +8,10 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import java.util.List;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.R;
 
 public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
-	RecordingArrayAdapter(Context context, List<Recording> recordings) {
+	public RecordingArrayAdapter(Context context, List<Recording> recordings) {
 		super(context, listItemLayout, recordings);
 		inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

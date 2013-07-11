@@ -17,6 +17,7 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.RecordActivity;
 import org.lp20.aikuma.ui.SettingsActivity;
+import org.lp20.aikuma.ui.RecordingArrayAdapter;
 
 public class MainActivity extends ListActivity
 {
