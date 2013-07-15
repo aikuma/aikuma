@@ -8,6 +8,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import org.lp20.aikuma.R;
 import com.google.common.base.Charsets;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
@@ -198,13 +199,23 @@ public final class FileIO {
 		writer.close();
 	}
 
-	public static List readDefaultLanguages() throws IOException {
-		CSVReader reader = new CSVReader(new FileReader(
-				new File(getAppRootPath(), "default_languages.csv")), '\t');
-		String[] nextLine;
+	public static List readDefaultLanguages() {
 		List<Language> defaultLanguages = new ArrayList<Language>();
-		while ((nextLine = reader.readNext()) != null) {
-			defaultLanguages.add(new Language(nextLine[0], nextLine[1]));
+		try {
+			CSVReader reader = new CSVReader(new FileReader(
+					new File(getAppRootPath(), "default_languages.csv")), '\t');
+			String[] nextLine;
+			try {
+				while ((nextLine = reader.readNext()) != null) {
+					defaultLanguages.add(new Language(nextLine[0], nextLine[1]));
+				}
+			} catch (IOException e) {
+				// Return as many languages as we have managed to retrieve.
+				return defaultLanguages;
+			}
+		} catch (FileNotFoundException e) {
+			// Return an empty language list.
+			return defaultLanguages;
 		}
 		return defaultLanguages;
 	}

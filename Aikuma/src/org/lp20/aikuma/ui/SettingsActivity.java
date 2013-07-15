@@ -41,12 +41,7 @@ public class SettingsActivity extends ListActivity {
 	public void onResume() {
 		super.onResume();
 
-		try {
-			defaultLanguages = FileIO.readDefaultLanguages();
-		} catch (IOException e) {
-			// Not much to do if it cannot read the default languages. Perhaps
-			// pop up some toast for the user?
-		}
+		defaultLanguages = FileIO.readDefaultLanguages();
 		ArrayAdapter<Language> adapter = new ArrayAdapter(this,
 				android.R.layout.simple_list_item_1, defaultLanguages);
 		setListAdapter(adapter);
@@ -89,8 +84,13 @@ public class SettingsActivity extends ListActivity {
 			intent) {
 		if (requestCode == SELECT_LANGUAGE) {
 			if (resultCode == RESULT_OK) {
-				defaultLanguages.add((Language)
-						intent.getParcelableExtra("language"));
+				Language language =
+						(Language) intent.getParcelableExtra("language");
+				if (!defaultLanguages.contains(language)) {
+					Log.i("langcodes", "code: " + language.getCode() + 
+					" name: " + language.getName());
+					defaultLanguages.add(language);
+				}
 				try {
 					FileIO.writeDefaultLanguages(defaultLanguages);
 				} catch (IOException e) {

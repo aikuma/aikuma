@@ -20,12 +20,7 @@ public class AddSpeakerActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.add_speaker);
-		try {
-			languages = FileIO.readDefaultLanguages();
-		} catch (IOException e) {
-			// If no default languages can be loaded, then there's not much
-			// that can be done. Maybe pop some toast up for the user?
-		}
+		languages = FileIO.readDefaultLanguages();
 	}
 
 	@Override
