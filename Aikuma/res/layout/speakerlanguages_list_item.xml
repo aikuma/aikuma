@@ -10,7 +10,7 @@
 			android:layout_weight="1"
 			android:layout_gravity="center_vertical"
 			android:id="@+id/recordingName"/>
-	<ImageView android:src="@drawable/ok_32"
+	<ImageButton android:src="@drawable/ok_32"
 			android:layout_gravity="center"
 			android:padding="5dip"
 			android:layout_margin="10dip"
