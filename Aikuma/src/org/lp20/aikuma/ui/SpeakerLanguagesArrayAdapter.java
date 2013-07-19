@@ -17,6 +17,7 @@ public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
 	public SpeakerLanguagesArrayAdapter(Context context, List<Language>
 			languages) {
 		super(context, listItemLayout, languages);
+		this.languages = languages;
 		inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -32,7 +33,8 @@ public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
 				(ImageButton) recordingView.findViewById(R.id.removeButton);
 		removeLanguageButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View view) {
-				Log.i("langs", "language: " + language);
+				languages.remove(language);
+				notifyDataSetChanged();
 			}
 		});
 
@@ -43,5 +45,6 @@ public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
 	private static final int listItemLayout =
 			R.layout.speakerlanguages_list_item;
 	private LayoutInflater inflater;
+	private List<Language> languages;
 
 }
