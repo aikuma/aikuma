@@ -1,10 +1,13 @@
 package org.lp20.aikuma.ui;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import java.util.List;
 import org.lp20.aikuma.model.Language;
@@ -22,9 +25,17 @@ public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
 	public View getView(int position, View _, ViewGroup parent) {
 		View recordingView =
 				(View) inflater.inflate(listItemLayout, parent, false);
-		Language language = getItem(position);
+		final Language language = getItem(position);
 		TextView recordingNameView = 
 				(TextView) recordingView.findViewById(R.id.recordingName);
+		ImageButton removeLanguageButton = 
+				(ImageButton) recordingView.findViewById(R.id.removeButton);
+		removeLanguageButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View view) {
+				Log.i("langs", "language: " + language);
+			}
+		});
+
 		recordingNameView.setText(language.toString());
 		return recordingView;
 	}

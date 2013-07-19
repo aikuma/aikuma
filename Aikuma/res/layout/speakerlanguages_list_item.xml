@@ -10,12 +10,12 @@
 			android:layout_weight="1"
 			android:layout_gravity="center_vertical"
 			android:id="@+id/recordingName"/>
-	<ImageButton android:src="@drawable/ok_32"
+	<ImageButton android:src="@drawable/cancel_32"
 			android:layout_gravity="center"
 			android:padding="5dip"
 			android:layout_margin="10dip"
 			android:scaleType="centerInside"
 			android:layout_width="60dip"
 			android:layout_height="60dip"
-			android:id="@+id/speakerImage"/>
+			android:id="@+id/removeButton"/>
 </LinearLayout>
