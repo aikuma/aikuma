@@ -9,9 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import java.io.IOException;
 import java.util.List;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.util.FileIO;
 
 public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
 	public SpeakerLanguagesArrayAdapter(Context context, List<Language>
@@ -35,6 +37,12 @@ public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
 			public void onClick(View view) {
 				languages.remove(language);
 				notifyDataSetChanged();
+				try {
+					FileIO.writeDefaultLanguages(languages);
+				} catch (IOException e) {
+					// If it can't be written, then not much can be done.
+					// Perhaps toast the user.
+				}
 			}
 		});
 

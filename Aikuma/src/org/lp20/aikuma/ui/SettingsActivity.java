@@ -42,8 +42,8 @@ public class SettingsActivity extends ListActivity {
 		super.onResume();
 
 		defaultLanguages = FileIO.readDefaultLanguages();
-		ArrayAdapter<Language> adapter = new ArrayAdapter(this,
-				android.R.layout.simple_list_item_1, defaultLanguages);
+		ArrayAdapter<Language> adapter = 
+				new SpeakerLanguagesArrayAdapter(this, defaultLanguages);
 		setListAdapter(adapter);
 	}
 

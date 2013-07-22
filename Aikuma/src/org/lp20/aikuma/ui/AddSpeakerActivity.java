@@ -43,7 +43,6 @@ public class AddSpeakerActivity extends ListActivity {
 			if (resultCode == RESULT_OK) {
 				languages.add((Language)
 						intent.getParcelableExtra("language"));
-				Log.i("langs", "langs");
 			}
 		}
 	}
