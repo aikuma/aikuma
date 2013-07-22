@@ -228,6 +228,12 @@ public class Speaker {
 				.append(languages, rhs.languages).isEquals();
 	}
 
+	public String toString() {
+		String s = getUUID().toString() + ", " + getName() + ", " +
+				getLanguages().toString();
+		return s;
+	}
+
 	/**
 	 * Get the directory where the Speaker data is stored.
 	 *

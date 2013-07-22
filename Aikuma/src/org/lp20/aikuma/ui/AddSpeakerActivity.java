@@ -6,11 +6,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 
@@ -45,6 +49,21 @@ public class AddSpeakerActivity extends ListActivity {
 						intent.getParcelableExtra("language"));
 			}
 		}
+	}
+
+	public void onOkButtonPressed(View view) {
+		UUID uuid = UUID.randomUUID();
+		EditText textField = (EditText) findViewById(R.id.Name);
+		String name = textField.getText().toString();
+		Speaker newSpeaker = new Speaker(uuid, name, languages);
+		Log.i("addspeaker", "newSpeaker: " + newSpeaker);
+		try {
+			newSpeaker.write();
+		} catch (IOException e) {
+			Toast.makeText(this, "Failed to write the Speaker to file",
+					Toast.LENGTH_LONG).show();
+		}
+		this.finish();
 	}
 
 	static final int SELECT_LANGUAGE = 0;
