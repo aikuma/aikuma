@@ -38,6 +38,17 @@ public class SettingsActivity extends ListActivity {
 	}
 
 	@Override
+	public void onPause() {
+		super.onPause();
+		try {
+			FileIO.writeDefaultLanguages(defaultLanguages);
+		} catch (IOException e) {
+			// Not much that can be done if writing fails, except perhaps
+			// toasting the user.
+		}
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
 

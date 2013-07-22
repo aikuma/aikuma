@@ -37,12 +37,14 @@ public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
 			public void onClick(View view) {
 				languages.remove(language);
 				notifyDataSetChanged();
+				/*
 				try {
 					FileIO.writeDefaultLanguages(languages);
 				} catch (IOException e) {
 					// If it can't be written, then not much can be done.
 					// Perhaps toast the user.
 				}
+				*/
 			}
 		});
 
