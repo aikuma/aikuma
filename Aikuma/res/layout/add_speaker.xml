@@ -15,6 +15,13 @@
 			android:hint="@string/speaker_name"
 			android:inputType="text"
 		/>
+		<Button
+			android:id="@+id/takePhotoButton"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/take_photo"
+			android:onClick="takePhoto"
+		/>
 		<TextView
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
