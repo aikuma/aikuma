@@ -5,7 +5,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Contains utilities to deal with images in the app.
@@ -25,7 +27,7 @@ public final class ImageUtils {
 	 *
 	 * @return	A File representing the images directory.
 	 */
-	public static File getImagesPath() {
+	private static File getImagesPath() {
 		File path = new File(FileIO.getAppRootPath(), "images");
 		path.mkdirs();
 		return path;
@@ -70,7 +72,42 @@ public final class ImageUtils {
 		if (!path.startsWith("/")) {
 			path = new File(getImagesPath(), path).getPath();
 		}
-		Bitmap image = BitmapFactory.decodeFile(path);
+		return BitmapFactory.decodeFile(path);
+	}
+
+	/**
+	 * Returns the Image associated with a given speaker UUID.
+	 */
+	public static File getImageFile(UUID uuid) {
+		return new File(getImagesPath(), uuid.toString() + ".jpg");
+	}
+
+	/**
+	 * Returns the small Image associated with a given speaker UUID.
+	 */
+	public static File getSmallImageFile(UUID uuid) {
+		return new File(getImagesPath(), uuid.toString() + ".small.jpg");
+	}
+
+	/**
+	 * Returns a Bitmap associated with a given speaker UUID.
+	 */
+	public static Bitmap getImage(UUID uuid) throws IOException {
+		File file = getImageFile(uuid);
+		return retrieveFromFile(file);
+	}
+
+	/**
+	 * Returns a small Bitmap associated with a given speaker UUID.
+	 */
+	public static Bitmap getSmallImage(UUID uuid) throws IOException {
+		File file = getSmallImageFile(uuid);
+		return retrieveFromFile(file);
+	}
+
+	public static void createSmallSpeakerImage(UUID uuid) throws IOException {
+		String imageFilePath = getImageFile(uuid).getPath();
+		Bitmap image = BitmapFactory.decodeFile(imageFilePath);
 		if (image == null) {
 			throw new IOException("The image could not be decoded.");
 		}
@@ -78,7 +115,7 @@ public final class ImageUtils {
 		
 		//Check for EXIF TAG, and rotate if necessary.
 		try {
-			ExifInterface exif = new ExifInterface(path);
+			ExifInterface exif = new ExifInterface(imageFilePath);
 			int orientation = exif.getAttributeInt(
 					ExifInterface.TAG_ORIENTATION,
 					ExifInterface.ORIENTATION_NORMAL);
@@ -97,16 +134,17 @@ public final class ImageUtils {
 			e.printStackTrace();
 		}
 
+		Bitmap small = ImageUtils.resizeBitmap(image, 0.05f);
 		if (rotate != 0) {
 			Matrix matrix = new Matrix();
 			matrix.postRotate(rotate);
 
-			image = Bitmap.createBitmap(image, 0, 0,
-					image.getWidth(), image.getHeight(), matrix, true);
+			small = Bitmap.createBitmap(small, 0, 0,
+					small.getWidth(), small.getHeight(), matrix, true);
 		}
-
-		assert image != null;
-		return image;
+		FileOutputStream out = new FileOutputStream(
+				new File(getImagesPath(), uuid.toString() + ".small.jpg"));
+		small.compress(Bitmap.CompressFormat.JPEG, 100, out);
 	}
 
 	/**
@@ -114,7 +152,6 @@ public final class ImageUtils {
 	 * (rotates the file according to the EXIF orientation tag, if applicable).
 	 *
 	 * @param	path	The absolute path of the image file.
-	 * @return	The image as a bitmap
 	 */
 	public static Bitmap retrieveFromFile(File path) throws IOException {
 		return retrieveFromFile(path.toString());

@@ -2,6 +2,7 @@ package org.lp20.aikuma.ui;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
@@ -55,9 +57,21 @@ public class AddSpeakerActivity extends ListActivity {
 			}
 		} else if (requestCode == PHOTO_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
-				Log.i("addspeaker", "woot");
+				handleSmallCameraPhoto();
 			}
 		}
+	}
+
+	private void handleSmallCameraPhoto() {
+		Bitmap image;
+		try {
+			ImageUtils.createSmallSpeakerImage(this.uuid);
+			image = ImageUtils.getSmallImage(this.uuid);
+		} catch (IOException e) {
+			image = null;
+		}
+		ImageView speakerImage = (ImageView) findViewById(R.id.speakerImage);
+		speakerImage.setImageBitmap(image);
 	}
 
 	public void onOkButtonPressed(View view) {
@@ -81,11 +95,10 @@ public class AddSpeakerActivity extends ListActivity {
 	private void dispatchTakePictureIntent(int actionCode) {
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-		String imageFilename = this.uuid.toString() + ".jpg";
 		try {
-			File image = new File(ImageUtils.getImagesPath(), imageFilename);
+			File imageFile = ImageUtils.getImageFile(this.uuid);
 			takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-					Uri.fromFile(image));
+					Uri.fromFile(imageFile));
 		} catch (Exception e) {
 			Toast.makeText(this, "Failed to take a photo.",
 					Toast.LENGTH_LONG).show();
