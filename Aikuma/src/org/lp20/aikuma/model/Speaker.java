@@ -93,7 +93,7 @@ public class Speaker {
 	 * @return	A Bitmap object.
 	 */
 	public Bitmap getImage() throws IOException {
-		return ImageUtils.retrieveFromFile(getImage() + ".jpg");
+		return ImageUtils.getImage(getUUID());
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class Speaker {
 	 * @return	A Bitmap object.
 	 */
 	public Bitmap getSmallImage() throws IOException {
-		return ImageUtils.retrieveFromFile(getSmallImage() + ".small.jpg");
+		return ImageUtils.getSmallImage(getUUID());
 	}
 
 	/**
