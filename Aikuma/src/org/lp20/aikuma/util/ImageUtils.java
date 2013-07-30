@@ -72,7 +72,12 @@ public final class ImageUtils {
 		if (!path.startsWith("/")) {
 			path = new File(getImagesPath(), path).getPath();
 		}
-		return BitmapFactory.decodeFile(path);
+		Bitmap bmp = BitmapFactory.decodeFile(path);
+		if (bmp != null) {
+			return bmp;
+		} else {
+			throw new IOException("No such bitmap file exists.");
+		}
 	}
 
 	/**
