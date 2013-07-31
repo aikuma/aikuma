@@ -25,6 +25,8 @@ public class LanguageFilterList extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.filter_list);
+		filterText = (EditText) findViewById(R.id.search_box);
+		filterText.addTextChangedListener(filterTextWatcher);
 		List<Language> languages;
 		languages = Aikuma.getLanguages();
 		adapter = new ArrayAdapter<Language>(this,
@@ -50,6 +52,12 @@ public class LanguageFilterList extends ListActivity {
 				count) {adapter.getFilter().filter(s);
 		}
 	};
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		filterText.removeTextChangedListener(filterTextWatcher);
+	}
 	private ArrayAdapter<Language> adapter;
 	private EditText filterText = null;
 }
