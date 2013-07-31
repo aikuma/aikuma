@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import java.io.IOException;
 import java.util.List;
 import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.R;
 
 public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
@@ -24,9 +25,17 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 		View speakerView =
 				(View) inflater.inflate(listItemLayout, parent, false);
 		Speaker speaker = getItem(position);
-		TextView speakerNameView = 
+		TextView speakerNameView =
 				(TextView) speakerView.findViewById(R.id.speakerName);
 		speakerNameView.setText(speaker.getName());
+		TextView speakerLanguagesView =
+				(TextView) speakerView.findViewById(R.id.speakerLanguages);
+		List<Language> languages = speaker.getLanguages();
+		String languageNames = languages.remove(0).getName();
+		for (Language language : languages) {
+			languageNames = languageNames + ", " + language.getName();
+		}
+		speakerLanguagesView.setText(languageNames);
 		ImageView speakerImage =
 				(ImageView) speakerView.findViewById(R.id.speakerImage);
 		try {
