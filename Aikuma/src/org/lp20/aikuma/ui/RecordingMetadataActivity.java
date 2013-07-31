@@ -21,6 +21,8 @@ import java.util.UUID;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.model.Language;
 
 /**
  * The activity that allows audio to be recorded
@@ -80,7 +82,7 @@ public class RecordingMetadataActivity extends Activity {
 		Intent intent =
 			new Intent(RecordingMetadataActivity.this,
 						SpeakersActivity.class);
-		startActivity(intent);
+		startActivityForResult(intent, ADD_SPEAKER);
 	}
 
 	@Override
@@ -127,6 +129,15 @@ public class RecordingMetadataActivity extends Activity {
 				.show();
 	}
 
+	protected void onActivityResult(
+			int requestCode, int resultCode, Intent intent) {
+		if (requestCode == ADD_SPEAKER) {
+			if (resultCode == RESULT_OK) {
+				Speaker speaker = intent.getParcelableExtra("speaker");
+				Log.i("addspeaker", "speaker: " + speaker.getName());
+			}
+		}
+	}
 	private void setRecording(Recording recording) {
 		this.recording = recording;
 	}
@@ -135,6 +146,7 @@ public class RecordingMetadataActivity extends Activity {
 		return this.recording;
 	}
 
+	static final int ADD_SPEAKER = 0;
 	private UUID uuid;
 	private Recording recording;
 }

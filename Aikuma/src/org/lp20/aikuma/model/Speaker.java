@@ -1,6 +1,8 @@
 package org.lp20.aikuma.model;
 
 import android.graphics.Bitmap;
+import android.os.Parcelable;
+import android.os.Parcel;
 import android.util.Log;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.ImageUtils;
@@ -21,7 +23,7 @@ import org.json.simple.JSONValue;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class Speaker {
+public class Speaker implements Parcelable{
 
 	/**
 	 * The minimal constructor; do not use if the Speaker already has a UUID,
@@ -280,6 +282,34 @@ public class Speaker {
 		this.languages = languages;
 	}
 
+	/* To make it Parcelable */
+	public int describeContents() {
+		return 0;
+	}
+
+	public void writeToParcel(Parcel out, int _flags) {
+		out.writeString(uuid.toString());
+		out.writeString(name);
+		out.writeTypedList(languages);
+	}
+
+	public static final Parcelable.Creator<Speaker> CREATOR =
+			new Parcelable.Creator<Speaker>() {
+		public Speaker createFromParcel(Parcel in) {
+			return new Speaker(in);
+		}
+		public Speaker[] newArray(int size) {
+			return new Speaker[size];
+		}
+	};
+
+	public Speaker(Parcel in) {
+		setUUID(UUID.fromString(in.readString()));
+		setName(in.readString());
+		List<Language> languages = new ArrayList<Language>();
+		in.readTypedList(languages, Language.CREATOR);
+		setLanguages(languages);
+	}
 
 	/**
 	 * The UUID of the Speaker.
