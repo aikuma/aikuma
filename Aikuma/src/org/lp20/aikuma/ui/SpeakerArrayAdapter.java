@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.ImageView;
+import android.util.Log;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Language;
@@ -30,7 +32,8 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 		speakerNameView.setText(speaker.getName());
 		TextView speakerLanguagesView =
 				(TextView) speakerView.findViewById(R.id.speakerLanguages);
-		List<Language> languages = speaker.getLanguages();
+		List<Language> languages = new
+				ArrayList<Language>(speaker.getLanguages());
 		String languageNames = languages.remove(0).getName();
 		for (Language language : languages) {
 			languageNames = languageNames + ", " + language.getName();
