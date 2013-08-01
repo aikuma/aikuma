@@ -8,6 +8,8 @@
 		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:layout_above="@id/cancelAndOkButtons"
+		android:layout_alignParentTop="true"
 		>
 		<fragment
 				android:name="org.lp20.aikuma.ui.ListenFragment"
