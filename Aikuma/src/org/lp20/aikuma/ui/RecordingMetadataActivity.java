@@ -172,25 +172,27 @@ public class RecordingMetadataActivity extends ListActivity {
 		if (requestCode == ADD_SPEAKER) {
 			if (resultCode == RESULT_OK) {
 				Speaker speaker = intent.getParcelableExtra("speaker");
-				speakersUUIDs.add(speaker.getUUID());
-				for (Language language : speaker.getLanguages()) {
-					if (!languages.contains(language)) {
-						languages.add(language);
+				if (!speakersUUIDs.contains(speaker.getUUID())) {
+					speakersUUIDs.add(speaker.getUUID());
+					for (Language language : speaker.getLanguages()) {
+						if (!languages.contains(language)) {
+							languages.add(language);
+						}
 					}
+					selectedLanguages = new ArrayList<Language>(languages);
+					Log.i("recordinglangs", "languages: " + languages);
+					ImageView speakerImage = new ImageView(this);
+					speakerImage.setAdjustViewBounds(true);
+					speakerImage.setMaxHeight(60);
+					speakerImage.setMaxWidth(60);
+					speakerImage.setPaddingRelative(5,5,5,5);
+					try {
+						speakerImage.setImageBitmap(speaker.getSmallImage());
+					} catch (IOException e) {
+						// If the image can't be loaded, we just leave it at that.
+					}
+					userImages.addView(speakerImage);
 				}
-				selectedLanguages = new ArrayList<Language>(languages);
-				Log.i("recordinglangs", "languages: " + languages);
-				ImageView speakerImage = new ImageView(this);
-				speakerImage.setAdjustViewBounds(true);
-				speakerImage.setMaxHeight(60);
-				speakerImage.setMaxWidth(60);
-				speakerImage.setPaddingRelative(5,5,5,5);
-				try {
-					speakerImage.setImageBitmap(speaker.getSmallImage());
-				} catch (IOException e) {
-					// If the image can't be loaded, we just leave it at that.
-				}
-				userImages.addView(speakerImage);
 			}
 		}
 	}
