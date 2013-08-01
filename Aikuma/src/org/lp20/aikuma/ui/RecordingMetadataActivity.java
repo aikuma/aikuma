@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -69,6 +70,7 @@ public class RecordingMetadataActivity extends ListActivity {
 
 	}
 
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -112,6 +114,73 @@ public class RecordingMetadataActivity extends ListActivity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
+		switch (item.getItemId()) {
+			case R.id.record:
+				new AlertDialog.Builder(this)
+						.setMessage(R.string.restart_recording)
+						.setPositiveButton(R.string.discard, new
+						DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								Intent intent =
+									new Intent(RecordingMetadataActivity.this,
+												RecordActivity.class);
+								intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+								RecordingMetadataActivity.this.finish();
+								startActivity(intent);
+							}
+						})
+						.setNegativeButton(R.string.cancel, null)
+						.show();
+				return true;
+			case R.id.mainlist:
+				new AlertDialog.Builder(this)
+						.setMessage(R.string.discard_dialog)
+						.setPositiveButton(R.string.discard, new
+						DialogInterface.OnClickListener() {
+						
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								Intent intent =
+									new Intent(RecordingMetadataActivity.this,
+												MainActivity.class);
+								intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+								RecordingMetadataActivity.this.finish();
+								startActivity(intent);
+							}
+						})
+						.setNegativeButton(R.string.cancel, null)
+						.show();
+				return true;
+			case R.id.settings:
+				new AlertDialog.Builder(this)
+						.setMessage(R.string.discard_dialog)
+						.setPositiveButton(R.string.discard, new
+						DialogInterface.OnClickListener() {
+						
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								Intent intent =
+									new Intent(RecordingMetadataActivity.this,
+												SettingsActivity.class);
+								RecordingMetadataActivity.this.finish();
+								startActivity(intent);
+							}
+						})
+						.setNegativeButton(R.string.cancel, null)
+						.show();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 
 	public void onOkButtonPressed(View view) {
