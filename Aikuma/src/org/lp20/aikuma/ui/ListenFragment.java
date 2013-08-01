@@ -122,7 +122,11 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		player.release();
+		if (player != null) {
+			//If you hit the stop button really quickly, the player may not
+			//have been initialized fully.
+			player.release();
+		}
 	}
 
 	@Override

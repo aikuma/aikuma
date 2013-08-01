@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,9 +22,11 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
@@ -43,9 +46,9 @@ public class RecordingMetadataActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recording_metadata);
 		Intent intent = getIntent();
-		UUID uuid = UUID.fromString(
+		uuid = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
-		int sampleRate = (Integer) intent.getExtras().get("sampleRate");
+		sampleRate = (Integer) intent.getExtras().get("sampleRate");
 		ListenFragment fragment = (ListenFragment)
 				getFragmentManager().findFragmentById(R.id.ListenFragment);
 		try {
@@ -63,6 +66,7 @@ public class RecordingMetadataActivity extends ListActivity {
 				(LinearLayout) findViewById(R.id.userImagesAndAddUserButton);
 		speakersUUIDs = new ArrayList<UUID>();
 		languages = new ArrayList<Language>();
+
 	}
 
 	@Override
@@ -122,7 +126,22 @@ public class RecordingMetadataActivity extends ListActivity {
 								new Intent(RecordingMetadataActivity.this,
 										MainActivity.class);
 						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						//Recording recording = new Recording(
+						EditText descriptionField = (EditText)
+								findViewById(R.id.description);
+						String description =
+								descriptionField.getText().toString();
+						Date date = new Date();
+						String androidID = Aikuma.getAndroidID();
+						Recording recording = new Recording(
+								uuid, description, date, selectedLanguages, 
+								speakersUUIDs, androidID, sampleRate);
+						try {
+							recording.write();
+						} catch (IOException e) {
+							Toast.makeText(RecordingMetadataActivity.this,
+								"Failed to write the Recording metadata.",
+								Toast.LENGTH_LONG).show();
+						}
 						startActivity(intent);
 					}
 				})
@@ -190,4 +209,5 @@ public class RecordingMetadataActivity extends ListActivity {
 	private List<Language> languages;
 	private List<Language> selectedLanguages;
 	private LinearLayout userImages;
+	private int sampleRate;
 }
