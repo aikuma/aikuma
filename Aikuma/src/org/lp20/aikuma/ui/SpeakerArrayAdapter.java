@@ -34,11 +34,13 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 				(TextView) speakerView.findViewById(R.id.speakerLanguages);
 		List<Language> languages = new
 				ArrayList<Language>(speaker.getLanguages());
-		String languageNames = languages.remove(0).getName();
-		for (Language language : languages) {
-			languageNames = languageNames + ", " + language.getName();
+		if (languages.size() > 0) {
+			String languageNames = languages.remove(0).getName();
+			for (Language language : languages) {
+				languageNames = languageNames + ", " + language.getName();
+			}
+			speakerLanguagesView.setText(languageNames);
 		}
-		speakerLanguagesView.setText(languageNames);
 		ImageView speakerImage =
 				(ImageView) speakerView.findViewById(R.id.speakerImage);
 		try {
