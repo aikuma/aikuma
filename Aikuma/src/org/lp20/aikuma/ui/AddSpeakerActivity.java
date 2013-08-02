@@ -72,6 +72,11 @@ public class AddSpeakerActivity extends ListActivity {
 		}
 		ImageView speakerImage = (ImageView) findViewById(R.id.speakerImage);
 		speakerImage.setImageBitmap(image);
+		if (image != null) {
+			speakerHasImage = true;
+		} else {
+			speakerHasImage = false;
+		}
 	}
 
 	public void onCancelButtonPressed(View view) {
@@ -83,13 +88,18 @@ public class AddSpeakerActivity extends ListActivity {
 		String name = textField.getText().toString();
 		Speaker newSpeaker = new Speaker(uuid, name, languages);
 		Log.i("addspeaker", "newSpeaker: " + newSpeaker);
-		try {
-			newSpeaker.write();
-		} catch (IOException e) {
-			Toast.makeText(this, "Failed to write the Speaker to file",
+		if (speakerHasImage) {
+			try {
+				newSpeaker.write();
+			} catch (IOException e) {
+				Toast.makeText(this, "Failed to write the Speaker to file",
+						Toast.LENGTH_LONG).show();
+			}
+			this.finish();
+		} else {
+			Toast.makeText(this, "Each speaker needs an image. Take a photo!",
 					Toast.LENGTH_LONG).show();
 		}
-		this.finish();
 	}
 
 	public void takePhoto(View view) {
@@ -115,4 +125,5 @@ public class AddSpeakerActivity extends ListActivity {
 	static final int PHOTO_REQUEST_CODE = 1;
 	private List<Language> languages = new ArrayList<Language>();
 	private UUID uuid;
+	private boolean speakerHasImage;
 }
