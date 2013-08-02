@@ -52,8 +52,11 @@ public class AddSpeakerActivity extends ListActivity {
 			intent) {
 		if (requestCode == SELECT_LANGUAGE) {
 			if (resultCode == RESULT_OK) {
-				languages.add((Language)
-						intent.getParcelableExtra("language"));
+				Language language =
+						(Language) intent.getParcelableExtra("language");
+				if (!languages.contains(language)) {
+					languages.add(language);
+				}
 			}
 		} else if (requestCode == PHOTO_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
