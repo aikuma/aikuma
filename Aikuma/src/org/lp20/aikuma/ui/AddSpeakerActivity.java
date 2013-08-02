@@ -74,6 +74,10 @@ public class AddSpeakerActivity extends ListActivity {
 		speakerImage.setImageBitmap(image);
 	}
 
+	public void onCancelButtonPressed(View view) {
+		this.finish();
+	}
+
 	public void onOkButtonPressed(View view) {
 		EditText textField = (EditText) findViewById(R.id.Name);
 		String name = textField.getText().toString();
