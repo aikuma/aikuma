@@ -192,8 +192,8 @@ public final class FileIO {
 				new File(getAppRootPath(), "default_languages.csv")), '\t');
 		String[] entry = new String[2];
 		for (Language lang : defaultLanguages) {
-			entry[0] = lang.getCode();
-			entry[1] = lang.getName();
+			entry[0] = lang.getName();
+			entry[1] = lang.getCode();
 			writer.writeNext(entry);
 		}
 		writer.close();
