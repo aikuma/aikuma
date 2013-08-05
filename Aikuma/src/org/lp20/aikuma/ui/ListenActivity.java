@@ -68,6 +68,10 @@ public class ListenActivity extends Activity {
 		super.onStop();
 	}
 
+	public void onPhoneRespeakingToggle(View view) {
+		phoneRespeaking = ((ToggleButton) view).isChecked();
+	}
+
 	public Recording getRecording() {
 		return this.recording;
 	}
@@ -77,4 +81,5 @@ public class ListenActivity extends Activity {
 	}
 
 	private Recording recording;
+	private boolean phoneRespeaking = false;
 }
