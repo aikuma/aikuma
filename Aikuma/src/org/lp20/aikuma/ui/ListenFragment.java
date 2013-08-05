@@ -20,6 +20,7 @@ import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.model.Segments;
 import org.lp20.aikuma.model.Segments.Segment;
+import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.R;
 
 public class ListenFragment extends Fragment implements OnClickListener {
@@ -107,11 +108,27 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	public void onPause() {
 		super.onPause();
 		pause();
+		this.proximityDetector.stop();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		this.proximityDetector = new ProximityDetector(getActivity()) {
+			public void near(float distance) {
+				if (!player.isPlaying()) {
+					play();
+				}
+				Log.i("issue73", "near");
+			}
+			public void far(float distance) {
+				Log.i("issue73", "far");
+				if (player.isPlaying()) {
+					pause();
+				}
+			}
+		};
+		this.proximityDetector.start();
 	}
 
 	@Override
@@ -194,4 +211,5 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	private Recording recording;
 	private UUID uuid;
 	private int sampleRate;
+	private ProximityDetector proximityDetector;
 }

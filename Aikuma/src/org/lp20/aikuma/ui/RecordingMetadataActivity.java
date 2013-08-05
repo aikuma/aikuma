@@ -67,6 +67,7 @@ public class RecordingMetadataActivity extends ListActivity {
 				(LinearLayout) findViewById(R.id.userImagesAndAddUserButton);
 		speakersUUIDs = new ArrayList<UUID>();
 		languages = new ArrayList<Language>();
+		selectedLanguages = new ArrayList<Language>();
 
 	}
 

@@ -182,6 +182,7 @@ public class RecordActivity extends Activity {
 		intent.putExtra("uuidString", uuid.toString());
 		intent.putExtra("sampleRate", sampleRate);
 		startActivity(intent);
+		RecordActivity.this.finish();
 		try {
 			recorder.stop();
 		} catch (MicException e) {
