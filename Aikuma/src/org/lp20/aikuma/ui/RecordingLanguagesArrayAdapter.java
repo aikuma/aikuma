@@ -46,9 +46,6 @@ public class RecordingLanguagesArrayAdapter extends ArrayAdapter<Language> {
 					selectedLanguages.add(language);
 					checked = true;
 				}
-				Log.i("recordinglangs", "languages: " + languages);
-				Log.i("recordinglangs", "selectedLanguages: " + selectedLanguages);
-				//notifyDataSetChanged();
 			}
 			private boolean checked = true;
 		});

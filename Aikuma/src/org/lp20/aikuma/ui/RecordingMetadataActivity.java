@@ -250,7 +250,6 @@ public class RecordingMetadataActivity extends ListActivity {
 						}
 					}
 					selectedLanguages = new ArrayList<Language>(languages);
-					Log.i("recordinglangs", "languages: " + languages);
 					ImageView speakerImage = new ImageView(this);
 					speakerImage.setAdjustViewBounds(true);
 					speakerImage.setMaxHeight(60);

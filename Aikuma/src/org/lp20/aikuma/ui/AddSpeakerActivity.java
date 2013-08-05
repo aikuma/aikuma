@@ -90,7 +90,6 @@ public class AddSpeakerActivity extends ListActivity {
 		EditText textField = (EditText) findViewById(R.id.Name);
 		String name = textField.getText().toString();
 		Speaker newSpeaker = new Speaker(uuid, name, languages);
-		Log.i("addspeaker", "newSpeaker: " + newSpeaker);
 		if (speakerHasImage) {
 			try {
 				newSpeaker.write();

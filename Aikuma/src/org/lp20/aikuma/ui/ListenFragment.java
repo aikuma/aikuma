@@ -119,10 +119,8 @@ public class ListenFragment extends Fragment implements OnClickListener {
 				if (!player.isPlaying()) {
 					play();
 				}
-				Log.i("issue73", "near");
 			}
 			public void far(float distance) {
-				Log.i("issue73", "far");
 				if (player.isPlaying()) {
 					pause();
 				}
@@ -192,7 +190,6 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	}
 
 	public void setRecording(Recording recording) {
-		Log.i("lf", "recording: " + recording);
 		this.recording = recording;
 	}
 

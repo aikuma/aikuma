@@ -98,8 +98,6 @@ public class SettingsActivity extends ListActivity {
 				Language language =
 						(Language) intent.getParcelableExtra("language");
 				if (!defaultLanguages.contains(language)) {
-					Log.i("langcodes", "code: " + language.getCode() + 
-					" name: " + language.getName());
 					defaultLanguages.add(language);
 				}
 				try {
