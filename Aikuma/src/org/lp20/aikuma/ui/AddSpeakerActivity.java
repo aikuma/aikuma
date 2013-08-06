@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 import java.io.File;
@@ -32,6 +33,8 @@ public class AddSpeakerActivity extends ListActivity {
 		setContentView(R.layout.add_speaker);
 		languages = FileIO.readDefaultLanguages();
 		uuid = UUID.randomUUID();
+		ImageButton okButton = (ImageButton) findViewById(R.id.okButton);
+		okButton.setEnabled(false);
 	}
 
 	@Override
@@ -77,6 +80,8 @@ public class AddSpeakerActivity extends ListActivity {
 		speakerImage.setImageBitmap(image);
 		if (image != null) {
 			speakerHasImage = true;
+			ImageButton okButton = (ImageButton) findViewById(R.id.okButton);
+			okButton.setEnabled(true);
 		} else {
 			speakerHasImage = false;
 		}
