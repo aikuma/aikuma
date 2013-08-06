@@ -30,22 +30,25 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		Recording recording = getItem(position);
 		TextView recordingNameView = 
 				(TextView) recordingView.findViewById(R.id.recordingName);
-		ImageView speakerImage;
 		for (UUID uuid : recording.getSpeakersUUIDs()) {
-			speakerImage = new ImageView(context);
-			speakerImage.setAdjustViewBounds(true);
-			speakerImage.setMaxHeight(60);
-			speakerImage.setMaxWidth(60);
-			speakerImage.setPaddingRelative(5,5,5,5);
-			try {
-				speakerImage.setImageBitmap(ImageUtils.getSmallImage(uuid));
-			} catch (IOException e) {
-				// Not much can be done if the image can't be loaded.
-			}
-			recordingView.addView(speakerImage);
+			recordingView.addView(makeSpeakerImageView(uuid));
 		}
 		recordingNameView.setText(recording.getName());
 		return recordingView;
+	}
+
+	private ImageView makeSpeakerImageView(UUID speakerUUID) {
+		ImageView speakerImage = new ImageView(context);
+		speakerImage.setAdjustViewBounds(true);
+		speakerImage.setMaxHeight(60);
+		speakerImage.setMaxWidth(60);
+		speakerImage.setPaddingRelative(5,5,5,5);
+		try {
+			speakerImage.setImageBitmap(ImageUtils.getSmallImage(speakerUUID));
+		} catch (IOException e) {
+			// Not much can be done if the image can't be loaded.
+		}
+		return speakerImage;
 	}
 
 	private static final int listItemLayout = R.layout.recording_list_item;
