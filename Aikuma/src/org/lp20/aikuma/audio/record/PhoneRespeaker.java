@@ -1,4 +1,4 @@
-package org.lp20.aikuma.audio.recording.PhoneRespeaker;
+package org.lp20.aikuma.audio.record;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,9 +11,9 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.util.Log;
 
 import org.lp20.aikuma.audio.Player;
+import org.lp20.aikuma.audio.record.recognizers.AverageRecognizer;
 import org.lp20.aikuma.audio.record.analyzers.Analyzer;
 import org.lp20.aikuma.audio.record.analyzers.ThresholdSpeechAnalyzer;
-import org.lp20.aikuma.audio.recognizers.AverageRecognizer;
 
 /** Respeaker used to get input from eg. a microphone and
  *  output into a file.tIn addition, it also 
@@ -34,12 +34,23 @@ import org.lp20.aikuma.audio.recognizers.AverageRecognizer;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class AudioRespeaker implements AudioListener, AudioHandler {
-	
+public class PhoneRespeaker implements AudioListener, AudioHandler {
+
+	public PhoneRespeaker(File originalFile, File respeakingFile,
+			int sampleRate, Analyzer analyzer) {
+		this.analyzer = analyzer;
+		setUpMicrophone(sampleRate);
+		setUpFile();
+	}
+
+	/** Analyzer that determines whether speech is happening */
 	private Analyzer analyzer;
-	
 	/** The microphone used to get respeaking data. */
 	private Microphone microphone;
+
+	/////////////////////////////////////////////////////////////////////
+	
+	
 	
 	/** Player to play the original with. */
 	private Player player;
@@ -54,7 +65,7 @@ public class AudioRespeaker implements AudioListener, AudioHandler {
 	private boolean finishedPlaying = false;
 	
 	/** Default constructor. */
-	public AudioRespeaker(ThresholdSpeechAnalyzer analyzer, boolean
+	public PhoneRespeaker(ThresholdSpeechAnalyzer analyzer, boolean
 			shouldPlayThroughSpeaker) {
 		this.analyzer = analyzer;
 		
