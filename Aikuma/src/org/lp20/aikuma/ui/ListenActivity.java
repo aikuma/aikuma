@@ -8,12 +8,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.audio.Player;
+import org.lp20.aikuma.audio.SimplePlayer;
+import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.R;
 
 public class ListenActivity extends Activity {
@@ -23,22 +28,43 @@ public class ListenActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listen);
+		//UUID respeakingUUID = UUID.randomUUID();
+		//phoneRespeaker = new PhoneRespeaker(recording,
+		//		new File(Recording.getRecordingsPath(),
+		//				respeakingUUID.toString() + ".wav"),
+		//		sampleRate);
+		fragment =
+				(ListenFragment)
+				getFragmentManager().findFragmentById(R.id.ListenFragment);
+		setUpPlayer();
+	}
+
+	private void setUpPlayer() {
 		Intent intent = getIntent();
 		UUID uuid = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
 		try {
-			setRecording(Recording.read(uuid));
+			Recording recording = Recording.read(uuid);
+			if (recording.isOriginal()) {
+				setPlayer(new SimplePlayer(recording));
+			} else {
+				setPlayer(new InterleavedPlayer(recording));
+			}
 		} catch (IOException e) {
-			// In this case there probably isn't a Recording metadata file but
-			// are we sure that's the exception? Probably should check for the
-			// existence of the file.
-			File wavFile = new File(Recording.getRecordingsPath(),
-					uuid.toString() + ".wav");
+			//The recording metadata cannot be read, so let's wrap up this
+			//activity.
+			ListenActivity.this.finish();
 		}
-		ListenFragment fragment =
-				(ListenFragment)
-				getFragmentManager().findFragmentById(R.id.ListenFragment);
-		fragment.setRecording(getRecording());
+	}
+
+	private void setPlayer(SimplePlayer player) {
+		this.player = player;
+		fragment.setPlayer(player);
+	}
+
+	private void setPlayer(InterleavedPlayer player) {
+		this.player = player;
+		fragment.setPlayer(player);
 	}
 
 	@Override
@@ -72,14 +98,7 @@ public class ListenActivity extends Activity {
 		phoneRespeaking = ((ToggleButton) view).isChecked();
 	}
 
-	public Recording getRecording() {
-		return this.recording;
-	}
-
-	private void setRecording(Recording recording) {
-		this.recording = recording;
-	}
-
-	private Recording recording;
 	private boolean phoneRespeaking = false;
+	private Player player;
+	private ListenFragment fragment;
 }
