@@ -20,7 +20,7 @@ public class InterleavedPlayer extends Player {
 	 *
 	 * @param	recording	The metadata of the recording to play.
 	 */
-	public InterleavedPlayer(Recording recording) throws Exception {
+	public InterleavedPlayer(Recording recording) throws IOException {
 		if (recording.isOriginal()) {
 			throw new IllegalArgumentException("The supplied Recording is " +
 					"not a respeaking. Use SimplePlayer instead.");

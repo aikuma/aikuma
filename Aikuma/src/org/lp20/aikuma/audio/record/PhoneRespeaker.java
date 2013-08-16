@@ -16,6 +16,7 @@ import org.lp20.aikuma.audio.record.recognizers.AverageRecognizer;
 import org.lp20.aikuma.audio.record.analyzers.Analyzer;
 import org.lp20.aikuma.audio.record.analyzers.ThresholdSpeechAnalyzer;
 import static org.lp20.aikuma.audio.record.Microphone.MicException;
+import org.lp20.aikuma.model.Recording;
 
 /** Respeaker used to get input from eg. a microphone and
  *  output into a file.tIn addition, it also 
