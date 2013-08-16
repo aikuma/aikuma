@@ -29,6 +29,7 @@ import java.util.UUID;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.MainActivity;
+import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Language;
@@ -50,27 +51,27 @@ public class RecordingMetadataActivity extends ListActivity {
 		uuid = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
 		sampleRate = (Integer) intent.getExtras().get("sampleRate");
-		ListenFragment fragment = (ListenFragment)
-				getFragmentManager().findFragmentById(R.id.ListenFragment);
-		try {
-			setRecording(Recording.read(uuid));
-			fragment.setRecording(getRecording());
-		} catch (IOException e) {
-			//If there is an issue reading the recording metadata, then we'll
-			//just try use the wav file alone.
-			File wavFile = new File(Recording.getRecordingsPath(),
-						uuid.toString() + ".wav");
-			fragment.setUUID(uuid);
-			fragment.setSampleRate(sampleRate);
-		}
-		userImages = 
+		setUpPlayer(uuid, sampleRate);
+		userImages =
 				(LinearLayout) findViewById(R.id.userImagesAndAddUserButton);
 		speakersUUIDs = new ArrayList<UUID>();
 		languages = new ArrayList<Language>();
 		selectedLanguages = new ArrayList<Language>();
-
 	}
 
+	private void setUpPlayer(UUID uuid, int sampleRate) {
+		listenFragment = (ListenFragment)
+				getFragmentManager().findFragmentById(R.id.ListenFragment);
+		try {
+			listenFragment.setPlayer(new SimplePlayer(
+					new File(Recording.getRecordingsPath(), uuid.toString() + ".wav"),
+					sampleRate));
+		} catch (IOException e) {
+			//The SimplePlayer cannot be constructed, so let's end the
+			//activity.
+			RecordingMetadataActivity.this.finish();
+		}
+	}
 
 	@Override
 	public void onResume() {
@@ -282,4 +283,5 @@ public class RecordingMetadataActivity extends ListActivity {
 	private List<Language> selectedLanguages;
 	private LinearLayout userImages;
 	private int sampleRate;
+	private ListenFragment listenFragment;
 }
