@@ -28,7 +28,7 @@ public abstract class Player {
 	public abstract void play();
 
 	/** Get current point in the recording in milliseconds. */
-	public abstract int getCurrentPositionMsec();
+	public abstract int getCurrentMsec();
 
 	/** Releases resources associated with the player */
 	public abstract void release();

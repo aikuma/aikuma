@@ -19,4 +19,11 @@
 			android:textOff="Phone respeak off"
 			android:onClick="onPhoneRespeakingToggle"
 	/>
+	<Button
+			android:id="@+id/thumbRespeaking"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:onClick="onThumbRespeakingButton"
+	/>
 </RelativeLayout>

@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Set;
 import org.lp20.aikuma.audio.record.analyzers.Analyzer;
 import org.lp20.aikuma.audio.record.analyzers.SimpleAnalyzer;
+import org.lp20.aikuma.audio.Sampler;
 import org.lp20.aikuma.R;
 import static org.lp20.aikuma.audio.record.Microphone.MicException;
 
@@ -26,7 +27,7 @@ import static org.lp20.aikuma.audio.record.Microphone.MicException;
  *
  *  Note that stopping the recorder closes and finalizes the WAV file.
  */
-public class Recorder implements AudioHandler, MicrophoneListener {
+public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 
 	/**
 	 * Creates a Recorder that uses an analyzer which tells the recorder to

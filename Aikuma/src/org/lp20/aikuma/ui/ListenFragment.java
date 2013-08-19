@@ -130,7 +130,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 				public void run() {
 					int currentPosition;
 					while (true) {
-						currentPosition = player.getCurrentPositionMsec();
+						currentPosition = player.getCurrentMsec();
 						seekBar.setProgress(
 								(int)(((float)currentPosition/(float)
 								player.getDurationMsec())*100));

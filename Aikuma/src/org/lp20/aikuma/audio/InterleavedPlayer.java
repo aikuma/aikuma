@@ -83,8 +83,8 @@ public class InterleavedPlayer extends Player {
 	}
 
 	/** Get current point in the recording in milliseconds. */
-	public int getCurrentPositionMsec() {
-		return original.getCurrentPositionMsec();
+	public int getCurrentMsec() {
+		return original.getCurrentMsec();
 	}
 
 	/** Get the duration of the recording in milliseconds. */

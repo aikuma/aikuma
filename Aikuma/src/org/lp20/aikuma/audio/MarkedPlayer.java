@@ -118,7 +118,7 @@ public class MarkedPlayer extends SimplePlayer {
 					break;
 				}
 				if (notificationMarkerPosition >= 0) {
-					if (getCurrentPositionMsec() >=
+					if (getCurrentMsec() >=
 							getNotificationMarkerPositionMsec()) {
 						onMarkerReachedListener.onMarkerReached(
 								MarkedPlayer.this);
