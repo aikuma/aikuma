@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+	>
+	<fragment
+			android:name="org.lp20.aikuma.ui.ListenFragment"
+			android:id="@+id/ListenFragment"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+	/>
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+	>
+		<ImageButton
+			android:id="@+id/PlayButton"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="0.5"
+			android:scaleType="centerInside"
+			android:src="@drawable/play_48"
+		/>
+		<ImageButton
+			android:id="@+id/RespeakButton"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="0.5"
+			android:scaleType="centerInside"
+			android:src="@drawable/record_48"
+		/>
+	</LinearLayout>
+</RelativeLayout>

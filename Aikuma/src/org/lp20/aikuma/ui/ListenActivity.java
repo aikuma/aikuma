@@ -44,7 +44,7 @@ public class ListenActivity extends Activity {
 		UUID uuid = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
 		try {
-			Recording recording = Recording.read(uuid);
+			recording = Recording.read(uuid);
 			if (recording.isOriginal()) {
 				setPlayer(new SimplePlayer(recording));
 			} else {
@@ -98,7 +98,14 @@ public class ListenActivity extends Activity {
 		phoneRespeaking = ((ToggleButton) view).isChecked();
 	}
 
+	public void onThumbRespeakingButton(View view) {
+		Intent intent = new Intent(this, ThumbRespeakActivity.class);
+		intent.putExtra("uuidString", recording.getUUID().toString());
+		startActivity(intent);
+	}
+
 	private boolean phoneRespeaking = false;
 	private Player player;
 	private ListenFragment fragment;
+	private Recording recording;
 }

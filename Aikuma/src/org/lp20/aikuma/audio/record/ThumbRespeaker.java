@@ -27,10 +27,10 @@ import org.lp20.aikuma.util.FileIO;
  */
 public class ThumbRespeaker {
 
-	public ThumbRespeaker(Recording original, UUID respeakingUUID,
-			int sampleRate) throws MicException, IOException {
+	public ThumbRespeaker(Recording original, UUID respeakingUUID)
+			throws MicException, IOException {
 		recorder = new Recorder(new File(Recording.getRecordingsPath(),
-				respeakingUUID + ".map"), sampleRate);
+				respeakingUUID + ".map"), original.getSampleRate());
 		player = new SimplePlayer(original);
 		mapper = new Mapper(respeakingUUID);
 		setFinishedPlaying(false);
