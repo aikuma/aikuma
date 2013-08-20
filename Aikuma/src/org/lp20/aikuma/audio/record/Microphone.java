@@ -29,9 +29,9 @@ public class Microphone {
 	 * @param	sampleRate	The sample rate at which the audio should be
 	 * recorded
 	 */
-	public Microphone(int sampleRate) throws MicException {
+	public Microphone(long sampleRate) throws MicException {
 		physicalMicrophone = getListener(
-				sampleRate,
+				(int) sampleRate,
 				AudioFormat.ENCODING_PCM_16BIT,
 				AudioFormat.CHANNEL_IN_MONO
 		);

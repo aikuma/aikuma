@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
+import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.record.analyzers.Analyzer;
 import org.lp20.aikuma.audio.record.analyzers.ThresholdSpeechAnalyzer;
@@ -89,6 +90,10 @@ public class ThumbRespeaker {
 
 	public void setOnCompletionListener(OnCompletionListener ocl) {
 		player.setOnCompletionListener(ocl);
+	}
+
+	public SimplePlayer getSimplePlayer() {
+		return this.player;
 	}
 
 	/** Player to play the original with. */
