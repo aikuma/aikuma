@@ -101,6 +101,7 @@ public class ListenActivity extends Activity {
 	public void onThumbRespeakingButton(View view) {
 		Intent intent = new Intent(this, ThumbRespeakActivity.class);
 		intent.putExtra("uuidString", recording.getUUID().toString());
+		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
 	}
 

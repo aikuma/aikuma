@@ -193,5 +193,5 @@ public class RecordActivity extends Activity {
 
 	private Recorder recorder;
 	private UUID uuid;
-	private int sampleRate = 16000;
+	private long sampleRate = 16000l;
 }

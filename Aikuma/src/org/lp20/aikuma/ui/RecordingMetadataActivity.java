@@ -50,7 +50,11 @@ public class RecordingMetadataActivity extends ListActivity {
 		Intent intent = getIntent();
 		uuid = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
-		sampleRate = (Integer) intent.getExtras().get("sampleRate");
+		sampleRate = (Long) intent.getExtras().get("sampleRate");
+		String originalUUIDString = (String) intent.getExtras().get("originalUUIDString");
+		if (originalUUIDString != null) {
+			originalUUID = UUID.fromString(originalUUIDString);
+		}
 		setUpPlayer(uuid, sampleRate);
 		userImages =
 				(LinearLayout) findViewById(R.id.userImagesAndAddUserButton);
@@ -59,7 +63,7 @@ public class RecordingMetadataActivity extends ListActivity {
 		selectedLanguages = new ArrayList<Language>();
 	}
 
-	private void setUpPlayer(UUID uuid, int sampleRate) {
+	private void setUpPlayer(UUID uuid, long sampleRate) {
 		listenFragment = (ListenFragment)
 				getFragmentManager().findFragmentById(R.id.ListenFragment);
 		try {
@@ -282,6 +286,7 @@ public class RecordingMetadataActivity extends ListActivity {
 	private List<Language> languages;
 	private List<Language> selectedLanguages;
 	private LinearLayout userImages;
-	private int sampleRate;
+	private long sampleRate;
 	private ListenFragment listenFragment;
+	private UUID originalUUID;
 }

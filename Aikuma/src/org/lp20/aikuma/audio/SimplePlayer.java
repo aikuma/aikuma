@@ -31,7 +31,7 @@ public class SimplePlayer extends Player implements Sampler {
 	 * @param	file	The location of the recording as a File
 	 * @param	sampleRate	The sample rate of the recording
 	 */
-	public SimplePlayer(File recordingFile, int sampleRate) throws IOException {
+	public SimplePlayer(File recordingFile, long sampleRate) throws IOException {
 		mediaPlayer = new MediaPlayer();
 		mediaPlayer.setDataSource(recordingFile.getCanonicalPath());
 		mediaPlayer.prepare();
