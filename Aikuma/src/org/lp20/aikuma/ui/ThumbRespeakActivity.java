@@ -21,11 +21,10 @@ public class ThumbRespeakActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.thumb_respeak);
-		fragment = (ListenFragment)
-				getFragmentManager().findFragmentById(R.id.ListenFragment);
+		fragment = (ThumbRespeakFragment)
+				getFragmentManager().findFragmentById(R.id.ThumbRespeakFragment);
 		setUpThumbRespeaker();
-		fragment.setPlayer(respeaker.getSimplePlayer());
-		installButtonBehaviour();
+		fragment.setThumbRespeaker(respeaker);
 	}
 
 	private void setUpThumbRespeaker() {
@@ -43,43 +42,6 @@ public class ThumbRespeakActivity extends Activity {
 		}
 	}
 
-	private void installButtonBehaviour() {
-		final ImageButton playButton = (ImageButton)
-				findViewById(R.id.PlayButton);
-		final ImageButton respeakButton = (ImageButton)
-				findViewById(R.id.RespeakButton);
-
-		playButton.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View view, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					respeaker.playOriginal();
-				}
-				if (event.getAction() == MotionEvent.ACTION_UP) {
-					respeaker.pauseOriginal();
-				}
-				return false;
-			}
-		});
-
-		respeakButton.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View view, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					respeaker.pauseOriginal();
-					respeaker.recordRespeaking();
-				}
-				if (event.getAction() == MotionEvent.ACTION_UP) {
-					try {
-						respeaker.pauseRespeaking();
-					} catch (MicException e) {
-						ThumbRespeakActivity.this.finish();
-					}
-				}
-				return false;
-			}
-		});
-	}
 
 	public void onSaveRespeakingButton(View view) {
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
@@ -96,7 +58,7 @@ public class ThumbRespeakActivity extends Activity {
 		}
 	}
 
-	private ListenFragment fragment;
+	private ThumbRespeakFragment fragment;
 	private ThumbRespeaker respeaker;
 	private UUID originalUUID;
 	private UUID respeakingUUID;
