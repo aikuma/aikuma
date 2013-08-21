@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import java.io.File;
@@ -53,6 +54,9 @@ public class ListenActivity extends Activity {
 				Log.i("thumb", "respeaking");
 				Log.i("thumb", "uuid is: " + uuid);
 				setPlayer(new InterleavedPlayer(recording));
+				Button thumbRespeakingButton =
+						(Button) findViewById(R.id.thumbRespeaking);
+				thumbRespeakingButton.setVisibility(View.GONE);
 			}
 		} catch (IOException e) {
 			//The recording metadata cannot be read, so let's wrap up this
