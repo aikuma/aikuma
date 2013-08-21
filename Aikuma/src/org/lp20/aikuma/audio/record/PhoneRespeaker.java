@@ -1,0 +1,230 @@
+package org.lp20.aikuma.audio.record;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+
+import android.media.AudioManager;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.util.Log;
+
+import org.lp20.aikuma.audio.Player;
+import org.lp20.aikuma.audio.SimplePlayer;
+import org.lp20.aikuma.audio.record.recognizers.AverageRecognizer;
+import org.lp20.aikuma.audio.record.analyzers.Analyzer;
+import org.lp20.aikuma.audio.record.analyzers.ThresholdSpeechAnalyzer;
+import static org.lp20.aikuma.audio.record.Microphone.MicException;
+import org.lp20.aikuma.model.Recording;
+
+/** Respeaker used to get input from eg. a microphone and
+ *  output into a file.tIn addition, it also 
+ * 
+ *  Usage:
+ *    AudioRespeaker respeaker = new AudioRespeaker();
+ *    respeaker.prepare(
+ *      "/mnt/sdcard/bold/recordings/source_file.wav",
+ *      "/mnt/sdcard/bold/recordings/target_file.wav"
+ *    );
+ *    respeaker.listen();
+ *    respeaker.pause();
+ *    respeaker.resume();
+ *    respeaker.stop();
+ *
+ *  Note that stopping the respeaker closes and finalizes the WAV file.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
+public class PhoneRespeaker implements AudioListener, AudioHandler,
+		MicrophoneListener {
+
+	public PhoneRespeaker(Recording original, File respeakingFile,
+			int sampleRate, Analyzer analyzer) throws IOException, MicException {
+		this(original.getFile(), respeakingFile, sampleRate, analyzer);
+	}
+
+	public PhoneRespeaker(File originalFile, File respeakingFile,
+			int sampleRate, Analyzer analyzer) throws IOException, MicException {
+		this.analyzer = analyzer;
+		setUpMicrophone(sampleRate);
+		setUpFile(respeakingFile);
+		setUpPlayer(originalFile, sampleRate);
+	}
+
+	private void setUpPlayer(File originalFile, int sampleRate) throws IOException {
+		this.player = new SimplePlayer(originalFile, sampleRate);
+	}
+
+	/** Sets up the microphone for recording. */
+	private void setUpMicrophone(int sampleRate) throws MicException {
+		this.microphone = new Microphone(sampleRate);
+	}
+
+	/** Sets the file up for writing. */
+	private void setUpFile(File respeakingFile) {
+		file = PCMWriter.getInstance(
+				microphone.getSampleRate(),
+				microphone.getChannelConfiguration(),
+				microphone.getAudioFormat()
+		);
+		file.prepare(respeakingFile.getPath());
+	}
+
+	public void listen() {
+		//mapper.markRespeaking(player, file);
+		microphone.listen(this);
+	}
+
+	/** Callback for the microphone */
+	public void onBufferFull(short[] buffer) {
+		// This will call back the methods:
+		//  * silenceTriggered
+		//  * audioTriggered
+		analyzer.analyze(this, buffer);
+	}
+
+	private void switchToRecord() {
+		player.pause();
+		//mapper.markRespeaking(player, file);
+	}
+
+	protected void switchToPlay() {
+		player.play();
+	}
+
+	/** Pause listening to the microphone. */
+	public void pause() {
+		try {
+			microphone.stop();
+		} catch (MicException e) {
+			//Do Nothing. Could perhaps replace with a new Microphone.
+		}
+		player.pause();
+		// Reset the analyzer to default values so it doesn't assume speech on
+		// resuming.
+		analyzer.reset();
+	}
+
+	public void stop() {
+		try {
+			microphone.stop();
+		} catch (MicException e) {
+			//Do nothing.
+		}
+		//mapper.store(player, file);
+		player.release();
+		//mapper.stop();
+		file.close();
+	}
+
+	// The following two methods handle silences/speech discovered in the input
+	// data.
+
+	public void audioTriggered(short[] buffer, boolean justChanged) {
+		if (justChanged) {
+			switchToRecord();
+		}
+		file.write(buffer);
+	}
+
+	public void silenceTriggered(short[] buffer, boolean justChanged) {
+		if (justChanged) {
+			if (getFinishedPlaying()) {
+				stop();
+			} else {
+				//mapper.store(player, file);
+				//player.rewind(getRewindAmount());
+				switchToPlay();
+			}
+		}
+	}
+
+	public boolean getFinishedPlaying() {
+		return finishedPlaying;
+	}
+	
+	public void setFinishedPlaying(boolean finishedPlaying) {
+		this.finishedPlaying = finishedPlaying;
+	}
+
+	public int getRewindAmount() {
+		return 650;
+	}
+
+	/** Resume playing. */
+	public void resume() {
+		microphone.listen(this);
+		//rewindToSegmentStart();
+		//mapper.markOriginal(player);
+		switchToPlay();
+	}
+	
+	//public void rewindToSegmentStart() {
+	//	int msecs = player.sampleToMsec(mapper.getOriginalStartSample());
+	//	msecs = msecs - getRewindAmount();
+	//	player.seekTo(msecs >= 0 ? msecs : 0);
+	//}
+
+	/** Analyzer that determines whether speech is happening */
+	private Analyzer analyzer;
+	/** The microphone used to get respeaking data. */
+	private Microphone microphone;
+	/** The file to write to */
+	private PCMWriter file;
+	/** Player to play the original with. */
+	private Player player;
+	/** Indicates whether the recording has finished playing. */
+	private boolean finishedPlaying = false;
+
+	/////////////////////////////////////////////////////////////////////
+	
+	///** The mapper used to store mapping data. */
+	//private Mapper mapper;
+
+	
+	///** Default constructor. */
+	//public PhoneRespeaker(ThresholdSpeechAnalyzer analyzer, boolean
+	//		shouldPlayThroughSpeaker) {
+	//	this.analyzer = analyzer;
+	//	
+	//	microphone = new Microphone();
+	//	player = new Player();
+	//	file = PCMFile.getInstance(microphone);
+	//	mapper = new Mapper();
+	//	
+	//	if (shouldPlayThroughSpeaker) {
+	//		this.playThroughSpeaker();
+	//	} else {
+	//		this.playThroughEarpiece();
+	//	}
+	//}
+	
+	//public void setSensitivity(int threshold) {
+	//	this.analyzer = new ThresholdSpeechAnalyzer(88, 3,
+	//			new AverageRecognizer(threshold, threshold));
+	//}
+  
+	///** Prepare the respeaker by setting a source file and a target file. */
+	//public void prepare(String sourceFilename, String targetFilename,
+	//		String mappingFilename) {
+	//	player.prepare(sourceFilename);
+	//	file.prepare(new File(targetFilename));
+	//	mapper.prepare(mappingFilename);
+	//}
+
+
+	//public void setOnCompletionListener(OnCompletionListener ocl) {
+	//	player.setOnCompletionListener(ocl);
+	//}
+
+	//public void playThroughEarpiece() {
+	//	player.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+	//}
+
+	//public void playThroughSpeaker() {
+	//	player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+	//}
+
+}

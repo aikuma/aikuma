@@ -32,51 +32,6 @@ public class ListenFragment extends Fragment implements OnClickListener {
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		try {
-			if (recording == null) {
-				// A recording metadata file doesn't exist yet, so it must have
-				// just been recorded.
-				player = new SimplePlayer(new File(
-						Recording.getRecordingsPath(),
-						uuid.toString() + ".wav"), sampleRate);
-			} else {
-				if (recording.isOriginal()) {
-					player = new SimplePlayer(recording);
-				} else {
-					try {
-						player = new InterleavedPlayer(recording);
-						Segments segments = new Segments(recording.getUUID());
-						Iterator<Segment> originalSegmentIterator =
-								segments.getOriginalSegmentIterator();
-						while (originalSegmentIterator.hasNext()) {
-							Segment segment = originalSegmentIterator.next();
-							float fraction =
-									player.sampleToMsec(segment.getEndSample()) /
-									(float) player.getDurationMsec();
-							seekBar.addLine(fraction*100);
-						}
-					} catch (Exception e) {
-						//URGENT. quit the pokemon exceptions and write a new class
-						//that should get thrown by getOriginalUUID.
-						getActivity().finish();
-					}
-				}
-			}
-			Player.OnCompletionListener listener =
-					new Player.OnCompletionListener() {
-						public void onCompletion(Player _player) {
-							playPauseButton.setImageResource(R.drawable.play);
-							stopThread(seekBarThread);
-							seekBar.setProgress(seekBar.getMax());
-						}
-					};
-			player.setOnCompletionListener(listener);
-		} catch (IOException e) {
-			getActivity().finish();
-			Toast.makeText(getActivity(), 
-					"Cannot create a Player from the recording.", 
-					Toast.LENGTH_LONG).show();
-		}
 		super.onActivityCreated(savedInstanceState);
 	}
 
@@ -201,6 +156,34 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		this.uuid = uuid;
 	}
 
+	public void setPlayer(SimplePlayer simplePlayer) {
+		this.player = simplePlayer;
+		player.setOnCompletionListener(onCompletionListener);
+	}
+
+	public void setPlayer(InterleavedPlayer interleavedPlayer) {
+		this.player = interleavedPlayer;
+		Segments segments = new Segments(recording.getUUID());
+		Iterator<Segment> originalSegmentIterator =
+				segments.getOriginalSegmentIterator();
+		while (originalSegmentIterator.hasNext()) {
+			Segment segment = originalSegmentIterator.next();
+			float fraction =
+					player.sampleToMsec(segment.getEndSample()) /
+					(float) player.getDurationMsec();
+			seekBar.addLine(fraction*100);
+		}
+		player.setOnCompletionListener(onCompletionListener);
+	}
+
+	private Player.OnCompletionListener onCompletionListener =
+			new Player.OnCompletionListener() {
+				public void onCompletion(Player _player) {
+					playPauseButton.setImageResource(R.drawable.play);
+					stopThread(seekBarThread);
+					seekBar.setProgress(seekBar.getMax());
+				}
+			};
 	private Player player;
 	private ImageButton playPauseButton;
 	private InterleavedSeekBar seekBar;

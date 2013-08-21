@@ -160,9 +160,9 @@ public class Recording {
 	/**
 	 * originalUUID accessor.
 	 */
-	public UUID getOriginalUUID() throws Exception {
+	public UUID getOriginalUUID() {
 		if (originalUUID == null) {
-			throw new Exception(
+			throw new IllegalStateException(
 					"Cannot call getOriginalUUID when originalUUID is null." + 
 					" Call isOriginal().");
 		}
