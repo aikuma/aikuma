@@ -1,0 +1,144 @@
+File Structure
+==============
+
+Goals
+-----
+
+Balance between:
+- Human readable
+- Machine readable
+
+- Well reasoned
+
+Hotly debated
+-------------
+
+- Should transcriptions be in a separate top-level directory? Why?
+I decided they should not as they are attached to a recording. The discussion was whether they could be created first (as text to be read), then respoken. But this is a definite edge case we do not support.
+
+- Should images not be in a separate top-level directory? Why?
+I decided that they should, as we intend to support the case in the future that someone can take a picture, then create a recording for it.
+
+While they do not follow the same convention, the structure acknowledges the difference of both cases.
+
+Overview
+--------
+
+Note that <uuid> stands for a generated UUID. uuid1 and uuid1 are the same, uuid1 and uuid2 are different uuids.
+
+/aikuma
+    /images
+        /<uuid7>
+            metadata.json
+            image.jpg
+        /<uuid8>
+            metadata.json
+            image.jpg
+    /recordings
+        /<uuid1>
+            data.wav
+            metadata.json
+            /transcriptions
+                /<uuid4>
+                    metadata.json
+                    mapping.csv
+                /<uuid5>
+                    metadata.json
+                    mapping.csv
+        /<uuid2>
+            data.wav
+            metadata.json
+            mapping.csv
+            /transcriptions
+                /<uuid6>
+                    metadata.json
+                    mapping.csv
+    /speakers
+        /<uuid3>
+            metadata.json
+        /...
+            
+
+uuid1 - recording
+uuid2 - commentary on uuid1 (note mapping.csv)
+uuid3 - speaker
+uuid4 - transcription of uuid1
+uuid5 - transcription of uuid1
+uuid6 - transcription of uuid2
+uuid7 - image for uuid2 (reference in metadata.json)
+uuid8 - image for uuid2 (reference in metadata.json)
+
+File structures
+---------------
+
+- Generally, open ended, database "record"-like data is stored as CSV (lists).
+- Metadata structure which needs to be expanded in the future is stored as JSON (hashes).
+
+This is usually both human-readable and easily processed via machine (and libraries are readily available).
+
+Recording data.wav
+------------------
+
+- The data.wav contains only raw data.
+- While WAVs can contain additional metadata in XMP format in the INFO chunk, we do not use it as not all applications can handle metadata in WAVs (and may strip it).
+
+
+Recording metadata.json
+-----------------------
+
+- We use JSON hashes, as this enables us to:
+    - extend the metadata
+    - load "old" versions (applications need to be able to load hashes that might not contain all information)
+- However: We do not store hash values that are open ended in size, as that makes the metadata hard to use for humans. Examples of this is the commentary mapping data which is far easier to read in a CSV format.
+- If the recording references another recording (i.e. it is a commentary of another), that recording is referenced via "parent_uuid".
+
+Example:
+{ "uuid":"<uuid1>", "parent_uuid":"<uuid2>", "languages":["usa","gsw"], "description":"...", "location":"12.3456,-98.7654", "timestamp":"2007-04-05T14:30Z" }
+
+location: Decimal coordinates (http://en.wikipedia.org/wiki/Geographic_coordinate_conversion#Ways_of_writing_coordinates)
+timestamp: ISO 8601 (http://en.wikipedia.org/wiki/ISO_8601)
+
+
+Recording mapping.csv
+---------------------
+
+- We use CSV, as it is essentially an open ended list of "records", where a record signifies a mapping between two segments (orig_start,orig_end,commentary_start,commentary_end).
+
+Example:
+0,10000,0,20000
+9850,12000,20001,24000
+etc.
+
+Transcription mapping.csv
+-------------------------
+
+- We use CSV, as it is essentially an open ended list of "records", where a record signifies a mapping between two segments (orig_start,orig_end,commentary_start,commentary_end).
+
+Example:
+0,10000,"Four score and..."
+10001,12000,"hello, world!"
+etc.
+
+Speaker metadata.json
+---------------------
+
+- We use JSON hashes, as this enables us to:
+    - extend the metadata
+    - load "old" versions (applications need to be able to load hashes that might not contain all information)
+- However: We do not store hash values that are open ended in size, as that makes the metadata hard to use for humans.
+- If the recording references another recording (i.e. it is a commentary of another), the 
+
+Example:
+{ "uuid":"<uuid1>", "parent_uuid":"<uuid2>", "languages":["usa","gsw"], "description":"...", "location":"12.3456,-98.7654", "timestamp":"2007-04-05T14:30Z" }
+
+location: Decimal coordinates (http://en.wikipedia.org/wiki/Geographic_coordinate_conversion#Ways_of_writing_coordinates)
+timestamp: ISO 8601 (http://en.wikipedia.org/wiki/ISO_8601)
+
+Notes
+-----
+
+Prefix Trees
+------------
+
+Should the amount of recordings be too large we could relatively easily switch to a structure which uses the first 2 characters of a uuid to create a tree directory structure 2 one level deeper but much less wider:
+/abd53... -> /ab/d53...
