@@ -10,7 +10,7 @@ import org.lp20.aikuma.model.Recording;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class SimplePlayer extends Player {
+public class SimplePlayer extends Player implements Sampler {
 
 	/**
 	 * Creates a player to play the supplied recording.
@@ -31,7 +31,7 @@ public class SimplePlayer extends Player {
 	 * @param	file	The location of the recording as a File
 	 * @param	sampleRate	The sample rate of the recording
 	 */
-	public SimplePlayer(File recordingFile, int sampleRate) throws IOException {
+	public SimplePlayer(File recordingFile, long sampleRate) throws IOException {
 		mediaPlayer = new MediaPlayer();
 		mediaPlayer.setDataSource(recordingFile.getCanonicalPath());
 		mediaPlayer.prepare();
@@ -54,8 +54,12 @@ public class SimplePlayer extends Player {
 	}
 
 	/** Get current point in the recording in milliseconds. */
-	public int getCurrentPositionMsec() {
+	public int getCurrentMsec() {
 		return mediaPlayer.getCurrentPosition();
+	}
+
+	public long getCurrentSample() {
+		return msecToSample(getCurrentMsec());
 	}
 
 	/** Get the duration of the recording in milliseconds. */
@@ -67,7 +71,6 @@ public class SimplePlayer extends Player {
 	public void seekToMsec(int msec) {
 		mediaPlayer.seekTo(msec);
 	}
-
 
 	public void seekToSample(long sample) {
 		seekToMsec(sampleToMsec(sample));
@@ -108,6 +111,14 @@ public class SimplePlayer extends Player {
 			return Integer.MAX_VALUE;
 		}
 		return (int) msec;
+	}
+
+	public long msecToSample(int msec) {
+		return msec * (getSampleRate() / 1000);
+	}
+	
+	public void setAudioStreamType(int type) {
+		mediaPlayer.setAudioStreamType(type);
 	}
 
 	/** The MediaPlayer used to play the recording. **/

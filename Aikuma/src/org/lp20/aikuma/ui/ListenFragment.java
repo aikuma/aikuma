@@ -128,7 +128,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 				public void run() {
 					int currentPosition;
 					while (true) {
-						currentPosition = player.getCurrentPositionMsec();
+						currentPosition = player.getCurrentMsec();
 						seekBar.setProgress(
 								(int)(((float)currentPosition/(float)
 								player.getDurationMsec())*100));
@@ -163,7 +163,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 
 	public void setPlayer(InterleavedPlayer interleavedPlayer) {
 		this.player = interleavedPlayer;
-		Segments segments = new Segments(recording.getUUID());
+		Segments segments = new Segments(interleavedPlayer.getRecording().getUUID());
 		Iterator<Segment> originalSegmentIterator =
 				segments.getOriginalSegmentIterator();
 		while (originalSegmentIterator.hasNext()) {

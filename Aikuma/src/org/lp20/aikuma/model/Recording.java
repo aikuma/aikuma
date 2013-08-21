@@ -295,13 +295,21 @@ public class Recording {
 	 * @return	A list of the users found in the users directory.
 	 */
 	public static List<Recording> readAll() {
-		// Get a list of all the UUIDs of users in the "recordings" directory.
-		List<String> recordingUUIDs =
-				Arrays.asList(getRecordingsPath().list(new FilenameFilter() {
+
+		String[] recordingUUIDsArray =
+				getRecordingsPath().list(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
 						return filename.endsWith(".json");
 					}
-				}));
+				});
+
+		List<String> recordingUUIDs;
+		// Get a list of all the UUIDs of users in the "recordings" directory.
+		if (recordingUUIDsArray != null) {
+			recordingUUIDs = Arrays.asList();
+		} else {
+			return new ArrayList<Recording>();
+		}
 
 		for (int i = 0; i < recordingUUIDs.size(); i++) {
 			recordingUUIDs.set(i,

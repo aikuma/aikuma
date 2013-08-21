@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import java.io.File;
@@ -44,11 +45,18 @@ public class ListenActivity extends Activity {
 		UUID uuid = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
 		try {
-			Recording recording = Recording.read(uuid);
+			recording = Recording.read(uuid);
 			if (recording.isOriginal()) {
+				Log.i("thumb", "original");
+				Log.i("thumb", "uuid is: " + uuid);
 				setPlayer(new SimplePlayer(recording));
 			} else {
+				Log.i("thumb", "respeaking");
+				Log.i("thumb", "uuid is: " + uuid);
 				setPlayer(new InterleavedPlayer(recording));
+				Button thumbRespeakingButton =
+						(Button) findViewById(R.id.thumbRespeaking);
+				thumbRespeakingButton.setVisibility(View.GONE);
 			}
 		} catch (IOException e) {
 			//The recording metadata cannot be read, so let's wrap up this
@@ -98,7 +106,15 @@ public class ListenActivity extends Activity {
 		phoneRespeaking = ((ToggleButton) view).isChecked();
 	}
 
+	public void onThumbRespeakingButton(View view) {
+		Intent intent = new Intent(this, ThumbRespeakActivity.class);
+		intent.putExtra("uuidString", recording.getUUID().toString());
+		intent.putExtra("sampleRate", recording.getSampleRate());
+		startActivity(intent);
+	}
+
 	private boolean phoneRespeaking = false;
 	private Player player;
 	private ListenFragment fragment;
+	private Recording recording;
 }

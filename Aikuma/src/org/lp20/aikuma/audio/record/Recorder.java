@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Set;
 import org.lp20.aikuma.audio.record.analyzers.Analyzer;
 import org.lp20.aikuma.audio.record.analyzers.SimpleAnalyzer;
+import org.lp20.aikuma.audio.Sampler;
 import org.lp20.aikuma.R;
 import static org.lp20.aikuma.audio.record.Microphone.MicException;
 
@@ -26,13 +27,13 @@ import static org.lp20.aikuma.audio.record.Microphone.MicException;
  *
  *  Note that stopping the recorder closes and finalizes the WAV file.
  */
-public class Recorder implements AudioHandler, MicrophoneListener {
+public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 
 	/**
 	 * Creates a Recorder that uses an analyzer which tells the recorder to
 	 * always record regardless of input.
 	 */
-	public Recorder(File path, int sampleRate) throws MicException {
+	public Recorder(File path, long sampleRate) throws MicException {
 		this(path, sampleRate, new SimpleAnalyzer());
 	}
 
@@ -43,7 +44,7 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	 * @param Pass in an analyzer which decides whether
 	 *        the recorder should record or ignore the input.
 	 */
-	public Recorder(File path, int sampleRate, Analyzer analyzer) throws MicException {
+	public Recorder(File path, long sampleRate, Analyzer analyzer) throws MicException {
 		this.analyzer = analyzer;
 		setUpMicrophone(sampleRate);
 		setUpFile();
@@ -74,7 +75,7 @@ public class Recorder implements AudioHandler, MicrophoneListener {
 	}
 
 	/** Sets up the micrphone for recording */
-	private void setUpMicrophone(int sampleRate) throws MicException {
+	private void setUpMicrophone(long sampleRate) throws MicException {
 		this.microphone = new Microphone(sampleRate);
 	}
 
