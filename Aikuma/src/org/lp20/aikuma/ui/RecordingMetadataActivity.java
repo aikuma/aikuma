@@ -209,7 +209,7 @@ public class RecordingMetadataActivity extends ListActivity {
 						String androidID = Aikuma.getAndroidID();
 						Recording recording = new Recording(
 								uuid, description, date, selectedLanguages, 
-								speakersUUIDs, androidID, sampleRate);
+								speakersUUIDs, androidID, originalUUID, sampleRate);
 						try {
 							recording.write();
 						} catch (IOException e) {

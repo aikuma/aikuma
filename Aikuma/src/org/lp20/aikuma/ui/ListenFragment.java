@@ -166,7 +166,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 
 	public void setPlayer(InterleavedPlayer interleavedPlayer) {
 		this.player = interleavedPlayer;
-		Segments segments = new Segments(recording.getUUID());
+		Segments segments = new Segments(interleavedPlayer.getRecording().getUUID());
 		Iterator<Segment> originalSegmentIterator =
 				segments.getOriginalSegmentIterator();
 		while (originalSegmentIterator.hasNext()) {

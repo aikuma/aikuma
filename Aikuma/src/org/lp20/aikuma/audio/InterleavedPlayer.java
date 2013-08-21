@@ -21,6 +21,7 @@ public class InterleavedPlayer extends Player {
 	 * @param	recording	The metadata of the recording to play.
 	 */
 	public InterleavedPlayer(Recording recording) throws IOException {
+		setRecording(recording);
 		if (recording.isOriginal()) {
 			throw new IllegalArgumentException("The supplied Recording is " +
 					"not a respeaking. Use SimplePlayer instead.");
@@ -152,6 +153,15 @@ public class InterleavedPlayer extends Player {
 	private Segment currentOriginalSegment;
 	private Iterator<Segment> originalSegmentIterator;
 	private Player.OnCompletionListener onCompletionListener;
+	private Recording recording;
+
+	private void setRecording(Recording recording) {
+		this.recording = recording;
+	}
+
+	public Recording getRecording() {
+		return this.recording;
+	}
 
 	private class OriginalMarkerReachedListener extends
 			MarkedPlayer.OnMarkerReachedListener {

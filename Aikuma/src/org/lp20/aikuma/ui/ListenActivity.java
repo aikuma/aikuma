@@ -46,8 +46,12 @@ public class ListenActivity extends Activity {
 		try {
 			recording = Recording.read(uuid);
 			if (recording.isOriginal()) {
+				Log.i("thumb", "original");
+				Log.i("thumb", "uuid is: " + uuid);
 				setPlayer(new SimplePlayer(recording));
 			} else {
+				Log.i("thumb", "respeaking");
+				Log.i("thumb", "uuid is: " + uuid);
 				setPlayer(new InterleavedPlayer(recording));
 			}
 		} catch (IOException e) {
