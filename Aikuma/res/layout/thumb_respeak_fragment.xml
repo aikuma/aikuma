@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+	>
+	<view class="org.lp20.aikuma.ui.InterleavedSeekBar"
+		style="@android:style/Widget.ProgressBar.Horizontal"
+		android:id="@+id/InterleavedSeekBar"
+		android:layout_width="match_parent"
+		android:layout_height="32dp"
+		android:maxHeight="3dp"
+	/>
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/saveButton"
+	>
+		<ImageButton
+			android:id="@+id/PlayButton"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="0.5"
+			android:scaleType="centerInside"
+			android:src="@drawable/play_48"
+		/>
+		<ImageButton
+			android:id="@+id/RespeakButton"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="0.5"
+			android:scaleType="centerInside"
+			android:src="@drawable/record_48"
+		/>
+	</LinearLayout>
+</LinearLayout>

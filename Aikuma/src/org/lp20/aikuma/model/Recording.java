@@ -1,5 +1,6 @@
 package org.lp20.aikuma.model;
 
+import android.util.Log;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.StandardDateFormat;
@@ -303,10 +304,12 @@ public class Recording {
 					}
 				});
 
+		Log.i("len", " " + recordingUUIDsArray.length);
+
 		List<String> recordingUUIDs;
 		// Get a list of all the UUIDs of users in the "recordings" directory.
 		if (recordingUUIDsArray != null) {
-			recordingUUIDs = Arrays.asList();
+			recordingUUIDs = Arrays.asList(recordingUUIDsArray);
 		} else {
 			return new ArrayList<Recording>();
 		}
@@ -319,6 +322,7 @@ public class Recording {
 		// Get the recordings data from the metadata.json files.
 		List<Recording> recordings = new ArrayList<Recording>();
 		for (String recordingUUID : recordingUUIDs) {
+			Log.i("len", " " + recordingUUID);
 			try {
 				recordings.add(Recording.read(UUID.fromString(recordingUUID)));
 			} catch (IOException e) {
@@ -327,6 +331,8 @@ public class Recording {
 				// that user.
 			}
 		}
+
+		Log.i("len", " " + recordings.size());
 		return recordings;
 	}
 

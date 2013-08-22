@@ -96,6 +96,12 @@ public class ThumbRespeaker {
 		return this.player;
 	}
 
+	public void release() {
+		if (player != null) {
+			player.release();
+		}
+	}
+
 	/** Player to play the original with. */
 	private SimplePlayer player;
 
