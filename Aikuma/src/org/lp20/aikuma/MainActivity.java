@@ -16,9 +16,10 @@ import java.util.List;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.ui.ListenActivity;
+import org.lp20.aikuma.ui.MenuBehaviour;
 import org.lp20.aikuma.ui.RecordActivity;
-import org.lp20.aikuma.ui.SettingsActivity;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;
+import org.lp20.aikuma.ui.SettingsActivity;
 
 public class MainActivity extends ListActivity
 {
@@ -28,10 +29,7 @@ public class MainActivity extends ListActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		//ActionBar actionBar = getActionBar();
-		//actionBar.setDisplayShowHomeEnabled(false);
-		//actionBar.setDisplayShowTitleEnabled(false);
-
+		menuBehaviour = new MenuBehaviour(this);
 		List<Recording> recordings = Recording.readAll();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this, recordings);
 		setListAdapter(adapter);
@@ -40,27 +38,12 @@ public class MainActivity extends ListActivity
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-		return true;
+		return menuBehaviour.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent;
-		switch (item.getItemId()) {
-			case R.id.record:
-				intent = new Intent(this, RecordActivity.class);
-				startActivity(intent);
-				return true;
-			case R.id.settings:
-				intent = new Intent(this, SettingsActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
+		return menuBehaviour.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -70,4 +53,6 @@ public class MainActivity extends ListActivity
 		intent.putExtra("uuidString", recording.getUUID().toString());
 		startActivity(intent);
 	}
+
+	MenuBehaviour menuBehaviour;
 }

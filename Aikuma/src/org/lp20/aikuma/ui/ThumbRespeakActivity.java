@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -20,11 +21,16 @@ public class ThumbRespeakActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		menuBehaviour = new MenuBehaviour(this);
 		setContentView(R.layout.thumb_respeak);
 		fragment = (ThumbRespeakFragment)
 				getFragmentManager().findFragmentById(R.id.ThumbRespeakFragment);
 		setUpThumbRespeaker();
 		fragment.setThumbRespeaker(respeaker);
+	}
+
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return menuBehaviour.onCreateOptionsMenu(menu);
 	}
 
 	private void setUpThumbRespeaker() {
@@ -64,4 +70,5 @@ public class ThumbRespeakActivity extends Activity {
 	private UUID respeakingUUID;
 	private Recording recording;
 	private long sampleRate;
+	private MenuBehaviour menuBehaviour;
 }

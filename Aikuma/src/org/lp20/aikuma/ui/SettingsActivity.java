@@ -69,12 +69,6 @@ public class SettingsActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent;
 		switch (item.getItemId()) {
-			case R.id.record:
-				intent = new Intent(this, RecordActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-				SettingsActivity.this.finish();
-				return true;
 			case R.id.mainlist:
 				intent = new Intent(this, MainActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

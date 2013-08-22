@@ -47,6 +47,7 @@ public class RecordingMetadataActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recording_metadata);
+		menuBehaviour = new MenuBehaviour(this);
 		Intent intent = getIntent();
 		uuid = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
@@ -117,76 +118,14 @@ public class RecordingMetadataActivity extends ListActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-		return true;
+		return menuBehaviour.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent;
-		switch (item.getItemId()) {
-			case R.id.record:
-				new AlertDialog.Builder(this)
-						.setMessage(R.string.restart_recording)
-						.setPositiveButton(R.string.discard, new
-						DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								Intent intent =
-									new Intent(RecordingMetadataActivity.this,
-												RecordActivity.class);
-								intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-								RecordingMetadataActivity.this.finish();
-								startActivity(intent);
-							}
-						})
-						.setNegativeButton(R.string.cancel, null)
-						.show();
-				return true;
-			case R.id.mainlist:
-				new AlertDialog.Builder(this)
-						.setMessage(R.string.discard_dialog)
-						.setPositiveButton(R.string.discard, new
-						DialogInterface.OnClickListener() {
-						
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								Intent intent =
-									new Intent(RecordingMetadataActivity.this,
-												MainActivity.class);
-								intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-								RecordingMetadataActivity.this.finish();
-								startActivity(intent);
-							}
-						})
-						.setNegativeButton(R.string.cancel, null)
-						.show();
-				return true;
-			case R.id.settings:
-				new AlertDialog.Builder(this)
-						.setMessage(R.string.discard_dialog)
-						.setPositiveButton(R.string.discard, new
-						DialogInterface.OnClickListener() {
-						
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								Intent intent =
-									new Intent(RecordingMetadataActivity.this,
-												SettingsActivity.class);
-								RecordingMetadataActivity.this.finish();
-								startActivity(intent);
-							}
-						})
-						.setNegativeButton(R.string.cancel, null)
-						.show();
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
+		return menuBehaviour.onOptionsItemSelected(item,
+				"This will discard the recording. Are you sure?",
+				"Discard", "Cancel");
 	}
 
 	public void onOkButtonPressed(View view) {
@@ -288,4 +227,5 @@ public class RecordingMetadataActivity extends ListActivity {
 	private long sampleRate;
 	private ListenFragment listenFragment;
 	private UUID originalUUID;
+	private MenuBehaviour menuBehaviour;
 }
