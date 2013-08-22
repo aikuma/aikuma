@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -25,6 +27,7 @@ public class LanguageFilterList extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.filter_list);
+		menuBehaviour = new MenuBehaviour(this);
 		filterText = (EditText) findViewById(R.id.search_box);
 		filterText.addTextChangedListener(filterTextWatcher);
 		List<Language> languages;
@@ -32,6 +35,18 @@ public class LanguageFilterList extends ListActivity {
 		adapter = new ArrayAdapter<Language>(this,
 				android.R.layout.simple_list_item_1, languages);
 		setListAdapter(adapter);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return menuBehaviour.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		return menuBehaviour.onOptionsItemSelected(item,
+				"This will discard the recording. Are you sure?",
+				"Discard", "Cancel");
 	}
 
 	@Override
@@ -60,4 +75,5 @@ public class LanguageFilterList extends ListActivity {
 	}
 	private ArrayAdapter<Language> adapter;
 	private EditText filterText = null;
+	private MenuBehaviour menuBehaviour;
 }

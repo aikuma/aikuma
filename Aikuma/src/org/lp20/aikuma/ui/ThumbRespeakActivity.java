@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -29,8 +30,16 @@ public class ThumbRespeakActivity extends Activity {
 		fragment.setThumbRespeaker(respeaker);
 	}
 
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return menuBehaviour.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		return menuBehaviour.onOptionsItemSelected(item,
+				"The respeaking will be discarded. Are you sure?",
+				"Discard", "Cancel");
 	}
 
 	private void setUpThumbRespeaker() {

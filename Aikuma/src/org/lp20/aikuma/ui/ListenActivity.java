@@ -7,7 +7,7 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -29,6 +29,7 @@ public class ListenActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listen);
+		menuBehaviour = new MenuBehaviour(this);
 		//UUID respeakingUUID = UUID.randomUUID();
 		//phoneRespeaker = new PhoneRespeaker(recording,
 		//		new File(Recording.getRecordingsPath(),
@@ -77,9 +78,12 @@ public class ListenActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-		return true;
+		return menuBehaviour.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		return menuBehaviour.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -117,4 +121,5 @@ public class ListenActivity extends Activity {
 	private Player player;
 	private ListenFragment fragment;
 	private Recording recording;
+	private MenuBehaviour menuBehaviour;
 }
