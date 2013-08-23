@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="vertical"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-	>
-	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:orientation="vertical">
+	>
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_weight="1">
 		<TextView
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -37,4 +38,43 @@
 			/>
 		</LinearLayout>
 	</LinearLayout>
-</RelativeLayout>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_weight="1"
+		android:orientation="vertical">
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/syncSettingsHeader"
+	/>
+	<EditText
+		android:id="@+id/ipAddress"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/ipAddressHint"
+		android:inputType="text"
+	/>
+	<EditText
+		android:id="@+id/username"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/usernameHint"
+		android:inputType="text"
+	/>
+	<EditText
+		android:id="@+id/password"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/passwordHint"
+		android:inputType="text"
+	/>
+	<ToggleButton
+		android:id="@+id/syncToggle"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textOn="On"
+		android:textOff="Off"
+	/>
+	</LinearLayout>
+</LinearLayout>

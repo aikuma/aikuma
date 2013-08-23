@@ -28,4 +28,8 @@
 			</string>
 	<string name="take_photo">Take photo (necessary)</string>
 	<string name="thumb_respeaking">Thumb Respeaking</string>
+	<string name="syncSettingsHeader">Connect this phone to</string>
+	<string name="ipAddressHint">IP Address</string>
+	<string name="usernameHint">Username</string>
+	<string name="passwordHint">Password</string>
 </resources>
