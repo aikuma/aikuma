@@ -17,29 +17,19 @@ import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
 import org.lp20.aikuma.model.Recording;
 
-public class ThumbRespeakActivity extends Activity {
+public class ThumbRespeakActivity extends AikumaActivity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		menuBehaviour = new MenuBehaviour(this);
 		setContentView(R.layout.thumb_respeak);
+		//Lets method in superclass know to ask user if they are willing to
+		//discard new data on an activity transition via the menu.
+		safeActivityTransition = true;
 		fragment = (ThumbRespeakFragment)
 				getFragmentManager().findFragmentById(R.id.ThumbRespeakFragment);
 		setUpThumbRespeaker();
 		fragment.setThumbRespeaker(respeaker);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return menuBehaviour.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		return menuBehaviour.onOptionsItemSelected(item,
-				"The respeaking will be discarded. Are you sure?",
-				"Discard", "Cancel");
 	}
 
 	private void setUpThumbRespeaker() {
@@ -79,5 +69,4 @@ public class ThumbRespeakActivity extends Activity {
 	private UUID respeakingUUID;
 	private Recording recording;
 	private long sampleRate;
-	private MenuBehaviour menuBehaviour;
 }

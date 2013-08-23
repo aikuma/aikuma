@@ -22,7 +22,7 @@ import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.R;
 
-public class ListenActivity extends Activity {
+public class ListenActivity extends AikumaActivity {
 
 	/** Called when the activity is first created. */
 	@Override

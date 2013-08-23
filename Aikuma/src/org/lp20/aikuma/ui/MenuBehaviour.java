@@ -52,8 +52,7 @@ public class MenuBehaviour {
 		}
 	}
 
-	public boolean onOptionsItemSelected(
-			MenuItem item, String message, String positive, String negative) {
+	public boolean safeOnOptionsItemSelected(MenuItem item) {
 		Intent intent;
 		switch (item.getItemId()) {
 			case R.id.record:
@@ -61,7 +60,7 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				return true;
 			case R.id.mainlist:
-				goToMainActivity(message, positive, negative);
+				safeGoToMainActivity();
 				return true;
 			case R.id.settings:
 				intent = new Intent(activity, SettingsActivity.class);
@@ -87,11 +86,10 @@ public class MenuBehaviour {
 	 * with the supplied text for the message and the positive and negative
 	 * buttons.
 	 */
-	private void goToMainActivity(
-			String message, String positive, String negative) {
+	private void safeGoToMainActivity() {
 		new AlertDialog.Builder(activity)
-				.setMessage(message)
-				.setPositiveButton(positive,
+				.setMessage("This will discard the new data. Are you sure?")
+				.setPositiveButton("Discard",
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog,
@@ -102,7 +100,7 @@ public class MenuBehaviour {
 								activity.startActivity(intent);
 							}
 						})
-				.setNegativeButton(negative, null)
+				.setNegativeButton("Cancel", null)
 				.show();
 	}
 

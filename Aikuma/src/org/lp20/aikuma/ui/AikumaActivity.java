@@ -1,11 +1,11 @@
 package org.lp20.aikuma.ui;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public abstract class AikumaListActivity extends ListActivity {
+public abstract class AikumaActivity extends Activity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

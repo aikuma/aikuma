@@ -27,15 +27,17 @@ import org.lp20.aikuma.R;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class RecordActivity extends Activity {
+public class RecordActivity extends AikumaActivity {
 	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
-		menuBehaviour = new MenuBehaviour(this);
 		this.uuid = UUID.randomUUID();
+		//Lets method in superclass know to ask user if they are willing to
+		//discard new data on an activity transition via the menu.
+		safeActivityTransition = true;
 		try {
 			recorder = new Recorder(new File(Recording.getRecordingsPath(),
 					uuid.toString() + ".wav"), sampleRate);
@@ -72,23 +74,6 @@ public class RecordActivity extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return menuBehaviour.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	protected void onNewIntent(Intent intent) {
-		/*Do some stuff*/
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		return menuBehaviour.onOptionsItemSelected(item,
-				"This will discard the recording. Are you sure?",
-				"Discard", "Cancel");
 	}
 
 	public void onRecordButton(View view) {
@@ -133,5 +118,4 @@ public class RecordActivity extends Activity {
 	private Recorder recorder;
 	private UUID uuid;
 	private long sampleRate = 16000l;
-	private MenuBehaviour menuBehaviour;
 }

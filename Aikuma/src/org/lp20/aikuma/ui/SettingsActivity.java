@@ -28,7 +28,7 @@ import org.lp20.aikuma.util.FileIO;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class SettingsActivity extends ListActivity {
+public class SettingsActivity extends AikumaListActivity {
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -56,28 +56,6 @@ public class SettingsActivity extends ListActivity {
 		ArrayAdapter<Language> adapter = 
 				new SpeakerLanguagesArrayAdapter(this, defaultLanguages);
 		setListAdapter(adapter);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent;
-		switch (item.getItemId()) {
-			case R.id.mainlist:
-				intent = new Intent(this, MainActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				SettingsActivity.this.finish();
-				startActivity(intent);
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
 	}
 
 	public void onAddLanguageButton(View view) {

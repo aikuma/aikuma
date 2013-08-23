@@ -21,13 +21,15 @@ import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.model.Language;
 
-public class LanguageFilterList extends ListActivity {
+public class LanguageFilterList extends AikumaListActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.filter_list);
-		menuBehaviour = new MenuBehaviour(this);
+		//Lets method in superclass know to ask user if they are willing to
+		//discard new data on an activity transition via the menu.
+		safeActivityTransition = true;
 		filterText = (EditText) findViewById(R.id.search_box);
 		filterText.addTextChangedListener(filterTextWatcher);
 		List<Language> languages;
@@ -35,18 +37,6 @@ public class LanguageFilterList extends ListActivity {
 		adapter = new ArrayAdapter<Language>(this,
 				android.R.layout.simple_list_item_1, languages);
 		setListAdapter(adapter);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return menuBehaviour.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		return menuBehaviour.onOptionsItemSelected(item,
-				"This will discard the recording. Are you sure?",
-				"Discard", "Cancel");
 	}
 
 	@Override
@@ -75,5 +65,4 @@ public class LanguageFilterList extends ListActivity {
 	}
 	private ArrayAdapter<Language> adapter;
 	private EditText filterText = null;
-	private MenuBehaviour menuBehaviour;
 }

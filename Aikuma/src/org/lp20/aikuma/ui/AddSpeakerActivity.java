@@ -27,29 +27,19 @@ import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.ImageUtils;
 
-public class AddSpeakerActivity extends ListActivity {
+public class AddSpeakerActivity extends AikumaListActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.add_speaker);
-		menuBehaviour = new MenuBehaviour(this);
+		//Lets method in superclass know to ask user if they are willing to
+		//discard new data on an activity transition via the menu.
+		safeActivityTransition = true;
 		languages = FileIO.readDefaultLanguages();
 		uuid = UUID.randomUUID();
 		ImageButton okButton = (ImageButton) findViewById(R.id.okButton);
 		okButton.setEnabled(false);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return menuBehaviour.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		return menuBehaviour.onOptionsItemSelected(item,
-				"This will discard the recording. Are you sure?",
-				"Discard", "Cancel");
 	}
 
 	@Override
@@ -139,5 +129,4 @@ public class AddSpeakerActivity extends ListActivity {
 	static final int PHOTO_REQUEST_CODE = 1;
 	private List<Language> languages = new ArrayList<Language>();
 	private UUID uuid;
-	private MenuBehaviour menuBehaviour;
 }

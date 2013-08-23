@@ -12,25 +12,15 @@ import java.util.List;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.R;
 
-public class SpeakersActivity extends ListActivity {
+public class SpeakersActivity extends AikumaListActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.speakers);
-		menuBehaviour = new MenuBehaviour(this);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return menuBehaviour.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		return menuBehaviour.onOptionsItemSelected(item,
-				"This will discard the recording. Are you sure?",
-				"Discard", "Cancel");
+		//Lets method in superclass know to ask user if they are willing to
+		//discard new data on an activity transition via the menu.
+		safeActivityTransition = true;
 	}
 
 	@Override
@@ -57,6 +47,4 @@ public class SpeakersActivity extends ListActivity {
 	}
 
 	private List<Speaker> speakers;
-	private MenuBehaviour menuBehaviour;
-
 }

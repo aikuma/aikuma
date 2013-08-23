@@ -40,14 +40,16 @@ import org.lp20.aikuma.model.Language;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class RecordingMetadataActivity extends ListActivity {
+public class RecordingMetadataActivity extends AikumaListActivity {
 	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recording_metadata);
-		menuBehaviour = new MenuBehaviour(this);
+		//Lets method in superclass know to ask user if they are willing to
+		//discard new data on an activity transition via the menu.
+		safeActivityTransition = true;
 		Intent intent = getIntent();
 		uuid = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
@@ -114,18 +116,6 @@ public class RecordingMetadataActivity extends ListActivity {
 			new Intent(RecordingMetadataActivity.this,
 						SpeakersActivity.class);
 		startActivityForResult(intent, ADD_SPEAKER);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return menuBehaviour.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		return menuBehaviour.onOptionsItemSelected(item,
-				"This will discard the recording. Are you sure?",
-				"Discard", "Cancel");
 	}
 
 	public void onOkButtonPressed(View view) {
