@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.model.ServerCredentials;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 
@@ -35,6 +37,9 @@ public class SettingsActivity extends AikumaListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings);
+		ipAddressField = (EditText) findViewById(R.id.ipAddress);
+		usernameField = (EditText) findViewById(R.id.username);
+		passwordField = (EditText) findViewById(R.id.password);
 	}
 
 	@Override
@@ -42,9 +47,23 @@ public class SettingsActivity extends AikumaListActivity {
 		super.onPause();
 		try {
 			FileIO.writeDefaultLanguages(defaultLanguages);
+			commitServerCredentials();
 		} catch (IOException e) {
 			// Not much that can be done if writing fails, except perhaps
 			// toasting the user.
+		}
+	}
+
+	private void commitServerCredentials() throws IOException {
+		try {
+			ServerCredentials serverCredentials =
+					new ServerCredentials(
+							ipAddressField.getText().toString(),
+							usernameField.getText().toString(),
+							passwordField.getText().toString());
+			serverCredentials.write();
+		} catch (IllegalArgumentException e) {
+			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -53,9 +72,18 @@ public class SettingsActivity extends AikumaListActivity {
 		super.onResume();
 
 		defaultLanguages = FileIO.readDefaultLanguages();
-		ArrayAdapter<Language> adapter = 
+		ArrayAdapter<Language> adapter =
 				new SpeakerLanguagesArrayAdapter(this, defaultLanguages);
 		setListAdapter(adapter);
+
+		try {
+			ServerCredentials serverCredentials = ServerCredentials.read();
+			ipAddressField.setText(serverCredentials.getIPAddress());
+			usernameField.setText(serverCredentials.getUsername());
+			passwordField.setText(serverCredentials.getPassword());
+		} catch (IOException e) {
+			//If reading fails, then no text is put into the fields.
+		}
 	}
 
 	public void onAddLanguageButton(View view) {
@@ -89,4 +117,7 @@ public class SettingsActivity extends AikumaListActivity {
 	private List<Language> defaultLanguages;
 	static Map langCodeMap;
 	static Thread loadLangCodesThread;
+	private EditText ipAddressField;
+	private EditText usernameField;
+	private EditText passwordField;
 }
