@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import java.io.File;
@@ -21,6 +23,7 @@ import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.util.ImageUtils;
 
 public class ListenActivity extends AikumaActivity {
 
@@ -38,31 +41,68 @@ public class ListenActivity extends AikumaActivity {
 		fragment =
 				(ListenFragment)
 				getFragmentManager().findFragmentById(R.id.ListenFragment);
+		setUpRecording();
 		setUpPlayer();
+		setUpRespeakingImages();
+	}
+
+
+	private void setUpRecording() {
+		Intent intent = getIntent();
+		UUID recordingUUID = UUID.fromString(
+				(String) intent.getExtras().get("uuidString"));
+		try {
+			recording = Recording.read(recordingUUID);
+		} catch (IOException e) {
+			//The recording metadata cannot be read, so let's wrap up this
+			//activity.
+			Toast.makeText(this, "Failed to read recording metadata.",
+					Toast.LENGTH_LONG).show();
+			ListenActivity.this.finish();
+		}
 	}
 
 	private void setUpPlayer() {
-		Intent intent = getIntent();
-		UUID uuid = UUID.fromString(
-				(String) intent.getExtras().get("uuidString"));
 		try {
-			recording = Recording.read(uuid);
 			if (recording.isOriginal()) {
-				Log.i("thumb", "original");
-				Log.i("thumb", "uuid is: " + uuid);
 				setPlayer(new SimplePlayer(recording));
 			} else {
-				Log.i("thumb", "respeaking");
-				Log.i("thumb", "uuid is: " + uuid);
 				setPlayer(new InterleavedPlayer(recording));
 				Button thumbRespeakingButton =
 						(Button) findViewById(R.id.thumbRespeaking);
 				thumbRespeakingButton.setVisibility(View.GONE);
 			}
 		} catch (IOException e) {
-			//The recording metadata cannot be read, so let's wrap up this
-			//activity.
+			//The player couldn't be created from the recoridng, so lets wrap
+			//this activity up.
+			Toast.makeText(this, "Failed to create player from recording.",
+					Toast.LENGTH_LONG).show();
 			ListenActivity.this.finish();
+		}
+	}
+
+	private void setUpRespeakingImages() {
+		List<Recording> respeakings = recording.getRespeakings();
+		LinearLayout respeakingImages = (LinearLayout)
+				findViewById(R.id.RespeakingImages);
+		for (Recording respeaking : respeakings) {
+			ImageView respeakingImage = new ImageView(this);
+			respeakingImage.setAdjustViewBounds(true);
+			respeakingImage.setMaxHeight(60);
+			respeakingImage.setMaxWidth(60);
+			respeakingImage.setPaddingRelative(5,5,5,5);
+			try {
+				if (respeaking.getSpeakersUUIDs().size() > 0) {
+					respeakingImage.setImageBitmap(
+							ImageUtils.getSmallImage(
+							respeaking.getSpeakersUUIDs().get(0)));
+				} else {
+					continue;
+				}
+			} catch (IOException e) {
+				// Not much can be done if the image can't be loaded.
+			}
+			respeakingImages.addView(respeakingImage);
 		}
 	}
 

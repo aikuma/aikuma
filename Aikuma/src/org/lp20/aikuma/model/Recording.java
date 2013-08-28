@@ -229,6 +229,24 @@ public class Recording {
 	}
 
 	/**
+	 * Deletes the JSON File associated with the recording.
+	 */
+	public boolean delete() {
+		File file = new File(getRecordingsPath(), this.getUUID().toString() +
+				".json");
+		if (!isOriginal()) {
+			File mapFile = new File(getRecordingsPath(),
+					this.getUUID().toString() + ".map");
+			boolean result;
+			result = mapFile.delete();
+			if (!result) {
+				return false;
+			}
+		}
+		return file.delete();
+	}
+
+	/**
 	 * Read a recording from the file containing JSON describing the Recording
 	 *
 	 * @param	uuid	The uuid of the recording to be read.
@@ -288,6 +306,29 @@ public class Recording {
 				uuid, name, date, languages, speakersUUIDs, androidID,
 				originalUUID, sampleRate);
 		return recording;
+	}
+
+	/**
+	 * Returns a list of all the respeakings of this Recording.
+	 */
+	public List<Recording> getRespeakings() {
+		List<Recording> allRecordings = readAll();
+		List<Recording> respeakings = new ArrayList();
+		for (Recording recording : allRecordings) {
+			if (!recording.isOriginal()) {
+				if (recording.getOriginalUUID().equals(getUUID())) {
+					Log.i("issue55", "got one");
+					respeakings.add(recording);
+				} else {
+					Log.i("issue55", "failed second if; uuid was " +
+							recording.getOriginalUUID() + ", not " +
+							getUUID());
+				}
+			} else {
+				Log.i("issue55", "failed first if.");
+			}
+		}
+		return respeakings;
 	}
 
 	/**

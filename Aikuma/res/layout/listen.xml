@@ -20,6 +20,13 @@
 			android:textOff="Phone respeak off"
 			android:onClick="onPhoneRespeakingToggle"
 	/>-->
+	<LinearLayout
+		android:id="@+id/RespeakingImages"
+		android:orientation="horizontal"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/ListenFragment"
+	/>
 	<Button
 			android:id="@+id/thumbRespeaking"
 			android:text="@string/thumb_respeaking"

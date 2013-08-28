@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
@@ -211,6 +212,54 @@ public class RecordingTest extends AndroidTestCase {
 				recording1.getUUID() + ".json").delete();
 		new File(FileIO.getAppRootPath(), "recordings/" +
 				recording2.getUUID() + ".json").delete();
+	}
+
+	public void testEquals() throws Exception {
+		UUID uuid = UUID.randomUUID();
+		Recording respeaking = new Recording(uuid, "respeaking1",
+				new Date(), new ArrayList<Language>(), new ArrayList<UUID>(),
+				"androidID", UUID.randomUUID(), 16000l);
+		respeaking.write();
+		Recording readRespeaking = Recording.read(uuid);
+		assertEquals(respeaking, readRespeaking);
+	}
+
+	public void testGetRespeakings() throws Exception {
+		UUID originalUUID = UUID.randomUUID();
+		Recording recording = new Recording(originalUUID, "original",
+				new Date(), new ArrayList<Language>(), new ArrayList<UUID>(),
+				"androidID", 16000l);
+		Recording respeaking1 = new Recording(UUID.randomUUID(), "respeaking1",
+				new Date(), new ArrayList<Language>(), new ArrayList<UUID>(),
+				"androidID", originalUUID, 16000l);
+		Recording respeaking2 = new Recording(UUID.randomUUID(), "respeaking2",
+				new Date(), new ArrayList<Language>(), new ArrayList<UUID>(),
+				"androidID", originalUUID, 16000l);
+		Recording respeakingNot = new Recording(UUID.randomUUID(),
+				"respeakingNot", new Date(), new ArrayList<Language>(),
+				new ArrayList<UUID>(), "androidID", UUID.randomUUID(), 16000l);
+		recording.write();
+		respeaking1.write();
+		respeaking2.write();
+		respeakingNot.write();
+
+		List<Recording> actualRespeakings = new ArrayList<Recording>();
+		actualRespeakings.add(respeaking1);
+		actualRespeakings.add(respeaking2);
+
+		Log.i("issue55", "originalUUID: " + originalUUID);
+		List<Recording> returnedRespeakings = recording.getRespeakings();
+		Log.i("issue55", "alleged respeaking name: " +
+				returnedRespeakings.get(0).getName());
+		Log.i("issue55", "alleged respeaking name: " +
+				returnedRespeakings.get(1).getName());
+		assertEquals(new HashSet(actualRespeakings),
+				new HashSet(returnedRespeakings));
+
+		recording.delete();
+		respeaking1.delete();
+		respeaking2.delete();
+		respeakingNot.delete();
 	}
 
 }
