@@ -9,8 +9,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.View;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.Aikuma;
@@ -20,6 +22,7 @@ import org.lp20.aikuma.ui.MenuBehaviour;
 import org.lp20.aikuma.ui.RecordActivity;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;
 import org.lp20.aikuma.ui.SettingsActivity;
+import org.lp20.aikuma.util.SyncUtil;
 
 public class MainActivity extends ListActivity
 {
@@ -30,6 +33,15 @@ public class MainActivity extends ListActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		menuBehaviour = new MenuBehaviour(this);
+		try {
+			Log.i("sync", "syncUtil null: " + (syncUtil == null));
+			if (syncUtil == null) {
+				syncUtil = new SyncUtil();
+			}
+		} catch (IOException e) {
+			//If an IOException is thrown here, the ServerCredentials probably
+			//couldn't be read.
+		}
 		List<Recording> recordings = Recording.readAll();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this, recordings);
 		setListAdapter(adapter);
@@ -55,4 +67,5 @@ public class MainActivity extends ListActivity
 	}
 
 	MenuBehaviour menuBehaviour;
+	private static SyncUtil syncUtil;
 }
