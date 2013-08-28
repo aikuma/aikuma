@@ -46,7 +46,6 @@ public class ListenActivity extends AikumaActivity {
 		setUpRespeakingImages();
 	}
 
-
 	private void setUpRecording() {
 		Intent intent = getIntent();
 		UUID recordingUUID = UUID.fromString(
@@ -82,7 +81,20 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	private void setUpRespeakingImages() {
-		List<Recording> respeakings = recording.getRespeakings();
+		List<Recording> respeakings;
+		if (recording.isOriginal()) {
+			respeakings = recording.getRespeakings();
+		} else {
+			try {
+				respeakings =
+						Recording.read(recording.getOriginalUUID()).getRespeakings();
+			} catch (IOException e) {
+				//If the original recording can't be loaded, then we can't
+				//display any other respeaking images, so we should just return
+				//now.
+				return;
+			}
+		}
 		LinearLayout respeakingImages = (LinearLayout)
 				findViewById(R.id.RespeakingImages);
 		for (final Recording respeaking : respeakings) {
