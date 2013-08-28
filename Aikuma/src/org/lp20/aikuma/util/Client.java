@@ -242,20 +242,31 @@ public class Client {
 	 * @return	true if successful; false otherwise.
 	 */
 	public boolean pushFile(String directoryPath, File file) {
+		Log.i("sync", "pushFile: " + file);
 		boolean result = false;
 		try {
 			InputStream stream = new FileInputStream(file);
+			Log.i("sync", "1");
 			result = apacheClient.storeFile(
 					serverBaseDir + "/" + directoryPath + "/" + file.getName() +
 							".inprogress",
 					stream);
+			Log.i("sync", "2");
 			stream.close();
+			Log.i("sync", "3");
 			apacheClient.rename(
 					serverBaseDir + "/" + directoryPath + "/" + file.getName() +
 							".inprogress",
 					serverBaseDir + "/" + directoryPath + "/" + file.getName());
+			Log.i("sync", "4");
 		} catch (IOException e) {
+			Log.i("sync", "notpushed");
 			return false;
+		}
+		if (result) {
+			Log.i("sync", "pushed");
+		} else {
+			Log.i("sync", "notpushed");
 		}
 		return result;
 	}
@@ -267,6 +278,7 @@ public class Client {
 	 * @return	true if successful; false otherwise.
 	 */
 	public boolean pullFile(String directoryPath, File file) {
+		Log.i("sync", "pullFile: " + file);
 		boolean result = false;
 		try {
 			File inProgressFile = new File(file.getPath() + ".inprogress");
@@ -280,7 +292,13 @@ public class Client {
 			stream.close();
 			inProgressFile.renameTo(file);
 		} catch (IOException e) {
+			Log.i("sync", "notpulled");
 			return false;
+		}
+		if (result) {
+			Log.i("sync", "pulled");
+		} else {
+			Log.i("sync", "notpulled");
 		}
 		return result;
 	}

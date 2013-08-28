@@ -17,25 +17,21 @@ public class SyncUtil {
 
 	private class SyncLoop extends Thread {
 		public void run() {
-			FTPSyncUtil ftpSyncUtil = new FTPSyncUtil();
-			//client.setClientBaseDir(FileIO.getAppRootPath().toString());
-			try {
-				ftpSyncUtil.connect("192.168.1.1");
-				ftpSyncUtil.login("admin", "admin");
-				ftpSyncUtil.setClientSyncDir(FileIO.getAppRootPath());
-				Log.i("sync", "findwritabledir: " +
-				ftpSyncUtil.findWritableServerDir(new File("/")));
-				ftpSyncUtil.setServerSyncDir(
-						ftpSyncUtil.findWritableServerDir(new File("/")));
-				Log.i("sync", "serverSyncDir: " +
-						ftpSyncUtil.getServerSyncDir());
-				Log.i("sync", "sync success: " + ftpSyncUtil.sync());
-				ftpSyncUtil.logout();
-				ftpSyncUtil.disconnect();
-			} catch (IOException e) {
-				Log.i("sync", "exception thrown: " + e.getMessage());
+			Client client = new Client();
+			client.setClientBaseDir(FileIO.getAppRootPath().toString());
+			if (!client.login(serverCredentials.getIPAddress(),
+					serverCredentials.getUsername(),
+					serverCredentials.getPassword())) {
+				Log.i("sync", "login failed: " +
+						serverCredentials.getIPAddress());
+			} else if (!client.sync()) {
+				Log.i("sync", "sync failed.");
+			} else if (!client.logout()) {
+				Log.i("sync", "Logout failed.");
+			} else {
+				Log.i("sync", "sync complete.");
 			}
-			Log.i("sync", "sync complete");
+			Log.i("sync", "end of conditional block");
 		}
 	}
 
