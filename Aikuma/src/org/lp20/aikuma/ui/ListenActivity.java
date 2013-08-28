@@ -85,12 +85,22 @@ public class ListenActivity extends AikumaActivity {
 		List<Recording> respeakings = recording.getRespeakings();
 		LinearLayout respeakingImages = (LinearLayout)
 				findViewById(R.id.RespeakingImages);
-		for (Recording respeaking : respeakings) {
+		for (final Recording respeaking : respeakings) {
 			ImageView respeakingImage = new ImageView(this);
 			respeakingImage.setAdjustViewBounds(true);
 			respeakingImage.setMaxHeight(60);
 			respeakingImage.setMaxWidth(60);
 			respeakingImage.setPaddingRelative(5,5,5,5);
+			respeakingImage.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View _) {
+					Intent intent = new Intent(ListenActivity.this,
+							ListenActivity.class);
+					intent.putExtra("uuidString",
+							respeaking.getUUID().toString());
+					startActivity(intent);
+					ListenActivity.this.finish();
+				}
+			});
 			try {
 				if (respeaking.getSpeakersUUIDs().size() > 0) {
 					respeakingImage.setImageBitmap(
