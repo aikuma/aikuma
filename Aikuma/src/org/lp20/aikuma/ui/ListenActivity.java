@@ -102,7 +102,11 @@ public class ListenActivity extends AikumaActivity {
 			respeakingImage.setAdjustViewBounds(true);
 			respeakingImage.setMaxHeight(60);
 			respeakingImage.setMaxWidth(60);
-			respeakingImage.setPaddingRelative(5,5,5,5);
+			respeakingImage.setPadding(5,5,5,5);
+			respeakingImage.setPaddingRelative(2,2,2,2);
+			if (respeaking.equals(recording)) {
+				respeakingImage.setBackgroundColor(0xFFCC0000);
+			}
 			respeakingImage.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View _) {
 					Intent intent = new Intent(ListenActivity.this,
