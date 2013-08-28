@@ -84,6 +84,7 @@ public class Client {
 				result = apacheClient.login(username, password);
 				loggedIn = result;
 			} catch (IOException e) {
+				Log.i("sync", "1.1, " + e.getMessage());
 				return false;
 			}
 		}
