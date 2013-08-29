@@ -22,10 +22,10 @@ uuid1 and uuid1 are the same while uuid1 and uuid2 are different uuids.
             data.wav
             metadata.json
             /transcriptions
-                /<uuid4>
+                /<uuid4> # Transcription as language is the same
                     metadata.json
                     mapping.csv
-                /<uuid5>
+                /<uuid5> # Translation as language is not the same
                     metadata.json
                     mapping.csv
         /<uuid2>
@@ -120,10 +120,17 @@ Speaker metadata.json
 - If the recording references another recording (i.e. it is a commentary of another), the 
 
 Example:
-{ "uuid":"<uuid1>", "parent_uuid":"<uuid2>", "languages":["usa","gsw"], "description":"...", "location":"12.3456,-98.7654", "timestamp":"2007-04-05T14:30Z" }
+{ "uuid":"<uuid1>", "languages":["usa","gsw"], "description":"...", "location":"12.3456,-98.7654", "timestamp":"2007-04-05T14:30Z" }
 
 location: Decimal coordinates (http://en.wikipedia.org/wiki/Geographic_coordinate_conversion#Ways_of_writing_coordinates)
 timestamp: ISO 8601 (http://en.wikipedia.org/wiki/ISO_8601)
+
+
+
+
+
+
+
 
 Notes
 -----
