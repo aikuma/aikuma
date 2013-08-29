@@ -10,6 +10,21 @@ Balance between:
 
 - Well reasoned
 
+Open issues
+-----------
+
+- Should recording/user directory names contain more than the uuid?
+    - Just the UUIDs are not very human readable.
+    - We could add metadata information in the directory, like so:
+        - Speaker: andy-<uuid>
+        - Recording: andy,peter_the-story-of-the-mountain-<uuid>
+    -> We can still extract the uuid data, but it also "speaks" to a user.
+        - Problem with the approach: If metadata is changed, the directory name would change.
+
+- Should the mapping of original and respoken segments be in samples, or time (as with the transcriptions)?
+    - Time: Resistant to resampling of recordings.
+    - Samples: Easier to handle on the machine side (no recalculations necessary).
+
 Overview & Example
 ------------------
 
@@ -22,10 +37,10 @@ uuid1 and uuid1 are the same while uuid1 and uuid2 are different uuids.
             data.wav
             metadata.json
             /transcriptions
-                /<uuid4> # Transcription as language is the same
+                /<uuid4> # It is a simple transcription if the language of the recording is the same as the language of the transcription
                     metadata.json
                     mapping.csv
-                /<uuid5> # Translation as language is not the same
+                /<uuid5> # It is a translation if the language of the recording is different from the language of the transcription
                     metadata.json
                     mapping.csv
         /<uuid2>
@@ -67,6 +82,7 @@ File structures
 
 This is usually both human-readable and easily processed via machine (and libraries are readily available).
 
+
 Recording data.wav
 ------------------
 
@@ -84,7 +100,7 @@ Recording metadata.json
 - If the recording references another recording (i.e. it is a commentary of another), that recording is referenced via "parent_uuid".
 
 Example:
-{ "uuid":"<uuid1>", "languages":["usa","gsw"], "description":"...", "location":"12.3456,-98.7654", "timestamp":"2007-04-05T14:30Z" }
+{ "uuid":"<uuid2>", "parent_uuid":"<uuid1>", "languages":["usa","gsw"], "description":"...", "location":"12.3456,-98.7654", "timestamp":"2007-04-05T14:30Z" }
 
 location: Decimal coordinates (http://en.wikipedia.org/wiki/Geographic_coordinate_conversion#Ways_of_writing_coordinates)
 timestamp: ISO 8601 (http://en.wikipedia.org/wiki/ISO_8601)
@@ -93,22 +109,27 @@ timestamp: ISO 8601 (http://en.wikipedia.org/wiki/ISO_8601)
 Recording mapping.csv
 ---------------------
 
-- We use CSV, as it is essentially an open ended list of "records", where a record signifies a mapping between two segments (orig_start,orig_end,commentary_start,commentary_end).
+- We use CSV, as it is essentially an open ended list of "records", where a record signifies a mapping between two segments.
+- Structure: <orig_start,orig_end,commentary_start,commentary_end>
 
 Example:
 0,10000,0,20000
 9850,12000,20001,24000
 etc.
 
+
 Transcription mapping.csv
 -------------------------
 
 - We use CSV, as it is essentially an open ended list of "records", where a record signifies a mapping between two segments (orig_start,orig_end,commentary_start,commentary_end).
+- Structure: <orig_segment_start_time,orig_segment_length,transcription>
 
 Example:
-0,10000,"Four score and..."
-10001,12000,"hello, world!"
+0.000000,4.567890,"Four score and..."
+4.567890,2.123456,"hello, world!"
+6.691346,1.234567,"Ding!"
 etc.
+
 
 Speaker metadata.json
 ---------------------
@@ -124,8 +145,6 @@ Example:
 
 location: Decimal coordinates (http://en.wikipedia.org/wiki/Geographic_coordinate_conversion#Ways_of_writing_coordinates)
 timestamp: ISO 8601 (http://en.wikipedia.org/wiki/ISO_8601)
-
-
 
 
 
