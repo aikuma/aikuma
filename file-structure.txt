@@ -25,6 +25,11 @@ Open issues
     - Time: Resistant to resampling of recordings.
     - Samples: Easier to handle on the machine side (no recalculations necessary).
 
+- Should commentaries also be subordinate to "original" recordings?
+    - In the example below, should <uuid2> be in a subdirectory /commentaries under <uuid1>.
+    -> Only actual original recordings would be top level in the /recordings directory.
+    -> Deeper structure, everything is subordinate to the "original" recording. 
+
 Overview & Example
 ------------------
 
