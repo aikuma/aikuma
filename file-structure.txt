@@ -10,30 +10,13 @@ Balance between:
 
 - Well reasoned
 
-Hotly debated
--------------
+Overview & Example
+------------------
 
-- Should transcriptions be in a separate top-level directory? Why?
-I decided they should not as they are attached to a recording. The discussion was whether they could be created first (as text to be read), then respoken. But this is a definite edge case we do not support.
-
-- Should images not be in a separate top-level directory? Why?
-I decided that they should, as we intend to support the case in the future that someone can take a picture, then create a recording for it.
-
-While they do not follow the same convention, the structure acknowledges the difference of both cases.
-
-Overview
---------
-
-Note that <uuid> stands for a generated UUID. uuid1 and uuid1 are the same, uuid1 and uuid2 are different uuids.
+Note that <uuidN> stands for a generated UUID.
+uuid1 and uuid1 are the same while uuid1 and uuid2 are different uuids.
 
 /aikuma
-    /images
-        /<uuid7>
-            metadata.json
-            image.jpg
-        /<uuid8>
-            metadata.json
-            image.jpg
     /recordings
         /<uuid1>
             data.wav
@@ -53,9 +36,17 @@ Note that <uuid> stands for a generated UUID. uuid1 and uuid1 are the same, uuid
                 /<uuid6>
                     metadata.json
                     mapping.csv
+            /images
+                /<uuid7>
+                    metadata.json
+                    image.jpg
+                /<uuid8>
+                    metadata.json
+                    image.jpg
     /speakers
         /<uuid3>
             metadata.json
+            image.jpg
         /...
             
 
@@ -65,8 +56,8 @@ uuid3 - speaker
 uuid4 - transcription of uuid1
 uuid5 - transcription of uuid1
 uuid6 - transcription of uuid2
-uuid7 - image for uuid2 (reference in metadata.json)
-uuid8 - image for uuid2 (reference in metadata.json)
+uuid7 - image for recording uuid2
+uuid8 - image for recording uuid2
 
 File structures
 ---------------
@@ -93,7 +84,7 @@ Recording metadata.json
 - If the recording references another recording (i.e. it is a commentary of another), that recording is referenced via "parent_uuid".
 
 Example:
-{ "uuid":"<uuid1>", "parent_uuid":"<uuid2>", "languages":["usa","gsw"], "description":"...", "location":"12.3456,-98.7654", "timestamp":"2007-04-05T14:30Z" }
+{ "uuid":"<uuid1>", "languages":["usa","gsw"], "description":"...", "location":"12.3456,-98.7654", "timestamp":"2007-04-05T14:30Z" }
 
 location: Decimal coordinates (http://en.wikipedia.org/wiki/Geographic_coordinate_conversion#Ways_of_writing_coordinates)
 timestamp: ISO 8601 (http://en.wikipedia.org/wiki/ISO_8601)
