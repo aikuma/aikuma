@@ -83,7 +83,7 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 				}
 			}
 		};
-		//this.proximityDetector.start();
+		this.proximityDetector.start();
 	}
 
 	@Override
