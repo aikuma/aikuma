@@ -126,7 +126,6 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 
 	private void play() {
 		respeaker.resume();
-		/*
 		seekBarThread = new Thread(new Runnable() {
 				public void run() {
 					int currentPosition;
@@ -144,7 +143,6 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 				}
 		});
 		seekBarThread.start();
-		*/
 		playPauseButton.setImageResource(R.drawable.pause);
 	}
 

@@ -96,7 +96,6 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 		} catch (MicException e) {
 			//Do nothing.
 		}
-		mapper.store(player, file);
 		mapper.stop();
 		file.close();
 	}
