@@ -232,13 +232,16 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 			// We are in speech mode, we do not care whether there's
 			// speech.
 			if (doesTriggerSilence(buffer)) {
+				Log.i("issue54", "In speech, does trigger silence");
 				speech = false;
 				handler.silenceTriggered(buffer, true);
 			} else { // Still in speech mode.
+				Log.i("issue54", "In speech, does NOT trigger silence");
 				handler.audioTriggered(buffer, false);
 			}
 		} else { // We are in silence mode. Wait for enough speech.
 			if (doesTriggerSpeech(buffer)) {
+				Log.i("issue54", "Not in speech, does trigger silence");
 				speech = true;
 
 				// Empty preamble.

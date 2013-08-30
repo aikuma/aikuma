@@ -9,6 +9,8 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.util.Log;
 
+import org.lp20.aikuma.audio.Sampler;
+
 /**
  * A writer that can handle PCM/WAV files.
  *
@@ -20,7 +22,7 @@ import android.util.Log;
  *
  * Note: The file cannot be reopened.
  */
-public class PCMWriter {
+public class PCMWriter implements Sampler {
 
 	/**
 	 * The current sample, which represents where in the recording we are.

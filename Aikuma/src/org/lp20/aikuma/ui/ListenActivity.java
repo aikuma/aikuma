@@ -70,6 +70,9 @@ public class ListenActivity extends AikumaActivity {
 				Button thumbRespeakingButton =
 						(Button) findViewById(R.id.thumbRespeaking);
 				thumbRespeakingButton.setVisibility(View.GONE);
+				Button phoneRespeakingButton =
+						(Button) findViewById(R.id.phoneRespeaking);
+				phoneRespeakingButton.setVisibility(View.GONE);
 			}
 		} catch (IOException e) {
 			//The player couldn't be created from the recoridng, so lets wrap
@@ -178,6 +181,13 @@ public class ListenActivity extends AikumaActivity {
 
 	public void onThumbRespeakingButton(View view) {
 		Intent intent = new Intent(this, ThumbRespeakActivity.class);
+		intent.putExtra("uuidString", recording.getUUID().toString());
+		intent.putExtra("sampleRate", recording.getSampleRate());
+		startActivity(intent);
+	}
+
+	public void onPhoneRespeakingButton(View view) {
+		Intent intent = new Intent(this, PhoneRespeakActivity.class);
 		intent.putExtra("uuidString", recording.getUUID().toString());
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);

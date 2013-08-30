@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.UUID;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -18,61 +19,43 @@ import org.lp20.aikuma.audio.record.analyzers.ThresholdSpeechAnalyzer;
 import static org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.model.Recording;
 
-/** Respeaker used to get input from eg. a microphone and
- *  output into a file.tIn addition, it also 
- * 
- *  Usage:
- *    AudioRespeaker respeaker = new AudioRespeaker();
- *    respeaker.prepare(
- *      "/mnt/sdcard/bold/recordings/source_file.wav",
- *      "/mnt/sdcard/bold/recordings/target_file.wav"
- *    );
- *    respeaker.listen();
- *    respeaker.pause();
- *    respeaker.resume();
- *    respeaker.stop();
- *
- *  Note that stopping the respeaker closes and finalizes the WAV file.
- *
+/**
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class PhoneRespeaker implements AudioListener, AudioHandler,
 		MicrophoneListener {
 
-	public PhoneRespeaker(Recording original, File respeakingFile,
-			int sampleRate, Analyzer analyzer) throws IOException, MicException {
-		this(original.getFile(), respeakingFile, sampleRate, analyzer);
-	}
-
-	public PhoneRespeaker(File originalFile, File respeakingFile,
-			int sampleRate, Analyzer analyzer) throws IOException, MicException {
+	public PhoneRespeaker(Recording original, UUID respeakingUUID,
+			Analyzer analyzer) throws MicException, IOException {
 		this.analyzer = analyzer;
-		setUpMicrophone(sampleRate);
-		setUpFile(respeakingFile);
-		setUpPlayer(originalFile, sampleRate);
-	}
-
-	private void setUpPlayer(File originalFile, int sampleRate) throws IOException {
-		this.player = new SimplePlayer(originalFile, sampleRate);
+		setUpMicrophone(original.getSampleRate());
+		setUpFile(respeakingUUID);
+		setUpPlayer(original);
+		mapper = new Mapper(respeakingUUID);
 	}
 
 	/** Sets up the microphone for recording. */
-	private void setUpMicrophone(int sampleRate) throws MicException {
+	private void setUpMicrophone(long sampleRate) throws MicException {
 		this.microphone = new Microphone(sampleRate);
 	}
 
 	/** Sets the file up for writing. */
-	private void setUpFile(File respeakingFile) {
+	private void setUpFile(UUID respeakingUUID) {
 		file = PCMWriter.getInstance(
 				microphone.getSampleRate(),
 				microphone.getChannelConfiguration(),
 				microphone.getAudioFormat()
 		);
-		file.prepare(respeakingFile.getPath());
+		file.prepare(new File(Recording.getRecordingsPath(),
+				respeakingUUID + ".wav").getPath());
 	}
 
-	public void listen() {
+	private void setUpPlayer(Recording original) throws IOException {
+		this.player = new SimplePlayer(original);
+	}
+
+	public void listenNoPlay() {
 		//mapper.markRespeaking(player, file);
 		microphone.listen(this);
 	}
@@ -87,7 +70,7 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 
 	private void switchToRecord() {
 		player.pause();
-		//mapper.markRespeaking(player, file);
+		mapper.markRespeaking(player, file);
 	}
 
 	protected void switchToPlay() {
@@ -113,16 +96,22 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 		} catch (MicException e) {
 			//Do nothing.
 		}
-		//mapper.store(player, file);
-		player.release();
-		//mapper.stop();
+		mapper.store(player, file);
+		mapper.stop();
 		file.close();
+	}
+
+	public void release() {
+		if (player != null) {
+			player.release();
+		}
 	}
 
 	// The following two methods handle silences/speech discovered in the input
 	// data.
 
 	public void audioTriggered(short[] buffer, boolean justChanged) {
+		Log.i("issue54", "audioTriggered");
 		if (justChanged) {
 			switchToRecord();
 		}
@@ -130,11 +119,12 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 	}
 
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
+		Log.i("issue54", "silenceTriggered");
 		if (justChanged) {
 			if (getFinishedPlaying()) {
 				stop();
 			} else {
-				//mapper.store(player, file);
+				mapper.store(player, file);
 				//player.rewind(getRewindAmount());
 				switchToPlay();
 			}
@@ -155,9 +145,10 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 
 	/** Resume playing. */
 	public void resume() {
+		Log.i("issue54", "resume()");
 		microphone.listen(this);
 		//rewindToSegmentStart();
-		//mapper.markOriginal(player);
+		mapper.markOriginal(player);
 		switchToPlay();
 	}
 	
@@ -166,6 +157,9 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 	//	msecs = msecs - getRewindAmount();
 	//	player.seekTo(msecs >= 0 ? msecs : 0);
 	//}
+	public SimplePlayer getSimplePlayer() {
+		return this.player;
+	}
 
 	/** Analyzer that determines whether speech is happening */
 	private Analyzer analyzer;
@@ -174,14 +168,14 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 	/** The file to write to */
 	private PCMWriter file;
 	/** Player to play the original with. */
-	private Player player;
+	private SimplePlayer player;
 	/** Indicates whether the recording has finished playing. */
 	private boolean finishedPlaying = false;
+	/** The mapper used to store mapping data. */
+	private Mapper mapper;
 
 	/////////////////////////////////////////////////////////////////////
 	
-	///** The mapper used to store mapping data. */
-	//private Mapper mapper;
 
 	
 	///** Default constructor. */
@@ -192,7 +186,6 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 	//	microphone = new Microphone();
 	//	player = new Player();
 	//	file = PCMFile.getInstance(microphone);
-	//	mapper = new Mapper();
 	//	
 	//	if (shouldPlayThroughSpeaker) {
 	//		this.playThroughSpeaker();

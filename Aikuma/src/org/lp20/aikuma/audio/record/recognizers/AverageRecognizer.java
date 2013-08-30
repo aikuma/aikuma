@@ -47,6 +47,8 @@ public class AverageRecognizer extends Recognizer {
 	@Override
 	public boolean isSilence(short[] buffer) {
 		int reading = processor.getAverage(buffer);
+		Log.i("issue54", "reading: " + reading + ", silenceThreshhold: " +
+				silenceThreshold);
 		
 		return reading < silenceThreshold;
 	}

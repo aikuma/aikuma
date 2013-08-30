@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+	>
+	<ImageButton
+		android:id="@+id/PlayPauseButton"
+		android:layout_width="wrap_content"
+		android:layout_height="32dp"
+		android:src="@drawable/play"
+		android:onClick="play"
+		android:background="@null"
+	/>
+	<view class="org.lp20.aikuma.ui.InterleavedSeekBar"
+		style="@android:style/Widget.ProgressBar.Horizontal"
+		android:id="@+id/InterleavedSeekBar"
+		android:layout_width="match_parent"
+		android:layout_height="32dp"
+		android:maxHeight="3dp"
+	/>
+</LinearLayout>
