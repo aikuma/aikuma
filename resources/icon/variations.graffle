@@ -194,8 +194,21 @@
 				<dict>
 					<key>Beneath</key>
 					<string>YES</string>
-					<key>Draws</key>
-					<string>NO</string>
+					<key>Color</key>
+					<dict>
+						<key>a</key>
+						<string>0.75</string>
+						<key>b</key>
+						<string>1</string>
+						<key>g</key>
+						<string>1</string>
+						<key>r</key>
+						<string>1</string>
+					</dict>
+					<key>Fuzziness</key>
+					<real>9.2949161529541016</real>
+					<key>ShadowVector</key>
+					<string>{0, 0}</string>
 				</dict>
 				<key>stroke</key>
 				<dict>
@@ -324,8 +337,23 @@
 				</dict>
 				<key>shadow</key>
 				<dict>
-					<key>Draws</key>
-					<string>NO</string>
+					<key>Beneath</key>
+					<string>YES</string>
+					<key>Color</key>
+					<dict>
+						<key>a</key>
+						<string>0.75</string>
+						<key>b</key>
+						<string>1</string>
+						<key>g</key>
+						<string>1</string>
+						<key>r</key>
+						<string>1</string>
+					</dict>
+					<key>Fuzziness</key>
+					<real>9.2949161529541016</real>
+					<key>ShadowVector</key>
+					<string>{0, 0}</string>
 				</dict>
 				<key>stroke</key>
 				<dict>
@@ -828,7 +856,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2013-09-02 04:28:31 +0000</string>
+	<string>2013-09-02 04:38:23 +0000</string>
 	<key>Modifier</key>
 	<string>Florian René Hanke</string>
 	<key>NotesVisible</key>
@@ -923,7 +951,7 @@
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{-126, 24.5}, {811, 735}}</string>
+		<string>{{-133, 24.5}, {825, 735}}</string>
 		<key>Zoom</key>
 		<real>1</real>
 		<key>ZoomValues</key>
