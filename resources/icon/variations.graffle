@@ -773,6 +773,11 @@
 					<key>Draws</key>
 					<string>NO</string>
 				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
 			</dict>
 		</dict>
 	</array>
@@ -823,7 +828,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2013-09-02 02:34:07 +0000</string>
+	<string>2013-09-02 04:28:31 +0000</string>
 	<key>Modifier</key>
 	<string>Florian René Hanke</string>
 	<key>NotesVisible</key>
