@@ -9,10 +9,12 @@ import org.lp20.aikuma.util.FileIO;
 
 public class ServerCredentials {
 	
-	public ServerCredentials(String ipAddress, String username, String password) {
+	public ServerCredentials(String ipAddress, String username, 
+			String password, boolean syncActivated) {
 		setIPAddress(ipAddress);
 		setUsername(username);
 		setPassword(password);
+		setSyncActivated(syncActivated);
 	}
 
 	public void write() throws IOException {
@@ -28,7 +30,10 @@ public class ServerCredentials {
 		String ipAddress = (String) encodedServerCredentials.get("ipAddress");
 		String username = (String) encodedServerCredentials.get("username");
 		String password = (String) encodedServerCredentials.get("password");
-		return new ServerCredentials(ipAddress, username, password);
+		Boolean syncActivated = (Boolean)
+				encodedServerCredentials.get("syncActivated");
+		return new ServerCredentials(
+				ipAddress, username, password, syncActivated);
 	}
 
 	private JSONObject encode() {
@@ -36,6 +41,7 @@ public class ServerCredentials {
 		encodedServerCredentials.put("ipAddress", getIPAddress());
 		encodedServerCredentials.put("username", getUsername());
 		encodedServerCredentials.put("password", getPassword());
+		encodedServerCredentials.put("syncActivated", getSyncActivated());
 		return encodedServerCredentials;
 	}
 
@@ -74,9 +80,18 @@ public class ServerCredentials {
 		this.password = password;
 	}
 
+	private void setSyncActivated(boolean syncActivated) {
+		this.syncActivated = syncActivated;
+	}
+
+	public boolean getSyncActivated() {
+		return this.syncActivated;
+	}
+
 	private String ipAddress;
 	private String username;
 	private String password;
+	private boolean syncActivated;
 	private static final String IP_ADDRESS_PATTERN =
 			"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
 			"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +

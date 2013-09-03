@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,7 @@ public class SettingsActivity extends AikumaListActivity {
 		ipAddressField = (EditText) findViewById(R.id.ipAddress);
 		usernameField = (EditText) findViewById(R.id.username);
 		passwordField = (EditText) findViewById(R.id.password);
+		toggleButton = (ToggleButton) findViewById(R.id.syncToggle);
 	}
 
 	@Override
@@ -56,11 +58,13 @@ public class SettingsActivity extends AikumaListActivity {
 
 	private void commitServerCredentials() throws IOException {
 		try {
+			Log.i("sync", "syncActivated: " + syncActivated);
 			ServerCredentials serverCredentials =
 					new ServerCredentials(
 							ipAddressField.getText().toString(),
 							usernameField.getText().toString(),
-							passwordField.getText().toString());
+							passwordField.getText().toString(),
+							syncActivated);
 			serverCredentials.write();
 		} catch (IllegalArgumentException e) {
 			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -81,6 +85,7 @@ public class SettingsActivity extends AikumaListActivity {
 			ipAddressField.setText(serverCredentials.getIPAddress());
 			usernameField.setText(serverCredentials.getUsername());
 			passwordField.setText(serverCredentials.getPassword());
+			toggleButton.setChecked(serverCredentials.getSyncActivated());
 		} catch (IOException e) {
 			//If reading fails, then no text is put into the fields.
 		}
@@ -110,6 +115,15 @@ public class SettingsActivity extends AikumaListActivity {
 		}
 	}
 
+	public void onToggleClicked(View view) {
+		boolean on = ((ToggleButton) view).isChecked();
+		if (on) {
+			syncActivated = true;
+		} else {
+			syncActivated = false;
+		}
+	}
+
 	/**
 	 * Constant to represent the request code for the LanguageFilterList calls.
 	 */
@@ -120,4 +134,6 @@ public class SettingsActivity extends AikumaListActivity {
 	private EditText ipAddressField;
 	private EditText usernameField;
 	private EditText passwordField;
+	private boolean syncActivated;
+	private ToggleButton toggleButton;
 }
