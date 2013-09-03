@@ -17,6 +17,13 @@
 		<string>{{0, 0}, {559, 783}}</string>
 		<key>Class</key>
 		<string>SolidGraphic</string>
+		<key>FontInfo</key>
+		<dict>
+			<key>Font</key>
+			<string>Helvetica</string>
+			<key>Size</key>
+			<real>10</real>
+		</dict>
 		<key>ID</key>
 		<integer>2</integer>
 		<key>Style</key>
@@ -856,7 +863,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2013-09-02 04:38:23 +0000</string>
+	<string>2013-09-02 05:48:14 +0000</string>
 	<key>Modifier</key>
 	<string>Florian René Hanke</string>
 	<key>NotesVisible</key>
@@ -951,7 +958,7 @@
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{-133, 24.5}, {825, 735}}</string>
+		<string>{{-133, 24}, {825, 735}}</string>
 		<key>Zoom</key>
 		<real>1</real>
 		<key>ZoomValues</key>
@@ -959,7 +966,7 @@
 			<array>
 				<string>Canvas 1</string>
 				<real>1</real>
-				<real>0.25</real>
+				<real>0.20000000298023224</real>
 			</array>
 		</array>
 	</dict>
