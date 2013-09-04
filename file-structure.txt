@@ -37,50 +37,151 @@ Note that <uuidN> stands for a generated UUID.
 uuid1 and uuid1 are the same while uuid1 and uuid2 are different uuids.
 
 /aikuma
+    
+    # Contains original recordings.
+    #
     /recordings
+        
+        # All data of the recording uuid1 (and commentaries/transcriptions) are in this directory.
+        #
         /<uuid1>
+        
+            # The audio data in WAV format.
+            #
             data.wav
+            
+            # Metadata of this recording:
+            #   { "uuid":"<uuid2>", "people":["<uuid3>","<uuid4>"], "languages":["usa","gsw"],
+            #   "description":"...", "location":"12.3456,-98.7654", "timestamp":"2007-04-05T14:30Z" }
+            #
             metadata.json
+            
+            # Human readable version of metadata.json.
+            #
+            # Only ever gets written, never read by a machine.
+            #
+            # Example:
+            #   uuid: <uuid2>
+            #   people: <uuid3>
+            #   languages: usa, gsw
+            #   description: Blah.
+            #   location: 12.3456,-98.7654
+            #   timestamp: 2007-04-05T14:30Z
+            #
+            # Note: We could use YAML here http://en.wikipedia.org/wiki/YAML.
+            #
+            metadata.txt
+            
+            # Directory for audio commentaries (respeakings/translations).
+            #
+            /commentaries
+            
+                # All data of commentary uuid2.
+                #
+                /<uuid2>
+                    
+                    # The audio data in WAV format.
+                    #
+                    data.wav
+                    
+                    # Metadata of this commentary:
+                    # 
+                    #
+                    metadata.json
+            
+                    # The mapping CSV, mapping original segment <start,length> in
+                    # seconds to respoken/translated segment <start,length> in seconds.
+                    #
+                    # Example:
+                    #   0.0000000,1.1234567,0.0000000,2.1234567
+                    #   1.0123456,3.1234567,2.1234567,4.1234567
+                    #
+                    mapping.csv
+                    
+                    # Transcriptions of this commentary.
+                    #
+                    /transcriptions
+                        
+                        # All data of transcription uuid6 are in this directory.
+                        #
+                        /<uuid6>
+                            
+                            #
+                            #
+                            metadata.json
+                            
+                            # Transcription data for the commentary uuid2.
+                            #
+                            # Example:
+                            #   0.0000000,4.5678900,"Four score and..."
+                            #   4.5678900,2.1234567,"hello, world!"
+                            #   6.6913467,1.2345678,"Ding!"
+                            #
+                            transcript.csv
+                    
+                    # Images of commentary uuid2.
+                    #
+                    /images
+                        /<uuid7>
+                            metadata.json
+                            image.jpg
+                        /<uuid8>
+                            metadata.json
+                            image.jpg
+            
             /transcriptions
-                /<uuid4> # It is a simple transcription if the language of the recording is the same as the language of the transcription
+                /<uuid4>
+                    # Metadata of this transcription:
+                    #
+                    # It is a simple transcription if the language of the recording
+                    # is the same as the language of the transcription.
                     metadata.json
+                    
+                    # Transcription data for the recording uuid1.
+                    #
+                    # 0.0000000,4.5678900,"Four score and..."
+                    # 4.5678900,2.1234567,"hello, world!"
+                    # 6.6913467,1.2345678,"Ding!"
+                    #
                     mapping.csv
-                /<uuid5> # It is a translation if the language of the recording is different from the language of the transcription
+                /<uuid5>
+                    # Metadata of the transcription.
+                    #
+                    # It is a translation if the language of the recording is
+                    # different from the language of the transcription.
+                    #
                     metadata.json
+                    
+                    # Transcription data for the recording uuid1.
+                    #
+                    # 0.0000000,4.5678900,"Honni soit qui mal y pense."
+                    # 4.5678900,2.1234567,"Bonjour."
+                    # 6.6913467,1.2345678,"Et voilà!"
+                    #
                     mapping.csv
-        /<uuid2>
-            data.wav
-            metadata.json
-            mapping.csv
-            /transcriptions
-                /<uuid6>
-                    metadata.json
-                    mapping.csv
-            /images
-                /<uuid7>
-                    metadata.json
-                    image.jpg
-                /<uuid8>
-                    metadata.json
-                    image.jpg
-    /speakers
+    
+    # People - referred to in metadata.json of recordings/transcriptions/commentaries.
+    #
+    /people
+        
+        # Person.
+        #
         /<uuid3>
+        
+            # Metadata of person uuid3.
+            #
+            # { "uuid":"<uuid1>", "languages":["usa","gsw"], "description":"...",
+            # "location":"12.3456,-98.7654", "timestamp":"2007-04-05T14:30Z" }
+            #
             metadata.json
+            
+            # Picture for person uuid3.
+            #
             image.jpg
         /...
-            
 
-uuid1 - recording
-uuid2 - commentary on uuid1 (note mapping.csv)
-uuid3 - speaker
-uuid4 - transcription of uuid1
-uuid5 - transcription of uuid1
-uuid6 - transcription of uuid2
-uuid7 - image for recording uuid2
-uuid8 - image for recording uuid2
-
-File structures
----------------
+File internals
+--------------
 
 - Generally, open ended, database "record"-like data is stored as CSV (lists).
 - Metadata structure which needs to be expanded in the future is stored as JSON (hashes).
