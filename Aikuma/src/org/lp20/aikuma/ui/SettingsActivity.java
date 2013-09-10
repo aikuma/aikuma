@@ -23,6 +23,7 @@ import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.ServerCredentials;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
+import org.lp20.aikuma.util.SyncUtil;
 
 /**
  * The activity that allows default languages and network settings to be
@@ -86,6 +87,7 @@ public class SettingsActivity extends AikumaListActivity {
 			usernameField.setText(serverCredentials.getUsername());
 			passwordField.setText(serverCredentials.getPassword());
 			toggleButton.setChecked(serverCredentials.getSyncActivated());
+			syncActivated = serverCredentials.getSyncActivated();
 		} catch (IOException e) {
 			//If reading fails, then no text is put into the fields.
 		}
@@ -94,6 +96,15 @@ public class SettingsActivity extends AikumaListActivity {
 	public void onAddLanguageButton(View view) {
 		Intent intent = new Intent(this, LanguageFilterList.class);
 		startActivityForResult(intent, SELECT_LANGUAGE);
+	}
+
+	public void onSyncNowButton(View view) {
+		try {
+			commitServerCredentials();
+		} catch (IOException e) {
+			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+		}
+		SyncUtil.syncNow();
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent
@@ -118,6 +129,7 @@ public class SettingsActivity extends AikumaListActivity {
 	public void onToggleClicked(View view) {
 		boolean on = ((ToggleButton) view).isChecked();
 		if (on) {
+			Log.i("sync", "onToggleClicked syncActivated true");
 			syncActivated = true;
 		} else {
 			syncActivated = false;

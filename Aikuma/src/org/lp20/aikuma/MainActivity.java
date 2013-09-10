@@ -33,15 +33,7 @@ public class MainActivity extends ListActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		menuBehaviour = new MenuBehaviour(this);
-		try {
-			Log.i("sync", "syncUtil null: " + (syncUtil == null));
-			if (syncUtil == null) {
-				syncUtil = new SyncUtil();
-			}
-		} catch (IOException e) {
-			//If an IOException is thrown here, the ServerCredentials probably
-			//couldn't be read.
-		}
+		SyncUtil.startSyncLoop();
 		List<Recording> recordings = Recording.readAll();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this, recordings);
 		setListAdapter(adapter);
@@ -67,5 +59,4 @@ public class MainActivity extends ListActivity
 	}
 
 	MenuBehaviour menuBehaviour;
-	private static SyncUtil syncUtil;
 }
