@@ -10,29 +10,46 @@ import org.lp20.aikuma.model.ServerCredentials;
 
 public class SyncUtil {
 
-	public SyncUtil() throws IOException {
-		Log.i("sync", "in constructor 1");
-		serverCredentials = ServerCredentials.read();
-		Log.i("sync", "in constructor 2");
-		syncThread = new SyncLoop();
-		Log.i("sync", "in constructor 3 ");
-		syncThread.start();
-		Log.i("sync", "in constructor 4 ");
+	private SyncUtil() {}
+
+	public static void startSyncLoop() {
+		if (syncThread == null || !syncThread.isAlive()) {
+			syncThread = new SyncLoop();
+			syncThread.start();
+		}
 	}
 
-	private class SyncLoop extends Thread {
+	public static void syncNow() {
+		Log.i("sync", "syncNow called");
+		//When we interrupt the syncThread, we fire up a new syncThread which
+		//syncs immediately.
+		syncThread.interrupt();
+		Log.i("sync", "syncThread.interrupt() call finished");
+	}
+
+	private static class SyncLoop extends Thread {
+		public SyncLoop() {
+		}
+		public SyncLoop(String syncMessage) {
+			this.syncMessage = syncMessage;
+		}
 		public void run() {
-			int waitMins = 0;
+			int waitMins = 1;
 			boolean syncResult;
 			while (true) {
 				try {
+					Log.i("sync", "starting to sleep");
 					TimeUnit.MINUTES.sleep(waitMins);
+					Log.i("sync", "finishing sleep");
 				} catch (InterruptedException e) {
 					//This shouldn't be happening
 					Log.i("sync", "Got an interrupted exception");
+					SyncUtil.syncThread = new SyncLoop("Syncing complete");
+					SyncUtil.syncThread.start();
+					return;
 				}
 				try {
-					SyncUtil.this.serverCredentials = ServerCredentials.read();
+					SyncUtil.serverCredentials = ServerCredentials.read();
 				} catch (IOException e) {
 					//We'll cope and assume the old serverCredentials work.
 				}
@@ -51,14 +68,18 @@ public class SyncUtil {
 				} else if (!client.logout()) {
 					Log.i("sync", "Logout failed.");
 				} else {
-					Log.i("sync", "sync complete.");
+					Log.i("sync", "sync complete");
+					if (syncMessage != null) {
+						Log.i("sync", "syncMessage: " + syncMessage);
+						syncMessage = null;
+					}
 				}
 				Log.i("sync", "end of conditional block");
-				waitMins = 1;
 			}
 		}
+		private String syncMessage;
 	}
 
-	private ServerCredentials serverCredentials;
-	private Thread syncThread;
+	private static ServerCredentials serverCredentials;
+	private static Thread syncThread;
 }
