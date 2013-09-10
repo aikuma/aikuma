@@ -73,8 +73,8 @@
 			android:id="@+id/syncToggle"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:textOn="On"
-			android:textOff="Off"
+			android:textOn="Automatic Sync On"
+			android:textOff="Automatic Sync Off"
 			android:onClick="onToggleClicked"
 		/>
 		<Button

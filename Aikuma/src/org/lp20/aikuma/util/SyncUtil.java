@@ -31,6 +31,9 @@ public class SyncUtil {
 	private static class SyncLoop extends Thread {
 		public SyncLoop() {
 		}
+		public SyncLoop(boolean forceSync) {
+			this.forceSync = forceSync;
+		}
 		public void run() {
 			int waitMins = 1;
 			boolean syncResult;
@@ -42,7 +45,8 @@ public class SyncUtil {
 				}
 				//For some reason we get an EPIPE unless we instantiate a new
 				//Client at each iteration.
-				if (serverCredentials.getSyncActivated()) {
+				if (forceSync || serverCredentials.getSyncActivated()) {
+					forceSync = false;
 					Client client = new Client();
 					client.setClientBaseDir(FileIO.getAppRootPath().toString());
 					Log.i("sync", "beginning sync run");
@@ -70,12 +74,13 @@ public class SyncUtil {
 					Log.i("sync", "finishing sleep");
 				} catch (InterruptedException e) {
 					Log.i("sync", "Got an interrupted exception");
-					SyncUtil.syncThread = new SyncLoop();
+					SyncUtil.syncThread = new SyncLoop(true);
 					SyncUtil.syncThread.start();
 					return;
 				}
 			}
 		}
+		private boolean forceSync;
 	}
 
 	private static ServerCredentials serverCredentials;

@@ -134,6 +134,11 @@ public class SettingsActivity extends AikumaListActivity {
 		} else {
 			syncActivated = false;
 		}
+		try {
+			commitServerCredentials();
+		} catch (IOException e) {
+			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+		}
 	}
 
 	/**
