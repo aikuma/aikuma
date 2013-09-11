@@ -62,7 +62,6 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 
 	@Override
 	public void onPause() {
-		Log.i("issue54", "pause");
 		super.onPause();
 		pause();
 		this.proximityDetector.stop();

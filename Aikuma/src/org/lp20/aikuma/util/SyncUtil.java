@@ -21,11 +21,9 @@ public class SyncUtil {
 	}
 
 	public static void syncNow() {
-		Log.i("sync", "syncNow called");
 		//When we interrupt the syncThread, we fire up a new syncThread which
 		//syncs immediately.
 		syncThread.interrupt();
-		Log.i("sync", "syncThread.interrupt() call finished");
 	}
 
 	private static class SyncLoop extends Thread {
@@ -49,12 +47,10 @@ public class SyncUtil {
 					forceSync = false;
 					Client client = new Client();
 					client.setClientBaseDir(FileIO.getAppRootPath().toString());
-					Log.i("sync", "beginning sync run");
 					if (!client.login(serverCredentials.getIPAddress(),
 							serverCredentials.getUsername(),
 							serverCredentials.getPassword())) {
-						Log.i("sync", "login failed: " +
-								serverCredentials.getIPAddress());
+						Log.i("sync", "Login failed.");
 					} else if (!client.sync()) {
 						Log.i("sync", "sync failed.");
 					} else if (!client.logout()) {
@@ -62,18 +58,11 @@ public class SyncUtil {
 					} else {
 						Log.i("sync", "sync complete.");
 					}
-					Log.i("sync", "end of conditional block");
 					waitMins = 1;
-					Log.i("sync", "sync complete");
-				} else {
-					Log.i("sync", "not syncing");
 				}
 				try {
-					Log.i("sync", "starting to sleep");
 					TimeUnit.MINUTES.sleep(waitMins);
-					Log.i("sync", "finishing sleep");
 				} catch (InterruptedException e) {
-					Log.i("sync", "Got an interrupted exception");
 					SyncUtil.syncThread = new SyncLoop(true);
 					SyncUtil.syncThread.start();
 					return;

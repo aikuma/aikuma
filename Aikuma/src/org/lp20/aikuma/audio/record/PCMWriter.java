@@ -92,11 +92,6 @@ public class PCMWriter implements Sampler {
 		try {
 			// Write buffer to file.
 			//
-			if (randomAccessWriter == null) {
-				Log.i("dafuq", "DAFUQ");
-			} else if (buffer == null) {
-				Log.i("dafuq", "DAFUQ2");
-			}
 			randomAccessWriter.write(buffer);
 
 			// Remember larger payload.

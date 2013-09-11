@@ -317,15 +317,8 @@ public class Recording {
 		for (Recording recording : allRecordings) {
 			if (!recording.isOriginal()) {
 				if (recording.getOriginalUUID().equals(getUUID())) {
-					Log.i("issue55", "got one");
 					respeakings.add(recording);
-				} else {
-					Log.i("issue55", "failed second if; uuid was " +
-							recording.getOriginalUUID() + ", not " +
-							getUUID());
 				}
-			} else {
-				Log.i("issue55", "failed first if.");
 			}
 		}
 		return respeakings;
@@ -345,8 +338,6 @@ public class Recording {
 					}
 				});
 
-		Log.i("len", " " + recordingUUIDsArray.length);
-
 		List<String> recordingUUIDs;
 		// Get a list of all the UUIDs of users in the "recordings" directory.
 		if (recordingUUIDsArray != null) {
@@ -363,7 +354,6 @@ public class Recording {
 		// Get the recordings data from the metadata.json files.
 		List<Recording> recordings = new ArrayList<Recording>();
 		for (String recordingUUID : recordingUUIDs) {
-			Log.i("len", " " + recordingUUID);
 			try {
 				recordings.add(Recording.read(UUID.fromString(recordingUUID)));
 			} catch (IOException e) {
@@ -373,7 +363,6 @@ public class Recording {
 			}
 		}
 
-		Log.i("len", " " + recordings.size());
 		return recordings;
 	}
 

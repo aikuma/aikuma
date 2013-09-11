@@ -71,24 +71,19 @@ public class Client {
 			try {
 				apacheClient.connect(serverURI);
 			} catch (SocketException e) {
-				Log.i("sync", "0.1");
 				return false;
 			} catch (IOException e) {
-				Log.i("sync", "0.2");
 				return false;
 			}
 		}
-		Log.i("sync", "1");
 		if (!loggedIn) {
 			try {
 				result = apacheClient.login(username, password);
 				loggedIn = result;
 			} catch (IOException e) {
-				Log.i("sync", "1.1, " + e.getMessage());
 				return false;
 			}
 		}
-		Log.i("sync", "2, " + result);
 		try {
 			// This code cannot be run before logging in, although no
 			// documentation ever says that.
@@ -99,26 +94,22 @@ public class Client {
 		} catch (IOException e) {
 			return false;
 		}
-		Log.i("sync", "3, " + result);
 		// Change to appropriate working directory
 		if (loggedIn) {
 			//try {
 				String serverBaseDir = findServerBaseDir();
-				Log.i("sync", "server base dir: "+ serverBaseDir);
 				if (serverBaseDir == null) {
 					logout();
 					return false;
 				} else {
 					setServerBaseDir(findServerBaseDir());
 					result = cdServerBaseDir();
-					Log.i("sync", "result " + result);
 				}
 				//result = true;
 			//} catch (IOException e ) {
 			//	return false;
 			//}
 		}
-		Log.i("sync", "4");
 		return result;
 	}
 
@@ -243,31 +234,23 @@ public class Client {
 	 * @return	true if successful; false otherwise.
 	 */
 	public boolean pushFile(String directoryPath, File file) {
-		Log.i("sync", "pushFile: " + file);
 		boolean result = false;
 		try {
 			InputStream stream = new FileInputStream(file);
-			Log.i("sync", "1");
 			result = apacheClient.storeFile(
 					serverBaseDir + "/" + directoryPath + "/" + file.getName() +
 							".inprogress",
 					stream);
-			Log.i("sync", "2");
 			stream.close();
-			Log.i("sync", "3");
 			apacheClient.rename(
 					serverBaseDir + "/" + directoryPath + "/" + file.getName() +
 							".inprogress",
 					serverBaseDir + "/" + directoryPath + "/" + file.getName());
-			Log.i("sync", "4");
 		} catch (IOException e) {
-			Log.i("sync", "notpushed");
 			return false;
 		}
 		if (result) {
-			Log.i("sync", "pushed");
 		} else {
-			Log.i("sync", "notpushed");
 		}
 		return result;
 	}
@@ -279,7 +262,6 @@ public class Client {
 	 * @return	true if successful; false otherwise.
 	 */
 	public boolean pullFile(String directoryPath, File file) {
-		Log.i("sync", "pullFile: " + file);
 		boolean result = false;
 		try {
 			File inProgressFile = new File(file.getPath() + ".inprogress");
@@ -293,13 +275,7 @@ public class Client {
 			stream.close();
 			inProgressFile.renameTo(file);
 		} catch (IOException e) {
-			Log.i("sync", "notpulled");
 			return false;
-		}
-		if (result) {
-			Log.i("sync", "pulled");
-		} else {
-			Log.i("sync", "notpulled");
 		}
 		return result;
 	}
@@ -372,10 +348,8 @@ public class Client {
 	public boolean cdServerBaseDir() {
 		try {
 			boolean result = apacheClient.changeWorkingDirectory(serverBaseDir);
-			Log.i("sync", "cdserverbasedir result: " + result);
 			return result;
 		} catch (IOException e) {
-			Log.i("sync", "cdserverbasedir error: " + e.getMessage());
 			return false;
 		}
 	}

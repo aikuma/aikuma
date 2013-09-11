@@ -110,7 +110,6 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 	// data.
 
 	public void audioTriggered(short[] buffer, boolean justChanged) {
-		Log.i("issue54", "audioTriggered");
 		if (justChanged) {
 			switchToRecord();
 		}
@@ -118,7 +117,6 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 	}
 
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
-		Log.i("issue54", "silenceTriggered");
 		if (justChanged) {
 			if (getFinishedPlaying()) {
 				stop();
@@ -144,7 +142,6 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 
 	/** Resume playing. */
 	public void resume() {
-		Log.i("issue54", "resume()");
 		microphone.listen(this);
 		//rewindToSegmentStart();
 		mapper.markOriginal(player);

@@ -59,7 +59,6 @@ public class SettingsActivity extends AikumaListActivity {
 
 	private void commitServerCredentials() throws IOException {
 		try {
-			Log.i("sync", "syncActivated: " + syncActivated);
 			ServerCredentials serverCredentials =
 					new ServerCredentials(
 							ipAddressField.getText().toString(),
@@ -129,7 +128,6 @@ public class SettingsActivity extends AikumaListActivity {
 	public void onToggleClicked(View view) {
 		boolean on = ((ToggleButton) view).isChecked();
 		if (on) {
-			Log.i("sync", "onToggleClicked syncActivated true");
 			syncActivated = true;
 		} else {
 			syncActivated = false;

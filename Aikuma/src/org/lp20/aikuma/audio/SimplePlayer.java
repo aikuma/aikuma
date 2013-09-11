@@ -40,7 +40,6 @@ public class SimplePlayer extends Player implements Sampler {
 
 	/** Starts or resumes playback of the recording. */
 	public void play() {
-		Log.i("issue54", "SimplePlayer.start()");
 		mediaPlayer.start();
 	}
 
