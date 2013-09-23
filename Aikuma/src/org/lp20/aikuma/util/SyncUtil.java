@@ -40,33 +40,35 @@ public class SyncUtil {
 			while (true) {
 				try {
 					SyncUtil.serverCredentials = ServerCredentials.read();
-				} catch (IOException e) {
-					//We'll cope and assume the old serverCredentials work.
-				}
-				//For some reason we get an EPIPE unless we instantiate a new
-				//Client at each iteration.
-				if (forceSync || serverCredentials.getSyncActivated()) {
-					forceSync = false;
-					Client client = new Client();
-					client.setClientBaseDir(FileIO.getAppRootPath().toString());
-					Log.i("sync", "beginning sync run");
-					if (!client.login(serverCredentials.getIPAddress(),
-							serverCredentials.getUsername(),
-							serverCredentials.getPassword())) {
-						Log.i("sync", "login failed: " +
-								serverCredentials.getIPAddress());
-					} else if (!client.sync()) {
-						Log.i("sync", "sync failed.");
-					} else if (!client.logout()) {
-						Log.i("sync", "Logout failed.");
+					//For some reason we get an EPIPE unless we instantiate a new
+					//Client at each iteration.
+					if (forceSync || serverCredentials.getSyncActivated()) {
+						forceSync = false;
+						Client client = new Client();
+						client.setClientBaseDir(
+								FileIO.getAppRootPath().toString());
+						Log.i("sync", "beginning sync run");
+						if (!client.login(serverCredentials.getIPAddress(),
+								serverCredentials.getUsername(),
+								serverCredentials.getPassword())) {
+							Log.i("sync", "login failed: " +
+									serverCredentials.getIPAddress());
+						} else if (!client.sync()) {
+							Log.i("sync", "sync failed.");
+						} else if (!client.logout()) {
+							Log.i("sync", "Logout failed.");
+						} else {
+							Log.i("sync", "sync complete.");
+						}
+						Log.i("sync", "end of conditional block");
+						waitMins = 1;
+						Log.i("sync", "sync complete");
 					} else {
-						Log.i("sync", "sync complete.");
+						Log.i("sync", "not syncing");
 					}
-					Log.i("sync", "end of conditional block");
-					waitMins = 1;
-					Log.i("sync", "sync complete");
-				} else {
-					Log.i("sync", "not syncing");
+				} catch (IOException e) {
+					Log.i("npe", "ioexception on serverCredentials.read()");
+					//We'll cope and assume the old serverCredentials work.
 				}
 				try {
 					Log.i("sync", "starting to sleep");
