@@ -64,6 +64,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		speakersUUIDs = new ArrayList<UUID>();
 		languages = new ArrayList<Language>();
 		selectedLanguages = new ArrayList<Language>();
+		ImageButton okButton = (ImageButton) findViewById(R.id.okButton);
+		okButton.setEnabled(false);
 	}
 
 	private void setUpPlayer(UUID uuid, long sampleRate) {
@@ -195,6 +197,9 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 						// If the image can't be loaded, we just leave it at that.
 					}
 					userImages.addView(speakerImage);
+					ImageButton okButton = (ImageButton)
+							findViewById(R.id.okButton);
+					okButton.setEnabled(true);
 				}
 			}
 		}
