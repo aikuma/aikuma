@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,6 +43,8 @@ public class MenuBehaviour {
 			case R.id.mainlist:
 				goToMainActivity();
 				return true;
+			case R.id.help:
+				openHelpInBrowser();
 			case R.id.settings:
 				intent = new Intent(activity, SettingsActivity.class);
 				activity.startActivity(intent);
@@ -62,6 +65,8 @@ public class MenuBehaviour {
 			case R.id.mainlist:
 				safeGoToMainActivity();
 				return true;
+			case R.id.help:
+				openHelpInBrowser();
 			case R.id.settings:
 				intent = new Intent(activity, SettingsActivity.class);
 				activity.startActivity(intent);
@@ -70,6 +75,12 @@ public class MenuBehaviour {
 			default:
 				return true;
 		}
+	}
+
+	private void openHelpInBrowser() {
+		Uri uri = Uri.parse("http://lp20.org/aikuma/design.html");
+		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+		activity.startActivity(intent);
 	}
 
 	/**

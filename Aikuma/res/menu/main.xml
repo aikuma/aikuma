@@ -8,6 +8,10 @@
 		android:icon="@drawable/settings_32"
 		android:title="@string/settings"
 		android:showAsAction="always" />
+	<item android:id="@+id/help"
+		android:icon="@drawable/help_32"
+		android:title="@string/help"
+		android:showAsAction="always" />
 	<item android:id="@+id/mainlist"
 		android:icon="@drawable/main_list_32"
 		android:title="@string/mainlist"
