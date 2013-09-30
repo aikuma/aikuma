@@ -5,12 +5,15 @@
 package org.lp20.aikuma.model;
 
 import android.util.Log;
+import au.com.bytecode.opencsv.CSVReader;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.IdUtils;
 import org.lp20.aikuma.util.StandardDateFormat;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -285,6 +288,7 @@ public class Recording {
 	}
 
 	/**
+	 * working on the design
 	 * Encode the Recording as a corresponding JSONObject.
 	 *
 	 * @return	A JSONObject instance representing the Recording;

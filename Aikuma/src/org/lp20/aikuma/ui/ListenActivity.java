@@ -128,6 +128,7 @@ public class ListenActivity extends AikumaActivity {
 	private void setUpPlayer() {
 		try {
 			if (recording.isOriginal()) {
+				List<String> translation = recording.getTranslation();
 				setPlayer(new SimplePlayer(recording, true));
 			} else {
 				setPlayer(new InterleavedPlayer(recording));
