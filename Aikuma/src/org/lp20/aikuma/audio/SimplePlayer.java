@@ -55,7 +55,13 @@ public class SimplePlayer extends Player implements Sampler {
 
 	/** Get current point in the recording in milliseconds. */
 	public int getCurrentMsec() {
-		return mediaPlayer.getCurrentPosition();
+		try {
+			return mediaPlayer.getCurrentPosition();
+		} catch (IllegalStateException e) {
+			//If we get an IllegalStateException because the recording has
+			//finished playing, just return the duration of the recording.
+			return getDurationMsec();
+		}
 	}
 
 	public long getCurrentSample() {
