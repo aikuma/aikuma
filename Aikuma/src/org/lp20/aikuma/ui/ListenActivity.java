@@ -33,9 +33,11 @@ import java.util.List;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.model.Transcript;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
+import org.lp20.aikuma.audio.MarkedPlayer;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.util.ImageUtils;
@@ -124,12 +126,28 @@ public class ListenActivity extends AikumaActivity {
 		return speakerImage;
 	}
 
-	// Set up the player
+	private void doSomeStuff() {
+		ListenActivity.this.runOnUiThread(new Runnable() {
+			public void run() {
+				Toast.makeText(ListenActivity.this, "okay",
+						Toast.LENGTH_LONG).show();
+			}
+		});
+	}
+
 	private void setUpPlayer() {
 		try {
 			if (recording.isOriginal()) {
-				//List<String> translation = recording.getTranslation();
-				setPlayer(new SimplePlayer(recording, true));
+				Transcript transcript = new Transcript(recording);
+				MarkedPlayer player = new MarkedPlayer(recording, new
+					MarkedPlayer.OnMarkerReachedListener() {
+						public void onMarkerReached(MarkedPlayer p) {
+							ListenActivity.this.doSomeStuff();
+						}
+					}
+				, true);
+				player.setNotificationMarkerPositionMsec(2000);
+				setPlayer(player);
 			} else {
 				setPlayer(new InterleavedPlayer(recording));
 				ImageButton respeakingButton =
@@ -213,6 +231,11 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	private void setPlayer(SimplePlayer player) {
+		this.player = player;
+		fragment.setPlayer(player);
+	}
+
+	private void setPlayer(MarkedPlayer player) {
 		this.player = player;
 		fragment.setPlayer(player);
 	}
