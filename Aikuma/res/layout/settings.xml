@@ -8,81 +8,89 @@
 		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_weight="1.7">
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/defaultLangHeading"
-		/>
+		android:layout_weight="10">
 		<LinearLayout
-			android:orientation="horizontal"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.1">
-			<ListView android:id="@android:id/list"
+			android:orientation="vertical"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="5">
+			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:text="@string/defaultLangHeading"
 			/>
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.1">
+				<ListView android:id="@android:id/list"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+				/>
+			</LinearLayout>
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				>
+				<Button
+					android:id="@+id/addLanguageButton"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/addLanguage"
+					android:onClick="onAddLanguageButton"
+				/>
+			</LinearLayout>
 		</LinearLayout>
 		<LinearLayout
-			android:orientation="horizontal"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			>
-			<Button
-				android:id="@+id/addLanguageButton"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="5"
+			android:orientation="vertical">
+			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/addLanguage"
-				android:onClick="onAddLanguageButton"
+				android:text="@string/syncSettingsHeader"
+			/>
+			<EditText
+				android:id="@+id/ipAddress"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/ipAddressHint"
+				android:inputType="text"
+			/>
+			<EditText
+				android:id="@+id/username"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/usernameHint"
+				android:inputType="text"
+			/>
+			<EditText
+				android:id="@+id/password"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/passwordHint"
+				android:inputType="text"
+			/>
+			<ToggleButton
+				android:id="@+id/syncToggle"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:textOn="Automatic Sync On"
+				android:textOff="Automatic Sync Off"
+				android:onClick="onToggleClicked"
 			/>
 		</LinearLayout>
 	</LinearLayout>
-	<LinearLayout
+	<Button
+		android:id="@+id/syncNowButton"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/syncNow"
+		android:onClick="onSyncNowButton"
+		android:layout_alignParentBottom="true"
 		android:layout_weight="1"
-		android:orientation="vertical">
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/syncSettingsHeader"
-		/>
-		<EditText
-			android:id="@+id/ipAddress"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/ipAddressHint"
-			android:inputType="text"
-		/>
-		<EditText
-			android:id="@+id/username"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/usernameHint"
-			android:inputType="text"
-		/>
-		<EditText
-			android:id="@+id/password"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/passwordHint"
-			android:inputType="text"
-		/>
-		<ToggleButton
-			android:id="@+id/syncToggle"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:textOn="Automatic Sync On"
-			android:textOff="Automatic Sync Off"
-			android:onClick="onToggleClicked"
-		/>
-		<Button
-			android:id="@+id/syncNowButton"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/syncNow"
-			android:onClick="onSyncNowButton"
-		/>
-	</LinearLayout>
+	/>
 </LinearLayout>
