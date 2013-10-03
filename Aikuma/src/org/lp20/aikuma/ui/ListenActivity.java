@@ -38,6 +38,7 @@ import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.audio.MarkedPlayer;
+import org.lp20.aikuma.audio.TranscriptPlayer;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.util.ImageUtils;
@@ -126,7 +127,7 @@ public class ListenActivity extends AikumaActivity {
 		return speakerImage;
 	}
 
-	private void doSomeStuff() {
+	private void popUpOkay() {
 		ListenActivity.this.runOnUiThread(new Runnable() {
 			public void run() {
 				Toast.makeText(ListenActivity.this, "okay",
@@ -138,15 +139,8 @@ public class ListenActivity extends AikumaActivity {
 	private void setUpPlayer() {
 		try {
 			if (recording.isOriginal()) {
-				Transcript transcript = new Transcript(recording);
-				MarkedPlayer player = new MarkedPlayer(recording, new
-					MarkedPlayer.OnMarkerReachedListener() {
-						public void onMarkerReached(MarkedPlayer p) {
-							ListenActivity.this.doSomeStuff();
-						}
-					}
-				, true);
-				player.setNotificationMarkerPositionMsec(2000);
+				TranscriptPlayer player =
+						new TranscriptPlayer(recording, this);
 				setPlayer(player);
 			} else {
 				setPlayer(new InterleavedPlayer(recording));
@@ -236,6 +230,11 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	private void setPlayer(MarkedPlayer player) {
+		this.player = player;
+		fragment.setPlayer(player);
+	}
+
+	private void setPlayer(TranscriptPlayer player) {
 		this.player = player;
 		fragment.setPlayer(player);
 	}

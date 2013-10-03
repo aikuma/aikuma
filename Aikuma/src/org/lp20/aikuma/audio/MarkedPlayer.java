@@ -67,6 +67,13 @@ public class MarkedPlayer extends SimplePlayer {
 	}
 
 	/**
+	 * Sets the notificaiton marker position to be at the specified sample.
+	 */
+	public void setNotificationMarkerPositionSample(Long sample) {
+		setNotificationMarkerPositionMsec(sampleToMsec(sample));
+	}
+
+	/**
 	 * Removes the marker if it has been set.
 	 */
 	public void unsetNotificationMarkerPosition() {

@@ -24,6 +24,7 @@ import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.audio.MarkedPlayer;
+import org.lp20.aikuma.audio.TranscriptPlayer;
 import org.lp20.aikuma.model.Segments;
 import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.R;
@@ -175,6 +176,16 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	 */
 	public void setPlayer(MarkedPlayer markedPlayer) {
 		this.player = markedPlayer;
+		player.setOnCompletionListener(onCompletionListener);
+	}
+
+	/**
+	 * Sets the player that the ListenFragment is to use
+	 *
+	 * @param	transcript player	The transcript player to be used.
+	 */
+	public void setPlayer(TranscriptPlayer transcriptPlayer) {
+		this.player = transcriptPlayer;
 		player.setOnCompletionListener(onCompletionListener);
 	}
 

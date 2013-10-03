@@ -93,4 +93,11 @@
 			android:scaleType="centerInside"
 			android:layout_alignParentBottom="true"
 	/>
+	<TextView
+		android:id="@+id/transcriptView"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/RespeakingImages"
+		android:text="hello"
+	/>
 </RelativeLayout>
