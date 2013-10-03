@@ -14,34 +14,33 @@ public class TranscriptPlayer extends MarkedPlayer {
 
 	public TranscriptPlayer(Recording recording, final Activity activity)
 			throws IOException {
-		super(recording,
-				new MarkedPlayer.OnMarkerReachedListener() {
-					public void onMarkerReached(MarkedPlayer p) {
-						activity.runOnUiThread(new Runnable() {
-							public void run() {
-								transcriptView = (TextView) activity.findViewById(R.id.transcriptView);
-								//Toast.makeText(activity, "hello",
-								//	Toast.LENGTH_SHORT).show();
-								transcriptView.setText("different");
-							}
-						});
-						//transcriptView.setText("different");
-					}
-				}
-		, true);
+		super(recording, true);
 		transcript = new Transcript(recording);
-		segmentIterator = transcript.getSegmentIterator();
-		/*
-		markedPlayer = new MarkedPlayer(recording,
-				new TranscriptMarkerReachedListener());
-				*/
-		setNotificationMarkerPositionSample(32000l);
+		final Iterator<Segment> segmentIterator = 
+				transcript.getSegmentIterator();
+		if (segmentIterator.hasNext()) {
+			segment = segmentIterator.next();
+			setNotificationMarkerPositionSample(segment.getStartSample());
+		}
+		OnMarkerReachedListener onTranscriptMarkerReachedListener =
+				new OnMarkerReachedListener() {
+			public void onMarkerReached(MarkedPlayer p) {
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						transcriptView = (TextView)
+							activity.findViewById(R.id.transcriptView);
+						transcriptView.setText(transcript.getTranscriptSegment(TranscriptPlayer.segment));
+						if (segmentIterator.hasNext()) {
+							TranscriptPlayer.segment = segmentIterator.next();
+							TranscriptPlayer.this.setNotificationMarkerPositionSample(
+									TranscriptPlayer.segment.getEndSample());
+						}
+					}
+				});
+			}
+		};
+		setOnMarkerReachedListener(onTranscriptMarkerReachedListener);
 	}
-
-	/*
-	private OnMarkerReachedListener onMarkerReachedListener = new
-	MarkedPlayer.onMarkerReached
-	*/
 
 	private class TranscriptMarkerReachedListener
 			extends MarkedPlayer.OnMarkerReachedListener {
@@ -93,7 +92,7 @@ public class TranscriptPlayer extends MarkedPlayer {
 
 	private MarkedPlayer markedPlayer;
 	*/
+	private static Segment segment;
 	private static TextView transcriptView;
-	private Iterator<Segment> segmentIterator;
 	private Transcript transcript;
 }

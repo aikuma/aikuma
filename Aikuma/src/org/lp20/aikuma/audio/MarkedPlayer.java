@@ -37,6 +37,14 @@ public class MarkedPlayer extends SimplePlayer {
 		count++;
 	}
 
+	public MarkedPlayer(Recording recording) throws IOException {
+		super(recording);
+		notificationMarkerLoop = new Thread(new NotificationMarkerLoop());
+		notificationMarkerLoop.start();
+		unsetNotificationMarkerPosition();
+		count++;
+	}
+
 	/**
 	 * Returns the marker position in milliseconds
 	 *
@@ -127,7 +135,7 @@ public class MarkedPlayer extends SimplePlayer {
 	 *
 	 * @param	onMarkerReachedListener	the listener to be notified.
 	 */
-	private void setOnMarkerReachedListener(OnMarkerReachedListener
+	public void setOnMarkerReachedListener(OnMarkerReachedListener
 			onMarkerReachedListener) {
 		this.onMarkerReachedListener = onMarkerReachedListener;
 	}
