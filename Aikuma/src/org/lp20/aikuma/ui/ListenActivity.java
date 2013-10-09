@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import java.io.File;
@@ -47,6 +48,7 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	private void setUpRecording() {
+		setUpRecordingName();
 		Intent intent = getIntent();
 		UUID recordingUUID = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
@@ -59,6 +61,11 @@ public class ListenActivity extends AikumaActivity {
 					Toast.LENGTH_LONG).show();
 			ListenActivity.this.finish();
 		}
+	}
+
+	private void setUpRecordingName() {
+		TextView nameView = (TextView) findViewById(R.id.recordingName);
+		nameView.setText(recording.getName());
 	}
 
 	private void setUpPlayer() {
