@@ -70,7 +70,14 @@ public class SimplePlayer extends Player implements Sampler {
 
 	/** Get the duration of the recording in milliseconds. */
 	public int getDurationMsec() {
-		return mediaPlayer.getDuration();
+		try {
+			return mediaPlayer.getDuration();
+		} catch (IllegalStateException e) {
+			//If this fails then we won't be in an activity where a duration is
+			//actually required. -1 is returned so we at least know it was
+			//erroneous if we ever need to.
+			return -1;
+		}
 	}
 
 	/** Seek to a given point in the recording in milliseconds. */
