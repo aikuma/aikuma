@@ -43,8 +43,13 @@ public class MenuBehaviour {
 			case R.id.mainlist:
 				goToMainActivity();
 				return true;
+			case R.id.speakers:
+				intent = new Intent(activity, SpeakersActivity.class);
+				activity.startActivity(intent);
+				return true;
 			case R.id.help:
 				openHelpInBrowser();
+				return true;
 			case R.id.settings:
 				intent = new Intent(activity, SettingsActivity.class);
 				activity.startActivity(intent);
@@ -67,6 +72,7 @@ public class MenuBehaviour {
 				return true;
 			case R.id.help:
 				openHelpInBrowser();
+				return true;
 			case R.id.settings:
 				intent = new Intent(activity, SettingsActivity.class);
 				activity.startActivity(intent);
