@@ -4,18 +4,18 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 	>
+	<ImageButton
+		android:id="@+id/addSpeakerButton"
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:scaleType="centerInside"
+		android:src="@drawable/speakers_32"
+		android:onClick="addSpeakerButtonPressed"
+	/>
 	<ListView
 		android:id="@android:id/list"
 		android:layout_width="fill_parent"
 		android:layout_height="0dp"
 		android:layout_weight="1"
-	/>
-	<ImageButton
-		android:id="@+id/addSpeakerButton"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:scaleType="centerInside"
-		android:src="@drawable/plus_48"
-		android:onClick="addSpeakerButtonPressed"
 	/>
 </LinearLayout>
