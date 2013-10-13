@@ -1,5 +1,8 @@
 package org.lp20.aikuma.ui;
 
+import android.media.AudioManager;
+import android.content.Context;
+
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +18,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.audio.Audio;;
 import org.lp20.aikuma.audio.Player;;
 import org.lp20.aikuma.audio.record.PhoneRespeaker;;
 import org.lp20.aikuma.audio.SimplePlayer;
@@ -65,6 +69,7 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 		super.onPause();
 		pause();
 		this.proximityDetector.stop();
+		Audio.reset(getActivity());
 	}
 
 	@Override
@@ -83,6 +88,7 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 			}
 		};
 		this.proximityDetector.start();
+		Audio.playThroughEarpiece(getActivity(), true);
 	}
 
 	@Override

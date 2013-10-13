@@ -44,10 +44,11 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		respeakingUUID = UUID.randomUUID();
 		try {
 			originalRecording = Recording.read(originalUUID);
-			//The threshold speech analyzer here should be automatically detected
-			//using Florian's method.
-			respeaker = new PhoneRespeaker(originalRecording, respeakingUUID, new
-					ThresholdSpeechAnalyzer(88,3, new AverageRecognizer(400,400)));
+			//The threshold speech analyzer here should be automatically
+			//detected using Florian's method.
+			respeaker = new PhoneRespeaker(originalRecording, respeakingUUID,
+					new ThresholdSpeechAnalyzer(88,3,
+							new AverageRecognizer(400,400)));
 		} catch (IOException e) {
 			PhoneRespeakActivity.this.finish();
 		} catch (MicException e) {
