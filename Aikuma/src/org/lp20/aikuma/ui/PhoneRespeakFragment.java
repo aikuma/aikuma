@@ -88,7 +88,7 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 			}
 		};
 		this.proximityDetector.start();
-		Audio.playThroughEarpiece(getActivity(), true);
+		Audio.playThroughEarpiece(getActivity(), false);
 	}
 
 	@Override

@@ -1,5 +1,8 @@
 package org.lp20.aikuma.audio;
 
+import android.media.AudioManager;
+import android.content.Context;
+
 import android.util.Log;
 import android.media.MediaPlayer;
 import java.io.File;
@@ -19,6 +22,7 @@ public class SimplePlayer extends Player implements Sampler {
 	 */
 	public SimplePlayer(Recording recording) throws IOException {
 		mediaPlayer = new MediaPlayer();
+		mediaPlayer.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
 		mediaPlayer.setDataSource(recording.getFile().getCanonicalPath());
 		mediaPlayer.prepare();
 		setSampleRate(recording.getSampleRate());
@@ -33,6 +37,7 @@ public class SimplePlayer extends Player implements Sampler {
 	 */
 	public SimplePlayer(File recordingFile, long sampleRate) throws IOException {
 		mediaPlayer = new MediaPlayer();
+		mediaPlayer.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
 		mediaPlayer.setDataSource(recordingFile.getCanonicalPath());
 		mediaPlayer.prepare();
 		setSampleRate(sampleRate);
