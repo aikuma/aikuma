@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import java.io.IOException;
@@ -70,7 +71,17 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		return this.sampleRate;
 	}
 
+	private void extractBackgroundNoiseThreshold() {
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			public void run() {
+				new NoiseLevel(PhoneRespeakActivity.this, 18).find();
+			}
+		}, 500);
+	}
+
 	public void setSensitivity(int level) {
+		this.respeaker.setSensivitiy(level);
 	}
 
 	private PhoneRespeakFragment fragment;
