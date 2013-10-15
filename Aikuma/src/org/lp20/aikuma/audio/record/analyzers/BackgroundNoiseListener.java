@@ -1,6 +1,6 @@
-package au.edu.unimelb.aikuma.audio.record.analyzers;
+package org.lp20.aikuma.audio.record.analyzers;
 
-import au.edu.unimelb.aikuma.audio.record.thresholders.Noise;
+import org.lp20.aikuma.audio.record.Noise;
 
 /**
  * Interface for anything that listens to background noise data.

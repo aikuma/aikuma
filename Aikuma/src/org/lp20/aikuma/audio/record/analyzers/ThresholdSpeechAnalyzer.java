@@ -224,6 +224,7 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
    *  @param buffer The buffer with audio samples.
    */
 	public void analyze(AudioHandler handler, short[] buffer) {
+		Log.i("sound", "analyze");
 		if (buffer == null) { return; }
 		
 		// Check if we need to callback.
