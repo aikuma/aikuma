@@ -2,6 +2,7 @@
 *.json
 .metadata
 *.swp
+*~
 
 server/public/
 

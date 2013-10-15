@@ -69,11 +69,13 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 	}
 
 	private void switchToRecord() {
+		Log.i("sound", "switchToRecord()");
 		player.pause();
 		mapper.markRespeaking(player, file);
 	}
 
 	protected void switchToPlay() {
+		Log.i("sound", "switchToPlay()");
 		player.play();
 	}
 
@@ -118,7 +120,7 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
 		if (justChanged) {
-			if (getFinishedPlaying()) {
+			if (this.player.isFinishedPlaying()) {
 				stop();
 			} else {
 				mapper.store(player, file);
@@ -126,14 +128,6 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 				switchToPlay();
 			}
 		}
-	}
-
-	public boolean getFinishedPlaying() {
-		return finishedPlaying;
-	}
-	
-	public void setFinishedPlaying(boolean finishedPlaying) {
-		this.finishedPlaying = finishedPlaying;
 	}
 
 	public int getRewindAmount() {

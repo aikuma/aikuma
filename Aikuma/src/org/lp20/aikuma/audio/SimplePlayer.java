@@ -45,6 +45,7 @@ public class SimplePlayer extends Player implements Sampler {
 
 	/** Starts or resumes playback of the recording. */
 	public void play() {
+		this.finishedPlaying = false;
 		mediaPlayer.start();
 	}
 
@@ -105,6 +106,7 @@ public class SimplePlayer extends Player implements Sampler {
 				new MediaPlayer.OnCompletionListener() {
 					public void onCompletion(MediaPlayer _mp) {
 						listener.onCompletion(SimplePlayer.this);
+						SimplePlayer.this.finishedPlaying = true;
 					}
 				});
 	}
@@ -139,7 +141,12 @@ public class SimplePlayer extends Player implements Sampler {
 		mediaPlayer.setAudioStreamType(type);
 	}
 
+	public boolean isFinishedPlaying() {
+		return this.finishedPlaying;
+	}
+
 	/** The MediaPlayer used to play the recording. **/
 	private MediaPlayer mediaPlayer;
 	private long sampleRate;
+	private boolean finishedPlaying;
 }
