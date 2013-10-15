@@ -20,9 +20,13 @@ public class SimplePlayer extends Player implements Sampler {
 	 *
 	 * @param	recording	The metadata of the recording to play.
 	 */
-	public SimplePlayer(Recording recording) throws IOException {
+	public SimplePlayer(Recording recording, boolean playThroughSpeaker) throws IOException {
 		mediaPlayer = new MediaPlayer();
-		mediaPlayer.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+		if (playThroughSpeaker) {
+			mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		} else {
+			mediaPlayer.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+		}
 		mediaPlayer.setDataSource(recording.getFile().getCanonicalPath());
 		mediaPlayer.prepare();
 		setSampleRate(recording.getSampleRate());
@@ -35,9 +39,14 @@ public class SimplePlayer extends Player implements Sampler {
 	 * @param	file	The location of the recording as a File
 	 * @param	sampleRate	The sample rate of the recording
 	 */
-	public SimplePlayer(File recordingFile, long sampleRate) throws IOException {
+	public SimplePlayer(File recordingFile, long sampleRate,
+			boolean playThroughSpeaker) throws IOException {
 		mediaPlayer = new MediaPlayer();
-		mediaPlayer.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+		if (playThroughSpeaker) {
+			mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		} else {
+			mediaPlayer.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+		}
 		mediaPlayer.setDataSource(recordingFile.getCanonicalPath());
 		mediaPlayer.prepare();
 		setSampleRate(sampleRate);

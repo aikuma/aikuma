@@ -32,10 +32,9 @@ public class ThumbRespeaker {
 			throws MicException, IOException {
 		recorder = new Recorder(new File(Recording.getRecordingsPath(),
 				respeakingUUID + ".wav"), original.getSampleRate());
-		player = new SimplePlayer(original);
+		player = new SimplePlayer(original, true);
 		mapper = new Mapper(respeakingUUID);
 		setFinishedPlaying(false);
-		playThroughSpeaker();
 	}
 
 	/*
@@ -44,7 +43,6 @@ public class ThumbRespeaker {
 		player = new Player();
 		mapper = new Mapper();
 		setFinishedPlaying(false);
-		playThroughSpeaker();
 	}
 	*/
 
@@ -72,10 +70,6 @@ public class ThumbRespeaker {
 		recorder.stop();
 		player.pause();
 		mapper.stop();
-	}
-
-	public void playThroughSpeaker() {
-		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 	}
 
 	/** finishedPlaying mutator */

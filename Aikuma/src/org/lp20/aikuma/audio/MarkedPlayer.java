@@ -14,9 +14,9 @@ import org.lp20.aikuma.model.Segments.Segment;
  */
 public class MarkedPlayer extends SimplePlayer {
 
-	public MarkedPlayer(Recording recording,
-			OnMarkerReachedListener listener) throws IOException {
-		super(recording);
+	public MarkedPlayer(Recording recording, OnMarkerReachedListener listener,
+			boolean playThroughSpeaker) throws IOException {
+		super(recording, playThroughSpeaker);
 		setOnMarkerReachedListener(listener);
 		notificationMarkerLoop = new Thread(new NotificationMarkerLoop());
 		notificationMarkerLoop.start();

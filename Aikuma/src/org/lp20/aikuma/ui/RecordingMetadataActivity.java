@@ -74,7 +74,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		try {
 			listenFragment.setPlayer(new SimplePlayer(
 					new File(Recording.getRecordingsPath(), uuid.toString() + ".wav"),
-					sampleRate));
+					sampleRate, true));
 		} catch (IOException e) {
 			//The SimplePlayer cannot be constructed, so let's end the
 			//activity.

@@ -52,7 +52,7 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 	}
 
 	private void setUpPlayer(Recording original) throws IOException {
-		this.player = new SimplePlayer(original);
+		this.player = new SimplePlayer(original, false);
 	}
 
 	public void listenNoPlay() {

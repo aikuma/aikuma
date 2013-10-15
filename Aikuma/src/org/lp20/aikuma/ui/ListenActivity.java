@@ -64,7 +64,7 @@ public class ListenActivity extends AikumaActivity {
 	private void setUpPlayer() {
 		try {
 			if (recording.isOriginal()) {
-				setPlayer(new SimplePlayer(recording));
+				setPlayer(new SimplePlayer(recording, true));
 			} else {
 				setPlayer(new InterleavedPlayer(recording));
 				Button thumbRespeakingButton =
