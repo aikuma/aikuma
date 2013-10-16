@@ -48,7 +48,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 			//detected using Florian's method.
 			respeaker = new PhoneRespeaker(originalRecording, respeakingUUID,
 					new ThresholdSpeechAnalyzer(88,3,
-							new AverageRecognizer(10000,10000)));
+							new AverageRecognizer(5000,5000)));
 		} catch (IOException e) {
 			PhoneRespeakActivity.this.finish();
 		} catch (MicException e) {

@@ -28,7 +28,7 @@ import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.R;
 
-public class PhoneRespeakFragment extends Fragment implements OnClickListener {
+public class PhoneRespeakFragment extends Fragment {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,22 +43,21 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.listen_fragment, container, false);
-		playPauseButton = (ImageButton) v.findViewById(R.id.PlayPauseButton);
-		playPauseButton.setOnClickListener(this);
+		View v = inflater.inflate(R.layout.phone_respeak_fragment, container, false);
 		seekBar = (InterleavedSeekBar) v.findViewById(R.id.InterleavedSeekBar);
 		seekBar.setOnSeekBarChangeListener(
 				new SeekBar.OnSeekBarChangeListener() {
+					int originalProgress;
 					public void onProgressChanged(SeekBar seekBar,
 							int progress, boolean fromUser) {
 						if (fromUser) {
-							respeaker.getSimplePlayer().seekToMsec((int)Math.round(
-									(((float)progress)/100)*
-									respeaker.getSimplePlayer().getDurationMsec()));
+							seekBar.setProgress(originalProgress);
 						}
 					}
 					public void onStopTrackingTouch(SeekBar _seekBar) {};
-					public void onStartTrackingTouch(SeekBar _seekBar) {};
+					public void onStartTrackingTouch(SeekBar _seekBar) {
+						originalProgress = seekBar.getProgress();
+					};
 				});
 		seekBar.invalidate();
 		return v;
@@ -106,17 +105,6 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 		}
 	}
 
-	@Override
-	public void onClick(View v) {
-		if (v == playPauseButton) {
-			if (respeaker.getSimplePlayer().isPlaying()) {
-				pause();
-			} else {
-				play();
-			}
-		}
-	}
-
 	private void stopThread(Thread thread) {
 		if (thread != null) {
 			thread.interrupt();
@@ -126,7 +114,6 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 	private void pause() {
 		respeaker.pause();
 		stopThread(seekBarThread);
-		playPauseButton.setImageResource(R.drawable.play);
 	}
 
 	private void play() {
@@ -148,7 +135,6 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 				}
 		});
 		seekBarThread.start();
-		playPauseButton.setImageResource(R.drawable.pause);
 	}
 
 	public void setRecording(Recording recording) {
@@ -171,7 +157,6 @@ public class PhoneRespeakFragment extends Fragment implements OnClickListener {
 	private Player.OnCompletionListener onCompletionListener =
 			new Player.OnCompletionListener() {
 				public void onCompletion(Player _player) {
-					playPauseButton.setImageResource(R.drawable.play);
 					stopThread(seekBarThread);
 					seekBar.setProgress(seekBar.getMax());
 				}
