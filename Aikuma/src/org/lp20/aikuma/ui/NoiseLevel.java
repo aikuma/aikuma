@@ -1,4 +1,4 @@
-package org.lp20.aikuma;
+package org.lp20.aikuma.ui;
 
 import android.util.Log;
 

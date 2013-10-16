@@ -57,6 +57,12 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		}
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		extractBackgroundNoiseThreshold();
+	}	
+
 	public void onSaveRespeakingButton(View view) {
 		respeaker.stop();
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
@@ -75,13 +81,17 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
 			public void run() {
-				new NoiseLevel(PhoneRespeakActivity.this, 18).find();
+				try {
+					new NoiseLevel(PhoneRespeakActivity.this, 18).find();
+				} catch (MicException e) {
+					throw new RuntimeException("MicException thrown on detecting noise threshhold");
+				}
 			}
 		}, 500);
 	}
 
 	public void setSensitivity(int level) {
-		this.respeaker.setSensivitiy(level);
+		this.respeaker.setSensitivity(level);
 	}
 
 	private PhoneRespeakFragment fragment;
