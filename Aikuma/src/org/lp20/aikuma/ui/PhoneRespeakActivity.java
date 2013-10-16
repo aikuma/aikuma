@@ -43,6 +43,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		originalUUID = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
 		respeakingUUID = UUID.randomUUID();
+		sampleRate = (Long) intent.getExtras().get("sampleRate");
 		try {
 			originalRecording = Recording.read(originalUUID);
 			//The threshold speech analyzer here should be automatically
