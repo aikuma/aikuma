@@ -45,16 +45,17 @@ public class ThumbRespeakFragment extends Fragment {
 		seekBar = (InterleavedSeekBar) v.findViewById(R.id.InterleavedSeekBar);
 		seekBar.setOnSeekBarChangeListener(
 				new SeekBar.OnSeekBarChangeListener() {
+					int originalProgress;
 					public void onProgressChanged(SeekBar seekBar,
 							int progress, boolean fromUser) {
 						if (fromUser) {
-							respeaker.getSimplePlayer().seekToMsec((int)Math.round(
-									(((float)progress)/100)*
-									respeaker.getSimplePlayer().getDurationMsec()));
+							seekBar.setProgress(originalProgress);
 						}
 					}
 					public void onStopTrackingTouch(SeekBar _seekBar) {};
-					public void onStartTrackingTouch(SeekBar _seekBar) {};
+					public void onStartTrackingTouch(SeekBar _seekBar) {
+						originalProgress = seekBar.getProgress();
+					};
 				});
 		seekBar.invalidate();
 		return v;
