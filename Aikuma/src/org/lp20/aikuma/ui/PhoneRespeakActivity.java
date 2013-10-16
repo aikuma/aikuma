@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import java.io.IOException;
 import java.util.UUID;
 import org.lp20.aikuma.audio.record.PhoneRespeaker;
@@ -61,6 +63,21 @@ public class PhoneRespeakActivity extends AikumaActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
+		sensitivitySlider = (SeekBar) findViewById(R.id.SensitivitySlider);
+		sensitivitySlider.setOnSeekBarChangeListener(
+			new OnSeekBarChangeListener() {
+				public void onProgressChanged(SeekBar sensitivitySlider,
+						int sensitivity, boolean fromUser) {
+					if (sensitivity == 0) {
+						respeaker.setSensitivity(1);
+					} else {
+						respeaker.setSensitivity(sensitivity);
+					}
+				}
+				public void onStartTrackingTouch(SeekBar seekBar) {}
+				public void onStopTrackingTouch(SeekBar seekBar) {}
+			}
+		);
 		extractBackgroundNoiseThreshold();
 	}	
 
@@ -93,6 +110,8 @@ public class PhoneRespeakActivity extends AikumaActivity {
 
 	public void setSensitivity(int level) {
 		this.respeaker.setSensitivity(level);
+		sensitivitySlider.setMax(level*2);
+		sensitivitySlider.setProgress(level);
 	}
 
 	private PhoneRespeakFragment fragment;
@@ -101,4 +120,5 @@ public class PhoneRespeakActivity extends AikumaActivity {
 	private UUID respeakingUUID;
 	private Recording originalRecording;
 	private long sampleRate;
+	private SeekBar sensitivitySlider;
 }
