@@ -120,10 +120,10 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
 		if (justChanged) {
+			mapper.store(player, file);
 			if (this.player.isFinishedPlaying()) {
 				stop();
 			} else {
-				mapper.store(player, file);
 				//player.rewind(getRewindAmount());
 				switchToPlay();
 			}
