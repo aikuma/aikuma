@@ -12,7 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.UUID;
 import java.io.File;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
@@ -47,6 +50,29 @@ public class RecordActivity extends AikumaActivity {
 					"Error setting up microphone.",
 					Toast.LENGTH_LONG).show();
 		}
+		timeDisplay = (TextView) findViewById(R.id.timeDisplay);
+		new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+					timeDisplay.post(new Runnable() {
+						public void run() {
+							Float time = recorder.getCurrentMsec()/1000f;
+							/*
+							BigDecimal bd = new
+									BigDecimal(recorder.getCurrentMsec()/1000f);
+							bd = bd.round(new MathContext(1));
+							*/
+							timeDisplay.setText(Float.toString(time) + "s");
+						}
+					});
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						return;
+					}
+				}
+			}
+		}).start();
 	}
 
 	@Override
@@ -118,4 +144,5 @@ public class RecordActivity extends AikumaActivity {
 	private Recorder recorder;
 	private UUID uuid;
 	private long sampleRate = 16000l;
+	private TextView timeDisplay;
 }

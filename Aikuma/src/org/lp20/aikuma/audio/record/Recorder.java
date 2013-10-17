@@ -67,6 +67,18 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 		return file.getCurrentSample();
 	}
 
+	public float getCurrentMsec() {
+		return sampleToMsec(getCurrentSample());
+	}
+
+	private int sampleToMsec(long sample) {
+		long msec = sample / (microphone.getSampleRate() / 1000);
+		if (msec > Integer.MAX_VALUE) {
+			return Integer.MAX_VALUE;
+		}
+		return (int) msec;
+	}
+
 	/**
 	 * Prepares the recorder for recording.
 	 */

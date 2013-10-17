@@ -4,6 +4,14 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 	>
+	<TextView
+		android:id="@+id/timeDisplay"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true"
+		android:layout_centerVertical="true"
+		android:textSize="25sp"
+	/>
 	<ImageButton
 		android:id="@+id/recordButton"
 		android:layout_width="match_parent"
