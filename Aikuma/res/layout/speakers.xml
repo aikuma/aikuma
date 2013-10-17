@@ -9,7 +9,7 @@
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
 		android:scaleType="centerInside"
-		android:src="@drawable/speakers_32"
+		android:src="@drawable/add_speaker48"
 		android:onClick="addSpeakerButtonPressed"
 	/>
 	<ListView

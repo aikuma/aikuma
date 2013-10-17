@@ -27,7 +27,7 @@
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:scaleType="centerInside"
-				android:src="@drawable/speakers_32"
+				android:src="@drawable/add_speaker48"
 				android:layout_weight="1"
 				android:onClick="onAddUserButtonPressed"
 			/>
