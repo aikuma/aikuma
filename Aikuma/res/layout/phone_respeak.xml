@@ -10,12 +10,30 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 	/>
-	<Button
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+	>
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Sensitivity"
+		/>
+		<SeekBar
+			style="@android:style/Widget.ProgressBar.Horizontal"
+			android:id="@+id/SensitivitySlider"
+			android:layout_width="match_parent"
+			android:layout_height="32dp"
+			android:maxHeight="10dp"
+		/>
+		<Button
 			android:id="@+id/saveButton"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
 			android:text="Save respeaking"
 			android:onClick="onSaveRespeakingButton"
-	/>
+		/>
+	</LinearLayout>
 </RelativeLayout>

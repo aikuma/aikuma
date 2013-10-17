@@ -35,6 +35,11 @@ public class PhoneRespeaker implements AudioListener, AudioHandler,
 		mapper = new Mapper(respeakingUUID);
 	}
 
+	public void setSensitivity(int threshold) {
+		this.analyzer = new ThresholdSpeechAnalyzer(88, 3,
+				new AverageRecognizer(threshold, threshold));
+	}
+
 	/** Sets up the microphone for recording. */
 	private void setUpMicrophone(long sampleRate) throws MicException {
 		this.microphone = new Microphone(sampleRate);
