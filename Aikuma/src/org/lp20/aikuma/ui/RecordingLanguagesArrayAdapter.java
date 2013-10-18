@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import java.io.IOException;
@@ -32,22 +33,24 @@ public class RecordingLanguagesArrayAdapter extends ArrayAdapter<Language> {
 		final Language language = getItem(position);
 		TextView recordingNameView =
 				(TextView) recordingView.findViewById(R.id.recordingName);
-		final ImageButton removeLanguageButton =
-				(ImageButton) recordingView.findViewById(R.id.removeButton);
-		removeLanguageButton.setOnClickListener(new OnClickListener() {
+		CheckBox langCheckBox = (CheckBox)
+				recordingView.findViewById(R.id.langCheckBox);
+		langCheckBox.setChecked(true);
+		langCheckBox.setOnClickListener(new OnClickListener() {
 			public void onClick(View view) {
+				boolean checked = ((CheckBox) view).isChecked();
 				if (checked) {
-					removeLanguageButton.setImageResource(
-							R.drawable.ok_disabled_32);
-					selectedLanguages.remove(language);
-					checked = false;
-				} else {
-					removeLanguageButton.setImageResource(R.drawable.ok_32);
 					selectedLanguages.add(language);
 					checked = true;
+					Log.i("checked", "now true");
+				} else {
+					//removeLanguageButton.setImageResource(
+					//		R.drawable.ok_disabled_32);
+					selectedLanguages.remove(language);
+					checked = false;
+					Log.i("checked", "now false");
 				}
 			}
-			private boolean checked = true;
 		});
 
 		recordingNameView.setText(language.toString());
