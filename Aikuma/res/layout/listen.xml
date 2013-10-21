@@ -6,7 +6,7 @@
 	>
 	<LinearLayout
 			android:id="@+id/recordingInfo"
-			android:orientation="horizontal"
+			android:orientation="vertical"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			>
@@ -15,6 +15,7 @@
 				android:layout_width="match_parent"
 				android:text=""
 				android:id="@+id/recordingName"
+				android:textSize="20sp"
 		/>
 	</LinearLayout>
 	<fragment
@@ -22,6 +23,7 @@
 			android:id="@+id/ListenFragment"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_below="@id/recordingInfo"
 	/>
 	<LinearLayout
 		android:id="@+id/RespeakingImages"

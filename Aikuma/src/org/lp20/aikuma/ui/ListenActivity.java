@@ -48,12 +48,12 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	private void setUpRecording() {
-		setUpRecordingName();
 		Intent intent = getIntent();
 		UUID recordingUUID = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
 		try {
 			recording = Recording.read(recordingUUID);
+			setUpRecordingName();
 		} catch (IOException e) {
 			//The recording metadata cannot be read, so let's wrap up this
 			//activity.
@@ -66,6 +66,21 @@ public class ListenActivity extends AikumaActivity {
 	private void setUpRecordingName() {
 		TextView nameView = (TextView) findViewById(R.id.recordingName);
 		nameView.setText(recording.getName());
+		nameView.setText("YOYOO");
+	}
+
+	private ImageView makeSpeakerImageView(UUID speakerUUID) {
+		ImageView speakerImage = new ImageView(context);
+		speakerImage.setAdjustViewBounds(true);
+		speakerImage.setMaxHeight(60);
+		speakerImage.setMaxWidth(60);
+		speakerImage.setPaddingRelative(5,5,5,5);
+		try {
+			speakerImage.setImageBitmap(ImageUtils.getSmallImage(speakerUUID));
+		} catch (IOException e) {
+			// Not much can be done if the image can't be loaded.
+		}
+		return speakerImage;
 	}
 
 	private void setUpPlayer() {
