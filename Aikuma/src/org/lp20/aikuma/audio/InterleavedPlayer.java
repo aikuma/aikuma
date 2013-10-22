@@ -34,6 +34,7 @@ public class InterleavedPlayer extends Player {
 				new RespeakingMarkerReachedListener(), true);
 		segments = new Segments(recording.getUUID());
 		initializeCompletionListeners();
+		completedOnce = false;
 	}
 
 	private void initializeCompletionListeners() {
@@ -166,6 +167,8 @@ public class InterleavedPlayer extends Player {
 	private class OriginalMarkerReachedListener extends
 			MarkedPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedPlayer p) {
+			Log.i("release", "original onMarker reached, completedOnce = " +
+					completedOnce);
 			original.pause();
 			playRespeaking();
 		}
@@ -174,6 +177,8 @@ public class InterleavedPlayer extends Player {
 	private class RespeakingMarkerReachedListener extends
 			MarkedPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedPlayer p) {
+			Log.i("release", "respeaking onMarker reached, completedOnce = " +
+					completedOnce);
 			respeaking.pause();
 			if (!completedOnce) {
 				advanceOriginalSegment();
