@@ -44,7 +44,7 @@ public class MenuBehaviour {
 				goToMainActivity();
 				return true;
 			case R.id.speakers:
-				intent = new Intent(activity, SpeakersActivity.class);
+				intent = new Intent(activity, MainSpeakersActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.help:
