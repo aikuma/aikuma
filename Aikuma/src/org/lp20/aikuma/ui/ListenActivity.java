@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -132,6 +133,8 @@ public class ListenActivity extends AikumaActivity {
 		LinearLayout respeakingImages = (LinearLayout)
 				findViewById(R.id.RespeakingImages);
 		for (final Recording respeaking : respeakings) {
+			LinearLayout respeakingImageContainer = new LinearLayout(this);
+			respeakingImageContainer.setOrientation(LinearLayout.VERTICAL);
 			ImageView respeakingImage = new ImageView(this);
 			respeakingImage.setAdjustViewBounds(true);
 			respeakingImage.setMaxHeight(60);
@@ -162,7 +165,12 @@ public class ListenActivity extends AikumaActivity {
 			} catch (IOException e) {
 				// Not much can be done if the image can't be loaded.
 			}
-			respeakingImages.addView(respeakingImage);
+			respeakingImageContainer.addView(respeakingImage);
+			TextView respeakingLang = new TextView(this);
+			respeakingLang.setText(respeaking.getLanguages().get(0).getCode());
+			respeakingLang.setGravity(Gravity.CENTER_HORIZONTAL);
+			respeakingImageContainer.addView(respeakingLang);
+			respeakingImages.addView(respeakingImageContainer);
 		}
 	}
 
