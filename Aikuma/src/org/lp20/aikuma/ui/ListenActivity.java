@@ -45,6 +45,7 @@ public class ListenActivity extends AikumaActivity {
 		setUpRecording();
 		setUpPlayer();
 		setUpRespeakingImages();
+		setUpRecordingInfo();
 	}
 
 	private void setUpRecording() {
@@ -63,17 +64,25 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 
+	private void setUpRecordingInfo() {
+		setUpRecordingName();
+		LinearLayout recordingInfoView = (LinearLayout)
+				findViewById(R.id.recordingInfo);
+		for (UUID uuid : recording.getSpeakersUUIDs()) {
+			recordingInfoView.addView(makeSpeakerImageView(uuid));
+		}
+	}
+
 	private void setUpRecordingName() {
 		TextView nameView = (TextView) findViewById(R.id.recordingName);
 		nameView.setText(recording.getName());
-		nameView.setText("YOYOO");
 	}
 
 	private ImageView makeSpeakerImageView(UUID speakerUUID) {
-		ImageView speakerImage = new ImageView(context);
+		ImageView speakerImage = new ImageView(this);
 		speakerImage.setAdjustViewBounds(true);
-		speakerImage.setMaxHeight(60);
-		speakerImage.setMaxWidth(60);
+		speakerImage.setMaxHeight(40);
+		speakerImage.setMaxWidth(40);
 		speakerImage.setPaddingRelative(5,5,5,5);
 		try {
 			speakerImage.setImageBitmap(ImageUtils.getSmallImage(speakerUUID));
