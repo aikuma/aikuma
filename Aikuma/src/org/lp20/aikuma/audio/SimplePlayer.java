@@ -60,7 +60,12 @@ public class SimplePlayer extends Player implements Sampler {
 
 	/** Pauses the playback. */
 	public void pause() {
-		mediaPlayer.pause();
+		try {
+			mediaPlayer.pause();
+		} catch (IllegalStateException e) {
+			//If it's in an illegal state, then it wouldn't be playing anyway,
+			//so no issue.
+		}
 	}
 
 	/** Indicates whether the recording is currently being played. */

@@ -62,9 +62,18 @@ public class Mapper {
 		respeakingStartOfSegment = respoken.getCurrentSample();
 	}
 	
-	public void store(Sampler original, Sampler respoken) {
+	/** Returns true if a segment gets stored; false otherwise. A segment may
+	 * not be stored if there hasn't been an end to the current original
+	 * segment. */
+	public boolean store(Sampler original, Sampler respoken) {
+		//If we're not respeaking and still playing an original segment, do
+		//nothing
+		if (originalEndOfSegment == null) {
+			return false;
+		}
+		//Otherwise lets end this respeaking segment
 		respeakingEndOfSegment = respoken.getCurrentSample();
-		
+		//And store these two segments
 		Segment originalSegment;
 		try {
 			originalSegment = new Segment(originalStartOfSegment,
@@ -76,10 +85,14 @@ public class Mapper {
 		Segment respeakingSegment = new Segment(respeakingStartOfSegment,
 				respeakingEndOfSegment);
 		segments.put(originalSegment, respeakingSegment);
+		//Now we say we're marking the start of the new original and respekaing
+		//segments
 		originalStartOfSegment = original.getCurrentSample();
 		respeakingStartOfSegment = respoken.getCurrentSample();
+		//We currently have no end for these segments.
 		originalEndOfSegment = null;
 		respeakingEndOfSegment = null;
+		return true;
 	}
 	
 }

@@ -66,7 +66,7 @@ public class PhoneRespeakFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
-		pause();
+		haltRespeaking();
 		this.proximityDetector.stop();
 		Audio.reset(getActivity());
 	}
@@ -76,14 +76,20 @@ public class PhoneRespeakFragment extends Fragment {
 		super.onResume();
 		this.proximityDetector = new ProximityDetector(getActivity()) {
 			public void near(float distance) {
+				resumeRespeaking();
+				/*
 				if (!respeaker.getSimplePlayer().isPlaying()) {
 					play();
 				}
+				*/
 			}
 			public void far(float distance) {
+				haltRespeaking();
+				/*
 				if (respeaker.getSimplePlayer().isPlaying()) {
 					pause();
 				}
+				*/
 			}
 		};
 		this.proximityDetector.start();
@@ -111,12 +117,12 @@ public class PhoneRespeakFragment extends Fragment {
 		}
 	}
 
-	private void pause() {
-		respeaker.pause();
+	private void haltRespeaking() {
+		respeaker.halt();
 		stopThread(seekBarThread);
 	}
 
-	private void play() {
+	private void resumeRespeaking() {
 		respeaker.resume();
 		seekBarThread = new Thread(new Runnable() {
 				public void run() {
