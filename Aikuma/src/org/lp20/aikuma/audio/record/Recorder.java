@@ -109,6 +109,10 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 		file.close();
 	}
 
+	public void release() {
+		microphone.release();
+	}
+
 	/** Pause listening to the microphone. */
 	public void pause() throws MicException {
 		microphone.stop();

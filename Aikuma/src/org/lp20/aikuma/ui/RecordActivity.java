@@ -76,6 +76,12 @@ public class RecordActivity extends AikumaActivity {
 	}
 
 	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		recorder.release();
+	}
+
+	@Override
 	public void onStop() {
 		super.onStop();
 		try {

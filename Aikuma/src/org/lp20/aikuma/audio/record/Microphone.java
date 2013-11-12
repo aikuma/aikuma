@@ -41,6 +41,10 @@ public class Microphone {
 		initializeBuffer();
 	}
 
+	public void release() {
+		physicalMicrophone.release();
+	}
+
 	/** Accessors for sample rate, audio format channel configuration  */
 	public int getSampleRate() { return physicalMicrophone.getSampleRate(); }
 	public int getAudioFormat() { return physicalMicrophone.getAudioFormat(); }
