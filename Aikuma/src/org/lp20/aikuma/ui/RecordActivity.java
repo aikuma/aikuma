@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.UUID;
 import java.io.File;
+import org.lp20.aikuma.audio.Beeper;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.MainActivity;
@@ -108,29 +111,46 @@ public class RecordActivity extends AikumaActivity {
 		super.onResume();
 	}
 
-	public void onRecordButton(View view) {
+	private void record() {
 		ImageButton recordButton =
 				(ImageButton) findViewById(R.id.recordButton);
-		LinearLayout pauseAndStopButtons =
-				(LinearLayout) findViewById(R.id.pauseAndStopButtons);
-		recordButton.setVisibility(View.GONE);
-		pauseAndStopButtons.setVisibility(View.VISIBLE);
-		recorder.listen();
+		recordButton.setEnabled(false);
+		Beeper.beepBeep(this, new MediaPlayer.OnCompletionListener() {
+			public void onCompletion(MediaPlayer _) {
+				recorder.listen();
+				ImageButton recordButton =
+						(ImageButton) findViewById(R.id.recordButton);
+				LinearLayout pauseAndStopButtons =
+						(LinearLayout) findViewById(R.id.pauseAndStopButtons);
+				recordButton.setVisibility(View.GONE);
+				pauseAndStopButtons.setVisibility(View.VISIBLE);
+			}
+		});
 	}
 
-	public void onPauseButton(View view) {
+	private void pause() {
 		ImageButton recordButton =
 				(ImageButton) findViewById(R.id.recordButton);
 		LinearLayout pauseAndStopButtons =
 				(LinearLayout) findViewById(R.id.pauseAndStopButtons);
+		recordButton.setEnabled(true);
 		recordButton.setVisibility(View.VISIBLE);
 		pauseAndStopButtons.setVisibility(View.GONE);
 		try {
 			recorder.pause();
+			Beeper.beep(this, null);
 		} catch (MicException e) {
 			// Maybe make a recording metadata file that refers to the error so
 			// that the audio can be salvaged.
 		}
+	}
+
+	public void onRecordButton(View view) {
+		record();
+	}
+
+	public void onPauseButton(View view) {
+		pause();
 	}
 
 	public void onStopButton(View view) {
@@ -141,6 +161,7 @@ public class RecordActivity extends AikumaActivity {
 		RecordActivity.this.finish();
 		try {
 			recorder.stop();
+			Beeper.beep(this, null);
 		} catch (MicException e) {
 			// Maybe make a recording metadata file that refers to the error so
 			// that the audio can be salvaged.

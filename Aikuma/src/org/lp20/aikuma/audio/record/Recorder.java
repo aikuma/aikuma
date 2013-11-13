@@ -11,8 +11,10 @@ import java.util.Arrays;
 import java.util.Set;
 import org.lp20.aikuma.audio.record.analyzers.Analyzer;
 import org.lp20.aikuma.audio.record.analyzers.SimpleAnalyzer;
+import org.lp20.aikuma.audio.Beeper;
 import org.lp20.aikuma.audio.Sampler;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.ui.RecordActivity;
 import static org.lp20.aikuma.audio.record.Microphone.MicException;
 
 /**
@@ -38,6 +40,17 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	}
 
 	/**
+	 * Creates a Recorder that uses an analyzer which tells the recorder to
+	 * always record regardless of input. Containsa  beeper.
+	 */
+	 /*
+	public Recorder(File path, long sampleRate, RecordActivity recordActivity) throws MicException {
+		this(path, sampleRate, new SimpleAnalyzer());
+		beeper = new Beeper(recordActivity);
+	}
+	*/
+
+	/**
 	 * Accepts and analyzer that decides whether the recorder should record or
 	 * ignore the input
 	 *
@@ -53,6 +66,16 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 
 	/** Start listening. */
 	public void listen() {
+		/*
+		if (beeper != null) {
+			beeper.beepBeep(new MediaPlayer.OnCompletionListener() {
+				public void onCompletion(MediaPlayer _) {
+					microphone.listen(Recorder.this);
+					beeper.getRecordActivity().substituteRecordButton();
+				}
+			});
+		} else {
+		*/
 		microphone.listen(this);
 	}
 
@@ -117,7 +140,11 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 
 	/** Pause listening to the microphone. */
 	public void pause() throws MicException {
+		//Log.e("beep", "what", new Throwable());
 		microphone.stop();
+		/*
+		beeper.beep();
+		*/
 	}
 
 	/** Callback for the microphone */
@@ -153,4 +180,7 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 
 	/** Analyzer that analyzes the incoming data. */
 	private Analyzer analyzer;
+
+	/** Facilitates beeping when recording starts and stops.*/
+	//private Beeper beeper;
 }
