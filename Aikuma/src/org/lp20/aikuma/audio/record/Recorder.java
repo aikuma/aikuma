@@ -110,7 +110,9 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	}
 
 	public void release() {
-		microphone.release();
+		if (microphone != null) {
+			microphone.release();
+		}
 	}
 
 	/** Pause listening to the microphone. */
