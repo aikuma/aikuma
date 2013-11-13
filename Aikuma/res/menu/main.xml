@@ -4,10 +4,6 @@
 		android:icon="@drawable/record_disabled_32"
 		android:title="@string/record"
 		android:showAsAction="always" />
-	<item android:id="@+id/settings"
-		android:icon="@drawable/settings_32"
-		android:title="@string/settings"
-		android:showAsAction="always" />
 	<item android:id="@+id/speakers"
 		android:icon="@drawable/speakers_32"
 		android:title="@string/speakers"
@@ -16,8 +12,8 @@
 		android:icon="@drawable/help_32"
 		android:title="@string/help"
 		android:showAsAction="always" />
-	<item android:id="@+id/mainlist"
-		android:icon="@drawable/main_list_32"
-		android:title="@string/mainlist"
+	<item android:id="@+id/settings"
+		android:icon="@drawable/settings_32"
+		android:title="@string/settings"
 		android:showAsAction="always" />
 </menu>
