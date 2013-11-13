@@ -39,6 +39,7 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		languages = FileIO.readDefaultLanguages();
 		uuid = UUID.randomUUID();
 		ImageButton okButton = (ImageButton) findViewById(R.id.okButton);
+		okButton.setImageResource(R.drawable.ok_disabled_48);
 		okButton.setEnabled(false);
 	}
 
@@ -85,6 +86,7 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		speakerImage.setImageBitmap(image);
 		if (image != null) {
 			ImageButton okButton = (ImageButton) findViewById(R.id.okButton);
+		okButton.setImageResource(R.drawable.ok_48);
 			okButton.setEnabled(true);
 		}
 	}

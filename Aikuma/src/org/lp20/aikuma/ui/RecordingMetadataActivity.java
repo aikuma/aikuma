@@ -65,6 +65,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		languages = new ArrayList<Language>();
 		selectedLanguages = new ArrayList<Language>();
 		ImageButton okButton = (ImageButton) findViewById(R.id.okButton);
+		okButton.setImageResource(R.drawable.ok_disabled_48);
 		okButton.setEnabled(false);
 	}
 
@@ -199,6 +200,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 					userImages.addView(speakerImage);
 					ImageButton okButton = (ImageButton)
 							findViewById(R.id.okButton);
+					okButton.setImageResource(R.drawable.ok_48);
 					okButton.setEnabled(true);
 				}
 			}

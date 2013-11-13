@@ -28,6 +28,7 @@ public class RecordingLanguagesArrayAdapter extends ArrayAdapter<Language> {
 
 	@Override
 	public View getView(int position, View _, ViewGroup parent) {
+		Log.i("checkbox", "getView()");
 		View recordingView =
 				(View) inflater.inflate(listItemLayout, parent, false);
 		final Language language = getItem(position);
@@ -35,7 +36,9 @@ public class RecordingLanguagesArrayAdapter extends ArrayAdapter<Language> {
 				(TextView) recordingView.findViewById(R.id.recordingName);
 		CheckBox langCheckBox = (CheckBox)
 				recordingView.findViewById(R.id.langCheckBox);
-		langCheckBox.setChecked(true);
+		if (selectedLanguages.contains(language)) {
+			langCheckBox.setChecked(true);
+		}
 		langCheckBox.setOnClickListener(new OnClickListener() {
 			public void onClick(View view) {
 				boolean checked = ((CheckBox) view).isChecked();
