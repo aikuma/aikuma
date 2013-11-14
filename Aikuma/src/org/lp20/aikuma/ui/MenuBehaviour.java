@@ -103,7 +103,7 @@ public class MenuBehaviour {
 	 * with the supplied text for the message and the positive and negative
 	 * buttons.
 	 */
-	private void safeGoToMainActivity() {
+	public void safeGoToMainActivity() {
 		new AlertDialog.Builder(activity)
 				.setMessage("This will discard the new data. Are you sure?")
 				.setPositiveButton("Discard",

@@ -185,7 +185,6 @@ public class RecordActivity extends AikumaActivity {
 		RecordActivity.this.finish();
 		try {
 			recorder.stop();
-			Beeper.beep(this, null);
 		} catch (MicException e) {
 			// Maybe make a recording metadata file that refers to the error so
 			// that the audio can be salvaged.

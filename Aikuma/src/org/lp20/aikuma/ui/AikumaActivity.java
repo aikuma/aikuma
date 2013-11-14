@@ -20,10 +20,17 @@ public abstract class AikumaActivity extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (safeActivityTransition == true) {
+		if (safeActivityTransition) {
 			return menuBehaviour.safeOnOptionsItemSelected(item);
 		} else {
 			return menuBehaviour.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (safeActivityTransition) {
+			menuBehaviour.safeGoToMainActivity();
 		}
 	}
 
