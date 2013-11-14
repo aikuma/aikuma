@@ -139,10 +139,10 @@ public class RecordActivity extends AikumaActivity {
 						recorder.listen();
 						ImageButton recordButton =
 								(ImageButton) findViewById(R.id.recordButton);
-						LinearLayout pauseAndStopButtons =
-								(LinearLayout) findViewById(R.id.pauseAndStopButtons);
+						ImageButton pauseButton =
+								(ImageButton) findViewById(R.id.pauseButton);
 						recordButton.setVisibility(View.GONE);
-						pauseAndStopButtons.setVisibility(View.VISIBLE);
+						pauseButton.setVisibility(View.VISIBLE);
 					}
 				}
 			});
@@ -154,11 +154,11 @@ public class RecordActivity extends AikumaActivity {
 			recording = false;
 			ImageButton recordButton =
 					(ImageButton) findViewById(R.id.recordButton);
-			LinearLayout pauseAndStopButtons =
-					(LinearLayout) findViewById(R.id.pauseAndStopButtons);
+			ImageButton pauseButton =
+					(ImageButton) findViewById(R.id.pauseButton);
 			recordButton.setEnabled(true);
 			recordButton.setVisibility(View.VISIBLE);
-			pauseAndStopButtons.setVisibility(View.GONE);
+			pauseButton.setVisibility(View.GONE);
 			try {
 				recorder.pause();
 				Beeper.beep(this, null);
