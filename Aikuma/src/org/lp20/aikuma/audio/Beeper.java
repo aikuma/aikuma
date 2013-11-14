@@ -42,7 +42,7 @@ public class Beeper {
 	}
 	
 	public static void beepBeep(Context context, OnCompletionListener listener) {
-		start(context, listener, R.raw.beeps);
+		start(context, listener, R.raw.beeps2);
 	}
 	
 	private static void start(Context context, final OnCompletionListener listener, int resource) {

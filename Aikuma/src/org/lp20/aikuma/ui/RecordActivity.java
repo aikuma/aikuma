@@ -25,6 +25,7 @@ import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.R;
 
 /**
@@ -87,61 +88,66 @@ public class RecordActivity extends AikumaActivity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		try {
-			recorder.pause();
-		} catch (MicException e) {
-			// Maybe make a recording metadata file that refers to the error so
-			// that the audio can be salvaged.
-		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		try {
-			recorder.pause();
-		} catch (MicException e) {
-			// Maybe make a recording metadata file that refers to the error so
-			// that the audio can be salvaged.
-		}
+		pause();
+		this.proximityDetector.stop();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		this.proximityDetector = new ProximityDetector(this) {
+			public void near(float distance) {
+				record();
+			}
+			public void far(float distance) {
+				pause();
+			}
+		};
+		this.proximityDetector.start();
 	}
 
 	private void record() {
-		ImageButton recordButton =
-				(ImageButton) findViewById(R.id.recordButton);
-		recordButton.setEnabled(false);
-		Beeper.beepBeep(this, new MediaPlayer.OnCompletionListener() {
-			public void onCompletion(MediaPlayer _) {
-				recorder.listen();
-				ImageButton recordButton =
-						(ImageButton) findViewById(R.id.recordButton);
-				LinearLayout pauseAndStopButtons =
-						(LinearLayout) findViewById(R.id.pauseAndStopButtons);
-				recordButton.setVisibility(View.GONE);
-				pauseAndStopButtons.setVisibility(View.VISIBLE);
-			}
-		});
+		if (!recording) {
+			recording = true;
+			ImageButton recordButton =
+					(ImageButton) findViewById(R.id.recordButton);
+			recordButton.setEnabled(false);
+			Beeper.beepBeep(this, new MediaPlayer.OnCompletionListener() {
+				public void onCompletion(MediaPlayer _) {
+					recorder.listen();
+					ImageButton recordButton =
+							(ImageButton) findViewById(R.id.recordButton);
+					LinearLayout pauseAndStopButtons =
+							(LinearLayout) findViewById(R.id.pauseAndStopButtons);
+					recordButton.setVisibility(View.GONE);
+					pauseAndStopButtons.setVisibility(View.VISIBLE);
+				}
+			});
+		}
 	}
 
 	private void pause() {
-		ImageButton recordButton =
-				(ImageButton) findViewById(R.id.recordButton);
-		LinearLayout pauseAndStopButtons =
-				(LinearLayout) findViewById(R.id.pauseAndStopButtons);
-		recordButton.setEnabled(true);
-		recordButton.setVisibility(View.VISIBLE);
-		pauseAndStopButtons.setVisibility(View.GONE);
-		try {
-			recorder.pause();
-			Beeper.beep(this, null);
-		} catch (MicException e) {
-			// Maybe make a recording metadata file that refers to the error so
-			// that the audio can be salvaged.
+		if (recording) {
+			recording = false;
+			ImageButton recordButton =
+					(ImageButton) findViewById(R.id.recordButton);
+			LinearLayout pauseAndStopButtons =
+					(LinearLayout) findViewById(R.id.pauseAndStopButtons);
+			recordButton.setEnabled(true);
+			recordButton.setVisibility(View.VISIBLE);
+			pauseAndStopButtons.setVisibility(View.GONE);
+			try {
+				recorder.pause();
+				Beeper.beep(this, null);
+			} catch (MicException e) {
+				// Maybe make a recording metadata file that refers to the error so
+				// that the audio can be salvaged.
+			}
 		}
 	}
 
@@ -168,8 +174,10 @@ public class RecordActivity extends AikumaActivity {
 		}
 	}
 
+	private boolean recording;
 	private Recorder recorder;
 	private UUID uuid;
 	private long sampleRate = 16000l;
 	private TextView timeDisplay;
+	private ProximityDetector proximityDetector;
 }
