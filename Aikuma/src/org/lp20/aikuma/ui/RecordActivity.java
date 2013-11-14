@@ -2,6 +2,7 @@ package org.lp20.aikuma.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -11,7 +12,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -102,9 +106,17 @@ public class RecordActivity extends AikumaActivity {
 		super.onResume();
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
+				WindowManager.LayoutParams params = getWindow().getAttributes();
+				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
+				params.screenBrightness = 0;
+				getWindow().setAttributes(params);
 				record();
 			}
 			public void far(float distance) {
+				WindowManager.LayoutParams params = getWindow().getAttributes();
+				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
+				params.screenBrightness = 1;
+				getWindow().setAttributes(params);
 				pause();
 			}
 		};
@@ -119,13 +131,19 @@ public class RecordActivity extends AikumaActivity {
 			recordButton.setEnabled(false);
 			Beeper.beepBeep(this, new MediaPlayer.OnCompletionListener() {
 				public void onCompletion(MediaPlayer _) {
-					recorder.listen();
-					ImageButton recordButton =
-							(ImageButton) findViewById(R.id.recordButton);
-					LinearLayout pauseAndStopButtons =
-							(LinearLayout) findViewById(R.id.pauseAndStopButtons);
-					recordButton.setVisibility(View.GONE);
-					pauseAndStopButtons.setVisibility(View.VISIBLE);
+					// There is a reason for this conditional. The beeps take
+					// time to be played. If the user reaches the far state 
+					// before recording actually starts, then recording will 
+					// be then be triggered when the display suggests otherwise.
+					if (recording) {
+						recorder.listen();
+						ImageButton recordButton =
+								(ImageButton) findViewById(R.id.recordButton);
+						LinearLayout pauseAndStopButtons =
+								(LinearLayout) findViewById(R.id.pauseAndStopButtons);
+						recordButton.setVisibility(View.GONE);
+						pauseAndStopButtons.setVisibility(View.VISIBLE);
+					}
 				}
 			});
 		}
@@ -171,6 +189,15 @@ public class RecordActivity extends AikumaActivity {
 		} catch (MicException e) {
 			// Maybe make a recording metadata file that refers to the error so
 			// that the audio can be salvaged.
+		}
+	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+		if (proximityDetector.isNear()) {
+			return false;
+		} else {
+			return super.dispatchTouchEvent(event);
 		}
 	}
 
