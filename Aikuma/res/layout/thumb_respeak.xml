@@ -15,7 +15,7 @@
 			android:id="@+id/saveButton"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
+			android:layout_alignParentTop="true"
 			android:text="Save respeaking"
 			android:onClick="onSaveRespeakingButton"
 			android:layout_weight="1"
