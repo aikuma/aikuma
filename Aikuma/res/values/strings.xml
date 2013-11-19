@@ -24,7 +24,9 @@
 			speaker</string>
 	<string name="speaker_name">Name
 			</string>
-	<string name="add_language">Add Language
+	<string name="add_iso_language">Add ISO 639-3 Language
+			</string>
+	<string name="add_custom_language">Add Custom Language
 			</string>
 	<string name="take_photo">Take photo (necessary)</string>
 	<string name="thumb_respeaking">Thumb commentary</string>

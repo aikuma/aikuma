@@ -52,9 +52,12 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		setListAdapter(adapter);
 	}
 
-	public void onAddLanguageButton(View view) {
+	public void onAddISOLanguageButton(View view) {
 		Intent intent = new Intent(this, LanguageFilterList.class);
 		startActivityForResult(intent, SELECT_LANGUAGE);
+	}
+
+	public void onAddCustomLanguageButton(View view) {
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent
