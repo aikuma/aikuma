@@ -4,14 +4,6 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 	>
-	<ImageButton
-			android:id="@+id/saveButton"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:scaleType="centerInside"
-			android:src="@drawable/save48"
-			android:onClick="onSaveRespeakingButton"
-	/>
 	<fragment
 			android:name="org.lp20.aikuma.ui.ThumbRespeakFragment"
 			android:id="@+id/ThumbRespeakFragment"
@@ -19,15 +11,4 @@
 			android:layout_height="match_parent"
 			android:layout_weight="10"
 	/>
-	<!--
-	<Button
-			android:id="@+id/saveButton"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_alignParentTop="true"
-			android:text="Save respeaking"
-			android:onClick="onSaveRespeakingButton"
-			android:layout_weight="1"
-	/>
-	-->
 </LinearLayout>

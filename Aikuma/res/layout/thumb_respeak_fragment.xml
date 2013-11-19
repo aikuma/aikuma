@@ -11,6 +11,14 @@
 		android:layout_height="32dp"
 		android:maxHeight="3dp"
 	/>
+	<ImageButton
+			android:id="@+id/saveButton"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:src="@drawable/save48"
+			android:onClick="onSaveRespeakingButton"
+	/>
 	<LinearLayout
 		android:orientation="horizontal"
 		android:layout_width="fill_parent"
