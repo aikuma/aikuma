@@ -1,35 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 	>
 	<TextView
 		android:id="@+id/timeDisplay"
-		android:layout_width="wrap_content"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerHorizontal="true"
 		android:layout_centerVertical="true"
 		android:textSize="25sp"
-	/>
-	<ImageButton
-		android:id="@+id/recordButton"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:scaleType="centerInside"
-		android:src="@drawable/record_48"
-		android:layout_alignParentBottom="true"
-		android:onClick="onRecordButton"
-	/>
-	<ImageButton
-		android:id="@+id/pauseButton"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:scaleType="centerInside"
-		android:src="@drawable/pause_48"
-		android:onClick="onPauseButton"
-		android:layout_alignParentBottom="true"
-		android:visibility="gone"
 	/>
 	<ImageButton
 		android:id="@+id/stopButton"
@@ -39,4 +20,29 @@
 		android:src="@drawable/save48"
 		android:onClick="onStopButton"
 	/>
-</RelativeLayout>
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="4"
+	>
+		<ImageButton
+			android:id="@+id/pauseButton"
+			android:layout_width="match_parent"
+			android:layout_height="fill_parent"
+			android:scaleType="centerInside"
+			android:src="@drawable/pause_48"
+			android:onClick="onPauseButton"
+			android:layout_alignParentBottom="true"
+			android:visibility="gone"
+		/>
+		<ImageButton
+			android:id="@+id/recordButton"
+			android:layout_width="match_parent"
+			android:layout_height="fill_parent"
+			android:scaleType="centerInside"
+			android:src="@drawable/record_48"
+			android:onClick="onRecordButton"
+		/>
+	</LinearLayout>
+</LinearLayout>
