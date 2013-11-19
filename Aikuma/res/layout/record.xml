@@ -36,7 +36,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:scaleType="centerInside"
-		android:src="@drawable/stop_48"
+		android:src="@drawable/save48"
 		android:onClick="onStopButton"
 	/>
 </RelativeLayout>
