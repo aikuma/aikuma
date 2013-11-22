@@ -58,6 +58,8 @@ public class AddSpeakerActivity extends AikumaListActivity {
 	}
 
 	public void onAddCustomLanguageButton(View view) {
+		Intent intent = new Intent(this, AddCustomLanguageActivity.class);
+		startActivityForResult(intent, SELECT_LANGUAGE);
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent

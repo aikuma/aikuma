@@ -38,4 +38,5 @@
 	<string name="syncNow">Sync now</string>
 	<string name="help">Help</string>
 	<string name="speakers">Speakers</string>
+	<string name="language_name">Language name</string>
 </resources>
