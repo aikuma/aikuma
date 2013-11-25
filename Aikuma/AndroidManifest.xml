@@ -21,47 +21,58 @@
         </activity>
 		<activity android:name="org.lp20.aikuma.ui.ListenActivity"
 				android:configChanges="orientation"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.RecordActivity"
 				android:configChanges="orientation"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.SettingsActivity"
 				android:configChanges="orientation"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.RecordingMetadataActivity"
 				android:configChanges="orientation"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.LanguageFilterList"
 				android:configChanges="orientation"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.SpeakersActivity"
 				android:configChanges="orientation"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.MainSpeakersActivity"
 				android:configChanges="orientation"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.AddSpeakerActivity"
 				android:configChanges="orientation"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.ThumbRespeakActivity"
 				android:configChanges="orientation"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.PhoneRespeakActivity"
 				android:configChanges="orientation"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.AddCustomLanguageActivity"
 				android:configChanges="orientation"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
     </application>
 </manifest> 

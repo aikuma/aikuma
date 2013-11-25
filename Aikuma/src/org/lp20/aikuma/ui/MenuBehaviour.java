@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,14 +35,15 @@ public class MenuBehaviour {
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Log.i("issue103", "hello, " + item.getItemId());
 		Intent intent;
 		switch (item.getItemId()) {
+			case android.R.id.home:
+				goToMainActivity();
+				return true;
 			case R.id.record:
 				intent = new Intent(activity, RecordActivity.class);
 				activity.startActivity(intent);
-				return true;
-			case R.id.mainlist:
-				goToMainActivity();
 				return true;
 			case R.id.speakers:
 				intent = new Intent(activity, MainSpeakersActivity.class);
@@ -63,12 +65,12 @@ public class MenuBehaviour {
 	public boolean safeOnOptionsItemSelected(MenuItem item) {
 		Intent intent;
 		switch (item.getItemId()) {
+			case android.R.id.home:
+				safeGoToMainActivity();
+				return true;
 			case R.id.record:
 				intent = new Intent(activity, RecordActivity.class);
 				activity.startActivity(intent);
-				return true;
-			case R.id.mainlist:
-				safeGoToMainActivity();
 				return true;
 			case R.id.help:
 				openHelpInBrowser();
