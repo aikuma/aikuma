@@ -21,6 +21,9 @@ import org.lp20.aikuma.audio.Sampler;
  *  4. It closes the file.
  *
  * Note: The file cannot be reopened.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class PCMWriter implements Sampler {
 

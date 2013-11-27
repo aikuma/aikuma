@@ -45,6 +45,9 @@ import org.lp20.aikuma.audio.record.recognizers.AverageRecognizer;
  *    buffers have been recognized as silence.
  * 4. It then saves AFTER_SPEECH_BUFFERS buffers and starts recognizing
  *    silence, until 1. occurs again.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class ThresholdSpeechAnalyzer extends Analyzer {
   

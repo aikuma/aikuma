@@ -10,6 +10,10 @@ import org.lp20.aikuma.audio.Segments;
 import org.lp20.aikuma.audio.Segments.Segment;
 import org.lp20.aikuma.model.Recording;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class Mapper {
 	
 	/** The segment mapping between the original and the respeaking. */

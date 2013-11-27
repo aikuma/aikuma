@@ -9,6 +9,10 @@ import java.util.concurrent.TimeUnit;
 import org.lp20.aikuma.model.ServerCredentials;
 //import org.lp20.sync.FTPSyncUtil;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class SyncUtil {
 
 	private SyncUtil() {}

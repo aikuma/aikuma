@@ -18,6 +18,10 @@ import org.lp20.aikuma.audio.record.recognizers.AverageRecognizer;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.R;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class PhoneRespeakActivity extends AikumaActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

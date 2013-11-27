@@ -14,6 +14,9 @@ import org.lp20.aikuma.model.Recording;
 /**
  * A class to represent the alignment between segments in an original recording
  * and a respeaking.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class Segments {
 

@@ -7,6 +7,10 @@ import java.util.regex.Pattern;
 import org.json.simple.JSONObject;
 import org.lp20.aikuma.util.FileIO;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class ServerCredentials {
 	
 	public ServerCredentials(String ipAddress, String username, 

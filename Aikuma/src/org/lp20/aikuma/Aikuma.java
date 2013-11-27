@@ -11,8 +11,10 @@ import org.lp20.aikuma.util.FileIO;
  * Sources and caveats:
  * http://stackoverflow.com/questions/987072/using-application-context-everywhere
  * http://stackoverflow.com/questions/2002288/static-way-to-get-context-on-android
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-
 public class Aikuma extends android.app.Application {
 
 	private static Aikuma instance;

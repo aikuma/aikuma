@@ -23,6 +23,10 @@ import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.R;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class ListenFragment extends Fragment implements OnClickListener {
 
 	@Override

@@ -15,6 +15,10 @@ import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
 	public SpeakerLanguagesArrayAdapter(Context context, List<Language>
 			languages) {

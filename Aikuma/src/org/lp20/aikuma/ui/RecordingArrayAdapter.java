@@ -15,6 +15,10 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.ImageUtils;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	public RecordingArrayAdapter(Context context, List<Recording> recordings) {
 		super(context, listItemLayout, recordings);

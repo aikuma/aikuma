@@ -1,5 +1,9 @@
 package org.lp20.aikuma.audio;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public abstract class Player {
 
 	/** The class that is to be implemented that is given to a Player and has

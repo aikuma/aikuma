@@ -7,6 +7,10 @@ import android.widget.EditText;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.R;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class AddCustomLanguageActivity extends AikumaActivity {
 
 	@Override

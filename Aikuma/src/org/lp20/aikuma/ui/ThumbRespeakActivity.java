@@ -17,6 +17,10 @@ import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
 import org.lp20.aikuma.model.Recording;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class ThumbRespeakActivity extends AikumaActivity {
 	
 	@Override

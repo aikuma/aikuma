@@ -24,6 +24,10 @@ import org.lp20.aikuma.ui.RecordingArrayAdapter;
 import org.lp20.aikuma.ui.SettingsActivity;
 import org.lp20.aikuma.util.SyncUtil;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class MainActivity extends ListActivity
 {
 	/** Called when the activity is first created. */

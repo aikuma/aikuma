@@ -27,6 +27,10 @@ import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.ImageUtils;
 
+/**
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class ListenActivity extends AikumaActivity {
 
 	/** Called when the activity is first created. */
