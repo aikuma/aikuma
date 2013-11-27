@@ -199,6 +199,11 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	@Override
+	public void onBackPressed() {
+		this.finish();
+	}
+
+	@Override
 	public void onStop() {
 		super.onStop();
 	}
