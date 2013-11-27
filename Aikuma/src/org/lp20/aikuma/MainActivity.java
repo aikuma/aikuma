@@ -42,6 +42,9 @@ public class MainActivity extends ListActivity
 		ArrayAdapter adapter = new RecordingArrayAdapter(this, recordings);
 		setListAdapter(adapter);
 		Aikuma.loadLanguages();
+
+		getActionBar().setHomeButtonEnabled(true);
+		getActionBar().setDisplayShowHomeEnabled(true);
 	}
 
 	@Override

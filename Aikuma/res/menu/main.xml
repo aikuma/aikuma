@@ -3,17 +3,15 @@
 	<item android:id="@+id/record"
 		android:icon="@drawable/record_disabled_32"
 		android:title="@string/record"
-		android:showAsAction="always" />
-	<item android:id="@+id/speakers"
-		android:icon="@drawable/speakers_32"
-		android:title="@string/speakers"
 		android:showAsAction="always"/>
 	<item android:id="@+id/help"
 		android:icon="@drawable/help_32"
 		android:title="@string/help"
-		android:showAsAction="always" />
+		android:showAsAction="always"/>
+	<item android:id="@+id/speakers"
+		android:icon="@drawable/speakers_32"
+		android:title="@string/speakers"/>
 	<item android:id="@+id/settings"
 		android:icon="@drawable/settings_32"
-		android:title="@string/settings"
-		android:showAsAction="always" />
+		android:title="@string/settings"/>
 </menu>
