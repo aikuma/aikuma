@@ -43,8 +43,9 @@ public class MainActivity extends ListActivity
 		setListAdapter(adapter);
 		Aikuma.loadLanguages();
 
-		getActionBar().setHomeButtonEnabled(true);
-		getActionBar().setDisplayShowHomeEnabled(true);
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayShowHomeEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(false);
 	}
 
 	@Override

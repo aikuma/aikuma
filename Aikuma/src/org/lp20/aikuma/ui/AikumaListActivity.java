@@ -21,6 +21,7 @@ public abstract class AikumaListActivity extends ListActivity {
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(false);
 	}
 
 	@Override

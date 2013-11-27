@@ -10,8 +10,10 @@
 		android:showAsAction="always"/>
 	<item android:id="@+id/speakers"
 		android:icon="@drawable/speakers_32"
-		android:title="@string/speakers"/>
+		android:title="@string/speakers"
+		android:showAsAction="always"/>
 	<item android:id="@+id/settings"
 		android:icon="@drawable/settings_32"
-		android:title="@string/settings"/>
+		android:title="@string/settings"
+		android:showAsAction="always"/>
 </menu>
