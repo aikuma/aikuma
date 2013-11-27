@@ -90,7 +90,7 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 		return file.getCurrentSample();
 	}
 
-	public float getCurrentMsec() {
+	public int getCurrentMsec() {
 		return sampleToMsec(getCurrentSample());
 	}
 

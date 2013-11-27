@@ -77,6 +77,10 @@ public class ThumbRespeaker {
 	 	this.finishedPlaying = finishedPlaying;
 	 }
 
+	public int getCurrentMsec() {
+		return recorder.getCurrentMsec();
+	}
+
 	/** finishedPlaying accessor */
 	public boolean getFinishedPlaying() {
 		return this.finishedPlaying;

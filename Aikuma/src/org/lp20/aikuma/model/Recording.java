@@ -84,7 +84,8 @@ public class Recording {
 	 */
 	public Recording(UUID uuid, String name, Date date,
 			List<Language> languages, List<UUID> speakersUUIDs,
-			String androidID, UUID originalUUID, long sampleRate) {
+			String androidID, UUID originalUUID, long sampleRate,
+			int durationMsec) {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
@@ -93,6 +94,7 @@ public class Recording {
 		setAndroidID(androidID);
 		setOriginalUUID(originalUUID);
 		setSampleRate(sampleRate);
+		setDurationMsec(durationMsec);
 	}
 
 	/**
@@ -178,6 +180,13 @@ public class Recording {
 	}
 
 	/**
+	 * durationMsec accessor
+	 */
+	public int getDurationMsec() {
+		return durationMsec;
+	}
+
+	/**
 	 * Returns true if the Recording is an original; false if respeaking
 	 *
 	 * @return	True if the recording is an original.
@@ -208,6 +217,7 @@ public class Recording {
 		encodedRecording.put("speakersUUIDs", speakersUUIDsArray);
 		encodedRecording.put("androidID", this.androidID);
 		encodedRecording.put("sampleRate", getSampleRate());
+		encodedRecording.put("durationMsec", getDurationMsec());
 		if (this.originalUUID == null) {
 			encodedRecording.put("originalUUID", null);
 		} else {
@@ -302,9 +312,19 @@ public class Recording {
 		} else {
 			sampleRate = (Long) jsonObj.get("sampleRate");
 		}
+
+		Log.i("duration", "here");
+		int durationMsec;
+		if (jsonObj.get("durationMsec") == null) {
+			durationMsec = -1;
+			Log.i("duration", "reading: null");
+		} else {
+			durationMsec = ((Long) jsonObj.get("durationMsec")).intValue();
+			Log.i("duration", "reading: " + durationMsec);
+		}
 		Recording recording = new Recording(
 				uuid, name, date, languages, speakersUUIDs, androidID,
-				originalUUID, sampleRate);
+				originalUUID, sampleRate, (Integer) durationMsec);
 		return recording;
 	}
 
@@ -499,6 +519,13 @@ public class Recording {
 	}
 
 	/**
+	 * durationMsec mutator.
+	 */
+	private void setDurationMsec(int durationMsec) {
+		this.durationMsec = durationMsec;
+	}
+
+	/**
 	 * Get the applications recordings directory
 	 *
 	 * @return	A File representing the path of the recordings directory
@@ -549,5 +576,10 @@ public class Recording {
 	 * The sample rate of the recording in Hz
 	 */
 	private long sampleRate;
+
+	/**
+	 * The duration of the recording in seconds (floored)
+	 */
+	private int durationMsec;
 
 }

@@ -141,6 +141,10 @@ public class PhoneRespeaker implements
 		return this.player;
 	}
 
+	public int getCurrentMsec() {
+		return this.player.sampleToMsec(file.getCurrentSample());
+	}
+
 	//public void rewindToSegmentStart() {
 	//	int msecs = player.sampleToMsec(mapper.getOriginalStartSample());
 	//	msecs = msecs - getRewindAmount();

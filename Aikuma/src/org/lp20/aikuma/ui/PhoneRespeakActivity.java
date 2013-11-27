@@ -91,6 +91,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		intent.putExtra("uuidString", respeakingUUID.toString());
 		intent.putExtra("sampleRate", originalRecording.getSampleRate());
 		intent.putExtra("originalUUIDString", originalUUID.toString());
+		intent.putExtra("durationMsec", respeaker.getCurrentMsec());
 		startActivity(intent);
 		PhoneRespeakActivity.this.finish();
 	}

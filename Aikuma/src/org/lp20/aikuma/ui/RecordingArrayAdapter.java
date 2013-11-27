@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
@@ -25,6 +26,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		this.context = context;
 		inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	}
 
 	@Override
@@ -34,10 +36,17 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		Recording recording = getItem(position);
 		TextView recordingNameView = 
 				(TextView) recordingView.findViewById(R.id.recordingName);
+		TextView recordingDurationView =
+				(TextView) recordingView.findViewById(R.id.recordingDuration);
+		TextView recordingDateView = 
+				(TextView) recordingView.findViewById(R.id.recordingDate);
 		for (UUID uuid : recording.getSpeakersUUIDs()) {
 			recordingView.addView(makeSpeakerImageView(uuid));
 		}
 		recordingNameView.setText(recording.getName());
+		Integer duration = recording.getDurationMsec() / 1000;
+		recordingDurationView.setText(duration.toString() + "s");
+		recordingDateView.setText(simpleDateFormat.format(recording.getDate()));
 		return recordingView;
 	}
 
@@ -58,5 +67,6 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	private static final int listItemLayout = R.layout.recording_list_item;
 	private LayoutInflater inflater;
 	private Context context;
+	private SimpleDateFormat simpleDateFormat;
 
 }

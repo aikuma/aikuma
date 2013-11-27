@@ -9,7 +9,24 @@
 			android:layout_width="0dp"
 			android:layout_weight="1"
 			android:layout_gravity="center_vertical"
-			android:id="@+id/recordingName"/>
+			android:id="@+id/recordingName"
+			android:padding="5dp"/>
+	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_height="wrap_content"
+			android:text=""
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:layout_gravity="center_vertical"
+			android:id="@+id/recordingDuration"
+			android:padding="5dp"/>
+	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_height="wrap_content"
+			android:text=""
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:layout_gravity="center_vertical"
+			android:id="@+id/recordingDate"
+			android:padding="5dp"/>
 	<!-- Possible Recording image distinct from the programatically added
 	Speaker images
 	<ImageView android:src="@drawable/unknown_speaker"

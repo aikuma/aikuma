@@ -54,6 +54,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		uuid = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
 		sampleRate = (Long) intent.getExtras().get("sampleRate");
+		durationMsec = (Integer) intent.getExtras().get("durationMsec");
 		String originalUUIDString = (String) intent.getExtras().get("originalUUIDString");
 		if (originalUUIDString != null) {
 			originalUUID = UUID.fromString(originalUUIDString);
@@ -139,9 +140,11 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 								descriptionField.getText().toString();
 						Date date = new Date();
 						String androidID = Aikuma.getAndroidID();
+						Log.i("duration", "when recording created: " + durationMsec);
 						Recording recording = new Recording(
-								uuid, description, date, selectedLanguages, 
-								speakersUUIDs, androidID, originalUUID, sampleRate);
+								uuid, description, date, selectedLanguages,
+								speakersUUIDs, androidID, originalUUID,
+								sampleRate, durationMsec);
 						try {
 							recording.write();
 						} catch (IOException e) {
@@ -222,6 +225,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	private List<Language> selectedLanguages;
 	private LinearLayout userImages;
 	private long sampleRate;
+	private int durationMsec;
 	private ListenFragment listenFragment;
 	private UUID originalUUID;
 	private MenuBehaviour menuBehaviour;

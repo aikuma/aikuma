@@ -179,17 +179,20 @@ public class RecordActivity extends AikumaActivity {
 	}
 
 	public void onStopButton(View view) {
-		Intent intent = new Intent(this, RecordingMetadataActivity.class);
-		intent.putExtra("uuidString", uuid.toString());
-		intent.putExtra("sampleRate", sampleRate);
-		startActivity(intent);
-		RecordActivity.this.finish();
+		int duration = recorder.getCurrentMsec();
 		try {
 			recorder.stop();
 		} catch (MicException e) {
 			// Maybe make a recording metadata file that refers to the error so
 			// that the audio can be salvaged.
 		}
+		Intent intent = new Intent(this, RecordingMetadataActivity.class);
+		intent.putExtra("uuidString", uuid.toString());
+		intent.putExtra("sampleRate", sampleRate);
+		Log.i("duration", "RecordActivity end: " + duration);
+		intent.putExtra("durationMsec", duration);
+		startActivity(intent);
+		RecordActivity.this.finish();
 	}
 
 	@Override
