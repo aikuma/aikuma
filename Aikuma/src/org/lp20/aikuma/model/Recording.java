@@ -313,7 +313,6 @@ public class Recording {
 			sampleRate = (Long) jsonObj.get("sampleRate");
 		}
 
-		Log.i("duration", "here");
 		int durationMsec;
 		if (jsonObj.get("durationMsec") == null) {
 			durationMsec = -1;

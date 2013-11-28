@@ -1,6 +1,7 @@
 package org.lp20.aikuma.ui;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,9 +44,14 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		}
 		recordingNameView.setText(recording.getName());
 		Integer duration = recording.getDurationMsec() / 1000;
-		recordingDateDurationView.setText(
+		if (recording.getDurationMsec() == -1) {
+			recordingDateDurationView.setText(
+					simpleDateFormat.format(recording.getDate()));
+		} else {
+			recordingDateDurationView.setText(
 				simpleDateFormat.format(recording.getDate()) + " (" +
 				duration.toString() + "s)");
+		}
 		return recordingView;
 	}
 

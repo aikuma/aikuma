@@ -85,8 +85,14 @@ public class ListenActivity extends AikumaActivity {
 		TextView dateDurationView = (TextView) findViewById(R.id.recordingDateDuration);
 		nameView.setText(recording.getName());
 		Integer duration = recording.getDurationMsec() / 1000;
-		dateDurationView.setText(simpleDateFormat.format(recording.getDate()) + " (" + 
+		if (recording.getDurationMsec() == -1) {
+			dateDurationView.setText(
+					simpleDateFormat.format(recording.getDate()));
+		} else {
+			dateDurationView.setText(
+				simpleDateFormat.format(recording.getDate()) + " (" +
 				duration.toString() + "s)");
+		}
 	}
 
 	private ImageView makeSpeakerImageView(UUID speakerUUID) {
