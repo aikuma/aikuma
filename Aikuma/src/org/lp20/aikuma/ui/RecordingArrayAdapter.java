@@ -36,17 +36,16 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		Recording recording = getItem(position);
 		TextView recordingNameView = 
 				(TextView) recordingView.findViewById(R.id.recordingName);
-		TextView recordingDurationView =
-				(TextView) recordingView.findViewById(R.id.recordingDuration);
-		TextView recordingDateView = 
-				(TextView) recordingView.findViewById(R.id.recordingDate);
+		TextView recordingDateDurationView = 
+				(TextView) recordingView.findViewById(R.id.recordingDateDuration);
 		for (UUID uuid : recording.getSpeakersUUIDs()) {
 			recordingView.addView(makeSpeakerImageView(uuid));
 		}
 		recordingNameView.setText(recording.getName());
 		Integer duration = recording.getDurationMsec() / 1000;
-		recordingDurationView.setText(duration.toString() + "s");
-		recordingDateView.setText(simpleDateFormat.format(recording.getDate()));
+		recordingDateDurationView.setText(
+				simpleDateFormat.format(recording.getDate()) + " (" +
+				duration.toString() + "s)");
 		return recordingView;
 	}
 

@@ -18,6 +18,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
@@ -47,6 +48,7 @@ public class ListenActivity extends AikumaActivity {
 		fragment =
 				(ListenFragment)
 				getFragmentManager().findFragmentById(R.id.ListenFragment);
+		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		setUpRecording();
 		setUpPlayer();
 		setUpRespeakingImages();
@@ -80,7 +82,11 @@ public class ListenActivity extends AikumaActivity {
 
 	private void setUpRecordingName() {
 		TextView nameView = (TextView) findViewById(R.id.recordingName);
+		TextView dateDurationView = (TextView) findViewById(R.id.recordingDateDuration);
 		nameView.setText(recording.getName());
+		Integer duration = recording.getDurationMsec() / 1000;
+		dateDurationView.setText(simpleDateFormat.format(recording.getDate()) + " (" + 
+				duration.toString() + "s)");
 	}
 
 	private ImageView makeSpeakerImageView(UUID speakerUUID) {
@@ -246,4 +252,5 @@ public class ListenActivity extends AikumaActivity {
 	private ListenFragment fragment;
 	private Recording recording;
 	private MenuBehaviour menuBehaviour;
+	private SimpleDateFormat simpleDateFormat;
 }

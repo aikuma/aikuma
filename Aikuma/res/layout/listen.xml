@@ -16,6 +16,15 @@
 				android:text=""
 				android:id="@+id/recordingName"
 				android:textSize="20sp"
+				android:padding="5dp"
+		/>
+		<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text=""
+				android:id="@+id/recordingDateDuration"
+				android:textSize="20sp"
+				android:padding="5dp"
 		/>
 	</LinearLayout>
 	<fragment
