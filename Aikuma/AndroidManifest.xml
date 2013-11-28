@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.lp20.aikuma"
-      android:versionCode="010008"
-      android:versionName="1.0.0-beta.10">
+      android:versionCode="010009"
+      android:versionName="1.0.0-beta.11">
 	<uses-permission android:name="android.permission.RECORD_AUDIO"/>
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
