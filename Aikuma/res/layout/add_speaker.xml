@@ -67,11 +67,12 @@
 			android:hint="@string/speaker_name"
 			android:inputType="text"
 		/>
-		<Button
+		<ImageButton
 			android:id="@+id/takePhotoButton"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:text="@string/take_photo"
+			android:scaleType="centerInside"
+			android:src="@drawable/camera_48"
 			android:onClick="takePhoto"
 		/>
 		<ImageView
