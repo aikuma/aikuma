@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import java.io.IOException;
@@ -39,6 +40,13 @@ public class SettingsActivity extends AikumaListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings);
+		TextView versionField = (TextView) findViewById(R.id.versionField);
+		try {
+			versionField.setText(this.getPackageManager().getPackageInfo(
+					this.getPackageName(), 0).versionName);
+		} catch (android.content.pm.PackageManager.NameNotFoundException e) {
+			//Just leave the textview empty.
+		}
 		ipAddressField = (EditText) findViewById(R.id.ipAddress);
 		usernameField = (EditText) findViewById(R.id.username);
 		passwordField = (EditText) findViewById(R.id.password);
