@@ -10,6 +10,9 @@ import org.lp20.aikuma.model.ServerCredentials;
 //import org.lp20.sync.FTPSyncUtil;
 
 /**
+ * Periodically syncs with to a server specified in a ServerCredentials object
+ * using an FTP Client.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
