@@ -10,6 +10,9 @@ import java.io.IOException;
 import org.lp20.aikuma.model.Recording;
 
 /**
+ * A wrapper class for android.media.MediaPlayer that makes simpler the task of
+ * playing an Aikuma recording.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */

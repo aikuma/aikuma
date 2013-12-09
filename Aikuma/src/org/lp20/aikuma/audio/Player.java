@@ -1,6 +1,8 @@
 package org.lp20.aikuma.audio;
 
 /**
+ * A player interface that is to be implemented by all classes that play audio.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */

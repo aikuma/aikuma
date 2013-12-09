@@ -9,6 +9,11 @@ import org.lp20.aikuma.model.Segments;
 import org.lp20.aikuma.model.Segments.Segment;
 
 /**
+ * A player that plays both the original recording and its respeaking in an
+ * interleaved fashion, whereby a segment of the original is played, followed
+ * by the corresponding segment of the respeaking, followed by the next
+ * original segment and so on.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */

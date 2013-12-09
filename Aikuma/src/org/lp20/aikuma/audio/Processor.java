@@ -1,7 +1,8 @@
 package org.lp20.aikuma.audio;
 
 /**
- * Can do basic processing on audio buffers.
+ * Provides methods to process audio buffers - at the moment a single method to
+ * determine the average amplitude.
  *
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  * @author	Oliver Adams	<oliver.adams@gmail.com>

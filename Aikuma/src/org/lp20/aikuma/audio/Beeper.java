@@ -10,7 +10,8 @@ import java.io.IOException;
 import org.lp20.aikuma.R;
 
 /**
- * A thing that makes beeping noises.
+ * Provides methods to make beeping noises for when recording is started and
+ * stopped.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>

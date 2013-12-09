@@ -11,6 +11,9 @@ import org.lp20.aikuma.audio.Segments.Segment;
 import org.lp20.aikuma.model.Recording;
 
 /**
+ * Facilitates creation of segment mappings (Segments). To be used when
+ * recording a respeaking.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */

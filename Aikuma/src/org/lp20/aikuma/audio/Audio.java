@@ -6,7 +6,8 @@ import android.content.Context;
 import android.media.AudioManager;
 
 /**
- * An extension of MediaPlayer
+ * Provides methods to change which of the phone's speakers the audio is played
+ * through.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>

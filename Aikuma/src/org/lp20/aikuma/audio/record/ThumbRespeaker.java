@@ -23,6 +23,10 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.util.FileIO;
 
 /**
+ * Facilitates respeaking of an original recording by offering methods to start
+ * and pause playing the original, and start and pause recording the
+ * respeaking.
+ * 
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */

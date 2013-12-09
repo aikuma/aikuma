@@ -20,6 +20,10 @@ import static org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.model.Recording;
 
 /**
+ * Facilitates respeaking of a recording by playing the recording, then
+ * stopping playing and recording the user's voice when audio above a threshold
+ * is produced.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
