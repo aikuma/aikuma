@@ -1,6 +1,6 @@
 package org.lp20.aikuma.audio;
 
-/** 
+/**
  * Can do basic processing on audio buffers.
  *
  * @author	Florian Hanke	<florian.hanke@gmail.com>

@@ -1,6 +1,9 @@
 File Structure
 ==============
 
+These are considerations concerning the future design of the file structure
+layout.
+
 Goals
 -----
 
