@@ -18,7 +18,12 @@ import org.lp20.aikuma.util.FileIO;
  */
 public class Segments {
 
-
+	/**
+	 * Creates an object that represents a mapping of recording segments between
+	 * the original and the respeaking.
+	 *
+	 * @param	respeakingUUID	the UUID of the respeaking.
+	 */
 	public Segments(UUID respeakingUUID) {
 		this();
 		this.respeakingUUID = respeakingUUID;
@@ -29,23 +34,37 @@ public class Segments {
 			//Issue with reading mapping. Maybe throw an exception?
 		}
 	}
+
 	public Segments() {
 		segmentMap = new LinkedHashMap<Segment, Segment>();
 	}
 
+	/**
+	 * Gets the respeaking segment associated with the supplied original
+	 * segment.
+	 */
 	public Segment getRespeakingSegment(Segment originalSegment) {
 		return segmentMap.get(originalSegment);
 	}
 
+	/**
+	 * Adds a pair of segments.
+	 */
 	public void put(Segment originalSegment,
 					Segment respeakingSegment) {
 		segmentMap.put(originalSegment, respeakingSegment);
 	}
 
+	/**
+	 * Returns an iterator over the segments of the original recording.
+	 */
 	public Iterator<Segment> getOriginalSegmentIterator() {
 		return segmentMap.keySet().iterator();
 	}
 
+	/**
+	 * Reads the segments from a file.
+	 */
 	private void readSegments(File path) throws Exception {
 		String mapString = FileIO.read(path);
 		String[] lines = mapString.split("\n");
@@ -66,6 +85,9 @@ public class Segments {
 		}
 	}
 
+	/**
+	 * Writes the segment mapping to file.
+	 */
 	public void write(File path) throws IOException {
 		FileIO.write(path, toString());
 	}
@@ -76,6 +98,10 @@ public class Segments {
 	public static class Segment {
 		private Pair<Long, Long> pair;
 
+		/**
+		 * Creates a segment given the sample at which the segment starts, and
+		 * the sample at which it ends.
+		 */
 		public Segment(Long startSample, Long endSample) {
 			if (startSample == null) {
 				throw new IllegalArgumentException("Null start of sample");

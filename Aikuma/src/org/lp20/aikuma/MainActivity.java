@@ -25,11 +25,14 @@ import org.lp20.aikuma.ui.SettingsActivity;
 import org.lp20.aikuma.util.SyncUtil;
 
 /**
+ * The primary activity that lists existing recordings and allows you to select
+ * them for listening and subsequent respeaking.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class MainActivity extends ListActivity
-{
+public class MainActivity extends ListActivity {
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -58,6 +61,10 @@ public class MainActivity extends ListActivity
 		return menuBehaviour.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * When a recording item in the list is clicked, start the ListenActivity
+	 * and send the relevant UUID through.
+	 */
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Recording recording = (Recording) getListAdapter().getItem(position);

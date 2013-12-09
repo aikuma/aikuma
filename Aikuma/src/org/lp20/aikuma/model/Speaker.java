@@ -18,7 +18,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 /**
- * The class that stores the data about a speaker.
+ * The class that stores the data pertaining to a speaker who has contributed
+ * to a recording.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>

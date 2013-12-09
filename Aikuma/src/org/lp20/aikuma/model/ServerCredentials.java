@@ -8,11 +8,14 @@ import org.json.simple.JSONObject;
 import org.lp20.aikuma.util.FileIO;
 
 /**
+ * Contains information about the supplied server credentials for connecting to
+ * an FTP server.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class ServerCredentials {
-	
+
 	public ServerCredentials(String ipAddress, String username, 
 			String password, boolean syncActivated) {
 		setIPAddress(ipAddress);
@@ -96,6 +99,7 @@ public class ServerCredentials {
 	private String username;
 	private String password;
 	private boolean syncActivated;
+	// Used to ensure the IP address is valid syntactically
 	private static final String IP_ADDRESS_PATTERN =
 			"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
 			"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
