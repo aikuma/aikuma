@@ -44,11 +44,11 @@
 				android:layout_height="wrap_content"
 				>
 				<Button
-					android:id="@+id/addLanguageButton"
+					android:id="@+id/addISOLanguageButton"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:text="@string/addLanguage"
-					android:onClick="onAddLanguageButton"
+					android:text="@string/add_iso_language"
+					android:onClick="onAddISOLanguageButton"
 				/>
 			</LinearLayout>
 		</LinearLayout>
