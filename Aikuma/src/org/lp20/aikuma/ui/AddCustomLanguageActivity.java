@@ -28,9 +28,4 @@ public class AddCustomLanguageActivity extends AikumaActivity {
 		setResult(RESULT_OK, intent);
 		this.finish();
 	}
-
-	@Override
-	public void onBackPressed() {
-		this.finish();
-	}
 }
