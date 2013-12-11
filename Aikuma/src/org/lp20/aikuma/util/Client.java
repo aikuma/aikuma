@@ -71,8 +71,10 @@ public class Client {
 			try {
 				apacheClient.connect(serverURI);
 			} catch (SocketException e) {
+				Log.i("syncClient", "error 1");
 				return false;
 			} catch (IOException e) {
+				Log.i("syncClient", "error 2");
 				return false;
 			}
 		}
@@ -81,6 +83,7 @@ public class Client {
 				result = apacheClient.login(username, password);
 				loggedIn = result;
 			} catch (IOException e) {
+				Log.i("syncClient", "error 3");
 				return false;
 			}
 		}
@@ -89,9 +92,11 @@ public class Client {
 			// documentation ever says that.
 			result = apacheClient.setFileType(FTP.BINARY_FILE_TYPE);
 			if (!result) {
+				Log.i("syncClient", "error 4");
 				return false;
 			}
 		} catch (IOException e) {
+			Log.i("syncClient", "error 5");
 			return false;
 		}
 		// Change to appropriate working directory
@@ -100,10 +105,14 @@ public class Client {
 				String serverBaseDir = findServerBaseDir();
 				if (serverBaseDir == null) {
 					logout();
+					Log.i("syncClient", "error 6");
 					return false;
 				} else {
 					setServerBaseDir(findServerBaseDir());
 					result = cdServerBaseDir();
+					if (result == false) {
+						Log.i("syncClient", "error 7");
+					}
 				}
 				//result = true;
 			//} catch (IOException e ) {
@@ -425,6 +434,7 @@ public class Client {
 	private String findWritableDir(String startPath) {
 		try {
 			if (!apacheClient.changeWorkingDirectory(startPath)) {
+				Log.i("syncClient", "couldn't change working directory");
 				return null;
 			}
 
@@ -454,8 +464,10 @@ public class Client {
 				}
 			}
 		} catch (IOException e) {
+			Log.i("syncClient", "IOException");
 			return null;
 		}
+		Log.i("syncClient", "final null");
 		return null;
 	}
 
