@@ -51,6 +51,11 @@ public class DefaultLanguagesActivity extends AikumaListActivity {
 		startActivityForResult(intent, SELECT_LANGUAGE);
 	}
 
+	public void onAddCustomLanguageButton(View view) {
+		Intent intent = new Intent(this, AddCustomLanguageActivity.class);
+		startActivityForResult(intent, SELECT_LANGUAGE);
+	}
+
 	protected void onActivityResult(int requestCode, int resultCode, Intent
 			intent) {
 		if (requestCode == SELECT_LANGUAGE) {

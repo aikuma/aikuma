@@ -18,6 +18,13 @@
 		android:text="@string/add_iso_language"
 		android:onClick="onAddISOLanguageButton"
 	/>
+	<Button
+		android:id="@+id/addCustomLanguageButton"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/add_custom_language"
+		android:onClick="onAddCustomLanguageButton"
+	/>
 	<ListView android:id="@android:id/list"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
