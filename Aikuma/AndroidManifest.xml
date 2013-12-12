@@ -74,5 +74,15 @@
 				android:label="@string/app_name"
 				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
+		<activity android:name="org.lp20.aikuma.ui.DefaultLanguagesActivity"
+				android:configChanges="orientation"
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.SettingsActivity">
+		</activity>
+		<activity android:name="org.lp20.aikuma.ui.SyncSettingsActivity"
+				android:configChanges="orientation"
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.SettingsActivity">
+		</activity>
     </application>
 </manifest> 

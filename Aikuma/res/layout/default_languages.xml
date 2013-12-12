@@ -9,22 +9,17 @@
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:id="@+id/versionField"
-		android:text=""
-		android:textSize="15sp"
+		android:text="@string/defaultLangHeading"
 	/>
 	<Button
-		android:id="@+id/goToDefaultLanguages"
+		android:id="@+id/addISOLanguageButton"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="Default Languages"
-		android:onClick="onDefaultLanguagesButton"
+		android:text="@string/add_iso_language"
+		android:onClick="onAddISOLanguageButton"
 	/>
-	<Button
-		android:id="@+id/goToSyncSettings"
+	<ListView android:id="@android:id/list"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="Sync Settings"
-		android:onClick="onSyncSettingsButton"
 	/>
 </LinearLayout>
