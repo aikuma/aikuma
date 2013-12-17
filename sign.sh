@@ -1,4 +1,5 @@
 cd Aikuma
+rm bin/Aikuma.apk
 pwd
 ant release
 pwd

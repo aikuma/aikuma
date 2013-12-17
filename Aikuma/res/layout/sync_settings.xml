@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:focusable="true"
+		android:focusableInTouchMode="true"
+	>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/syncSettingsHeader"
+	/>
+	<EditText
+		android:id="@+id/ipAddress"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/ipAddressHint"
+		android:inputType="text"
+	/>
+	<EditText
+		android:id="@+id/username"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/usernameHint"
+		android:inputType="text"
+	/>
+	<EditText
+		android:id="@+id/password"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/passwordHint"
+		android:inputType="text"
+	/>
+	<ToggleButton
+		android:id="@+id/syncToggle"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textOn="Automatic Sync On"
+		android:textOff="Automatic Sync Off"
+		android:onClick="onToggleClicked"
+	/>
+	<Button
+		android:id="@+id/syncNowButton"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/syncNow"
+		android:onClick="onSyncNowButton"
+		android:layout_alignParentBottom="true"
+	/>
+</LinearLayout>
