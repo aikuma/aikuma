@@ -61,4 +61,3 @@ components are:
 	  button.
 	- Two further subpackages, analyzers and recognizers, facilitate
 	  determining when speech is occurring.
-	  is occuring and
