@@ -8,7 +8,6 @@ import android.media.MediaRecorder;
 import android.util.Log;
 import java.util.Arrays;
 import java.util.Set;
-import java.lang.reflect.*;
 
 /**
  * A Microphone is used to get input from the physical microphone
