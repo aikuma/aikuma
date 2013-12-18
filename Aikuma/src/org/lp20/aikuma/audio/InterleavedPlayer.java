@@ -169,6 +169,10 @@ public class InterleavedPlayer extends Player {
 		return this.recording;
 	}
 
+	/**
+	 * Implements a method for the original audio source to call when an
+	 * original segment has finished playing.
+	 */
 	private class OriginalMarkerReachedListener extends
 			MarkedPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedPlayer p) {
@@ -179,6 +183,10 @@ public class InterleavedPlayer extends Player {
 		}
 	}
 
+	/**
+	 * Implements a method for the respeaking audio source to call when a
+	 * respeaking segment has finished playing.
+	 */
 	private class RespeakingMarkerReachedListener extends
 			MarkedPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedPlayer p) {

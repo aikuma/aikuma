@@ -6,6 +6,12 @@ import android.view.View;
 import android.widget.TextView;
 import org.lp20.aikuma.R;
 
+/** The mother activity for settings - hosts buttons that link to various
+ * specific settings activities.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
+ */
 public class SettingsActivity extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

@@ -33,6 +33,9 @@ public class SyncUtil {
 		syncThread.interrupt();
 	}
 
+	/**
+	 * A thread that loops and attempts to sync every minute.
+	 */
 	private static class SyncLoop extends Thread {
 		public SyncLoop() {
 		}

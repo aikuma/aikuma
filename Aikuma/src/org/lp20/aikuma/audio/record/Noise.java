@@ -26,8 +26,9 @@ public class Noise {
 		this.currentQuality = -1;
 	}
 	
-	// Container class for information regarding background noise.
-	//
+	/**
+	 * Container class for information regarding background noise.
+	 */
 	public class Information {
 		
 		private int average;
