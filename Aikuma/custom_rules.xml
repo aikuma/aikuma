@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="custom_rules">
+	<taskdef resource="checkstyletask.properties"
+			 classpath="libs/checkstyle-5.6-all.jar"/>
+	<checkstyle config="checks.xml" file="src/org/lp20/aikuma/util/SyncUtil.java"/>
+</project>

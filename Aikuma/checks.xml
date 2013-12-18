@@ -4,6 +4,7 @@
 <module name="Checker">
 	<module name="JavadocPackage"/>
 	<module name="TreeWalker">
+		<module name="JavadocType"/>
 		<module name="AvoidStarImport"/>
 		<module name="ConstantName"/>
 		<!--
