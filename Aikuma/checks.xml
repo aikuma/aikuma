@@ -4,7 +4,16 @@
 <module name="Checker">
 	<module name="JavadocPackage"/>
 	<module name="TreeWalker">
-		<module name="JavadocType"/>
+		<module name="JavadocType">
+			<property name="scope" value="private"/>
+		</module>
+		<module name="JavadocType">
+			<property name="scope" value="public"/>
+			<property name="authorFormat" value="\S"/>
+		</module>
+		<module name="JavadocMethod">
+			<property name="scope" value="private"/>
+		</module>
 		<module name="AvoidStarImport"/>
 		<module name="ConstantName"/>
 		<!--

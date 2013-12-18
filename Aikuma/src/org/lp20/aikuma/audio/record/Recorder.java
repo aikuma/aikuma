@@ -27,6 +27,9 @@ import static org.lp20.aikuma.audio.record.Microphone.MicException;
  *    recorder.stop();
  *
  *  Note that stopping the recorder closes and finalizes the WAV file.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 

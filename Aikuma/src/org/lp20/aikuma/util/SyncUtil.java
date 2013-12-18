@@ -18,8 +18,14 @@ import org.lp20.aikuma.model.ServerCredentials;
  */
 public class SyncUtil {
 
+	/**
+	 * Private constructor to ensure the class cannot be instantiated.
+	 */
 	private SyncUtil() {}
 
+	/**
+	 * Starts the thread that attempts a sync every minute.
+	 */
 	public static void startSyncLoop() {
 		if (syncThread == null || !syncThread.isAlive()) {
 			syncThread = new SyncLoop();
@@ -27,6 +33,9 @@ public class SyncUtil {
 		}
 	}
 
+	/**
+	 * Forces a sync to occur now.
+	 */
 	public static void syncNow() {
 		//When we interrupt the syncThread, we fire up a new syncThread which
 		//syncs immediately.
