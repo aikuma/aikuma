@@ -1,11 +1,14 @@
 package org.lp20.aikuma.audio.record;
 
 import android.media.AudioFormat;
+import android.media.audiofx.AudioEffect;
+import android.media.audiofx.AutomaticGainControl;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 import java.util.Arrays;
 import java.util.Set;
+import java.lang.reflect.*;
 
 /**
  * A Microphone is used to get input from the physical microphone
@@ -35,12 +38,43 @@ public class Microphone {
 				AudioFormat.ENCODING_PCM_16BIT,
 				AudioFormat.CHANNEL_IN_MONO
 		);
+		boolean acgOff = ensureAGCIsOff();
+		Log.i("agc", "Is the ACG is definitely off: " + acgOff);
 		if (physicalMicrophone.getState() != AudioRecord.STATE_INITIALIZED) {
 			throw new MicException("Microphone failed to initialize");
 		};
 		initializeBuffer();
 	}
 
+	/**
+	 * Ensures Automatic Gain Control is off.
+	 *
+	 * @return	true if ACG is guaranteed to be off; false otherwise.
+	 */
+	private boolean ensureAGCIsOff() {
+		int audioSessionId = physicalMicrophone.getAudioSessionId();
+		try {
+			AutomaticGainControl agc = AutomaticGainControl.create(audioSessionId);
+			if (agc.getEnabled()) {
+				int result = agc.setEnabled(false);
+				if (result == AudioEffect.SUCCESS) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return true;
+			}
+		} catch (java.lang.NoSuchMethodError e) {
+			// In such circumstances the device is using an API < 16, which
+			// means there is no AutomaticGainControl class available. The
+			// device may or may not have various filters such as AGC
+			// implemented at a into the audio input path at the hardware codec
+			// or multimedia DSP level. While it's possible AGC is not on, it
+			// cannot be guaranteed in these circumstances.
+			return false;
+		}
+	}
 	public void release() {
 		physicalMicrophone.release();
 	}

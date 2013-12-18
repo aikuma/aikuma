@@ -2,7 +2,6 @@ package org.lp20.aikuma.audio.record;
 
 import android.content.Context;
 import android.media.AudioFormat;
-import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.media.MediaPlayer;
 import android.util.Log;
