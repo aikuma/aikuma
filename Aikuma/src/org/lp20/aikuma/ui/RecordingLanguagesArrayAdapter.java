@@ -23,7 +23,7 @@ import org.lp20.aikuma.util.FileIO;
 public class RecordingLanguagesArrayAdapter extends ArrayAdapter<Language> {
 	public RecordingLanguagesArrayAdapter(Context context, List<Language>
 			languages, List<Language> selectedLanguages) {
-		super(context, listItemLayout, languages);
+		super(context, LIST_ITEM_LAYOUT, languages);
 		this.languages = languages;
 		this.selectedLanguages = selectedLanguages;
 		inflater = (LayoutInflater)
@@ -34,7 +34,7 @@ public class RecordingLanguagesArrayAdapter extends ArrayAdapter<Language> {
 	public View getView(int position, View _, ViewGroup parent) {
 		Log.i("checkbox", "getView()");
 		View recordingView =
-				(View) inflater.inflate(listItemLayout, parent, false);
+				(View) inflater.inflate(LIST_ITEM_LAYOUT, parent, false);
 		final Language language = getItem(position);
 		TextView recordingNameView =
 				(TextView) recordingView.findViewById(R.id.recordingName);
@@ -64,7 +64,7 @@ public class RecordingLanguagesArrayAdapter extends ArrayAdapter<Language> {
 		return recordingView;
 	}
 
-	private static final int listItemLayout =
+	private static final int LIST_ITEM_LAYOUT =
 			R.layout.recordinglanguages_list_item;
 	private LayoutInflater inflater;
 	private List<Language> languages;

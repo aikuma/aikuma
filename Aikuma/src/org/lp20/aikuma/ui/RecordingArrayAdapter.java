@@ -23,7 +23,7 @@ import org.lp20.aikuma.util.ImageUtils;
  */
 public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	public RecordingArrayAdapter(Context context, List<Recording> recordings) {
-		super(context, listItemLayout, recordings);
+		super(context, LIST_ITEM_LAYOUT, recordings);
 		this.context = context;
 		inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -33,7 +33,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	@Override
 	public View getView(int position, View _, ViewGroup parent) {
 		LinearLayout recordingView =
-				(LinearLayout) inflater.inflate(listItemLayout, parent, false);
+				(LinearLayout) inflater.inflate(LIST_ITEM_LAYOUT, parent, false);
 		Recording recording = getItem(position);
 		TextView recordingNameView = 
 				(TextView) recordingView.findViewById(R.id.recordingName);
@@ -69,7 +69,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		return speakerImage;
 	}
 
-	private static final int listItemLayout = R.layout.recording_list_item;
+	private static final int LIST_ITEM_LAYOUT = R.layout.recording_list_item;
 	private LayoutInflater inflater;
 	private Context context;
 	private SimpleDateFormat simpleDateFormat;

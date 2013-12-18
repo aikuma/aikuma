@@ -21,7 +21,7 @@ import org.lp20.aikuma.R;
  */
 public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 	public SpeakerArrayAdapter(Context context, List<Speaker> speakers) {
-		super(context, listItemLayout, speakers);
+		super(context, LIST_ITEM_LAYOUT, speakers);
 		inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -29,7 +29,7 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 	@Override
 	public View getView(int position, View _, ViewGroup parent) {
 		View speakerView =
-				(View) inflater.inflate(listItemLayout, parent, false);
+				(View) inflater.inflate(LIST_ITEM_LAYOUT, parent, false);
 		Speaker speaker = getItem(position);
 		TextView speakerNameView =
 				(TextView) speakerView.findViewById(R.id.speakerName);
@@ -55,7 +55,7 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 		return speakerView;
 	}
 
-	private static final int listItemLayout = R.layout.speaker_list_item;
+	private static final int LIST_ITEM_LAYOUT = R.layout.speaker_list_item;
 	private LayoutInflater inflater;
 
 }

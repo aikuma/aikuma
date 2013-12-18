@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-//import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -49,7 +48,7 @@ public final class FileIO {
 	/**
 	 * The application's top level path in the external storage.
 	 */
-	static final String appRootPath = "aikuma/";
+	static final String APP_ROOT_PATH = "aikuma/";
 
 	/**
 	 * Returns the path to the application's data.
@@ -59,7 +58,7 @@ public final class FileIO {
 	 */
 	public static File getAppRootPath(){
 		File path = new File(Environment.getExternalStorageDirectory(),
-				appRootPath);
+				APP_ROOT_PATH);
 		path.mkdirs();
 		assert path != null;
 		return path;
