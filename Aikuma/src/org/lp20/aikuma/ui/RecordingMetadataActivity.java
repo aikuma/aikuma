@@ -12,6 +12,8 @@ import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -69,9 +71,11 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		speakersUUIDs = new ArrayList<UUID>();
 		languages = new ArrayList<Language>();
 		selectedLanguages = new ArrayList<Language>();
-		ImageButton okButton = (ImageButton) findViewById(R.id.okButton);
-		okButton.setImageResource(R.drawable.ok_disabled_48);
-		okButton.setEnabled(false);
+		okButton = (ImageButton) findViewById(R.id.okButton);
+		updateOkButton();
+
+		nameField = (EditText) findViewById(R.id.recordingDescription);
+		nameField.addTextChangedListener(emptyTextWatcher);
 	}
 
 	private void setUpPlayer(UUID uuid, long sampleRate) {
@@ -139,7 +143,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 										MainActivity.class);
 						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 						EditText descriptionField = (EditText)
-								findViewById(R.id.description);
+								findViewById(R.id.recordingDescription);
 						String description =
 								descriptionField.getText().toString();
 						Date date = new Date();
@@ -205,10 +209,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 						// If the image can't be loaded, we just leave it at that.
 					}
 					userImages.addView(speakerImage);
-					ImageButton okButton = (ImageButton)
-							findViewById(R.id.okButton);
-					okButton.setImageResource(R.drawable.ok_48);
-					okButton.setEnabled(true);
+					recordingHasSpeaker = true;
+					updateOkButton();
 				}
 			}
 		}
@@ -219,6 +221,38 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 
 	private Recording getRecording() {
 		return this.recording;
+	}
+
+	private TextWatcher emptyTextWatcher = new TextWatcher() {
+		public void afterTextChanged(Editable s) {
+		}
+		public void beforeTextChanged(CharSequence s,
+				int start, int count, int after) {
+		}
+		public void onTextChanged(CharSequence s,
+				int start, int before, int count) {
+			if (s.length() == 0) {
+				recordingHasName = false;
+				updateOkButton();
+			} else {
+				recordingHasName = true;
+				updateOkButton();
+			}
+		}
+	};
+
+	/**
+	 * Disables or enables the OK button depending on whether the recording now
+	 * has a speaker and name.
+	 */
+	private void updateOkButton() {
+		if (recordingHasSpeaker && recordingHasName) {
+			okButton.setImageResource(R.drawable.ok_48);
+			okButton.setEnabled(true);
+		} else {
+			okButton.setImageResource(R.drawable.ok_disabled_48);
+			okButton.setEnabled(false);
+		}
 	}
 
 	static final int ADD_SPEAKER = 0;
@@ -233,4 +267,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	private ListenFragment listenFragment;
 	private UUID originalUUID;
 	private MenuBehaviour menuBehaviour;
+	private EditText nameField;
+	private ImageButton okButton;
+	private boolean recordingHasSpeaker;
+	private boolean recordingHasName;
 }
