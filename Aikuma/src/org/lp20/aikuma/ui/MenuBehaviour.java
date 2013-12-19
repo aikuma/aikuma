@@ -90,7 +90,7 @@ public class MenuBehaviour {
 	}
 
 	private void openHelpInBrowser() {
-		Uri uri = Uri.parse("http://lp20.org/aikuma/help.html");
+		Uri uri = Uri.parse("http://lp20.org/aikuma/howto.html");
 		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 		activity.startActivity(intent);
 	}
