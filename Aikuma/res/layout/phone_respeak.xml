@@ -28,11 +28,12 @@
 			android:layout_height="32dp"
 			android:maxHeight="10dp"
 		/>
-		<Button
+		<ImageButton
 			android:id="@+id/saveButton"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:text="Save respeaking"
+			android:scaleType="centerInside"
+			android:src="@drawable/save48"
 			android:onClick="onSaveRespeakingButton"
 		/>
 	</LinearLayout>
