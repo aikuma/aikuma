@@ -42,10 +42,16 @@ public abstract class AikumaActivity extends Activity {
 		}
 	}
 
-	@Override
+	/**
+	 * Provides default back functionality, unless the activity requires safe
+	 * transitions, in which case it first notifies the user that they'll lose
+	 * data.
+	 */
 	public void onBackPressed() {
 		if (safeActivityTransition) {
-			menuBehaviour.safeGoToMainActivity();
+			menuBehaviour.safeGoBack();
+		} else {
+			this.finish();
 		}
 	}
 

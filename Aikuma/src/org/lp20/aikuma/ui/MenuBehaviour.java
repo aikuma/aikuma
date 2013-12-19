@@ -127,5 +127,25 @@ public class MenuBehaviour {
 				.show();
 	}
 
+	/**
+	 * Allows the activity to use the back button to return to the previous
+	 * activity in the stack, while ensuring the user is aware they'll lose
+	 * data.
+	 */
+	public void safeGoBack() {
+		new AlertDialog.Builder(activity)
+				.setMessage("This will discard the new data. Are you sure?")
+				.setPositiveButton("Discard",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								activity.finish();
+							}
+						})
+				.setNegativeButton("Cancel", null)
+				.show();
+	}
+
 	private Activity activity;
 }

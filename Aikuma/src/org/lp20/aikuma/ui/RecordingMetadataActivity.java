@@ -101,28 +101,6 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		setListAdapter(adapter);
 	}
 
-	@Override
-	public void onBackPressed() {
-		new AlertDialog.Builder(this)
-				.setMessage(R.string.discard_dialog)
-				.setPositiveButton(R.string.discard, new
-				DialogInterface.OnClickListener() {
-				
-					@Override
-					public void onClick(DialogInterface dialog,
-							int which) {
-						Intent intent =
-							new Intent(RecordingMetadataActivity.this,
-										MainActivity.class);
-						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						RecordingMetadataActivity.this.finish();
-						startActivity(intent);
-					}
-				})
-				.setNegativeButton(R.string.cancel, null)
-				.show();
-	}
-
 	public void onAddUserButtonPressed(View view) {
 		Intent intent =
 			new Intent(RecordingMetadataActivity.this,
@@ -266,7 +244,6 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	private int durationMsec;
 	private ListenFragment listenFragment;
 	private UUID originalUUID;
-	private MenuBehaviour menuBehaviour;
 	private EditText nameField;
 	private ImageButton okButton;
 	private boolean recordingHasSpeaker;
