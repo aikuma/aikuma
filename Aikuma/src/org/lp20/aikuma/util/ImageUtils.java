@@ -69,6 +69,8 @@ public final class ImageUtils {
 	 * (rotates the file according to the EXIF orientation tag, if applicable).
 	 *
 	 * @param	path	The absolute path of the image file.
+	 * @throws	IOException	If the file or Bitmap doesn't exist, or there is an
+	 * I/O issue loading it.
 	 * @return	The image as a bitmap
 	 */
 	public static Bitmap retrieveFromFile(String path) throws IOException {
@@ -86,6 +88,9 @@ public final class ImageUtils {
 
 	/**
 	 * Returns the Image associated with a given speaker UUID.
+	 *
+	 * @param	uuid	The UUID of the speaker.
+	 * @return	A File containing the speaker's image.
 	 */
 	public static File getImageFile(UUID uuid) {
 		return new File(getImagesPath(), uuid.toString() + ".jpg");
@@ -93,6 +98,9 @@ public final class ImageUtils {
 
 	/**
 	 * Returns the small Image associated with a given speaker UUID.
+	 *
+	 * @param	uuid	The UUID of the speaker.
+	 * @return	A File containing the small version of the speaker's image.
 	 */
 	public static File getSmallImageFile(UUID uuid) {
 		return new File(getImagesPath(), uuid.toString() + ".small.jpg");
@@ -100,6 +108,10 @@ public final class ImageUtils {
 
 	/**
 	 * Returns a Bitmap associated with a given speaker UUID.
+	 *
+	 * @param	uuid	The UUID of the speaker.
+	 * @throws	IOException	If an I/O exception arises when accessing the file.
+	 * @return	A Bitmap of the speaker's image.
 	 */
 	public static Bitmap getImage(UUID uuid) throws IOException {
 		File file = getImageFile(uuid);
@@ -111,7 +123,7 @@ public final class ImageUtils {
 	 *
 	 * @param	uuid	the UUID of the speaker
 	 * @throws	IOException	If an I/O exception arises when accessing the file.
-	 * @return	A Bitmap representing the small image.
+	 * @return	A Bitmap of the speaker's small image.
 	 */
 	public static Bitmap getSmallImage(UUID uuid) throws IOException {
 		File file = getSmallImageFile(uuid);
