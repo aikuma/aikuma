@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
@@ -187,8 +188,11 @@ public class ListenActivity extends AikumaActivity {
 			}
 			respeakingImageContainer.addView(respeakingImage);
 			TextView respeakingLang = new TextView(this);
-			respeakingLang.setText(respeaking.getLanguages().get(0).getCode());
-			respeakingLang.setGravity(Gravity.CENTER_HORIZONTAL);
+			List<Language> langs = respeaking.getLanguages();
+			if (langs.size() > 0) {
+				respeakingLang.setText(respeaking.getLanguages().get(0).getCode());
+				respeakingLang.setGravity(Gravity.CENTER_HORIZONTAL);
+			}
 			respeakingImageContainer.addView(respeakingLang);
 			respeakingImages.addView(respeakingImageContainer);
 		}

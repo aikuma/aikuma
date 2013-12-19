@@ -58,6 +58,10 @@ public class Microphone {
 		int audioSessionId = physicalMicrophone.getAudioSessionId();
 		try {
 			AutomaticGainControl agc = AutomaticGainControl.create(audioSessionId);
+			if (agc == null) {
+				//The device does not implement automatic gain control.
+				return true;
+			}
 			if (agc.getEnabled()) {
 				int result = agc.setEnabled(false);
 				if (result == AudioEffect.SUCCESS) {
