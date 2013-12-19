@@ -1,3 +1,7 @@
+/*
+	Copyright (C) 2013, The Aikuma Project
+	AUTHORS: Oliver Adams and Florian Hanke
+*/
 /**
  * The model package contains classes that model data handled by Aikuma.
  *

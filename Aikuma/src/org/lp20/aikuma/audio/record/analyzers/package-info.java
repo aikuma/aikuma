@@ -1,3 +1,7 @@
+/*
+	Copyright (C) 2013, The Aikuma Project
+	AUTHORS: Oliver Adams and Florian Hanke
+*/
 /**
  * This package contains Analyzers take samples and analyze them, calling
  * audioTriggered or silenceTriggered on an AudioHandler when appropriate.

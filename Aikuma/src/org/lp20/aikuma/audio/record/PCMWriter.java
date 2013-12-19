@@ -1,3 +1,7 @@
+/*
+	Copyright (C) 2013, The Aikuma Project
+	AUTHORS: Oliver Adams and Florian Hanke
+*/
 package org.lp20.aikuma.audio.record;
 
 import java.io.FileNotFoundException;

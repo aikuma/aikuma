@@ -1,3 +1,7 @@
+/*
+	Copyright (C) 2013, The Aikuma Project
+	AUTHORS: Oliver Adams and Florian Hanke
+*/
 /**
  * Contains code pertaining to sensors - at present this is just a proximity
  * detector.

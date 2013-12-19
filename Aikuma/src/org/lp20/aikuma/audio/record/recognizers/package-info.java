@@ -1,3 +1,7 @@
+/*
+	Copyright (C) 2013, The Aikuma Project
+	AUTHORS: Oliver Adams and Florian Hanke
+*/
 /**
  * Recognizers are used to determine whether buffers contain speech or silence.
  *
