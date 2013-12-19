@@ -43,12 +43,12 @@ public final class ImageUtils {
 	 * @param	original	The original image
 	 * @param	scale	the scale that should be applied to the original (0.5
 	 * results in an image 50% the size of the original)
-	 	
+	 * @return	A Bitmap representing the resized image.
 	 */
 	public static Bitmap resizeBitmap(
-			Bitmap original, float scale) throws IOException {
+			Bitmap original, float scale) {
 		if (original == null) {
-			throw new IOException("Can not resize null bitmap");
+			throw new IllegalArgumentException("Can not resize null bitmap");
 		}
 		if (scale < 0) {
 			throw new IllegalArgumentException(
@@ -108,12 +108,23 @@ public final class ImageUtils {
 
 	/**
 	 * Returns a small Bitmap associated with a given speaker UUID.
+	 *
+	 * @param	uuid	the UUID of the speaker
+	 * @throws	IOException	If an I/O exception arises when accessing the file.
+	 * @return	A Bitmap representing the small image.
 	 */
 	public static Bitmap getSmallImage(UUID uuid) throws IOException {
 		File file = getSmallImageFile(uuid);
 		return retrieveFromFile(file);
 	}
 
+	/**
+	 * Creates a small version of a speaker image for use in Aikuma.
+	 *
+	 * @param	uuid	The uuid of the speaker
+	 * @throws	IOException	if an I/O related exception is thrown when
+	 * accessing the file
+	 */
 	public static void createSmallSpeakerImage(UUID uuid) throws IOException {
 		String imageFilePath = getImageFile(uuid).getPath();
 		Bitmap image = BitmapFactory.decodeFile(imageFilePath);
@@ -161,6 +172,9 @@ public final class ImageUtils {
 	 * (rotates the file according to the EXIF orientation tag, if applicable).
 	 *
 	 * @param	path	The absolute path of the image file.
+	 * @throws	IOException	If some I/O exception occurs when accessing
+	 * the file
+	 * @return	a Bitmap of the specified file.
 	 */
 	public static Bitmap retrieveFromFile(File path) throws IOException {
 		return retrieveFromFile(path.toString());
