@@ -26,6 +26,14 @@
 				android:textSize="20sp"
 				android:padding="5dp"
 		/>
+		<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text=""
+				android:id="@+id/recordingLangCode"
+				android:textSize="20sp"
+				android:padding="5dp"
+		/>
 	</LinearLayout>
 	<fragment
 			android:name="org.lp20.aikuma.ui.ListenFragment"

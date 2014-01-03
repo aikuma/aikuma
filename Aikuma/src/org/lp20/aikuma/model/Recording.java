@@ -139,6 +139,26 @@ public class Recording {
 	}
 
 	/**
+	 * Returns the first language code as a string, or an empty string if there
+	 * is none.
+	 */
+	public String getFirstLangCode() {
+		if (getLanguages().size() > 0) {
+			return getLanguages().get(0).getCode();
+		} else {
+			return "";
+		}
+	}
+
+	public String getNameAndLang() {
+		if (getFirstLangCode().equals("")) {
+			return getName();
+		} else {
+			return getName() + " (" + getFirstLangCode() + ")";
+		}
+	}
+
+	/**
 	 * speakersUUIDs accessor.
 	 */
 	public List<UUID> getSpeakersUUIDs() {

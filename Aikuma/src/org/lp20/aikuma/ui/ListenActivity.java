@@ -87,8 +87,10 @@ public class ListenActivity extends AikumaActivity {
 
 	private void setUpRecordingName() {
 		TextView nameView = (TextView) findViewById(R.id.recordingName);
-		TextView dateDurationView = (TextView) findViewById(R.id.recordingDateDuration);
-		nameView.setText(recording.getName());
+		TextView dateDurationView = 
+				(TextView) findViewById(R.id.recordingDateDuration);
+		TextView langView = (TextView) findViewById(R.id.recordingLangCode);
+		nameView.setText(recording.getNameAndLang());
 		Integer duration = recording.getDurationMsec() / 1000;
 		if (recording.getDurationMsec() == -1) {
 			dateDurationView.setText(
@@ -188,11 +190,15 @@ public class ListenActivity extends AikumaActivity {
 			}
 			respeakingImageContainer.addView(respeakingImage);
 			TextView respeakingLang = new TextView(this);
+			respeakingLang.setText(respeaking.getFirstLangCode());
+			respeakingLang.setGravity(Gravity.CENTER_HORIZONTAL);
+			/*
 			List<Language> langs = respeaking.getLanguages();
 			if (langs.size() > 0) {
 				respeakingLang.setText(respeaking.getLanguages().get(0).getCode());
 				respeakingLang.setGravity(Gravity.CENTER_HORIZONTAL);
 			}
+			*/
 			respeakingImageContainer.addView(respeakingLang);
 			respeakingImages.addView(respeakingImageContainer);
 		}
