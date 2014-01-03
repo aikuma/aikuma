@@ -18,7 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
+import android.widget.CheckBox;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class SyncSettingsActivity extends AikumaActivity {
 		ipAddressField = (EditText) findViewById(R.id.ipAddress);
 		usernameField = (EditText) findViewById(R.id.username);
 		passwordField = (EditText) findViewById(R.id.password);
-		toggleButton = (ToggleButton) findViewById(R.id.syncToggle);
+		automaticSyncCheckBox = (CheckBox) findViewById(R.id.automaticSync);
 	}
 
 	@Override
@@ -82,7 +82,8 @@ public class SyncSettingsActivity extends AikumaActivity {
 			ipAddressField.setText(serverCredentials.getIPAddress());
 			usernameField.setText(serverCredentials.getUsername());
 			passwordField.setText(serverCredentials.getPassword());
-			toggleButton.setChecked(serverCredentials.getSyncActivated());
+			automaticSyncCheckBox.setChecked(
+					serverCredentials.getSyncActivated());
 			syncActivated = serverCredentials.getSyncActivated();
 		} catch (IOException e) {
 			//If reading fails, then no text is put into the fields.
@@ -103,8 +104,8 @@ public class SyncSettingsActivity extends AikumaActivity {
 		SyncUtil.syncNow();
 	}
 
-	public void onToggleClicked(View view) {
-		boolean on = ((ToggleButton) view).isChecked();
+	public void onCheckBoxClicked(View view) {
+		boolean on = ((CheckBox) view).isChecked();
 		if (on) {
 			syncActivated = true;
 		} else {
@@ -124,5 +125,5 @@ public class SyncSettingsActivity extends AikumaActivity {
 	private EditText usernameField;
 	private EditText passwordField;
 	private boolean syncActivated;
-	private ToggleButton toggleButton;
+	private CheckBox automaticSyncCheckBox;
 }

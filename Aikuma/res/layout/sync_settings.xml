@@ -32,13 +32,12 @@
 		android:hint="@string/passwordHint"
 		android:inputType="text"
 	/>
-	<ToggleButton
-		android:id="@+id/syncToggle"
-		android:layout_width="match_parent"
+	<CheckBox
+		android:id="@+id/automaticSync"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:textOn="Automatic Sync On"
-		android:textOff="Automatic Sync Off"
-		android:onClick="onToggleClicked"
+		android:text="Automatic sync"
+		android:onClick="onCheckBoxClicked"
 	/>
 	<Button
 		android:id="@+id/syncNowButton"
