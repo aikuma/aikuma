@@ -175,7 +175,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 							languages.add(language);
 						}
 					}
-					selectedLanguages = new ArrayList<Language>(languages);
+					selectedLanguages = new ArrayList<Language>();
 					ImageView speakerImage = new ImageView(this);
 					speakerImage.setAdjustViewBounds(true);
 					speakerImage.setMaxHeight(60);
