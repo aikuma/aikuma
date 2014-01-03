@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Audio;
+import org.lp20.aikuma.audio.Beeper;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.record.PhoneRespeaker;
 import org.lp20.aikuma.audio.SimplePlayer;
@@ -173,6 +174,7 @@ public class PhoneRespeakFragment extends Fragment {
 				public void onCompletion(Player _player) {
 					stopThread(seekBarThread);
 					seekBar.setProgress(seekBar.getMax());
+					Beeper.beep(getActivity(), null);
 				}
 			};
 
