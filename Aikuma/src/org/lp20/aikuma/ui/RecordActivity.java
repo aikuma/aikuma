@@ -115,14 +115,14 @@ public class RecordActivity extends AikumaActivity {
 				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
 				params.screenBrightness = 0;
 				getWindow().setAttributes(params);
-				record();
+				//record();
 			}
 			public void far(float distance) {
 				WindowManager.LayoutParams params = getWindow().getAttributes();
 				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
 				params.screenBrightness = 1;
 				getWindow().setAttributes(params);
-				pause();
+				//pause();
 			}
 		};
 		this.proximityDetector.start();
