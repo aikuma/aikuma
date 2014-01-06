@@ -74,6 +74,7 @@ public class Client {
 		if (!apacheClient.isConnected()) {
 			try {
 				apacheClient.connect(serverURI);
+				Log.i("sync", "Connected to: " + serverURI);
 			} catch (SocketException e) {
 				Log.e("sync", "apacheClient.connect() threw a SocketException", e);
 				return false;
@@ -85,6 +86,10 @@ public class Client {
 		if (!loggedIn) {
 			try {
 				result = apacheClient.login(username, password);
+				if (!result) {
+					Log.i("sync", "apacheClient.login returned false: " +
+						username + " " + password);
+				}
 				loggedIn = result;
 			} catch (IOException e) {
 				Log.e("sync", "apacheClient.login() threw an IOException", e);
