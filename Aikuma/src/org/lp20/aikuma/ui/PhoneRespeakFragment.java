@@ -174,7 +174,7 @@ public class PhoneRespeakFragment extends Fragment {
 				public void onCompletion(Player _player) {
 					stopThread(seekBarThread);
 					seekBar.setProgress(seekBar.getMax());
-					Beeper.beep(getActivity(), null);
+					Beeper.longBeep(getActivity(), null);
 				}
 			};
 
