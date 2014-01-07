@@ -47,7 +47,7 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 
 	/**
 	 * Creates a Recorder that uses an analyzer which tells the recorder to
-	 * always record regardless of input. Containsa  beeper.
+	 * always record regardless of input. Contains a beeper.
 	 */
 	 /*
 	public Recorder(File path, long sampleRate, RecordActivity recordActivity) throws MicException {

@@ -39,6 +39,8 @@ import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.util.FileIO;
+import org.apache.commons.io.FileUtils;
 
 /**
  * The activity that allows audio to be recorded
@@ -133,6 +135,10 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 								sampleRate, durationMsec);
 						try {
 							recording.write();
+							//Move the wave file from the nosync directory to the
+							//synced directory
+							File wavFile = new File(FileIO.getNoSyncPath(), uuid + ".wav");
+							FileUtils.moveFileToDirectory(wavFile, Recording.getRecordingsPath(), false);
 						} catch (IOException e) {
 							Toast.makeText(RecordingMetadataActivity.this,
 								"Failed to write the Recording metadata.",
