@@ -84,8 +84,10 @@ public class ListenActivity extends AikumaActivity {
 		setUpRecordingName();
 		LinearLayout recordingInfoView = (LinearLayout)
 				findViewById(R.id.recordingInfo);
+		LinearLayout originalImages = (LinearLayout)
+				findViewById(R.id.originalImages);
 		for (UUID uuid : recording.getSpeakersUUIDs()) {
-			recordingInfoView.addView(makeSpeakerImageView(uuid));
+			originalImages.addView(makeSpeakerImageView(uuid));
 		}
 	}
 
