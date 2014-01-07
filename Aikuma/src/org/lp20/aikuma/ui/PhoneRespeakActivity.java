@@ -86,7 +86,8 @@ public class PhoneRespeakActivity extends AikumaActivity {
 				public void onStopTrackingTouch(SeekBar seekBar) {}
 			}
 		);
-		extractBackgroundNoiseThreshold();
+		//extractBackgroundNoiseThreshold();
+		setSensitivity(2000);
 	}	
 
 	public void onSaveRespeakingButton(View view) {
