@@ -87,7 +87,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 			}
 		);
 		//extractBackgroundNoiseThreshold();
-		setSensitivity(2000);
+		setSensitivity(4000);
 	}	
 
 	public void onSaveRespeakingButton(View view) {
