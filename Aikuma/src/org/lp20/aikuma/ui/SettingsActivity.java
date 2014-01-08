@@ -39,7 +39,10 @@ public class SettingsActivity extends AikumaActivity {
 
 	private void getUsageInfo() {
 		TextView usageField = (TextView) findViewById(R.id.usageField);
-		usageField.setText("used: " + UsageUtils.secondsUsed(16000, 16));
+		usageField.setText("Hours used: " + UsageUtils.hoursUsed(16000, 16) + 
+				"\nHours available: " + UsageUtils.hoursAvailable(16000, 16) +
+				"\nOriginal recordings: " + UsageUtils.numOriginals() +
+				"\nCommentaries: " + UsageUtils.numCommentaries());
 	}
 
 	public void onDefaultLanguagesButton(View view) {

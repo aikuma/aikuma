@@ -7,6 +7,8 @@ package org.lp20.aikuma.util;
 import android.os.StatFs;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.List;
+import org.lp20.aikuma.model.Recording;
 
 /**
  * Provides information about the sdcard usage.
@@ -58,7 +60,7 @@ public class UsageUtils {
 	 * Returns the number of seconds of recordings in the synced recordings
 	 * directory.
 	 *
-	 * @param	sampleRate	The sampleRate of the recordings
+	 * @param	sampleRate	The sample rate of the recordings
 	 * @param	sampleSize	The size of each sample in bits
 	 */
 	public static float secondsUsed(int sampleRate, int sampleSize) {
@@ -73,21 +75,67 @@ public class UsageUtils {
 	}
 
 	/**
-	 * Returns the number of seconds of recordings available
-
-	/*
-	public static double hoursRemaining(int sampleRate, int sampleSize) {
-		
+	 * Returns the number of seconds of recordings available.
+	 *
+	 * @param	sampleRate	The sample rate of hte recordings
+	 * @param	sampleSize	The size of each sample in bits.
+	 */
+	public static float secondsAvailable(int sampleRate, int sampleSize) {
+		float bytesUsed = bytesAvailable(new File("/sdcard"));
+		//If the sample size isn't 16, it's assumed to be 8.
+		return bytesUsed / ((sampleSize == 16 ? 2 : 1) * sampleRate);
 	}
 
-	public static double hoursUsed(int sampleRate, int sampleSize) {
+	
+	/**
+	 * Returns the number of hours worth of recordings in the synced recordings
+	 * directory.
+	 *
+	 * @param	sampleRate	The sample rate of the recordings
+	 * @param	sampleSize	The size of each sample in bits
+	 */
+	public static float hoursUsed(int sampleRate, int sampleSize) {
+		return secondsUsed(sampleRate, sampleSize) / 3600;
+	}
+	/**
+	 * Returns the number of hours worth of recordings available.
+	 *
+	 * @param	sampleRate	The sample rate of hte recordings
+	 * @param	sampleSize	The size of each sample in bits.
+	 */
+	public static float hoursAvailable(int sampleRate, int sampleSize) {
+		return secondsAvailable(sampleRate, sampleSize) / 3600;
 	}
 
-	public static int numRecordings() {
+	/**
+	 * Returns the number of original recordings.
+	 *
+	 * @return	the number of original recordings in the aikuma directory.
+	 */
+	public static int numOriginals() {
+		List<Recording> recordings = Recording.readAll();
+		int originalCount = 0;
+		for (Recording recording : recordings) {
+			if (recording.isOriginal()) {
+				originalCount++;
+			}
+		}
+		return originalCount;
 	}
 
-	public static int numRespeakings() {
+	/**
+	 * Returns the number of commentaries.
+	 *
+	 * @return	the number of commentaries in the aikuma directory.
+	 */
+	public static int numCommentaries() {
+		List<Recording> recordings = Recording.readAll();
+		int commentaryCount = 0;
+		for (Recording recording : recordings) {
+			if (!recording.isOriginal()) {
+				commentaryCount++;
+			}
+		}
+		return commentaryCount;
 	}
-*/
-
 }
