@@ -54,6 +54,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.i("issue160", "in RecordingMetadataActivity.onCreate() 1");
 		setContentView(R.layout.recording_metadata);
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
@@ -63,6 +64,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 				(String) intent.getExtras().get("uuidString"));
 		sampleRate = (Long) intent.getExtras().get("sampleRate");
 		durationMsec = (Integer) intent.getExtras().get("durationMsec");
+		Log.i("issue160", "in RecordingMetadataActivity.onCreate() 2");
 		String originalUUIDString = (String) intent.getExtras().get("originalUUIDString");
 		if (originalUUIDString != null) {
 			originalUUID = UUID.fromString(originalUUIDString);
@@ -78,18 +80,23 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 
 		nameField = (EditText) findViewById(R.id.recordingDescription);
 		nameField.addTextChangedListener(emptyTextWatcher);
+		Log.i("issue160", "in RecordingMetadataActivity.onCreate() 3");
 	}
 
 	private void setUpPlayer(UUID uuid, long sampleRate) {
 		listenFragment = (ListenFragment)
 				getFragmentManager().findFragmentById(R.id.ListenFragment);
 		try {
+			//listenFragment.setPlayer(new SimplePlayer(
+			//		new File(FileIO.getNoSyncPath(), uuid.toString() + ".wav"),
+			//		sampleRate, true));
 			listenFragment.setPlayer(new SimplePlayer(
-					new File(Recording.getRecordingsPath(), uuid.toString() + ".wav"),
+					new File(FileIO.getNoSyncPath(), uuid.toString() + ".wav"),
 					sampleRate, true));
 		} catch (IOException e) {
 			//The SimplePlayer cannot be constructed, so let's end the
 			//activity.
+			Toast.makeText(this, "There has been an error in the creation of the audio file which prevents it from being read.", Toast.LENGTH_LONG).show();
 			RecordingMetadataActivity.this.finish();
 		}
 	}
@@ -97,10 +104,12 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
+		Log.i("issue160", "in RecordingMetadataActivity.onResume() 1");
 		ArrayAdapter<Language> adapter =
 				new RecordingLanguagesArrayAdapter(this, languages,
 						selectedLanguages);
 		setListAdapter(adapter);
+		Log.i("issue160", "in RecordingMetadataActivity.onResume() 2");
 	}
 
 	public void onAddUserButtonPressed(View view) {
