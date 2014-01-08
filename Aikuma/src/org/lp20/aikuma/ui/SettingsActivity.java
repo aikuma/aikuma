@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import java.io.File;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.util.UsageUtils;
 
 /** The mother activity for settings - hosts buttons that link to various
  * specific settings activities.
@@ -20,6 +22,11 @@ public class SettingsActivity extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings);
+		getVersionInfo();
+		getUsageInfo();
+	}
+
+	private void getVersionInfo() {
 		TextView versionField = (TextView) findViewById(R.id.versionField);
 		try {
 				versionField.setText("Version: " +
@@ -28,6 +35,11 @@ public class SettingsActivity extends AikumaActivity {
 		} catch (android.content.pm.PackageManager.NameNotFoundException e) {
 				//Just leave the textview empty.
 		}
+	}
+
+	private void getUsageInfo() {
+		TextView usageField = (TextView) findViewById(R.id.usageField);
+		usageField.setText("used: " + UsageUtils.secondsUsed(16000, 16));
 	}
 
 	public void onDefaultLanguagesButton(View view) {
