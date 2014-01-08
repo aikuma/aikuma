@@ -36,7 +36,6 @@ import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
-import org.lp20.aikuma.util.FileIO;
 
 /**
  * The activity that allows audio to be recorded
@@ -56,7 +55,7 @@ public class RecordActivity extends AikumaActivity {
 		//discard new data on an activity transition via the menu.
 		safeActivityTransition = true;
 		try {
-			recorder = new Recorder(new File(FileIO.getNoSyncPath(),
+			recorder = new Recorder(new File(Recording.getNoSyncRecordingsPath(),
 					uuid.toString() + ".wav"), sampleRate);
 		} catch (MicException e) {
 			this.finish();

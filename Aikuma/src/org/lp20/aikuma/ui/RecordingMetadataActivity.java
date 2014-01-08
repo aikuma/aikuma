@@ -39,7 +39,7 @@ import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Language;
-import org.lp20.aikuma.util.FileIO;
+//import org.lp20.aikuma.util.FileIO;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -54,7 +54,6 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i("issue160", "in RecordingMetadataActivity.onCreate() 1");
 		setContentView(R.layout.recording_metadata);
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
@@ -64,7 +63,6 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 				(String) intent.getExtras().get("uuidString"));
 		sampleRate = (Long) intent.getExtras().get("sampleRate");
 		durationMsec = (Integer) intent.getExtras().get("durationMsec");
-		Log.i("issue160", "in RecordingMetadataActivity.onCreate() 2");
 		String originalUUIDString = (String) intent.getExtras().get("originalUUIDString");
 		if (originalUUIDString != null) {
 			originalUUID = UUID.fromString(originalUUIDString);
@@ -80,7 +78,6 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 
 		nameField = (EditText) findViewById(R.id.recordingDescription);
 		nameField.addTextChangedListener(emptyTextWatcher);
-		Log.i("issue160", "in RecordingMetadataActivity.onCreate() 3");
 	}
 
 	private void setUpPlayer(UUID uuid, long sampleRate) {
@@ -91,7 +88,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 			//		new File(FileIO.getNoSyncPath(), uuid.toString() + ".wav"),
 			//		sampleRate, true));
 			listenFragment.setPlayer(new SimplePlayer(
-					new File(FileIO.getNoSyncPath(), uuid.toString() + ".wav"),
+					new File(Recording.getNoSyncRecordingsPath(), uuid.toString() + ".wav"),
 					sampleRate, true));
 		} catch (IOException e) {
 			//The SimplePlayer cannot be constructed, so let's end the
@@ -104,12 +101,10 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.i("issue160", "in RecordingMetadataActivity.onResume() 1");
 		ArrayAdapter<Language> adapter =
 				new RecordingLanguagesArrayAdapter(this, languages,
 						selectedLanguages);
 		setListAdapter(adapter);
-		Log.i("issue160", "in RecordingMetadataActivity.onResume() 2");
 	}
 
 	public void onAddUserButtonPressed(View view) {
@@ -146,8 +141,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 							recording.write();
 							//Move the wave file from the nosync directory to the
 							//synced directory
-							File wavFile = new File(FileIO.getNoSyncPath(), uuid + ".wav");
-							FileUtils.moveFileToDirectory(wavFile, Recording.getRecordingsPath(), false);
+							Recording.enableSync(uuid);
 						} catch (IOException e) {
 							Toast.makeText(RecordingMetadataActivity.this,
 								"Failed to write the Recording metadata.",

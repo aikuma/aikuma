@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
@@ -559,6 +560,22 @@ public class Recording {
 		return path;
 	}
 
+	/**
+	 * Get the applications recording directory that isn't synced.
+	 *
+	 * @return	A File representing the path of the recordings directory in the
+	 * no-sync Aikuma directory.
+	 */
+	public static File getNoSyncRecordingsPath() {
+		File path = new File(FileIO.getNoSyncPath(), "recordings");
+		path.mkdirs();
+		return path;
+	}
+
+	public static void enableSync(UUID uuid) throws IOException {
+		File wavFile = new File(getNoSyncRecordingsPath(), uuid + ".wav");
+		FileUtils.moveFileToDirectory(wavFile, getRecordingsPath(), false);
+	}
 
 	/**
 	 * The recording's UUID.

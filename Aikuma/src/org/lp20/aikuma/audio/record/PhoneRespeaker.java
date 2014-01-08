@@ -22,7 +22,6 @@ import org.lp20.aikuma.audio.record.analyzers.Analyzer;
 import org.lp20.aikuma.audio.record.analyzers.ThresholdSpeechAnalyzer;
 import static org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.model.Recording;
-import org.lp20.aikuma.util.FileIO;
 
 /**
  * Facilitates respeaking of a recording by playing the recording, then
@@ -56,7 +55,7 @@ public class PhoneRespeaker implements
 				microphone.getChannelConfiguration(),
 				microphone.getAudioFormat()
 		);
-		file.prepare(new File(FileIO.getNoSyncPath(),
+		file.prepare(new File(Recording.getNoSyncRecordingsPath(),
 				respeakingUUID + ".wav").getPath());
 	}
 
