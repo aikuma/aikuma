@@ -243,6 +243,26 @@ public final class FileIO {
 	}
 
 	/**
+	 * Writes the default sensitivity to file.
+	 *
+	 * @param	sensitivity	The default sensitivity for phone respeaking.
+	 */
+	public static void writeDefaultSensitivity(int defaultSensitivity) throws IOException {
+		write(new File(getNoSyncPath(), "sensitivity-settings.txt"),
+				Integer.valueOf(defaultSensitivity).toString());
+	}
+
+	/**
+	 * Reads the default sensitivity from file.
+	 *
+	 * @return	The default sensitivity for phone respeaking.
+	 */
+	public static int readDefaultSensitivity() throws IOException {
+		return Integer.parseInt(read(new File(getNoSyncPath(),
+				"sensitivity-settings.txt")));
+	}
+
+	/**
 	 * Reads the information about the server into a Server object, using the
 	 * default location of server.json in the app's root directory.
 	 */
