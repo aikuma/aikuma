@@ -47,11 +47,16 @@ parser = argparse.ArgumentParser(
 parser.add_argument("aikuma_dir", metavar="DIR", type=str,
         help="The Aikuma directory")
 parser.add_argument("-s", "--speaker", metavar="USER", type=str,
-        help="A user whose content is to be deleted")
+        help="A speaker whose content, images and metadata are to be deleted")
+parser.add_argument("-js", "--just_speaker", metavar="USER", type=str,
+        help="A user whose image and metadata are to be deleted")
 parser.add_argument("-r", "--recording", metavar="REC", type=str,
         help="A recording that is to be deleted")
 
 args = parser.parse_args()
 
-delete_recording(args.aikuma_dir, args.recording)
-delete_speaker(args.aikuma_dir, args.speaker, True)
+#delete_recording(args.aikuma_dir, args.recording)
+#delete_speaker(args.aikuma_dir, args.speaker, True)
+#delete_speaker(args.aikuma_dir, args.just_speaker, False)
+
+print args
