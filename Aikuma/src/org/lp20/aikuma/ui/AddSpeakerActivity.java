@@ -44,6 +44,7 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
 		safeActivityTransition = true;
+		safeActivityTransitionMessage = "This will discard the new speaker data.";
 		languages = FileIO.readDefaultLanguages();
 		uuid = UUID.randomUUID();
 		ImageButton okButton = (ImageButton) findViewById(R.id.okButton);

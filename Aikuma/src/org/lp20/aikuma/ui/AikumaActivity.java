@@ -36,7 +36,8 @@ public abstract class AikumaActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (safeActivityTransition) {
-			return menuBehaviour.safeOnOptionsItemSelected(item);
+			return menuBehaviour.safeOnOptionsItemSelected(item,
+					safeActivityTransitionMessage);
 		} else {
 			return menuBehaviour.onOptionsItemSelected(item);
 		}
@@ -49,7 +50,7 @@ public abstract class AikumaActivity extends Activity {
 	 */
 	public void onBackPressed() {
 		if (safeActivityTransition) {
-			menuBehaviour.safeGoBack();
+			menuBehaviour.safeGoBack(safeActivityTransitionMessage);
 		} else {
 			this.finish();
 		}
@@ -57,4 +58,5 @@ public abstract class AikumaActivity extends Activity {
 
 	private MenuBehaviour menuBehaviour;
 	protected boolean safeActivityTransition;
+	protected String safeActivityTransitionMessage;
 }
