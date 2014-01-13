@@ -28,7 +28,7 @@ public class SpeakersActivity extends AikumaListActivity {
 		setContentView(R.layout.speakers);
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
-		safeActivityTransition = true;
+		safeActivityTransition = false;
 	}
 
 	@Override
