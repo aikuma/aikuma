@@ -28,7 +28,7 @@ public class SpeakersActivity extends AikumaListActivity {
 		setContentView(R.layout.speakers);
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
-		safeActivityTransition = false;
+		safeActivityTransition = true;
 	}
 
 	@Override
@@ -51,6 +51,15 @@ public class SpeakersActivity extends AikumaListActivity {
 		Intent intent = new Intent();
 		intent.putExtra("speaker", (Speaker)l.getItemAtPosition(position));
 		setResult(RESULT_OK, intent);
+		this.finish();
+	}
+
+	/**
+	 * Returns to the RecordingMetadataActivity, so there is no need to prompt
+	 * the user that they may be discarding data.
+	 */
+	@Override
+	public void onBackPressed() {
 		this.finish();
 	}
 
