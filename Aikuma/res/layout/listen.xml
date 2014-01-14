@@ -6,7 +6,7 @@
 	>
 	<LinearLayout
 			android:id="@+id/recordingInfo"
-			android:orientation="horizontal"
+			android:orientation="vertical"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			>
@@ -18,14 +18,35 @@
 				android:textSize="20sp"
 				android:padding="5dp"
 		/>
-		<TextView
+		<LinearLayout
+				android:id="@+id/recordingInfo"
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:text=""
-				android:id="@+id/recordingDateDuration"
-				android:textSize="20sp"
-				android:padding="5dp"
-		/>
+				>
+			<TextView
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text=""
+					android:id="@+id/recordingDateDuration"
+					android:textSize="20sp"
+					android:padding="5dp"
+			/>
+			<TextView
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text=""
+					android:id="@+id/recordingLangCode"
+					android:textSize="20sp"
+					android:padding="5dp"
+			/>
+			<LinearLayout
+				android:id="@+id/originalImages"
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+			/>
+		</LinearLayout>
 	</LinearLayout>
 	<fragment
 			android:name="org.lp20.aikuma.ui.ListenFragment"

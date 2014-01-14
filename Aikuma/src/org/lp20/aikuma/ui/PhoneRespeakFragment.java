@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Audio;
+import org.lp20.aikuma.audio.Beeper;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.record.PhoneRespeaker;
 import org.lp20.aikuma.audio.SimplePlayer;
@@ -74,9 +75,13 @@ public class PhoneRespeakFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
+		Log.i("yo", "1");
 		haltRespeaking();
+		Log.i("yo", "2");
 		this.proximityDetector.stop();
+		Log.i("yo", "3");
 		Audio.reset(getActivity());
+		Log.i("yo", "4");
 	}
 
 	@Override
@@ -107,16 +112,19 @@ public class PhoneRespeakFragment extends Fragment {
 	@Override
 	public void onStop() {
 		super.onStop();
+		Log.i("yo", "onstop");
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		Log.i("yo", "onDestroy 1");
 		if (respeaker != null) {
 			//If you hit the stop button really quickly, the player may not
 			//have been initialized fully.
 			respeaker.release();
 		}
+		Log.i("yo", "onDestroy 2");
 	}
 
 	private void stopThread(Thread thread) {
@@ -171,8 +179,10 @@ public class PhoneRespeakFragment extends Fragment {
 	private Player.OnCompletionListener onCompletionListener =
 			new Player.OnCompletionListener() {
 				public void onCompletion(Player _player) {
+					Log.e("yo", "yo", new Throwable());
 					stopThread(seekBarThread);
 					seekBar.setProgress(seekBar.getMax());
+					Beeper.longBeep(getActivity(), null);
 				}
 			};
 

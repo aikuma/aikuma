@@ -12,6 +12,8 @@ import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -37,6 +39,8 @@ import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Language;
+//import org.lp20.aikuma.util.FileIO;
+import org.apache.commons.io.FileUtils;
 
 /**
  * The activity that allows audio to be recorded
@@ -69,21 +73,27 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		speakersUUIDs = new ArrayList<UUID>();
 		languages = new ArrayList<Language>();
 		selectedLanguages = new ArrayList<Language>();
-		ImageButton okButton = (ImageButton) findViewById(R.id.okButton);
-		okButton.setImageResource(R.drawable.ok_disabled_48);
-		okButton.setEnabled(false);
+		okButton = (ImageButton) findViewById(R.id.okButton);
+		updateOkButton();
+
+		nameField = (EditText) findViewById(R.id.recordingDescription);
+		nameField.addTextChangedListener(emptyTextWatcher);
 	}
 
 	private void setUpPlayer(UUID uuid, long sampleRate) {
 		listenFragment = (ListenFragment)
 				getFragmentManager().findFragmentById(R.id.ListenFragment);
 		try {
+			//listenFragment.setPlayer(new SimplePlayer(
+			//		new File(FileIO.getNoSyncPath(), uuid.toString() + ".wav"),
+			//		sampleRate, true));
 			listenFragment.setPlayer(new SimplePlayer(
-					new File(Recording.getRecordingsPath(), uuid.toString() + ".wav"),
+					new File(Recording.getNoSyncRecordingsPath(), uuid.toString() + ".wav"),
 					sampleRate, true));
 		} catch (IOException e) {
 			//The SimplePlayer cannot be constructed, so let's end the
 			//activity.
+			Toast.makeText(this, "There has been an error in the creation of the audio file which prevents it from being read.", Toast.LENGTH_LONG).show();
 			RecordingMetadataActivity.this.finish();
 		}
 	}
@@ -95,28 +105,6 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 				new RecordingLanguagesArrayAdapter(this, languages,
 						selectedLanguages);
 		setListAdapter(adapter);
-	}
-
-	@Override
-	public void onBackPressed() {
-		new AlertDialog.Builder(this)
-				.setMessage(R.string.discard_dialog)
-				.setPositiveButton(R.string.discard, new
-				DialogInterface.OnClickListener() {
-				
-					@Override
-					public void onClick(DialogInterface dialog,
-							int which) {
-						Intent intent =
-							new Intent(RecordingMetadataActivity.this,
-										MainActivity.class);
-						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						RecordingMetadataActivity.this.finish();
-						startActivity(intent);
-					}
-				})
-				.setNegativeButton(R.string.cancel, null)
-				.show();
 	}
 
 	public void onAddUserButtonPressed(View view) {
@@ -139,7 +127,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 										MainActivity.class);
 						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 						EditText descriptionField = (EditText)
-								findViewById(R.id.description);
+								findViewById(R.id.recordingDescription);
 						String description =
 								descriptionField.getText().toString();
 						Date date = new Date();
@@ -151,6 +139,9 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 								sampleRate, durationMsec);
 						try {
 							recording.write();
+							//Move the wave file from the nosync directory to the
+							//synced directory
+							Recording.enableSync(uuid);
 						} catch (IOException e) {
 							Toast.makeText(RecordingMetadataActivity.this,
 								"Failed to write the Recording metadata.",
@@ -193,7 +184,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 							languages.add(language);
 						}
 					}
-					selectedLanguages = new ArrayList<Language>(languages);
+					selectedLanguages = new ArrayList<Language>();
 					ImageView speakerImage = new ImageView(this);
 					speakerImage.setAdjustViewBounds(true);
 					speakerImage.setMaxHeight(60);
@@ -205,10 +196,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 						// If the image can't be loaded, we just leave it at that.
 					}
 					userImages.addView(speakerImage);
-					ImageButton okButton = (ImageButton)
-							findViewById(R.id.okButton);
-					okButton.setImageResource(R.drawable.ok_48);
-					okButton.setEnabled(true);
+					recordingHasSpeaker = true;
+					updateOkButton();
 				}
 			}
 		}
@@ -219,6 +208,38 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 
 	private Recording getRecording() {
 		return this.recording;
+	}
+
+	private TextWatcher emptyTextWatcher = new TextWatcher() {
+		public void afterTextChanged(Editable s) {
+		}
+		public void beforeTextChanged(CharSequence s,
+				int start, int count, int after) {
+		}
+		public void onTextChanged(CharSequence s,
+				int start, int before, int count) {
+			if (s.length() == 0) {
+				recordingHasName = false;
+				updateOkButton();
+			} else {
+				recordingHasName = true;
+				updateOkButton();
+			}
+		}
+	};
+
+	/**
+	 * Disables or enables the OK button depending on whether the recording now
+	 * has a speaker and name.
+	 */
+	private void updateOkButton() {
+		if (recordingHasSpeaker && recordingHasName) {
+			okButton.setImageResource(R.drawable.ok_48);
+			okButton.setEnabled(true);
+		} else {
+			okButton.setImageResource(R.drawable.ok_disabled_48);
+			okButton.setEnabled(false);
+		}
 	}
 
 	static final int ADD_SPEAKER = 0;
@@ -232,5 +253,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	private int durationMsec;
 	private ListenFragment listenFragment;
 	private UUID originalUUID;
-	private MenuBehaviour menuBehaviour;
+	private EditText nameField;
+	private ImageButton okButton;
+	private boolean recordingHasSpeaker;
+	private boolean recordingHasName;
 }

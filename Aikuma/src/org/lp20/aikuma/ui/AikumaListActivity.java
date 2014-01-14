@@ -36,12 +36,27 @@ public abstract class AikumaListActivity extends ListActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (safeActivityTransition == true) {
-			return menuBehaviour.safeOnOptionsItemSelected(item);
+			return menuBehaviour.safeOnOptionsItemSelected(item,
+					safeActivityTransitionMessage);
 		} else {
 			return menuBehaviour.onOptionsItemSelected(item);
 		}
 	}
 
+	/**
+	 * Provides default back functionality, unless the activity requires safe
+	 * transitions, in which case it first notifies the user that they'll lose
+	 * data.
+	 */
+	public void onBackPressed() {
+		if (safeActivityTransition) {
+			menuBehaviour.safeGoBack(safeActivityTransitionMessage);
+		} else {
+			this.finish();
+		}
+	}
+
 	private MenuBehaviour menuBehaviour;
 	protected boolean safeActivityTransition;
+	protected String safeActivityTransitionMessage;
 }

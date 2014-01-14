@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Contains utilities to deal with images in the app.
@@ -33,6 +34,17 @@ public final class ImageUtils {
 	 */
 	private static File getImagesPath() {
 		File path = new File(FileIO.getAppRootPath(), "images");
+		path.mkdirs();
+		return path;
+	}
+
+	/**
+	 * Returns the directory for images that are not to be synced.
+	 *
+	 * @return	A File representing the no-sync images directory.
+	 */
+	private static File getNoSyncImagesPath() {
+		File path = new File(FileIO.getNoSyncPath(), "images");
 		path.mkdirs();
 		return path;
 	}
@@ -97,6 +109,14 @@ public final class ImageUtils {
 	}
 
 	/**
+	 * Returns the Image associated with a given speaker UUID, looking in the
+	 * no-sync directory.
+	 */
+	public static File getNoSyncImageFile(UUID uuid) {
+		return new File(getNoSyncImagesPath(), uuid.toString() + ".jpg");
+	}
+
+	/**
 	 * Returns the small Image associated with a given speaker UUID.
 	 *
 	 * @param	uuid	The UUID of the speaker.
@@ -104,6 +124,27 @@ public final class ImageUtils {
 	 */
 	public static File getSmallImageFile(UUID uuid) {
 		return new File(getImagesPath(), uuid.toString() + ".small.jpg");
+	}
+
+	/**
+	 * Moves the images of the target user to the synced image directory.
+	 *
+	 * @param	uuid	The UUID of the user whose images are to be allowed to
+	 * sync.
+	 */
+	public static void enableImageSync(UUID uuid) throws IOException {
+		FileUtils.moveFileToDirectory(getNoSyncSmallImageFile(uuid),
+				ImageUtils.getImagesPath(), false);
+		FileUtils.moveFileToDirectory(getNoSyncImageFile(uuid),
+				ImageUtils.getImagesPath(), false);
+	}
+
+	/**
+	 * Returns the small Image associated with a given speaker UUID, looking in
+	 * the no-sync directory.
+	 */
+	public static File getNoSyncSmallImageFile(UUID uuid) {
+		return new File(getNoSyncImagesPath(), uuid.toString() + ".small.jpg");
 	}
 
 	/**
@@ -131,6 +172,19 @@ public final class ImageUtils {
 	}
 
 	/**
+	 * Returns a small Bitmap associated with a given speaker UUID, looking on
+	 * the no-sync directory.
+	 *
+	 * @param	uuid	The UUID of the Speaker whose image it is.
+	 * @throws	IOException	if an I/O related exception is thrown when
+	 * accessing the file.
+	 */
+	public static Bitmap getNoSyncSmallImage(UUID uuid) throws IOException {
+		File file = getNoSyncSmallImageFile(uuid);
+		return retrieveFromFile(file);
+	}
+
+	/**
 	 * Creates a small version of a speaker image for use in Aikuma.
 	 *
 	 * @param	uuid	The uuid of the speaker
@@ -138,7 +192,7 @@ public final class ImageUtils {
 	 * accessing the file
 	 */
 	public static void createSmallSpeakerImage(UUID uuid) throws IOException {
-		String imageFilePath = getImageFile(uuid).getPath();
+		String imageFilePath = getNoSyncImageFile(uuid).getPath();
 		Bitmap image = BitmapFactory.decodeFile(imageFilePath);
 		if (image == null) {
 			throw new IOException("The image could not be decoded.");
@@ -175,7 +229,7 @@ public final class ImageUtils {
 					small.getWidth(), small.getHeight(), matrix, true);
 		}
 		FileOutputStream out = new FileOutputStream(
-				new File(getImagesPath(), uuid.toString() + ".small.jpg"));
+				new File(getNoSyncImagesPath(), uuid.toString() + ".small.jpg"));
 		small.compress(Bitmap.CompressFormat.JPEG, 100, out);
 	}
 

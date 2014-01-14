@@ -23,7 +23,6 @@ import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.recognizers.AverageRecognizer;
 import org.lp20.aikuma.audio.Player.OnCompletionListener;
 import org.lp20.aikuma.model.Recording;
-import org.lp20.aikuma.util.FileIO;
 
 /**
  * Facilitates respeaking of an original recording by offering methods to start
@@ -37,7 +36,7 @@ public class ThumbRespeaker {
 
 	public ThumbRespeaker(Recording original, UUID respeakingUUID)
 			throws MicException, IOException {
-		recorder = new Recorder(new File(Recording.getRecordingsPath(),
+		recorder = new Recorder(new File(Recording.getNoSyncRecordingsPath(),
 				respeakingUUID + ".wav"), original.getSampleRate());
 		player = new SimplePlayer(original, true);
 		mapper = new Mapper(respeakingUUID);

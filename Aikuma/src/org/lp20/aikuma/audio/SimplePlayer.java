@@ -68,7 +68,7 @@ public class SimplePlayer extends Player implements Sampler {
 	/** Pauses the playback. */
 	public void pause() {
 		try {
-			mediaPlayer.pause();
+			//mediaPlayer.pause();
 		} catch (IllegalStateException e) {
 			//If it's in an illegal state, then it wouldn't be playing anyway,
 			//so no issue.

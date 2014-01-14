@@ -46,7 +46,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		for (UUID uuid : recording.getSpeakersUUIDs()) {
 			recordingView.addView(makeSpeakerImageView(uuid));
 		}
-		recordingNameView.setText(recording.getName());
+		recordingNameView.setText(recording.getNameAndLang());
 		Integer duration = recording.getDurationMsec() / 1000;
 		if (recording.getDurationMsec() == -1) {
 			recordingDateDurationView.setText(

@@ -74,17 +74,25 @@ public class Client {
 		if (!apacheClient.isConnected()) {
 			try {
 				apacheClient.connect(serverURI);
+				Log.i("sync", "Connected to: " + serverURI);
 			} catch (SocketException e) {
+				Log.e("sync", "apacheClient.connect() threw a SocketException", e);
 				return false;
 			} catch (IOException e) {
+				Log.e("sync", "apacheClient.connect() threw an IOException", e);
 				return false;
 			}
 		}
 		if (!loggedIn) {
 			try {
 				result = apacheClient.login(username, password);
+				if (!result) {
+					Log.i("sync", "apacheClient.login returned false: " +
+						username + " " + password);
+				}
 				loggedIn = result;
 			} catch (IOException e) {
+				Log.e("sync", "apacheClient.login() threw an IOException", e);
 				return false;
 			}
 		}
@@ -93,9 +101,11 @@ public class Client {
 			// documentation ever says that.
 			result = apacheClient.setFileType(FTP.BINARY_FILE_TYPE);
 			if (!result) {
+				Log.i("sync", "apacheClient.setFileType returned false");
 				return false;
 			}
 		} catch (IOException e) {
+			Log.e("sync", "apacheClient.setFileType threw an IOException", e);
 			return false;
 		}
 		// Change to appropriate working directory
@@ -104,10 +114,14 @@ public class Client {
 				String serverBaseDir = findServerBaseDir();
 				if (serverBaseDir == null) {
 					logout();
+					Log.i("sync", "serverbaseDir is null");
 					return false;
 				} else {
 					setServerBaseDir(findServerBaseDir());
 					result = cdServerBaseDir();
+					if (!result) {
+						Log.i("sync", "cdServerBaseDir returned false");
+					}
 				}
 				//result = true;
 			//} catch (IOException e ) {

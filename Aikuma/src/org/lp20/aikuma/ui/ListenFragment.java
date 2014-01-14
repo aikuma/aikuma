@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -24,7 +26,6 @@ import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.model.Segments;
 import org.lp20.aikuma.model.Segments.Segment;
-import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.R;
 
 /**
@@ -71,25 +72,11 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	public void onPause() {
 		super.onPause();
 		pause();
-		this.proximityDetector.stop();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		this.proximityDetector = new ProximityDetector(getActivity()) {
-			public void near(float distance) {
-				if (!player.isPlaying()) {
-					play();
-				}
-			}
-			public void far(float distance) {
-				if (player.isPlaying()) {
-					pause();
-				}
-			}
-		};
-		this.proximityDetector.start();
 	}
 
 	@Override
@@ -192,6 +179,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 					seekBar.setProgress(seekBar.getMax());
 				}
 			};
+
 	private Player player;
 	private ImageButton playPauseButton;
 	private InterleavedSeekBar seekBar;
@@ -199,5 +187,4 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	private Recording recording;
 	private UUID uuid;
 	private int sampleRate;
-	private ProximityDetector proximityDetector;
 }

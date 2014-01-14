@@ -34,8 +34,8 @@ import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Recording;
-import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.ui.sensors.ProximityDetector;
 
 /**
  * The activity that allows audio to be recorded
@@ -55,7 +55,7 @@ public class RecordActivity extends AikumaActivity {
 		//discard new data on an activity transition via the menu.
 		safeActivityTransition = true;
 		try {
-			recorder = new Recorder(new File(Recording.getRecordingsPath(),
+			recorder = new Recorder(new File(Recording.getNoSyncRecordingsPath(),
 					uuid.toString() + ".wav"), sampleRate);
 		} catch (MicException e) {
 			this.finish();
@@ -115,14 +115,14 @@ public class RecordActivity extends AikumaActivity {
 				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
 				params.screenBrightness = 0;
 				getWindow().setAttributes(params);
-				record();
+				//record();
 			}
 			public void far(float distance) {
 				WindowManager.LayoutParams params = getWindow().getAttributes();
 				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
 				params.screenBrightness = 1;
 				getWindow().setAttributes(params);
-				pause();
+				//pause();
 			}
 		};
 		this.proximityDetector.start();

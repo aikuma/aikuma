@@ -65,6 +65,14 @@ public class MainActivity extends ListActivity {
 		return menuBehaviour.onOptionsItemSelected(item);
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		List<Recording> recordings = Recording.readAll();
+		ArrayAdapter adapter = new RecordingArrayAdapter(this, recordings);
+		setListAdapter(adapter);
+	}
+
 	/**
 	 * When a recording item in the list is clicked, start the ListenActivity
 	 * and send the relevant UUID through.

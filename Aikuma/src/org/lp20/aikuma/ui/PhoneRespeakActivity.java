@@ -21,6 +21,7 @@ import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.recognizers.AverageRecognizer;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.util.FileIO;
 
 /**
  * @author	Oliver Adams	<oliver.adams@gmail.com>
@@ -72,6 +73,15 @@ public class PhoneRespeakActivity extends AikumaActivity {
 	public void onResume() {
 		super.onResume();
 		sensitivitySlider = (SeekBar) findViewById(R.id.SensitivitySlider);
+
+		sensitivitySlider.setMax(SettingsActivity.DEFAULT_DEFAULT_SENSITIVITY*2);
+		//extractBackgroundNoiseThreshold();
+		try {
+			setSensitivity(FileIO.readDefaultSensitivity());
+		} catch (IOException e) {
+			setSensitivity(SettingsActivity.DEFAULT_DEFAULT_SENSITIVITY);
+		}
+
 		sensitivitySlider.setOnSeekBarChangeListener(
 			new OnSeekBarChangeListener() {
 				public void onProgressChanged(SeekBar sensitivitySlider,
@@ -86,7 +96,6 @@ public class PhoneRespeakActivity extends AikumaActivity {
 				public void onStopTrackingTouch(SeekBar seekBar) {}
 			}
 		);
-		extractBackgroundNoiseThreshold();
 	}	
 
 	public void onSaveRespeakingButton(View view) {
@@ -119,7 +128,6 @@ public class PhoneRespeakActivity extends AikumaActivity {
 
 	public void setSensitivity(int level) {
 		this.respeaker.setSensitivity(level);
-		sensitivitySlider.setMax(level*2);
 		sensitivitySlider.setProgress(level);
 	}
 

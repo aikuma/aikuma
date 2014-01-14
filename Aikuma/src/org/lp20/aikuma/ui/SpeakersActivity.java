@@ -54,5 +54,14 @@ public class SpeakersActivity extends AikumaListActivity {
 		this.finish();
 	}
 
+	/**
+	 * Returns to the RecordingMetadataActivity, so there is no need to prompt
+	 * the user that they may be discarding data.
+	 */
+	@Override
+	public void onBackPressed() {
+		this.finish();
+	}
+
 	private List<Speaker> speakers;
 }

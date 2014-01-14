@@ -13,6 +13,13 @@
 		android:text=""
 		android:textSize="15sp"
 	/>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/usageField"
+		android:text=""
+		android:textSize="15sp"
+	/>
 	<Button
 		android:id="@+id/goToDefaultLanguages"
 		android:layout_width="match_parent"
@@ -26,5 +33,19 @@
 		android:layout_height="wrap_content"
 		android:text="Sync Settings"
 		android:onClick="onSyncSettingsButton"
+	/>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/usageField"
+		android:text="Default Sensitivity:"
+		android:textSize="15sp"
+	/>
+	<SeekBar
+		style="@android:style/Widget.ProgressBar.Horizontal"
+		android:id="@+id/SensitivitySlider"
+		android:layout_width="match_parent"
+		android:layout_height="32dp"
+		android:maxHeight="10dp"
 	/>
 </LinearLayout>

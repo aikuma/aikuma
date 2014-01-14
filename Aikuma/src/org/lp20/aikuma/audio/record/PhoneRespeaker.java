@@ -55,7 +55,7 @@ public class PhoneRespeaker implements
 				microphone.getChannelConfiguration(),
 				microphone.getAudioFormat()
 		);
-		file.prepare(new File(Recording.getRecordingsPath(),
+		file.prepare(new File(Recording.getNoSyncRecordingsPath(),
 				respeakingUUID + ".wav").getPath());
 	}
 

@@ -44,6 +44,7 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
 		safeActivityTransition = true;
+		safeActivityTransitionMessage = "This will discard the new speaker data.";
 		languages = FileIO.readDefaultLanguages();
 		uuid = UUID.randomUUID();
 		ImageButton okButton = (ImageButton) findViewById(R.id.okButton);
@@ -91,7 +92,7 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		Bitmap image;
 		try {
 			ImageUtils.createSmallSpeakerImage(this.uuid);
-			image = ImageUtils.getSmallImage(this.uuid);
+			image = ImageUtils.getNoSyncSmallImage(this.uuid);
 		} catch (IOException e) {
 			image = null;
 		}
@@ -114,6 +115,7 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		Speaker newSpeaker = new Speaker(uuid, name, languages);
 		try {
 			newSpeaker.write();
+			ImageUtils.enableImageSync(uuid);
 		} catch (IOException e) {
 			Toast.makeText(this, "Failed to write the Speaker to file",
 					Toast.LENGTH_LONG).show();
@@ -129,7 +131,7 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
 		try {
-			File imageFile = ImageUtils.getImageFile(this.uuid);
+			File imageFile = ImageUtils.getNoSyncImageFile(this.uuid);
 			takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
 					Uri.fromFile(imageFile));
 		} catch (Exception e) {

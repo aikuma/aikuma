@@ -13,7 +13,10 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,11 +28,13 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.util.ImageUtils;
 
 /**
@@ -79,15 +84,19 @@ public class ListenActivity extends AikumaActivity {
 		setUpRecordingName();
 		LinearLayout recordingInfoView = (LinearLayout)
 				findViewById(R.id.recordingInfo);
+		LinearLayout originalImages = (LinearLayout)
+				findViewById(R.id.originalImages);
 		for (UUID uuid : recording.getSpeakersUUIDs()) {
-			recordingInfoView.addView(makeSpeakerImageView(uuid));
+			originalImages.addView(makeSpeakerImageView(uuid));
 		}
 	}
 
 	private void setUpRecordingName() {
 		TextView nameView = (TextView) findViewById(R.id.recordingName);
-		TextView dateDurationView = (TextView) findViewById(R.id.recordingDateDuration);
-		nameView.setText(recording.getName());
+		TextView dateDurationView = 
+				(TextView) findViewById(R.id.recordingDateDuration);
+		TextView langView = (TextView) findViewById(R.id.recordingLangCode);
+		nameView.setText(recording.getNameAndLang());
 		Integer duration = recording.getDurationMsec() / 1000;
 		if (recording.getDurationMsec() == -1) {
 			dateDurationView.setText(
@@ -187,8 +196,15 @@ public class ListenActivity extends AikumaActivity {
 			}
 			respeakingImageContainer.addView(respeakingImage);
 			TextView respeakingLang = new TextView(this);
-			respeakingLang.setText(respeaking.getLanguages().get(0).getCode());
+			respeakingLang.setText(respeaking.getFirstLangCode());
 			respeakingLang.setGravity(Gravity.CENTER_HORIZONTAL);
+			/*
+			List<Language> langs = respeaking.getLanguages();
+			if (langs.size() > 0) {
+				respeakingLang.setText(respeaking.getLanguages().get(0).getCode());
+				respeakingLang.setGravity(Gravity.CENTER_HORIZONTAL);
+			}
+			*/
 			respeakingImageContainer.addView(respeakingLang);
 			respeakingImages.addView(respeakingImageContainer);
 		}
@@ -226,17 +242,35 @@ public class ListenActivity extends AikumaActivity {
 
 	@Override
 	public void onResume() {
-		super.onStop();
+		super.onResume();
+		this.proximityDetector = new ProximityDetector(this) {
+			public void near(float distance) {
+				WindowManager.LayoutParams params = getWindow().getAttributes();
+				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
+				params.screenBrightness = 0;
+				getWindow().setAttributes(params);
+				//record();
+			}
+			public void far(float distance) {
+				WindowManager.LayoutParams params = getWindow().getAttributes();
+				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
+				params.screenBrightness = 1;
+				getWindow().setAttributes(params);
+				//pause();
+			}
+		};
+		this.proximityDetector.start();
 	}
 
 	@Override
 	public void onRestart() {
-		super.onStop();
+		super.onRestart();
 	}
 
 	@Override
 	public void onPause() {
-		super.onStop();
+		super.onPause();
+		this.proximityDetector.stop();
 	}
 
 	public void onPhoneRespeakingToggle(View view) {
@@ -257,10 +291,20 @@ public class ListenActivity extends AikumaActivity {
 		startActivity(intent);
 	}
 
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+		if (proximityDetector.isNear()) {
+			return false;
+		} else {
+			return super.dispatchTouchEvent(event);
+		}
+	}
+
 	private boolean phoneRespeaking = false;
 	private Player player;
 	private ListenFragment fragment;
 	private Recording recording;
 	private MenuBehaviour menuBehaviour;
 	private SimpleDateFormat simpleDateFormat;
+	private ProximityDetector proximityDetector;
 }

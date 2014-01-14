@@ -66,11 +66,12 @@ public class MenuBehaviour {
 		}
 	}
 
-	public boolean safeOnOptionsItemSelected(MenuItem item) {
+	public boolean safeOnOptionsItemSelected(MenuItem item,
+			String safeActivityTransitionMessage) {
 		Intent intent;
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				safeGoToMainActivity();
+				safeGoToMainActivity(safeActivityTransitionMessage);
 				return true;
 			case R.id.record:
 				intent = new Intent(activity, RecordActivity.class);
@@ -90,7 +91,7 @@ public class MenuBehaviour {
 	}
 
 	private void openHelpInBrowser() {
-		Uri uri = Uri.parse("http://lp20.org/aikuma/help.html");
+		Uri uri = Uri.parse("http://lp20.org/aikuma/howto.html");
 		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 		activity.startActivity(intent);
 	}
@@ -109,9 +110,13 @@ public class MenuBehaviour {
 	 * with the supplied text for the message and the positive and negative
 	 * buttons.
 	 */
-	public void safeGoToMainActivity() {
+	public void safeGoToMainActivity(String safeActivityTransitionMessage) {
+		String message = DEFAULT_MESSAGE;
+		if (safeActivityTransitionMessage != null) {
+			message = safeActivityTransitionMessage;
+		}
 		new AlertDialog.Builder(activity)
-				.setMessage("This will discard the new data. Are you sure?")
+				.setMessage(message)
 				.setPositiveButton("Discard",
 						new DialogInterface.OnClickListener() {
 							@Override
@@ -127,5 +132,31 @@ public class MenuBehaviour {
 				.show();
 	}
 
+	/**
+	 * Allows the activity to use the back button to return to the previous
+	 * activity in the stack, while ensuring the user is aware they'll lose
+	 * data.
+	 */
+	public void safeGoBack(String safeActivityTransitionMessage) {
+		String message = DEFAULT_MESSAGE;
+		if (safeActivityTransitionMessage != null) {
+			message = safeActivityTransitionMessage;
+		}
+		new AlertDialog.Builder(activity)
+				.setMessage(message)
+				.setPositiveButton("Discard",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								activity.finish();
+							}
+						})
+				.setNegativeButton("Cancel", null)
+				.show();
+	}
+
 	private Activity activity;
+	private String DEFAULT_MESSAGE = "This will discard the new data. Are you sure?";
+
 }

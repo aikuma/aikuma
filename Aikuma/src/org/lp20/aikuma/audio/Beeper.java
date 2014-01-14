@@ -45,9 +45,14 @@ public class Beeper {
 	public static void beep(Context context, OnCompletionListener listener) {
 		start(context, listener, R.raw.beep);
 	}
+
 	
 	public static void beepBeep(Context context, OnCompletionListener listener) {
 		start(context, listener, R.raw.beeps2);
+	}
+
+	public static void longBeep(Context context, OnCompletionListener listener) {
+		start(context, listener, R.raw.longbeep);
 	}
 	
 	private static void start(Context context, final OnCompletionListener listener, int resource) {

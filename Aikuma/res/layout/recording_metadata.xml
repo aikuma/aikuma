@@ -37,7 +37,7 @@
 			/>
 		</LinearLayout>
 		<EditText
-			android:id="@+id/description"
+			android:id="@+id/recordingDescription"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:hint="@string/recording_description"
