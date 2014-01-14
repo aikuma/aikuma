@@ -15,7 +15,7 @@
 			<property name="scope" value="private"/>
 		</module>
 		<module name="JavadocVariable">
-			<property name="scope" value="public"/>
+			<property name="scope" value="protected"/>
 		</module>
 		<module name="AvoidStarImport"/>
 		<module name="ConstantName"/>
