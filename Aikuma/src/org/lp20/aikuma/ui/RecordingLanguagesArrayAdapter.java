@@ -21,10 +21,21 @@ import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 
 /**
+ * An array adapter for lists of languages associated with Recordings.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class RecordingLanguagesArrayAdapter extends ArrayAdapter<Language> {
+
+	/**
+	 * Default constructor.
+	 *
+	 * @param	context	The application context.
+	 * @param	languages	The list of languages to be dealt with.
+	 * @param	selectedLanguages	The subset of languages that are to be
+	 * selected by default.
+	 */
 	public RecordingLanguagesArrayAdapter(Context context, List<Language>
 			languages, List<Language> selectedLanguages) {
 		super(context, LIST_ITEM_LAYOUT, languages);
@@ -34,9 +45,16 @@ public class RecordingLanguagesArrayAdapter extends ArrayAdapter<Language> {
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
+	/**
+	 * Given a position, gets the appropriate list element as a View.
+	 *
+	 * @param	position	The position in the list view.
+	 * @param	_	Unused.
+	 * @param	parent	The parent ViewGroup.
+	 * @return	The list element's corresponding view.
+	 */
 	@Override
 	public View getView(int position, View _, ViewGroup parent) {
-		Log.i("checkbox", "getView()");
 		View recordingView =
 				(View) inflater.inflate(LIST_ITEM_LAYOUT, parent, false);
 		final Language language = getItem(position);
@@ -44,27 +62,26 @@ public class RecordingLanguagesArrayAdapter extends ArrayAdapter<Language> {
 				(TextView) recordingView.findViewById(R.id.recordingName);
 		CheckBox langCheckBox = (CheckBox)
 				recordingView.findViewById(R.id.langCheckBox);
+
+		recordingNameView.setText(language.toString());
+
 		if (selectedLanguages.contains(language)) {
 			langCheckBox.setChecked(true);
 		}
+
 		langCheckBox.setOnClickListener(new OnClickListener() {
 			public void onClick(View view) {
 				boolean checked = ((CheckBox) view).isChecked();
 				if (checked) {
 					selectedLanguages.add(language);
 					checked = true;
-					Log.i("checked", "now true");
 				} else {
-					//removeLanguageButton.setImageResource(
-					//		R.drawable.ok_disabled_32);
 					selectedLanguages.remove(language);
 					checked = false;
-					Log.i("checked", "now false");
 				}
 			}
 		});
 
-		recordingNameView.setText(language.toString());
 		return recordingView;
 	}
 

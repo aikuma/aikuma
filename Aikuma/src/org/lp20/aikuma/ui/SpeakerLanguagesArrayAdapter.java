@@ -20,10 +20,19 @@ import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 
 /**
+ * An array adapter to handle the list of languages associated with speakers.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
+
+	/**
+	 * Default constructor.
+	 *
+	 * @param	context	The application context.
+	 * @param	languages	The list of languages to be dealt with.
+	 */
 	public SpeakerLanguagesArrayAdapter(Context context, List<Language>
 			languages) {
 		super(context, LIST_ITEM_LAYOUT, languages);
@@ -32,6 +41,14 @@ public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
+	/**
+	 * Given a position, gets the appropriate list element as a View.
+	 *
+	 * @param	position	The position in the list view.
+	 * @param	_	Unused.
+	 * @param	parent	The parent ViewGroup.
+	 * @return	The list element's corresponding view.
+	 */
 	@Override
 	public View getView(int position, View _, ViewGroup parent) {
 		View recordingView =
