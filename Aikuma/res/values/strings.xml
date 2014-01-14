@@ -38,4 +38,9 @@
 	<string name="help">Help</string>
 	<string name="speakers">Speakers</string>
 	<string name="language_name">Language name</string>
+	<string name="http_menu_start_server">Start HTTP server</string>
+	<string name="http_menu_stop_server">Stop HTTP server</string>
+	<string name="http_dialog_success">Server started at port %1$d</string>
+	<string name="http_dialog_failure">Failed to start server</string>
+	<string name="http_dialog_title">HTTP</string>
 </resources>

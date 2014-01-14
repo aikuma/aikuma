@@ -8,12 +8,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import org.lp20.aikuma.MainActivity;
+import org.lp20.aikuma.http.Server;
 import org.lp20.aikuma.R;
 
 /**
@@ -61,11 +63,45 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				//openSettingsActivity;
 				return true;
+			case R.id.start_http_server:
+				if (httpStarted) {
+					Server.getServer().stop();
+					httpStarted = false;
+				}
+				else {
+					String msg;
+					Resources res = activity.getResources();
+					try {
+						Server.setPort(httpPort);
+						Server.getServer().start();
+						httpStarted = true;
+						msg = String.format(res.getString(R.string.http_dialog_success, httpPort));
+					}
+					catch (java.io.IOException e) {
+						msg = res.getString(R.string.http_dialog_failure);
+					}
+					AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+					builder.setTitle(R.string.http_dialog_title).setMessage(msg);
+					AlertDialog dialog = builder.create();
+					dialog.show();
+				}
+				return true;
 			default:
 				return true;
 		}
 	}
 
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		MenuItem item = menu.findItem(R.id.start_http_server);
+		if (httpStarted == true) {
+			item.setTitle(R.string.http_menu_stop_server);
+		}
+		else {
+			item.setTitle(R.string.http_menu_start_server);
+		}
+		return true;
+	}
+	
 	public boolean safeOnOptionsItemSelected(MenuItem item,
 			String safeActivityTransitionMessage) {
 		Intent intent;
@@ -158,5 +194,6 @@ public class MenuBehaviour {
 
 	private Activity activity;
 	private String DEFAULT_MESSAGE = "This will discard the new data. Are you sure?";
-
+	private boolean httpStarted = false;
+	private int httpPort = 8080;
 }
