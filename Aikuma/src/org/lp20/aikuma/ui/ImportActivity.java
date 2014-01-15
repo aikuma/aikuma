@@ -99,6 +99,17 @@ public class ImportActivity extends AikumaActivity {
 					} else {
 						//Then it must be a .wav file.
 						UUID uuid = UUID.randomUUID();
+						long sampleRate = -1;
+						try {
+							sampleRate = sampleRateOfWavFile(mPath);
+						} catch (IOException e) {
+							Toast.makeText(getActivity(),
+									"Failed to read the sampleRate of the WAV file",
+									Toast.LENGTH_LONG).show();
+							getActivity().finish();
+						}
+						int duration = -1;
+
 						try {
 							FileUtils.moveFile(mPath,
 									new File(Recording.getNoSyncRecordingsPath(),
@@ -107,10 +118,9 @@ public class ImportActivity extends AikumaActivity {
 							Toast.makeText(getActivity(),
 									"Failed to import the recording.",
 									Toast.LENGTH_LONG).show();
+							getActivity().finish();
 						}
-						//Must determine these
-						long sampleRate = -1;
-						int duration = -1;
+
 						Intent intent = new Intent(getActivity(),
 								RecordingMetadataActivity.class);
 						intent.putExtra("uuidString", uuid.toString());
@@ -124,6 +134,18 @@ public class ImportActivity extends AikumaActivity {
 			dialog = builder.show();
 			return dialog;
 		}
+	}
+
+	private long sampleRateOfWavFile(File wavFile) throws IOException {
+		byte[] bytes = FileUtils.readFileToByteArray(wavFile);
+		StringBuilder sb = new StringBuilder();
+		int i;
+		for (i = 24; i < 28; i++) {
+			byte b = bytes[i];
+			sb.append(String.format("%02X ", b));
+		}
+		Log.i("bytes", sb.toString());
+		return -1;
 	}
 
 	@Override
