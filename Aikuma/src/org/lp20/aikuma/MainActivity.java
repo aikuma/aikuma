@@ -67,11 +67,6 @@ public class MainActivity extends ListActivity {
 	}
 
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		return menuBehaviour.onPrepareOptionsMenu(menu);
-	}
-	
-	@Override
 	public void onResume() {
 		super.onResume();
 		List<Recording> recordings = Recording.readAll();

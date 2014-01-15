@@ -64,44 +64,14 @@ public class MenuBehaviour {
 				//openSettingsActivity;
 				return true;
 			case R.id.start_http_server:
-				if (httpStarted) {
-					Server.getServer().stop();
-					httpStarted = false;
-				}
-				else {
-					String msg;
-					Resources res = activity.getResources();
-					try {
-						Server.setPort(httpPort);
-						Server.getServer().start();
-						httpStarted = true;
-						msg = String.format(res.getString(R.string.http_dialog_success, httpPort));
-					}
-					catch (java.io.IOException e) {
-						msg = res.getString(R.string.http_dialog_failure);
-					}
-					AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-					builder.setTitle(R.string.http_dialog_title).setMessage(msg);
-					AlertDialog dialog = builder.create();
-					dialog.show();
-				}
+				intent = new Intent(activity, HttpServerActivity.class);
+				activity.startActivity(intent);
 				return true;
 			default:
 				return true;
 		}
 	}
 
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		MenuItem item = menu.findItem(R.id.start_http_server);
-		if (httpStarted == true) {
-			item.setTitle(R.string.http_menu_stop_server);
-		}
-		else {
-			item.setTitle(R.string.http_menu_start_server);
-		}
-		return true;
-	}
-	
 	public boolean safeOnOptionsItemSelected(MenuItem item,
 			String safeActivityTransitionMessage) {
 		Intent intent;
@@ -194,6 +164,4 @@ public class MenuBehaviour {
 
 	private Activity activity;
 	private String DEFAULT_MESSAGE = "This will discard the new data. Are you sure?";
-	private boolean httpStarted = false;
-	private int httpPort = 8080;
 }
