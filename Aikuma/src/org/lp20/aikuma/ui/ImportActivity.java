@@ -9,7 +9,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
-//import android.content.Intent;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -17,11 +17,14 @@ import android.util.Log;
 //import android.widget.SeekBar;
 //import android.widget.SeekBar.OnSeekBarChangeListener;
 //import android.widget.TextView;
-//import android.widget.Toast;
+import android.widget.Toast;
 import java.io.File;
 import java.io.FilenameFilter;
-//import java.io.IOException;
+import java.io.IOException;
+import java.util.UUID;
+import org.apache.commons.io.FileUtils;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.model.Recording;
 //import org.lp20.aikuma.util.FileIO;
 //import org.lp20.aikuma.util.UsageUtils;
 
@@ -95,8 +98,27 @@ public class ImportActivity extends AikumaActivity {
 						showAudioFilebrowserDialog();
 					} else {
 						//Then it must be a .wav file.
+						UUID uuid = UUID.randomUUID();
+						try {
+							FileUtils.moveFile(mPath,
+									new File(Recording.getNoSyncRecordingsPath(),
+									uuid.toString() + ".wav"));
+						} catch (IOException e) {
+							Toast.makeText(getActivity(),
+									"Failed to import the recording.",
+									Toast.LENGTH_LONG).show();
+						}
+						//Must determine these
+						long sampleRate = -1;
+						int duration = -1;
+						Intent intent = new Intent(getActivity(),
+								RecordingMetadataActivity.class);
+						intent.putExtra("uuidString", uuid.toString());
+						intent.putExtra("sampleRate", sampleRate);
+						intent.putExtra("durationMsec", duration);
+						startActivity(intent);
+						getActivity().finish();
 					}
-					//you can do stuff with the file here too
 				}
 			});
 			dialog = builder.show();
