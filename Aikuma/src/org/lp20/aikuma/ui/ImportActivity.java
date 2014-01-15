@@ -33,44 +33,33 @@ import org.lp20.aikuma.R;
  */
 public class ImportActivity extends AikumaActivity {
 
-	private FilebrowserDialogFragment fbdf;
+	private String[] mFileList;
+	private File mPath = Environment.getExternalStorageDirectory();
+	private String mChosenFile;
+	private static final String FILE_TYPE = ".wav";
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.importaudio);
-		loadFileList();
-		showDialog();
+		loadFileList(mPath, FILE_TYPE);
+		showAudioFilebrowserDialog();
 	}
 
-	private void showDialog() {
+	/**
+	 * Presents the dialog for choosing audio files to the user.
+	 */
+	private void showAudioFilebrowserDialog() {
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
-		fbdf = new FilebrowserDialogFragment();
+		FilebrowserDialogFragment fbdf = new FilebrowserDialogFragment();
 		fbdf.show(ft, "dialog");
 	}
 
-	@Override
-	public void onBackPressed() {
-		this.finish();
-	}
-
-	private String[] mFileList;
-	private File mPath = new File(Environment.getExternalStorageDirectory() + "//");
-	private String mChosenFile;
-	private static final String FTYPE = ".txt";
-	private static final int DIALOG_LOAD_FILE = 1000;
-
-	private void loadFileList() {
-		try {
-			mPath.mkdirs();
-		}
-		catch(SecurityException e) {
-			Log.e("importfile", "unable to write on the sd card " + e.toString());
-		}
-		if(mPath.exists()) {
+	private void loadFileList(File dir, final String fileType) {
+		if(dir.exists()) {
 			FilenameFilter filter = new FilenameFilter() {
 				public boolean accept(File dir, String filename) {
 					File sel = new File(dir, filename);
-					return filename.contains(FTYPE) || sel.isDirectory();
+					return filename.contains(fileType) || sel.isDirectory();
 				}
 			};
 			mFileList = mPath.list(filter);
@@ -99,11 +88,24 @@ public class ImportActivity extends AikumaActivity {
 			builder.setItems(mFileList, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					mChosenFile = mFileList[which];
+					Log.i("importfile", "mChosenFile: " + mChosenFile);
+					mPath = new File(mPath, mChosenFile);
+					if (mPath.isDirectory()) {
+						loadFileList(mPath, ".wav");
+						showAudioFilebrowserDialog();
+					} else {
+						//Then it must be a .wav file.
+					}
 					//you can do stuff with the file here too
 				}
 			});
 			dialog = builder.show();
 			return dialog;
 		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		this.finish();
 	}
 }
