@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.ui.ImportActivity;
 import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.MenuBehaviour;
 import org.lp20.aikuma.ui.RecordActivity;
@@ -82,6 +83,11 @@ public class MainActivity extends ListActivity {
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		Intent intent = new Intent(this, ListenActivity.class);
 		intent.putExtra("uuidString", recording.getUUID().toString());
+		startActivity(intent);
+	}
+
+	public void goToImport(View view) {
+		Intent intent = new Intent(this, ImportActivity.class);
 		startActivity(intent);
 	}
 
