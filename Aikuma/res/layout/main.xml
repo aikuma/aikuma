@@ -11,10 +11,10 @@
 		android:layout_weight="1"
 	/>
 	<Button
-		android:id="@+id/goToImport"
+		android:id="@+id/audioImport"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:text="Import audio file"
-		android:onClick="goToImport"
+		android:onClick="audioImport"
 	/>
 </LinearLayout>
