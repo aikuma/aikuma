@@ -1,14 +1,17 @@
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
-import org.apache.commons.io.FileUtils;
 
 public class WaveFile {
 
 	public static void main(String[] args) throws IOException {
-		WaveFile waveFile = new WaveFile(new File("ok.wav"));
+		WaveFile waveFile = new WaveFile(new File("test.wav"));
 		System.out.println(waveFile.getSampleRate());
 		System.out.println(waveFile.getBitsPerSample());
 		System.out.println(waveFile.getDuration());
@@ -17,7 +20,8 @@ public class WaveFile {
 
 	public WaveFile(File file) throws IOException {
 		setFile(file);
-		readBytes();
+		//readBytes();
+		readHeader();
 		readNumChannels();
 		readSampleRate();
 		readBitsPerSample();
@@ -70,33 +74,42 @@ public class WaveFile {
 		mFile = file;
 	}
 
-	private void readBytes() throws IOException {
-		mBytes = FileUtils.readFileToByteArray(mFile);
+	private void readHeader() throws IOException {
+		BufferedInputStream in = new
+				BufferedInputStream(new FileInputStream(mFile), 44);
+		byte[] buff = new byte[44];
+		if (in.read(buff) == -1) {
+			throw new IOException("End of input stream reached before filling the header.");
+		}
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		out.write(buff);
+		out.flush();
+		mHeader = out.toByteArray();
 	}
 
 	private void readSampleRate() {
-		byte[] sampleRateBytes = Arrays.copyOfRange(mBytes, 24, 28);
+		byte[] sampleRateBytes = Arrays.copyOfRange(mHeader, 24, 28);
 		ByteBuffer bb = ByteBuffer.wrap(sampleRateBytes);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 		mSampleRate = bb.getInt();
 	}
 
 	private void readBitsPerSample() {
-		byte[] bpsBytes = Arrays.copyOfRange(mBytes, 34, 36);
+		byte[] bpsBytes = Arrays.copyOfRange(mHeader, 34, 36);
 		ByteBuffer bb = ByteBuffer.wrap(bpsBytes);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 		mBitsPerSample = bb.getShort();
 	}
 
 	private void readNumChannels() {
-		byte[] ncBytes = Arrays.copyOfRange(mBytes, 22, 24);
+		byte[] ncBytes = Arrays.copyOfRange(mHeader, 22, 24);
 		ByteBuffer bb = ByteBuffer.wrap(ncBytes);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 		mNumChannels = bb.getShort();
 	}
 
 	private File mFile;
-	private byte[] mBytes;
+	private byte[] mHeader;
 	private int mSampleRate;
 	private short mBitsPerSample;
 	private short mNumChannels;
