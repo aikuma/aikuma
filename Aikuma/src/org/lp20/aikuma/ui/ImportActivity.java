@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.WaveFile;
 //import org.lp20.aikuma.util.FileIO;
 //import org.lp20.aikuma.util.UsageUtils;
 
@@ -100,18 +101,20 @@ public class ImportActivity extends AikumaActivity {
 						//Then it must be a .wav file.
 						UUID uuid = UUID.randomUUID();
 						long sampleRate = -1;
+						int durationMsec = -1;
 						try {
-							sampleRate = sampleRateOfWavFile(mPath);
+							WaveFile waveFile = new WaveFile(mPath);
+							sampleRate = (long) waveFile.getSampleRate();
+							durationMsec = (int) (waveFile.getDuration() * 1000);
 						} catch (IOException e) {
 							Toast.makeText(getActivity(),
-									"Failed to read the sampleRate of the WAV file",
+									"Failed to read the WAVE file.",
 									Toast.LENGTH_LONG).show();
 							getActivity().finish();
 						}
-						int duration = -1;
 
 						try {
-							FileUtils.moveFile(mPath,
+							FileUtils.copyFile(mPath,
 									new File(Recording.getNoSyncRecordingsPath(),
 									uuid.toString() + ".wav"));
 						} catch (IOException e) {
@@ -125,7 +128,7 @@ public class ImportActivity extends AikumaActivity {
 								RecordingMetadataActivity.class);
 						intent.putExtra("uuidString", uuid.toString());
 						intent.putExtra("sampleRate", sampleRate);
-						intent.putExtra("durationMsec", duration);
+						intent.putExtra("durationMsec", durationMsec);
 						startActivity(intent);
 						getActivity().finish();
 					}
