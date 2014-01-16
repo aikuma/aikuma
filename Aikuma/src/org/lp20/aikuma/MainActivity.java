@@ -107,7 +107,11 @@ public class MainActivity extends ListActivity {
 
 	MenuBehaviour menuBehaviour;
 
-	//// Things pertaining to AudioImport./////
+	////////////////////////////////////////////
+	////                                   /////
+	//// Things pertaining to AudioImport. /////
+	////                                   /////
+	////////////////////////////////////////////
 
 	/**
 	 * Called when the import button is pressed; starts the import process.
@@ -157,7 +161,6 @@ public class MainActivity extends ListActivity {
 	public class FilebrowserDialogFragment extends DialogFragment {
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			Log.i("importfile", "files: " + mFileList);
 			Dialog dialog = null;
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -177,9 +180,13 @@ public class MainActivity extends ListActivity {
 						showAudioFilebrowserDialog();
 					} else {
 						//Then it must be a .wav file.
+
 						UUID uuid = UUID.randomUUID();
 						long sampleRate = -1;
 						int durationMsec = -1;
+
+						// Determine sample rate and duration from the actual
+						// file.
 						try {
 							WaveFile waveFile = new WaveFile(mPath);
 							sampleRate = (long) waveFile.getSampleRate();
@@ -190,6 +197,7 @@ public class MainActivity extends ListActivity {
 									Toast.LENGTH_LONG).show();
 						}
 
+						//Copy the file to the no-sync directory.
 						try {
 							FileUtils.copyFile(mPath,
 									new File(Recording.getNoSyncRecordingsPath(),
@@ -200,6 +208,7 @@ public class MainActivity extends ListActivity {
 									Toast.LENGTH_LONG).show();
 						}
 
+						// Pass the info along to RecordingMetadataActivity.
 						Intent intent = new Intent(getActivity(),
 								RecordingMetadataActivity.class);
 						intent.putExtra("uuidString", uuid.toString());

@@ -23,14 +23,11 @@ import java.util.Arrays;
  */
 public class WaveFile {
 
-	public static void main(String[] args) throws IOException {
-		WaveFile waveFile = new WaveFile(new File("test.wav"));
-		System.out.println(waveFile.getSampleRate());
-		System.out.println(waveFile.getBitsPerSample());
-		System.out.println(waveFile.getDuration());
-		System.out.println(waveFile.getNumChannels());
-	}
-
+	/**
+	 * Constructor.
+	 *
+	 * @param	file	The file to read from.
+	 */
 	public WaveFile(File file) throws IOException {
 		setFile(file);
 		//readBytes();
