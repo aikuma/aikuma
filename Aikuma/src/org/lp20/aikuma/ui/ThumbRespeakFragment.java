@@ -174,18 +174,6 @@ public class ThumbRespeakFragment extends Fragment {
 		respeaker.getSimplePlayer().setOnCompletionListener(onCompletionListener);
 	}
 
-	private void drawSegments(Segments segments) {
-		Iterator<Segment> originalSegmentIterator =
-				segments.getOriginalSegmentIterator();
-		while (originalSegmentIterator.hasNext()) {
-			Segment segment = originalSegmentIterator.next();
-			float fraction =
-					respeaker.getSimplePlayer().sampleToMsec(segment.getEndSample()) /
-					(float) respeaker.getSimplePlayer().getDurationMsec();
-			seekBar.addLine(fraction*100);
-		}
-	}
-
 	private Player.OnCompletionListener onCompletionListener =
 			new Player.OnCompletionListener() {
 				public void onCompletion(Player _player) {
