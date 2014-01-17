@@ -117,8 +117,8 @@ public class SettingsActivity extends AikumaActivity {
 
 	private void getUsageInfo() {
 		TextView usageField = (TextView) findViewById(R.id.usageField);
-		usageField.setText("Hours used: " + UsageUtils.hoursUsed(16000, 16) + 
-				"\nHours available: " + UsageUtils.hoursAvailable(16000, 16) +
+		usageField.setText("Recording time used: " + UsageUtils.timeUsed(16000, 16) + 
+				"\nRecording time available: " + UsageUtils.timeAvailable(16000, 16) +
 				"\nOriginal recordings: " + UsageUtils.numOriginals() +
 				"\nCommentaries: " + UsageUtils.numCommentaries());
 	}
