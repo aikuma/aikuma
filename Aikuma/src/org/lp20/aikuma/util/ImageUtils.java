@@ -111,6 +111,10 @@ public final class ImageUtils {
 	/**
 	 * Returns the Image associated with a given speaker UUID, looking in the
 	 * no-sync directory.
+	 *
+	 * @param	uuid	The UUID of the speaker in question.
+	 * @return	A File in the no-sync directory containing the image of the
+	 * speaker.
 	 */
 	public static File getNoSyncImageFile(UUID uuid) {
 		return new File(getNoSyncImagesPath(), uuid.toString() + ".jpg");
@@ -131,6 +135,8 @@ public final class ImageUtils {
 	 *
 	 * @param	uuid	The UUID of the user whose images are to be allowed to
 	 * sync.
+	 * @throws	IOException in the event of an I/O related exception when
+	 * moving the file.
 	 */
 	public static void enableImageSync(UUID uuid) throws IOException {
 		FileUtils.moveFileToDirectory(getNoSyncSmallImageFile(uuid),
@@ -142,6 +148,10 @@ public final class ImageUtils {
 	/**
 	 * Returns the small Image associated with a given speaker UUID, looking in
 	 * the no-sync directory.
+	 *
+	 * @param	uuid	The UUID of the speaker in question.
+	 * @return	A File containing the small image of the speaker in the no-sync
+	 * directory.
 	 */
 	public static File getNoSyncSmallImageFile(UUID uuid) {
 		return new File(getNoSyncImagesPath(), uuid.toString() + ".small.jpg");
@@ -178,6 +188,8 @@ public final class ImageUtils {
 	 * @param	uuid	The UUID of the Speaker whose image it is.
 	 * @throws	IOException	if an I/O related exception is thrown when
 	 * accessing the file.
+	 * @return	A Bitmap representing the small image of a speaker stored in
+	 * the no-sync directory.
 	 */
 	public static Bitmap getNoSyncSmallImage(UUID uuid) throws IOException {
 		File file = getNoSyncSmallImageFile(uuid);

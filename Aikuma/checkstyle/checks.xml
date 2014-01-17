@@ -12,7 +12,12 @@
 			<property name="authorFormat" value="\S"/>
 		</module>
 		<module name="JavadocMethod">
+			<property name="scope" value="protected"/>
+			<property name="allowMissingPropertyJavadoc" value="true"/>
+		</module>
+		<module name="JavadocMethod">
 			<property name="scope" value="private"/>
+			<property name="allowMissingThrowsTags" value="true"/>
 		</module>
 		<module name="JavadocVariable">
 			<property name="scope" value="protected"/>

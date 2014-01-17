@@ -34,6 +34,8 @@ public class Client {
 
 	/**
 	 * Set up the working directory for the client.
+	 *
+	 * @param	clientBaseDir	The working directory for the client.
 	 */
 	public void setClientBaseDir(String clientBaseDir) {
 		this.clientBaseDir = clientBaseDir;
@@ -41,6 +43,8 @@ public class Client {
 
 	/**
 	 * Set up the working directory for the server.
+	 *
+	 * @param	serverBaseDir	The working directory for the server.
 	 */
 	private void setServerBaseDir(String serverBaseDir) {
 		this.serverBaseDir = serverBaseDir;
@@ -48,6 +52,8 @@ public class Client {
 
 	/**
 	 * Get the working directory for the server.
+	 *
+	 * @return	A string representing the working directory.
 	 */
 	public String getServerBaseDir() {
 		return this.serverBaseDir;
@@ -134,6 +140,8 @@ public class Client {
 
 	/**
 	 * Logout of a server.
+	 *
+	 * @return	true if successful; false otherwise.
 	 */
 	public boolean logout() {
 		if (apacheClient == null) {
@@ -185,6 +193,7 @@ public class Client {
 	 * Recursively push the directory to server.
 	 *
 	 * @param	directoryPath	the relative path from the base directory
+	 * @return	true if successful; false otherwise.
 	 */
 	public boolean pushDirectory(String directoryPath) {
 		// Get the specified client side directory.
@@ -277,6 +286,8 @@ public class Client {
 	 * Pull an individual file from the server.
 	 *
 	 * @param	file	The file to be pulled.
+	 * @param	directoryPath	The directory the file resides in, relative to
+	 * the base directory.
 	 * @return	true if successful; false otherwise.
 	 */
 	public boolean pullFile(String directoryPath, File file) {
@@ -302,6 +313,7 @@ public class Client {
 	 * Recursively pull the directory from the server.
 	 *
 	 * @param	directoryPath	the relative path from the base directory
+	 * @return	true if successful; false otherwise.
 	 */
 	public boolean pullDirectory(String directoryPath) {
 
@@ -382,6 +394,7 @@ public class Client {
 	 * Recursively deletes a directory on the server
 	 *
 	 * @param	dirPath	The path to the directory (absolute or relative)
+	 * @return	true if successful; false otherwise.
 	 **/
 	public boolean deleteServerDir(String dirPath) {
 		String[] dirPathSplit = dirPath.split("/");
@@ -439,6 +452,7 @@ public class Client {
 	 * uses a depth-first approach to determine what is "first writable".
 	 *
 	 * @param	startPath	The directory to start from
+	 * @return	A string representation of the writable directory.
 	 */
 	private String findWritableDir(String startPath) {
 		try {
