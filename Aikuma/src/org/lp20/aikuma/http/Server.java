@@ -1,18 +1,27 @@
 package org.lp20.aikuma.http;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.lp20.aikuma.http.NanoHTTPD;
+import org.lp20.aikuma.http.NanoHTTPD.Response.Status;
+import org.lp20.aikuma.model.Recording;
 
+import android.content.res.AssetManager;
+
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.net.NetworkInterface;
 import java.net.InetAddress;
+import java.net.URI;
 
 public class Server extends NanoHTTPD {
 	private static String host_;    // hostname
 	private static int port_ = -1;  // port number
 	private static Server server_;  // singleton server object
+	private static AssetManager am_;
 
 	/**
 	 * Protected constructor used by a factory function.
@@ -58,6 +67,15 @@ public class Server extends NanoHTTPD {
 	 */
 	public static void setPort(int port) {
 		port_ = port;
+	}
+	
+	/**
+	 * Set FileServer object.
+	 * 
+	 * @param fileServer
+	 */
+	public static void setAssetManager(AssetManager am) {
+		am_ = am;
 	}
 	
 	/**
@@ -109,6 +127,48 @@ public class Server extends NanoHTTPD {
 	
 	@Override
 	public Response serve(IHTTPSession session) {
-		return new Response("hello");
+		String path = session.getUri();
+		
+		if (path.startsWith("/recording/")) {
+			String uuid_str = path.split("/")[2];
+			try {
+				UUID uuid = UUID.fromString(uuid_str);
+				InputStream is = new FileInputStream(Recording.read(uuid).getFile());
+				return new Response(Status.OK, "audio/wave", is);
+			}
+			catch (IOException e) {
+				return mkNotFoundResponse(uuid_str);
+			}
+			catch (IllegalArgumentException e) {
+				return mkNotFoundResponse(uuid_str);
+			}
+		}
+		else {
+			try {
+				InputStream is = am_.open(path.substring(1));
+				String mimeType = guessMimeType(path);
+				return new Response(Status.OK, mimeType, is);
+			}
+			catch (IOException e) {
+				return mkNotFoundResponse(path);
+			}
+		}
+	}
+	
+	private String guessMimeType(String path) {
+		if (path.endsWith(".html")) {
+			return "text/html";
+		}
+		else if (path.endsWith(".js")) {
+			return "application/javascript";
+		}
+		else {
+			return "application/octet-stream";
+		}
+	}
+
+	private Response mkNotFoundResponse(String s) {
+		String msg = "Not found: " + s;
+		return new Response(Status.NOT_FOUND, MIME_PLAINTEXT, msg);
 	}
 }

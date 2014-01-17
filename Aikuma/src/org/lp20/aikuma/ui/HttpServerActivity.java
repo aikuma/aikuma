@@ -14,12 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -33,8 +28,12 @@ public class HttpServerActivity extends AikumaActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_http_server);
 
+		// read default port number set in ui
 		port = Integer.parseInt(((TextView) findViewById(R.id.text_port)).getText().toString());
+		
 		log = (TextView) findViewById(R.id.text_server_log);
+		
+		Server.setAssetManager(getAssets());
 		
 		Spinner hosts = (Spinner) findViewById(R.id.spinner_ifs);
 		hosts.removeAllViewsInLayout();
