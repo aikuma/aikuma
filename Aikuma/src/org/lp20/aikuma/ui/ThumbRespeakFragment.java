@@ -45,6 +45,11 @@ public class ThumbRespeakFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 	}
 
+	/**
+	 * Called to have the fragment instantiate it's user interface view.
+	 *
+	 * @param	inflater	
+	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -69,21 +74,10 @@ public class ThumbRespeakFragment extends Fragment {
 		return v;
 	}
 
-	@Override
-	public void onPause() {
-		super.onPause();
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-	}
-
+	/**
+	 * Called when the fragment is destroyed; ensures resources are
+	 * appropriately released.
+	 */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -94,6 +88,7 @@ public class ThumbRespeakFragment extends Fragment {
 		}
 	}
 
+	// Implements the behaviour for the play and respeak buttons.
 	private void installButtonBehaviour(View v) {
 		final ImageButton playButton = (ImageButton)
 				v.findViewById(R.id.PlayButton);
@@ -151,24 +146,45 @@ public class ThumbRespeakFragment extends Fragment {
 		});
 	}
 
+	// Wrapper to more safely stop threads.
 	private void stopThread(Thread thread) {
 		if (thread != null) {
 			thread.interrupt();
 		}
 	}
 
+	/**
+	 * Recording mutator.
+	 *
+	 * @param	recording	The recording to be played.
+	 */
 	public void setRecording(Recording recording) {
 		this.recording = recording;
 	}
 
+	/**
+	 * sample rate mutator.
+	 *
+	 * @param	sampleRate	The sample rate of the recording.
+	 */
 	public void setSampleRate(int sampleRate) {
 		this.sampleRate = sampleRate;
 	}
 
+	/**
+	 * UUID mutator.
+	 *
+	 * @param	uuid	The uuid of the recording.
+	 */
 	public void setUUID(UUID uuid) {
 		this.uuid = uuid;
 	}
 
+	/**
+	 * ThumbRespeaker mutator.
+	 *
+	 * @param	respeaker	The ThumbRespeaker to use.
+	 */
 	public void setThumbRespeaker(ThumbRespeaker respeaker) {
 		this.respeaker = respeaker;
 		respeaker.getSimplePlayer().setOnCompletionListener(onCompletionListener);
