@@ -68,7 +68,12 @@ public class SimplePlayer extends Player implements Sampler {
 	/** Pauses the playback. */
 	public void pause() {
 		try {
-			//mediaPlayer.pause();
+			// If it's not in a started state, then the OnCompletionListener
+			// may be called when pause() is, so ensure it's already playing
+			// before calling pause().
+			if (mediaPlayer.isPlaying()) {
+				mediaPlayer.pause();
+			}
 		} catch (IllegalStateException e) {
 			//If it's in an illegal state, then it wouldn't be playing anyway,
 			//so no issue.
