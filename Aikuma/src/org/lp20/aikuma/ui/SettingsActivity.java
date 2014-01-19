@@ -18,7 +18,8 @@ import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.UsageUtils;
 
-/** The mother activity for settings - hosts buttons that link to various
+/**
+ * The mother activity for settings - hosts buttons that link to various
  * specific settings activities.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>

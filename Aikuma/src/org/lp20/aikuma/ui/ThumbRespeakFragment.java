@@ -36,21 +36,6 @@ import org.lp20.aikuma.R;
 public class ThumbRespeakFragment extends Fragment {
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-	}
-
-	/**
-	 * Called to have the fragment instantiate it's user interface view.
-	 *
-	 * @param	inflater	
-	 */
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.thumb_respeak_fragment, container, false);

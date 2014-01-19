@@ -22,11 +22,14 @@ import org.lp20.aikuma.audio.record.ThumbRespeaker;
 import org.lp20.aikuma.model.Recording;
 
 /**
+ * The activity that allows recording to be respoken using buttons to
+ * make explicit when playing and respeaking start and pause.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class ThumbRespeakActivity extends AikumaActivity {
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,6 +43,7 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		fragment.setThumbRespeaker(respeaker);
 	}
 
+	// Creates an appropriate ThumbRespeaker for this activity.
 	private void setUpThumbRespeaker() {
 		Intent intent = getIntent();
 		originalUUID = UUID.fromString(
@@ -55,7 +59,12 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		}
 	}
 
-
+	/**
+	 * When the save respeaking button is called, stop the activity and send
+	 * the relevant data to the RecordingMetadataActivity
+	 *
+	 * @param	view	The save respeaking button.
+	 */
 	public void onSaveRespeakingButton(View view) {
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
 		intent.putExtra("uuidString", respeakingUUID.toString());
