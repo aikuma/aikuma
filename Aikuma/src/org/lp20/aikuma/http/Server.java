@@ -162,6 +162,9 @@ public class Server extends NanoHTTPD {
 		else if (path.endsWith(".js")) {
 			return "application/javascript";
 		}
+		else if (path.endsWith(".css")) {
+			return "text/css";
+		}
 		else {
 			return "application/octet-stream";
 		}
