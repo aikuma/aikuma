@@ -1,27 +1,34 @@
 package org.lp20.aikuma.http;
 import org.apache.http.conn.util.InetAddressUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.lp20.aikuma.http.NanoHTTPD;
 import org.lp20.aikuma.http.NanoHTTPD.Response.Status;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Speaker;
 
 import android.content.res.AssetManager;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.net.NetworkInterface;
 import java.net.InetAddress;
-import java.net.URI;
 
 public class Server extends NanoHTTPD {
 	private static String host_;    // hostname
 	private static int port_ = -1;  // port number
 	private static Server server_;  // singleton server object
 	private static AssetManager am_;
+	private Proc proc_;
 
 	/**
 	 * Protected constructor used by a factory function.
@@ -31,6 +38,26 @@ public class Server extends NanoHTTPD {
 	 */
 	protected Server(String host, int port) {
 		super(host, port);
+		
+		// Sets up a request processing chain.
+		proc_ = (new Proc() {
+			// serve recordings by uuid
+			@Override
+			public Response run(IHTTPSession session) {
+				return serveRecording(session.getUri());
+			}
+		}).add(new Proc() {
+			@Override
+			public Response run(IHTTPSession session) {
+				return serveIndex(session.getUri());
+			}
+		}).add(new Proc() {
+			// serve static assets
+			@Override
+			public Response run(IHTTPSession session) {
+				return serveAsset(session.getUri());
+			}
+		});
 	}
 	
 	/**
@@ -109,9 +136,6 @@ public class Server extends NanoHTTPD {
 				if (!addr.isLoopbackAddress()) {
 					String ip = addr.getHostAddress();
 					if (InetAddressUtils.isIPv4Address(ip)) {
-						android.util.Log.e("http--", ff.getName());
-						android.util.Log.e("http--", addr.getHostName());
-						android.util.Log.e("http--", ip);
 						ips.put(ff.getName(), ip);
 					}
 				}
@@ -127,32 +151,78 @@ public class Server extends NanoHTTPD {
 	
 	@Override
 	public Response serve(IHTTPSession session) {
-		String path = session.getUri();
-		
+		return proc_.exec(session);
+	}
+	
+	private Response serveIndex(String path) {
+		if (path.startsWith("/index/")) {
+			List<Recording> rs = Recording.readAll();
+			Iterator<Recording> it = rs.iterator();
+			JSONObject index = new JSONObject();
+			while (it.hasNext()) {
+				Recording r = it.next();
+				if (r.isOriginal()) {
+					JSONObject obj = new JSONObject();
+					JSONArray speakers = new JSONArray();
+					Iterator<UUID> uuid_it = r.getSpeakersUUIDs().iterator();
+					while (uuid_it.hasNext()) {
+						Speaker spkr;
+						try {
+							spkr = Speaker.read(uuid_it.next());
+						}
+						catch (IOException e) {
+							continue;
+						}
+						speakers.put(spkr.encode());
+					}
+					try {
+						obj.put("speakers", speakers);
+						index.put(r.getUUID().toString(), obj);
+					}
+					catch (JSONException e) {
+						continue;
+					}
+				}
+			}
+			return new Response(Status.OK, "text/plain", index.toString());
+		}
+		else {
+			return null;
+		}
+	}
+	
+	private Response serveRecording(String path) {
 		if (path.startsWith("/recording/")) {
-			String uuid_str = path.split("/")[2];
+			String[] a = path.split("/");
+			if (a.length < 3) {
+				return mkNotFoundResponse(path);
+			}
 			try {
-				UUID uuid = UUID.fromString(uuid_str);
+				UUID uuid = UUID.fromString(a[2]);
 				InputStream is = new FileInputStream(Recording.read(uuid).getFile());
 				return new Response(Status.OK, "audio/wave", is);
 			}
 			catch (IOException e) {
-				return mkNotFoundResponse(uuid_str);
-			}
-			catch (IllegalArgumentException e) {
-				return mkNotFoundResponse(uuid_str);
-			}
-		}
-		else {
-			try {
-				InputStream is = am_.open(path.substring(1));
-				String mimeType = guessMimeType(path);
-				return new Response(Status.OK, mimeType, is);
-			}
-			catch (IOException e) {
 				return mkNotFoundResponse(path);
 			}
+			catch (IllegalArgumentException e) {
+				return mkNotFoundResponse(path);
+			}			
 		}
+		else {
+			return null;
+		}
+	}
+	
+	private Response serveAsset(String path) {
+		try {
+			InputStream is = am_.open(path.substring(1));
+			String mimeType = guessMimeType(path);
+			return new Response(Status.OK, mimeType, is);
+		}
+		catch (IOException e) {
+			return mkNotFoundResponse(path);
+		}		
 	}
 	
 	private String guessMimeType(String path) {
