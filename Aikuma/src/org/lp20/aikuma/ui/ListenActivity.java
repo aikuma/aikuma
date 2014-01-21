@@ -43,17 +43,11 @@ import org.lp20.aikuma.util.ImageUtils;
  */
 public class ListenActivity extends AikumaActivity {
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listen);
 		menuBehaviour = new MenuBehaviour(this);
-		//UUID respeakingUUID = UUID.randomUUID();
-		//phoneRespeaker = new PhoneRespeaker(recording,
-		//		new File(Recording.getRecordingsPath(),
-		//				respeakingUUID.toString() + ".wav"),
-		//		sampleRate);
 		fragment =
 				(ListenFragment)
 				getFragmentManager().findFragmentById(R.id.ListenFragment);
@@ -236,11 +230,6 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	@Override
-	public void onStop() {
-		super.onStop();
-	}
-
-	@Override
 	public void onResume() {
 		super.onResume();
 		this.proximityDetector = new ProximityDetector(this) {
@@ -263,20 +252,16 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	@Override
-	public void onRestart() {
-		super.onRestart();
-	}
-
-	@Override
 	public void onPause() {
 		super.onPause();
 		this.proximityDetector.stop();
 	}
 
-	public void onPhoneRespeakingToggle(View view) {
-		phoneRespeaking = ((ToggleButton) view).isChecked();
-	}
-
+	/**
+	 * Change to the thumb respeaking activity
+	 *
+	 * @param	view	The thumb respeaking button
+	 */
 	public void onThumbRespeakingButton(View view) {
 		Intent intent = new Intent(this, ThumbRespeakActivity.class);
 		intent.putExtra("uuidString", recording.getUUID().toString());
@@ -284,6 +269,11 @@ public class ListenActivity extends AikumaActivity {
 		startActivity(intent);
 	}
 
+	/**
+	 * Change to the phone respeaking activity
+	 *
+	 * @param	view	The phone respeaking button
+	 */
 	public void onPhoneRespeakingButton(View view) {
 		Intent intent = new Intent(this, PhoneRespeakActivity.class);
 		intent.putExtra("uuidString", recording.getUUID().toString());
