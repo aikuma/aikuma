@@ -1,8 +1,7 @@
 package org.lp20.aikuma.http;
 import org.apache.http.conn.util.InetAddressUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.lp20.aikuma.http.NanoHTTPD;
 import org.lp20.aikuma.http.NanoHTTPD.Response.Status;
 import org.lp20.aikuma.model.Recording;
@@ -163,28 +162,31 @@ public class Server extends NanoHTTPD {
 				Recording r = it.next();
 				if (r.isOriginal()) {
 					JSONObject obj = new JSONObject();
-					JSONArray speakers = new JSONArray();
-					Iterator<UUID> uuid_it = r.getSpeakersUUIDs().iterator();
-					while (uuid_it.hasNext()) {
-						Speaker spkr;
+					
+					// add speaker information
+					JSONObject speakers = new JSONObject();
+					for (UUID spkr_uuid : r.getSpeakersUUIDs()) {
 						try {
-							spkr = Speaker.read(uuid_it.next());
+							speakers.put(spkr_uuid.toString(), Speaker.read(spkr_uuid).encode());
 						}
 						catch (IOException e) {
 							continue;
 						}
-						speakers.put(spkr.encode());
 					}
-					try {
-						obj.put("speakers", speakers);
-						index.put(r.getUUID().toString(), obj);
+					obj.put("speakers", speakers);
+					
+					// add respeakings
+					JSONObject respeakings = new JSONObject();
+					for (Recording rspk : r.getRespeakings()) {
+						respeakings.put(rspk.getUUID().toString(), rspk.encode());
 					}
-					catch (JSONException e) {
-						continue;
-					}
+					obj.put("respeakings",  respeakings);
+					obj.put("original", r.encode());
+					
+					index.put(r.getUUID().toString(), obj);
 				}
 			}
-			return new Response(Status.OK, "text/plain", index.toString());
+			return new Response(Status.OK, "application/json", index.toString());
 		}
 		else {
 			return null;
