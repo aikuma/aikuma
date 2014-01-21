@@ -71,7 +71,6 @@ public class HttpServerActivity extends AikumaActivity {
 	}
 
 	public void toggleServerStatus(View view) {
-		android.util.Log.e("http::", "hello");
 		if (((ToggleButton) view).isChecked()) {
 			String msg;
 			Resources res = this.getResources();
