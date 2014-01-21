@@ -24,10 +24,14 @@ import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 
 /**
+ * The Activity that allows users to create respeakings where the control of
+ * the original and respeaking is governed by the speaking of the user.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class PhoneRespeakActivity extends AikumaActivity {
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,6 +53,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		respeaker.release();
 	}
 
+	// Prepares the respeaker.
 	private void setUpPhoneRespeaker() {
 		Intent intent = getIntent();
 		originalUUID = UUID.fromString(
@@ -98,6 +103,12 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		);
 	}	
 
+	/**
+	 * Sends the appropriate metadata to the RecordingMetadataActivity so that
+	 * the data can be saved.
+	 *
+	 * @param	view	The save respeaking button.
+	 */
 	public void onSaveRespeakingButton(View view) {
 		respeaker.stop();
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
@@ -109,10 +120,17 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		PhoneRespeakActivity.this.finish();
 	}
 
+	/**
+	 * Returns the sample rate of the original (and respeaking).
+	 *
+	 * @return	The sample rate of the original (and respeaking).
+	 */
 	public long getSampleRate() {
 		return this.sampleRate;
 	}
 
+	// Currently unused method to automatically detect the background noise and
+	// set the sensitivity accordingly.
 	private void extractBackgroundNoiseThreshold() {
 		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
@@ -126,9 +144,15 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		}, 500);
 	}
 
-	public void setSensitivity(int level) {
-		this.respeaker.setSensitivity(level);
-		sensitivitySlider.setProgress(level);
+	/**
+	 * Sets the threshold which determines whether sound should be considered
+	 * speech or not.
+	 *
+	 * @param	threshold	the threshold.
+	 */
+	public void setSensitivity(int threshold) {
+		this.respeaker.setSensitivity(threshold);
+		sensitivitySlider.setProgress(threshold);
 	}
 
 	private PhoneRespeakFragment fragment;

@@ -171,6 +171,11 @@ public class PhoneRespeakFragment extends Fragment {
 		this.uuid = uuid;
 	}
 
+	/**
+	 * PhoneRespeaker mutator.
+	 *
+	 * @param	respeaker	The PhoneRespeaker
+	 */
 	public void setPhoneRespeaker(PhoneRespeaker respeaker) {
 		this.respeaker = respeaker;
 		respeaker.getSimplePlayer().setOnCompletionListener(onCompletionListener);
