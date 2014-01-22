@@ -66,6 +66,12 @@ public class Recording {
 	 * @param	uuid	the recording's UUID.
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
+	 * @param	languages	The languages associated with the recording
+	 * @param	speakersUUIDs	The UUIDs of the speakers associated with the
+	 * recording
+	 * @param	androidID	The android ID of the device that created the
+	 * recording
+	 * @param	sampleRate	The sample rate of the recording.
 	 */
 	public Recording(UUID uuid, String name, Date date,
 			List<Language> languages, List<UUID> speakersUUIDs,
@@ -86,6 +92,15 @@ public class Recording {
 	 * @param	uuid	the recording's UUID.
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
+	 * @param	languages	The languages associated with the recording
+	 * @param	speakersUUIDs	The UUIDs of the speakers associated with the
+	 * recording
+	 * @param	androidID	The android ID of the device that created the
+	 * recording
+	 * @param	originalUUID	The UUID of the recording that this recording
+	 * is a respeaking of
+	 * @param	sampleRate	The sample rate of the recording.
+	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 */
 	public Recording(UUID uuid, String name, Date date,
 			List<Language> languages, List<UUID> speakersUUIDs,
@@ -102,20 +117,23 @@ public class Recording {
 		setDurationMsec(durationMsec);
 	}
 
-	/**
-	 * UUID accessor.
-	 */
 	public UUID getUUID() {
 		return uuid;
 	}
 
-	/** Returns a File that refers to the actual recording file. */
+	/**
+	 * Returns a File that refers to the actual recording file.
+	 *
+	 * @return	The file the recording is stored in.
+	 */
 	public File getFile() {
 		return new File(getRecordingsPath(), getUUID() + ".wav");
 	}
 
 	/**
-	 * Name accessor.
+	 * Name accessor; returns an empty string if the name is null
+	 *
+	 * @return	The name of the recording.
 	 */
 	public String getName() {
 		if (name != null) {
@@ -125,16 +143,10 @@ public class Recording {
 		}
 	}
 
-	/**
-	 * Date accessor.
-	 */
 	public Date getDate() {
 		return date;
 	}
 
-	/**
-	 * languages accessor.
-	 */
 	public List<Language> getLanguages() {
 		return languages;
 	}
@@ -142,6 +154,9 @@ public class Recording {
 	/**
 	 * Returns the first language code as a string, or an empty string if there
 	 * is none.
+	 *
+	 * @return	The language code of the first language associated with the
+	 * recording.
 	 */
 	public String getFirstLangCode() {
 		if (getLanguages().size() > 0) {
@@ -151,6 +166,11 @@ public class Recording {
 		}
 	}
 
+	/**
+	 * Returns the name and language of the recording in a single string.
+	 *
+	 * @return	The name and langugage of the recording in a string.
+	 */
 	public String getNameAndLang() {
 		if (getFirstLangCode().equals("")) {
 			return getName();
@@ -161,6 +181,8 @@ public class Recording {
 
 	/**
 	 * speakersUUIDs accessor.
+	 *
+	 * @return	A list of UUIDs representing the speakers of the recording.
 	 */
 	public List<UUID> getSpeakersUUIDs() {
 		return speakersUUIDs;
@@ -180,6 +202,8 @@ public class Recording {
 
 	/**
 	 * androidID accessor
+	 *
+	 * @return	The Andorid of the device that made the recording.
 	 */
 	public String getAndroidID() {
 		return androidID;
@@ -187,6 +211,9 @@ public class Recording {
 
 	/**
 	 * originalUUID accessor.
+	 *
+	 * @return	The UUID of the original recording that this is a respeaking
+	 * of.
 	 */
 	public UUID getOriginalUUID() {
 		if (originalUUID == null) {
@@ -199,6 +226,8 @@ public class Recording {
 
 	/**
 	 * sampleRate accessor
+	 *
+	 * @return	The sample rate of the recording as a long.
 	 */
 	public long getSampleRate() {
 		return sampleRate;
@@ -206,6 +235,8 @@ public class Recording {
 
 	/**
 	 * durationMsec accessor
+	 *
+	 * @return	The duration of the recording in milliseconds as an int.
 	 */
 	public int getDurationMsec() {
 		return durationMsec;
@@ -254,6 +285,8 @@ public class Recording {
 	/**
 	 * Write the Recording to file in a subdirectory of the recordings
 	 * directory named as <uuid>.json
+	 *
+	 * @throws	IOException	If the recording metadata could not be written.
 	 */
 	public void write() throws IOException {
 		JSONObject encodedRecording = this.encode();
@@ -265,6 +298,8 @@ public class Recording {
 
 	/**
 	 * Deletes the JSON File associated with the recording.
+	 *
+	 * @return	true if successful; false otherwise.
 	 */
 	public boolean delete() {
 		File file = new File(getRecordingsPath(), this.getUUID().toString() +
@@ -285,6 +320,8 @@ public class Recording {
 	 * Read a recording from the file containing JSON describing the Recording
 	 *
 	 * @param	uuid	The uuid of the recording to be read.
+	 * @return	A Recording object corresponding to the uuid.
+	 * @throws	IOException	If the recording metadata cannot be read.
 	 */
 	public static Recording read(UUID uuid) throws IOException {
 		JSONObject jsonObj = FileIO.readJSONObject(
@@ -354,6 +391,8 @@ public class Recording {
 
 	/**
 	 * Returns a list of all the respeakings of this Recording.
+	 *
+	 * @return	A list of all the respeakings of the recording.
 	 */
 	public List<Recording> getRespeakings() {
 		List<Recording> allRecordings = readAll();
@@ -415,6 +454,7 @@ public class Recording {
 	 * Recordings uuid, name, date, languages, androidID and originalUUID are
 	 * equal
 	 *
+	 * @param	obj	The object to be compared.
 	 * @return	true if the uuid, name, date, languages, androidID and
 	 * originalUUID are equal; false otherwise.
 	 */
@@ -572,6 +612,13 @@ public class Recording {
 		return path;
 	}
 
+	/**
+	 * Indicates that this recording is allowed to be synced by moving it to a
+	 * directory that the SyncUtil synchronizes.
+	 *
+	 * @param	uuid	The UUID of the recording to sync.
+	 * @throws	IOException	If it cannot be moved to the synced directory.
+	 */
 	public static void enableSync(UUID uuid) throws IOException {
 		File wavFile = new File(getNoSyncRecordingsPath(), uuid + ".wav");
 		FileUtils.moveFileToDirectory(wavFile, getRecordingsPath(), false);

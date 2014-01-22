@@ -39,6 +39,9 @@ public class Segments {
 		}
 	}
 
+	/**
+	 * Constructor to create an empty Segments object.
+	 */
 	public Segments() {
 		segmentMap = new LinkedHashMap<Segment, Segment>();
 	}
@@ -46,13 +49,21 @@ public class Segments {
 	/**
 	 * Gets the respeaking segment associated with the supplied original
 	 * segment.
+	 *
+	 * @param	originalSegment	A Segment object representing a segment of the original audio.
+	 * @return	A respeaking Segment object corresponding to the
+	 * originalSegment
 	 */
 	public Segment getRespeakingSegment(Segment originalSegment) {
 		return segmentMap.get(originalSegment);
 	}
 
 	/**
-	 * Adds a pair of segments.
+	 * Adds a pair of segments to the Segments; analogous to Map.add().
+	 *
+	 * @param	originalSegment	A segment of an original recording.
+	 * @param	respeakingSegment	A respeaking segment corresponding to
+	 * originalSegment.
 	 */
 	public void put(Segment originalSegment,
 					Segment respeakingSegment) {
@@ -61,6 +72,8 @@ public class Segments {
 
 	/**
 	 * Returns an iterator over the segments of the original recording.
+	 *
+	 * @return	An iterator over the segments of the original recording.
 	 */
 	public Iterator<Segment> getOriginalSegmentIterator() {
 		return segmentMap.keySet().iterator();
@@ -68,6 +81,9 @@ public class Segments {
 
 	/**
 	 * Reads the segments from a file.
+	 *
+	 * @param	path	The path to the file.
+	 * @throws	Exception	If the segments cannot be read.
 	 */
 	private void readSegments(File path) throws Exception {
 		String mapString = FileIO.read(path);
@@ -91,6 +107,9 @@ public class Segments {
 
 	/**
 	 * Writes the segment mapping to file.
+	 *
+	 * @param	path	The path to the file.
+	 * @throws	IOException	If the segments cannot be written to file.
 	 */
 	public void write(File path) throws IOException {
 		FileIO.write(path, toString());
@@ -105,6 +124,9 @@ public class Segments {
 		/**
 		 * Creates a segment given the sample at which the segment starts, and
 		 * the sample at which it ends.
+		 *
+		 * @param	startSample	The sample at which the segment starts.
+		 * @param	endSample	The sample at which the segment ends.
 		 */
 		public Segment(Long startSample, Long endSample) {
 			if (startSample == null) {
@@ -124,14 +146,21 @@ public class Segments {
 			return this.pair.second;
 		}
 
+		/**
+		 * Returns the duration of the segment in samples
+		 *
+		 * @return	The duration of the segment in samples.
+		 */
 		public Long getDuration() {
 			return this.pair.second - this.pair.first;
 		}
 
+		@Override
 		public String toString() {
 			return getStartSample() + "," + getEndSample();
 		}
 
+		@Override
 		public boolean equals(Object obj) {
 			if (obj == null) { return false; }
 			if (obj == this) { return true; }
@@ -145,11 +174,13 @@ public class Segments {
 					.isEquals();
 		}
 
+		@Override
 		public int hashCode() {
 			return pair.hashCode();
 		}
 	}
 
+	@Override
 	public String toString() {
 		String mapString = new String();
 		Segment respeakingSegment;

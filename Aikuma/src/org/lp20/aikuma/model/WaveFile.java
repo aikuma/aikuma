@@ -27,6 +27,8 @@ public class WaveFile {
 	 * Constructor.
 	 *
 	 * @param	file	The file to read from.
+	 * @throws	IOException	In the event that there is an issue reading the
+	 * file.
 	 */
 	public WaveFile(File file) throws IOException {
 		setFile(file);

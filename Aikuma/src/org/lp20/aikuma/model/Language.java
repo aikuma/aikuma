@@ -44,16 +44,10 @@ public class Language implements Parcelable {
 		this.code = code;
 	}
 
-	/**
-	 * Name accessor
-	 */
 	public String getName() {
 		return this.name;
 	}
 
-	/**
-	 * Code accessor
-	 */
 	public String getCode() {
 		return this.code;
 	}
@@ -176,6 +170,7 @@ public class Language implements Parcelable {
 	 * Compares the given object with the Language, and returns true if the
 	 * Language name and code are equal.
 	 *
+	 * @param	obj	The object to be compared.
 	 * @return	true if the name and codes of the languages are equal; false
 	 * otherwise.
 	 */
