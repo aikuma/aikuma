@@ -34,6 +34,15 @@ import org.lp20.aikuma.model.Recording;
 public class PhoneRespeaker implements
 		AudioListener, AudioHandler, MicrophoneListener {
 
+	/**
+	 * Constructor
+	 *
+	 * @param	original	The original recording.
+	 * @param	respeakingUUID	The UUID of this respeaking.
+	 * @param	analyzer	The analyzer that determines what audio constitutes
+	 * speech.
+	 * @throws	MicException	If there is an issue setting up the microphone.
+	 * @throws	IOException	If there is an I/O issue.
 	public PhoneRespeaker(Recording original, UUID respeakingUUID,
 			Analyzer analyzer) throws MicException, IOException {
 		this.analyzer = analyzer;
@@ -59,7 +68,12 @@ public class PhoneRespeaker implements
 				respeakingUUID + ".wav").getPath());
 	}
 
-	/** Sets the sensitivity of the respeaker to microphone noise */
+	/**
+	 * Sets the sensitivity of the respeaker to microphone noise
+	 *
+	 * @param	threshold	The threshold above which audio is considered to be
+	 * speech.
+	 */
 	public void setSensitivity(int threshold) {
 		this.analyzer = new ThresholdSpeechAnalyzer(88, 3,
 				new AverageRecognizer(threshold, threshold));
@@ -69,7 +83,7 @@ public class PhoneRespeaker implements
 		this.player = new SimplePlayer(original, false);
 	}
 
-	/** Callback for the microphone */
+	@Override
 	public void onBufferFull(short[] buffer) {
 		// This will call back the methods:
 		//  * silenceTriggered
@@ -77,12 +91,18 @@ public class PhoneRespeaker implements
 		analyzer.analyze(this, buffer);
 	}
 
+	/**
+	 * Resumes the phone respeaking process.
+	 */
 	public void resume() {
 		microphone.listen(this);
 		//mapper.markOriginal(player);
 		switchToPlay();
 	}
 
+	/**
+	 * Halts the phone respeaking process, but allows for resumption.
+	 */
 	public void halt() {
 		mapper.store(player, file);
 		stopMic();
@@ -90,6 +110,9 @@ public class PhoneRespeaker implements
 		analyzer.reset();
 	}
 
+	/**
+	 * Stops/finishes the phone respeaking process.
+	 */
 	public void stop() {
 		stopMic();
 		player.release();
@@ -105,6 +128,7 @@ public class PhoneRespeaker implements
 		}
 	}
 
+	@Override
 	public void audioTriggered(short[] buffer, boolean justChanged) {
 		if (justChanged) {
 			switchToRecord();
@@ -121,6 +145,7 @@ public class PhoneRespeaker implements
 		player.play();
 	}
 
+	@Override
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
 		if (justChanged) {
 			mapper.store(player, file);
@@ -133,6 +158,9 @@ public class PhoneRespeaker implements
 		}
 	}
 
+	/**
+	 * Releases the resources associated with this respeaker.
+	 */
 	public void release() {
 		if (player != null) {
 			player.release();

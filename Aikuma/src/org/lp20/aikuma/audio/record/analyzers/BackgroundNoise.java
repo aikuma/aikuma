@@ -20,19 +20,28 @@ import org.lp20.aikuma.audio.record.analyzers.BackgroundNoiseListener;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  */
 public class BackgroundNoise {
-	
+
+	/** The thing that extracts the level of background noise from the buffers*/
 	protected Noise thresholder;
+	/** The microphone used to gather the noise data. */
 	protected Microphone microphone;
-	protected float factor;
-	
+
+	/**
+	 * Constructor
+	 *
+	 * @param	duration	The duration of the noise
+	 * @param	sampleRate	The sample rate of the noise.
+	 * @throws	MicException	If there is an issue creating the microphone.
+	 */
 	public BackgroundNoise(int duration, long sampleRate) throws MicException {
 		this.thresholder = new Noise(duration);
 		this.microphone = new Microphone(sampleRate);
-		this.factor = 1.5f;
 	}
 	
 	/**
-	 * Tries to find a threshold value.
+	 * Tries to find a meaningful threshold value to define speech with.
+	 *
+	 * @param	listener	The thing that will listen to the background noise.
 	 */
 	public void getThreshold(final BackgroundNoiseListener listener) {
 		// Try finding a stable background noise.
@@ -52,7 +61,12 @@ public class BackgroundNoise {
 			}
 		});
 	}
-	
+
+	/**
+	 * Stops the microphone.
+	 *
+	 * @throws	MicException	If there is an issue stopping the microphone.
+	 */
 	public void stop() throws MicException {
 		microphone.stop();
 	}

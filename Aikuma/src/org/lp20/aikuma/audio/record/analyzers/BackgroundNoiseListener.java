@@ -16,11 +16,15 @@ public interface BackgroundNoiseListener {
 
 	/**
 	 * Quality will be a negative value getting closer and closer to 0 (higher is better).
+	 *
+	 * @param	information	Information about the background noise.
 	 */
 	public void noiseLevelQualityUpdated(Noise.Information information);
 	
 	/**
-	 * Level will be a positive value. This will be called once when it's found.
+	 * Level will be a positive value; This will be called once when it's found.
+	 *
+	 * @param	information	Information about the background noise.
 	 */
 	public void noiseLevelFound(Noise.Information information);
 
