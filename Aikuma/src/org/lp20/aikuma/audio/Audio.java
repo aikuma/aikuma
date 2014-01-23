@@ -17,29 +17,48 @@ import android.media.AudioManager;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class Audio {
-	
+
+	/**
+	 * Resets the activity playing through the main speakers.
+	 *
+	 * @param	activity	The activity in question.
+	 */
 	public static void reset(Activity activity) {
 		playThroughSpeaker(activity);
 	}
-	
+
+	/**
+	 * Plays the audio through the earpiece, like a phone call.
+	 *
+	 * @param	activity	The activity that this method governs.
+	 * @param	toSetMode	True if the Audiomanager needs to be set to call mode.
+	 */
 	public static void playThroughEarpiece(Activity activity, boolean toSetMode) {
 		AudioManager audioManager = getAudioManager(activity);
 		if (toSetMode) {
 			audioManager.setMode(AudioManager.MODE_IN_CALL); 
 		}
-		Log.i("speaker", "setting it off");
 		audioManager.setSpeakerphoneOn(false);
-		Log.i("speaker", "set it off. isSpeakerphoneOn: " + audioManager.isSpeakerphoneOn());
 	}
-	
+
+	/**
+	 * Plays the audio through the main speaker (not the earpiece as a phone
+	 * call would)
+	 *
+	 * @param	activity	The activity that this method governs.
+	 */
 	public static void playThroughSpeaker(Activity activity) {
 		AudioManager audioManager = getAudioManager(activity);
 		audioManager.setMode(AudioManager.MODE_NORMAL); 
-		Log.i("speaker", "setting it on");
 		audioManager.setSpeakerphoneOn(true);
-		Log.i("speaker", "set it on. isSpeakerphoneOn: " + audioManager.isSpeakerphoneOn());
 	}
 
+	/**
+	 * Gets the audio manager for the given activity.
+	 *
+	 * @param	activity	The activity whose AudioManager is needed.
+	 * @return	The audiomanager.
+	 */
 	protected static AudioManager getAudioManager(Activity activity) {
 		return (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
 	}

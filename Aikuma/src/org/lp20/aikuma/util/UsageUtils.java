@@ -37,6 +37,7 @@ public class UsageUtils {
 	 * @param	dir	A File representing the directory
 	 * @param	fnf	A filenamefilter that specifies what types of files to
 	 * consider
+	 * @return	A float representing the number of bytes used by a directory.
 	 */
 	private static float bytesUsed(File dir, FilenameFilter fnf) {
 		if (dir.exists()) {
@@ -62,6 +63,7 @@ public class UsageUtils {
 	 *
 	 * @param	sampleRate	The sample rate of the recordings
 	 * @param	sampleSize	The size of each sample in bits
+	 * @return	A float representing the number of seconds used.
 	 */
 	public static float secondsUsed(int sampleRate, int sampleSize) {
 		float bytesUsed = bytesUsed(new File("/sdcard/aikuma/recordings"),
@@ -79,32 +81,12 @@ public class UsageUtils {
 	 *
 	 * @param	sampleRate	The sample rate of hte recordings
 	 * @param	sampleSize	The size of each sample in bits.
+	 * @return	A float representing the number of seconds available.
 	 */
 	public static float secondsAvailable(int sampleRate, int sampleSize) {
 		float bytesUsed = bytesAvailable(new File("/sdcard"));
 		//If the sample size isn't 16, it's assumed to be 8.
 		return bytesUsed / ((sampleSize == 16 ? 2 : 1) * sampleRate);
-	}
-
-	
-	/**
-	 * Returns the number of hours worth of recordings in the synced recordings
-	 * directory.
-	 *
-	 * @param	sampleRate	The sample rate of the recordings
-	 * @param	sampleSize	The size of each sample in bits
-	 */
-	public static float hoursUsed(int sampleRate, int sampleSize) {
-		return secondsUsed(sampleRate, sampleSize) / 3600;
-	}
-	/**
-	 * Returns the number of hours worth of recordings available.
-	 *
-	 * @param	sampleRate	The sample rate of the recordings
-	 * @param	sampleSize	The size of each sample in bits.
-	 */
-	public static float hoursAvailable(int sampleRate, int sampleSize) {
-		return secondsAvailable(sampleRate, sampleSize) / 3600;
 	}
 
 	/**

@@ -55,12 +55,12 @@ public final class ImageUtils {
 	 * @param	original	The original image
 	 * @param	scale	the scale that should be applied to the original (0.5
 	 * results in an image 50% the size of the original)
-	 	
+	 * @return	A Bitmap representing the resized image.
 	 */
 	public static Bitmap resizeBitmap(
-			Bitmap original, float scale) throws IOException {
+			Bitmap original, float scale) {
 		if (original == null) {
-			throw new IOException("Can not resize null bitmap");
+			throw new IllegalArgumentException("Can not resize null bitmap");
 		}
 		if (scale < 0) {
 			throw new IllegalArgumentException(
@@ -81,6 +81,8 @@ public final class ImageUtils {
 	 * (rotates the file according to the EXIF orientation tag, if applicable).
 	 *
 	 * @param	path	The absolute path of the image file.
+	 * @throws	IOException	If the file or Bitmap doesn't exist, or there is an
+	 * I/O issue loading it.
 	 * @return	The image as a bitmap
 	 */
 	public static Bitmap retrieveFromFile(String path) throws IOException {
@@ -98,6 +100,9 @@ public final class ImageUtils {
 
 	/**
 	 * Returns the Image associated with a given speaker UUID.
+	 *
+	 * @param	uuid	The UUID of the speaker.
+	 * @return	A File containing the speaker's image.
 	 */
 	public static File getImageFile(UUID uuid) {
 		return new File(getImagesPath(), uuid.toString() + ".jpg");
@@ -106,6 +111,10 @@ public final class ImageUtils {
 	/**
 	 * Returns the Image associated with a given speaker UUID, looking in the
 	 * no-sync directory.
+	 *
+	 * @param	uuid	The UUID of the speaker in question.
+	 * @return	A File in the no-sync directory containing the image of the
+	 * speaker.
 	 */
 	public static File getNoSyncImageFile(UUID uuid) {
 		return new File(getNoSyncImagesPath(), uuid.toString() + ".jpg");
@@ -113,6 +122,9 @@ public final class ImageUtils {
 
 	/**
 	 * Returns the small Image associated with a given speaker UUID.
+	 *
+	 * @param	uuid	The UUID of the speaker.
+	 * @return	A File containing the small version of the speaker's image.
 	 */
 	public static File getSmallImageFile(UUID uuid) {
 		return new File(getImagesPath(), uuid.toString() + ".small.jpg");
@@ -123,6 +135,8 @@ public final class ImageUtils {
 	 *
 	 * @param	uuid	The UUID of the user whose images are to be allowed to
 	 * sync.
+	 * @throws	IOException in the event of an I/O related exception when
+	 * moving the file.
 	 */
 	public static void enableImageSync(UUID uuid) throws IOException {
 		FileUtils.moveFileToDirectory(getNoSyncSmallImageFile(uuid),
@@ -134,6 +148,10 @@ public final class ImageUtils {
 	/**
 	 * Returns the small Image associated with a given speaker UUID, looking in
 	 * the no-sync directory.
+	 *
+	 * @param	uuid	The UUID of the speaker in question.
+	 * @return	A File containing the small image of the speaker in the no-sync
+	 * directory.
 	 */
 	public static File getNoSyncSmallImageFile(UUID uuid) {
 		return new File(getNoSyncImagesPath(), uuid.toString() + ".small.jpg");
@@ -141,6 +159,10 @@ public final class ImageUtils {
 
 	/**
 	 * Returns a Bitmap associated with a given speaker UUID.
+	 *
+	 * @param	uuid	The UUID of the speaker.
+	 * @throws	IOException	If an I/O exception arises when accessing the file.
+	 * @return	A Bitmap of the speaker's image.
 	 */
 	public static Bitmap getImage(UUID uuid) throws IOException {
 		File file = getImageFile(uuid);
@@ -149,6 +171,10 @@ public final class ImageUtils {
 
 	/**
 	 * Returns a small Bitmap associated with a given speaker UUID.
+	 *
+	 * @param	uuid	the UUID of the speaker
+	 * @throws	IOException	If an I/O exception arises when accessing the file.
+	 * @return	A Bitmap of the speaker's small image.
 	 */
 	public static Bitmap getSmallImage(UUID uuid) throws IOException {
 		File file = getSmallImageFile(uuid);
@@ -160,12 +186,23 @@ public final class ImageUtils {
 	 * the no-sync directory.
 	 *
 	 * @param	uuid	The UUID of the Speaker whose image it is.
+	 * @throws	IOException	if an I/O related exception is thrown when
+	 * accessing the file.
+	 * @return	A Bitmap representing the small image of a speaker stored in
+	 * the no-sync directory.
 	 */
 	public static Bitmap getNoSyncSmallImage(UUID uuid) throws IOException {
 		File file = getNoSyncSmallImageFile(uuid);
 		return retrieveFromFile(file);
 	}
 
+	/**
+	 * Creates a small version of a speaker image for use in Aikuma.
+	 *
+	 * @param	uuid	The uuid of the speaker
+	 * @throws	IOException	if an I/O related exception is thrown when
+	 * accessing the file
+	 */
 	public static void createSmallSpeakerImage(UUID uuid) throws IOException {
 		String imageFilePath = getNoSyncImageFile(uuid).getPath();
 		Bitmap image = BitmapFactory.decodeFile(imageFilePath);
@@ -213,6 +250,9 @@ public final class ImageUtils {
 	 * (rotates the file according to the EXIF orientation tag, if applicable).
 	 *
 	 * @param	path	The absolute path of the image file.
+	 * @throws	IOException	If some I/O exception occurs when accessing
+	 * the file
+	 * @return	a Bitmap of the specified file.
 	 */
 	public static Bitmap retrieveFromFile(File path) throws IOException {
 		return retrieveFromFile(path.toString());

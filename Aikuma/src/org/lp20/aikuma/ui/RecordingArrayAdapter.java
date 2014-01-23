@@ -22,10 +22,19 @@ import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.ImageUtils;
 
 /**
+ * Takes a list of recordings and provides views as appropriate.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
+
+	/**
+	 * Constructor.
+	 *
+	 * @param	context	the current context
+	 * @param	recordings	The list of recordings.
+	 */
 	public RecordingArrayAdapter(Context context, List<Recording> recordings) {
 		super(context, LIST_ITEM_LAYOUT, recordings);
 		this.context = context;
@@ -59,6 +68,12 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		return recordingView;
 	}
 
+	/**
+	 * Creates the view for a given speaker.
+	 *
+	 * @param	speakerUUID	The UUID of the speaker.
+	 * @return	The image view for the speaker.
+	 */
 	private ImageView makeSpeakerImageView(UUID speakerUUID) {
 		ImageView speakerImage = new ImageView(context);
 		speakerImage.setAdjustViewBounds(true);

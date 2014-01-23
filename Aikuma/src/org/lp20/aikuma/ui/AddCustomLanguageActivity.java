@@ -16,6 +16,9 @@ import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.R;
 
 /**
+ * Allows the user to add a custom language as a default language that isn't in
+ * ISO 639-3.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
@@ -32,6 +35,11 @@ public class AddCustomLanguageActivity extends AikumaActivity {
 		addLanguageButton.setEnabled(false);
 	}
 
+	/**
+	 * When the add custom language button is pressed.
+	 *
+	 * @param	view	The add custom language button.
+	 */
 	public void addCustomLanguage(View view) {
 		String name = nameField.getText().toString();
 		Intent intent = new Intent();
@@ -45,6 +53,8 @@ public class AddCustomLanguageActivity extends AikumaActivity {
 		this.finish();
 	}
 
+	// Ensures the language name field has characters in it, and
+	// disables/enables the add language button on the fly.
 	private TextWatcher emptyTextWatcher = new TextWatcher() {
 		public void afterTextChanged(Editable s) {
 		}

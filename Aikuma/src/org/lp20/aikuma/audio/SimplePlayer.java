@@ -26,6 +26,9 @@ public class SimplePlayer extends Player implements Sampler {
 	 * Creates a player to play the supplied recording.
 	 *
 	 * @param	recording	The metadata of the recording to play.
+	 * @param	playThroughSpeaker	True if the audio is to be played through the main
+	 * speaker; false if through the ear piece (ie the private phone call style)
+	 * @throws	IOException	If there is an issue reading the audio source.
 	 */
 	public SimplePlayer(Recording recording, boolean playThroughSpeaker) throws IOException {
 		mediaPlayer = new MediaPlayer();
@@ -43,8 +46,11 @@ public class SimplePlayer extends Player implements Sampler {
 	 * Creates a player to play the supplied recording for when no Recording
 	 * metadata file exists
 	 *
-	 * @param	file	The location of the recording as a File
+	 * @param	recordingFile	The location of the recording as a File
 	 * @param	sampleRate	The sample rate of the recording
+	 * @param	playThroughSpeaker	True if the audio is to be played through the main
+	 * speaker; false if through the ear piece (ie the private phone call style)
+	 * @throws	IOException	If there is an issue reading the audio source.
 	 */
 	public SimplePlayer(File recordingFile, long sampleRate,
 			boolean playThroughSpeaker) throws IOException {
@@ -80,12 +86,20 @@ public class SimplePlayer extends Player implements Sampler {
 		}
 	}
 
-	/** Indicates whether the recording is currently being played. */
+	/**
+	 * Indicates whether the recording is currently being played.
+	 *
+	 * @return	true if the player is currently playing; false otherwise.
+	 */
 	public boolean isPlaying() {
 		return mediaPlayer.isPlaying();
 	}
 
-	/** Get current point in the recording in milliseconds. */
+	/**
+	 * Get current point in the recording in milliseconds.
+	 *
+	 * @return	The current point in the recording in milliseconds as an int.
+	 */
 	public int getCurrentMsec() {
 		try {
 			return mediaPlayer.getCurrentPosition();
@@ -100,7 +114,11 @@ public class SimplePlayer extends Player implements Sampler {
 		return msecToSample(getCurrentMsec());
 	}
 
-	/** Get the duration of the recording in milliseconds. */
+	/**
+	 * Get the duration of the recording in milliseconds.
+	 *
+	 * @return	The duration of the audio in milliseconds as an int.
+	 */
 	public int getDurationMsec() {
 		try {
 			return mediaPlayer.getDuration();
@@ -112,11 +130,20 @@ public class SimplePlayer extends Player implements Sampler {
 		}
 	}
 
-	/** Seek to a given point in the recording in milliseconds. */
+	/**
+	 * Seek to a given point in the recording in milliseconds.
+	 *
+	 * @param	msec	The time to jump the playback to in milliseconds.
+	 */
 	public void seekToMsec(int msec) {
 		mediaPlayer.seekTo(msec);
 	}
 
+	/**
+	 * Moves the recording to the given sample.
+	 *
+	 * @param	sample	The sample to jump playback to.
+	 */
 	public void seekToSample(long sample) {
 		seekToMsec(sampleToMsec(sample));
 	}
@@ -126,7 +153,12 @@ public class SimplePlayer extends Player implements Sampler {
 		mediaPlayer.release();
 	}
 
-	/** Set the callback to be run when the recording completes playing. */
+	/**
+	 * Set the callback to be run when the recording completes playing.
+	 *
+	 * @param	listener	The callback to be called when the recording
+	 * complets playing.
+	 */
 	public void setOnCompletionListener(final OnCompletionListener listener) {
 		mediaPlayer.setOnCompletionListener(
 				new MediaPlayer.OnCompletionListener() {
@@ -137,6 +169,11 @@ public class SimplePlayer extends Player implements Sampler {
 				});
 	}
 
+	/**
+	 * Returns the sample rate of this recording
+	 *
+	 * @return	The sample rate of this recording.
+	 */
 	public long getSampleRate() {
 		//If the sample rate is less than zero, then this indicates that there
 		//wasn't a sample rate found in the metadata file.
@@ -151,6 +188,13 @@ public class SimplePlayer extends Player implements Sampler {
 		this.sampleRate = sampleRate;
 	}
 
+	/**
+	 * Converts a value of samples into milliseconds assuming this recording's
+	 * sample rate.
+	 *
+	 * @param	sample	sample value to be converted.
+	 * @return	A millisecond value as an integer.
+	 */
 	public int sampleToMsec(long sample) {
 		long msec = sample / (getSampleRate() / 1000);
 		if (msec > Integer.MAX_VALUE) {
@@ -159,12 +203,15 @@ public class SimplePlayer extends Player implements Sampler {
 		return (int) msec;
 	}
 
+	/**
+	 * Converts a millisecond value into samples assuming this recording's
+	 * sample rate.
+	 *
+	 * @param	msec	A time value in milliseconds.
+	 * @return	A sample value as a long.
+	 */
 	public long msecToSample(int msec) {
 		return msec * (getSampleRate() / 1000);
-	}
-	
-	public void setAudioStreamType(int type) {
-		mediaPlayer.setAudioStreamType(type);
 	}
 
 	public boolean isFinishedPlaying() {

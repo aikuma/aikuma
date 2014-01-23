@@ -32,8 +32,11 @@ import java.util.Set;
 public class Microphone {
 
 	/**
+	 * Constructor
+	 *
 	 * @param	sampleRate	The sample rate at which the audio should be
 	 * recorded
+	 * @throws	MicException	If the microphone couldn't be set up.
 	 */
 	public Microphone(long sampleRate) throws MicException {
 		physicalMicrophone = getListener(
@@ -82,18 +85,25 @@ public class Microphone {
 			return false;
 		}
 	}
+	
+	/**
+	 * Releases the physical microphone.
+	 */
 	public void release() {
 		physicalMicrophone.release();
 	}
 
-	/** Accessors for sample rate, audio format channel configuration  */
 	public int getSampleRate() { return physicalMicrophone.getSampleRate(); }
 	public int getAudioFormat() { return physicalMicrophone.getAudioFormat(); }
 	public int getChannelConfiguration() { 
 			return physicalMicrophone.getChannelConfiguration();
 	}
 
-	/** Start listening. */
+	/**
+	 * Start listening.
+	 *
+	 * @param	callback	The callback to hand audio buffers to.
+	 */
 	public void listen(final MicrophoneListener callback) {
 		// If there is already a thread listening then kill it and ensure it's
 		// dead before creating a new thread.
@@ -112,7 +122,11 @@ public class Microphone {
 		t.start();
 	}
   
-	/** Stop listening to the microphone. */
+	/**
+	 * Stop listening to the microphone.
+	 *
+	 * @throws	MicException	If there is a problem stopping the microphone.
+	 */
 	public void stop() throws MicException {
 		physicalMicrophone.stop();
 		if (physicalMicrophone.getState() != AudioRecord.RECORDSTATE_STOPPED) {
@@ -124,6 +138,11 @@ public class Microphone {
 	 * The exception class used when initialization or stopping fails.
 	 */
 	public static class MicException extends Exception {
+		/**
+		 * Constructor
+		 *
+		 * @param	message	The exception message.
+		 */
 		public MicException(String message) {
 			super(message);
 		}

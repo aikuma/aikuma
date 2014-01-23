@@ -36,9 +36,6 @@ public class PCMWriter implements Sampler {
 	 */
 	private long currentSample;
 
-	/**
-	 * currentSample accessor.
-	 */
 	public long getCurrentSample(){
 		return this.currentSample;
 	}
@@ -94,6 +91,8 @@ public class PCMWriter implements Sampler {
 	 * Write the given byte buffer to the file.
 	 *
 	 * Note: This method remembers the size of the buffer written so far.
+	 *
+	 * @param	buffer	The buffer containing the audio data to be written.
 	 */
 	public void write(byte[] buffer) {
 		try {
@@ -117,7 +116,11 @@ public class PCMWriter implements Sampler {
 		}
 	}
 
-	/** Write the given short buffer to the file. */
+	/**
+	 * Write the given short buffer to the file.
+	 *
+	 * @param	buffer	The buffer containing audio data to be written.
+	 */
 	public void write(short[] buffer) {
 		byte[] byteBuffer = new byte[buffer.length * 2];
 
@@ -132,13 +135,12 @@ public class PCMWriter implements Sampler {
 		write(byteBuffer);
 	}
 
-	/** Default constructor.
+	/**
+	 * Default constructor.
 	 *
 	 *  @param sampleRate    Eg. 1000
 	 *  @param channelConfig Eg. AudioFormat.CHANNEL_IN_MONO
 	 *  @param audioFormat   Eg. AudioFormat.ENCODING_PCM_16BIT
-	 *
-	 *  @return an instance of a PCMWriter.
 	 */
 	public PCMWriter(int sampleRate, int channelConfig, int audioFormat) {
 		currentSample = 0;

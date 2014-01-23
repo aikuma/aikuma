@@ -32,7 +32,7 @@ public class SyncUtil {
 	 */
 	public static void startSyncLoop() {
 		if (syncThread == null || !syncThread.isAlive()) {
-			syncThread = new SyncLoop();
+			syncThread = new SyncLoop(false);
 			syncThread.start();
 		}
 	}
@@ -50,11 +50,18 @@ public class SyncUtil {
 	 * A thread that loops and attempts to sync every minute.
 	 */
 	private static class SyncLoop extends Thread {
-		public SyncLoop() {
-		}
+		/**
+		 * Constructor for the SyncLoop.
+		 *
+		 * @param	forceSync	if true, ensures a sync will start immediately.
+		 */
 		public SyncLoop(boolean forceSync) {
 			this.forceSync = forceSync;
 		}
+		/**
+		 * Runs the loop that periodically tries to sync. 
+		 */
+		@Override
 		public void run() {
 			int waitMins = 1;
 			boolean syncResult;

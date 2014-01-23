@@ -120,17 +120,20 @@ public class PhoneRespeakFragment extends Fragment {
 		}
 	}
 
+	// A safer way to interrupt threads.
 	private void stopThread(Thread thread) {
 		if (thread != null) {
 			thread.interrupt();
 		}
 	}
 
+	// Pauses the respaking process
 	private void haltRespeaking() {
 		respeaker.halt();
 		stopThread(seekBarThread);
 	}
 
+	// Resumes the respeeaking process.
 	private void resumeRespeaking() {
 		respeaker.resume();
 		seekBarThread = new Thread(new Runnable() {
@@ -164,6 +167,11 @@ public class PhoneRespeakFragment extends Fragment {
 		this.uuid = uuid;
 	}
 
+	/**
+	 * PhoneRespeaker mutator.
+	 *
+	 * @param	respeaker	The PhoneRespeaker
+	 */
 	public void setPhoneRespeaker(PhoneRespeaker respeaker) {
 		this.respeaker = respeaker;
 		respeaker.getSimplePlayer().setOnCompletionListener(onCompletionListener);

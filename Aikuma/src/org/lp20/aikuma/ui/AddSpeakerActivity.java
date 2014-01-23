@@ -61,16 +61,27 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		setListAdapter(adapter);
 	}
 
+	/**
+	 * Called when a user presses the add ISO language button.
+	 *
+	 * @param	view	The button
+	 */
 	public void onAddISOLanguageButton(View view) {
 		Intent intent = new Intent(this, LanguageFilterList.class);
 		startActivityForResult(intent, SELECT_LANGUAGE);
 	}
 
+	/**
+	 * Called when a user presses the add custom language button.
+	 *
+	 * @param	view	The button
+	 */
 	public void onAddCustomLanguageButton(View view) {
 		Intent intent = new Intent(this, AddCustomLanguageActivity.class);
 		startActivityForResult(intent, SELECT_LANGUAGE);
 	}
 
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent
 			intent) {
 		if (requestCode == SELECT_LANGUAGE) {
@@ -88,6 +99,8 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		}
 	}
 
+	// Creates a smaller version of the photo taken and uses it for the speaker
+	// image view.
 	private void handleSmallCameraPhoto() {
 		Bitmap image;
 		try {
@@ -105,10 +118,20 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		}
 	}
 
+	/**
+	 * Called when the user cancels creation of a speaker
+	 *
+	 * @param	view	The cancel button.
+	 */
 	public void onCancelButtonPressed(View view) {
 		this.finish();
 	}
 
+	/**
+	 * Called wen the user is ready to confirm the creation of the speaker.
+	 *
+	 * @param	view	The OK button.
+	 */
 	public void onOkButtonPressed(View view) {
 		EditText textField = (EditText) findViewById(R.id.Name);
 		String name = textField.getText().toString();
@@ -123,6 +146,11 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		this.finish();
 	}
 
+	/**
+	 * When the take photo button is pressed.
+	 *
+	 * @param	view	The take photo button.
+	 */
 	public void takePhoto(View view) {
 		dispatchTakePictureIntent(PHOTO_REQUEST_CODE);
 	}

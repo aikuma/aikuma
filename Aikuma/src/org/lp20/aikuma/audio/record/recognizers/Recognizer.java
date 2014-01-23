@@ -11,8 +11,19 @@ package org.lp20.aikuma.audio.record.recognizers;
  */
 public abstract class Recognizer {
 
+	/**
+	 * Determines whether a buffer represents silence.
+	 *
+	 * @param	buffer	The buffer containing the audio
+	 * @return	true if silence; false otherwise
+	 */
 	public abstract boolean isSilence(short[] buffer);
 
+	/**
+	 * Determines whether a buffer represents speech.
+	 *
+	 * @param	buffer	The buffer containing the audio
+	 * @return	true if speech; false otherwise
+	 */
 	public abstract boolean isSpeech(short[] buffer);
-	
 }

@@ -44,8 +44,7 @@ import org.lp20.aikuma.ui.sensors.ProximityDetector;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class RecordActivity extends AikumaActivity {
-	
-	/** Called when the activity is first created. */
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -95,11 +94,6 @@ public class RecordActivity extends AikumaActivity {
 	}
 
 	@Override
-	public void onStop() {
-		super.onStop();
-	}
-
-	@Override
 	public void onPause() {
 		super.onPause();
 		pause();
@@ -128,6 +122,7 @@ public class RecordActivity extends AikumaActivity {
 		this.proximityDetector.start();
 	}
 
+	// Activates recording
 	private void record() {
 		if (!recording) {
 			recording = true;
@@ -154,6 +149,7 @@ public class RecordActivity extends AikumaActivity {
 		}
 	}
 
+	// Pauses the recording.
 	private void pause() {
 		if (recording) {
 			recording = false;
@@ -174,14 +170,30 @@ public class RecordActivity extends AikumaActivity {
 		}
 	}
 
+	/**
+	 * Called when the record button is pressed - starts recording.
+	 *
+	 * @param	view	The record button
+	 */
 	public void onRecordButton(View view) {
 		record();
 	}
 
+	/**
+	 * Called when the pause button is pressed - pauses recording.
+	 *
+	 * @param	view	The pause button
+	 */
 	public void onPauseButton(View view) {
 		pause();
 	}
 
+	/**
+	 * Called when the stop/save button is pressed; sends some metadata off to
+	 * RecordingMetadataActivity.
+	 *
+	 * @param	view	The stop/save button.
+	 */
 	public void onStopButton(View view) {
 		int duration = recorder.getCurrentMsec();
 		try {

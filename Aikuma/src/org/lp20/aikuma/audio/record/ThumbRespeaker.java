@@ -34,6 +34,14 @@ import org.lp20.aikuma.model.Recording;
  */
 public class ThumbRespeaker {
 
+	/**
+	 * Constructor
+	 *
+	 * @param	original	The original recording to make a respeaking of.
+	 * @param	respeakingUUID	The UUID of the respeaking we will create.
+	 * @throws	MicException	If the microphone couldn't be used.
+	 * @throws	IOException	If there is an I/O issue.
+	 */
 	public ThumbRespeaker(Recording original, UUID respeakingUUID)
 			throws MicException, IOException {
 		recorder = new Recorder(new File(Recording.getNoSyncRecordingsPath(),
@@ -43,55 +51,77 @@ public class ThumbRespeaker {
 		setFinishedPlaying(false);
 	}
 
-	/*
-	public ThumbRespeaker(Context context) {
-		recorder = new Recorder(context);
-		player = new Player();
-		mapper = new Mapper();
-		setFinishedPlaying(false);
-	}
-	*/
-
+	/**
+	 * Plays the original recording.
+	 */
 	public void playOriginal() {
 		player.seekToSample(mapper.getOriginalStartSample());
 		mapper.markOriginal(player);
 		player.play();
 	}
 
+	/**
+	 * Pauses playing of the original recording.
+	 */
 	public void pauseOriginal() {
 		player.pause();
 	}
 
+	/**
+	 * Activates recording of the respeaking.
+	 */
 	public void recordRespeaking() {
 		mapper.markRespeaking(player, recorder);
 		recorder.listen();
 	}
 
+	/**
+	 * Pauses the respeaking process.
+	 *
+	 * @throws	MicException	If the micrphone recording couldn't be paused.
+	 */
 	public void pauseRespeaking() throws MicException {
 		recorder.pause();
 		mapper.store(player, recorder);
 	}
 
-	public void stop() throws MicException {
+	/**
+	 * Stops/finishes the respeaking process
+	 *
+	 * @throws	MicException	If there is an issue stopping the microphone.
+	 * @throws	IOException	If the mapping between original and respeaking
+	 * couldn't be written to file.
+	 */
+	public void stop() throws MicException, IOException {
 		recorder.stop();
 		player.pause();
 		mapper.stop();
 	}
 
-	/** finishedPlaying mutator */
-	 public void setFinishedPlaying(boolean finishedPlaying) {
-	 	this.finishedPlaying = finishedPlaying;
-	 }
+	public void setFinishedPlaying(boolean finishedPlaying) {
+		this.finishedPlaying = finishedPlaying;
+	}
 
 	public int getCurrentMsec() {
 		return recorder.getCurrentMsec();
 	}
 
-	/** finishedPlaying accessor */
+	/**
+	 * finishedPlaying accessor
+	 *
+	 * @return	true if the original recording has finished playing; false
+	 * otherwise.
+	 */
 	public boolean getFinishedPlaying() {
 		return this.finishedPlaying;
 	}
 
+	/**
+	 * Sets the callback to be run when the original recording has finished
+	 * playing.
+	 *
+	 * @param	ocl	The callback to be played on completion.
+	 */
 	public void setOnCompletionListener(OnCompletionListener ocl) {
 		player.setOnCompletionListener(ocl);
 	}
@@ -100,6 +130,9 @@ public class ThumbRespeaker {
 		return this.player;
 	}
 
+	/**
+	 * Releases the resources associated with this respeaker.
+	 */
 	public void release() {
 		if (player != null) {
 			player.release();

@@ -95,7 +95,8 @@ public final class FileIO {
 	 * @param	path	The path to the file in which the data is to be
 	 * written.
 	 * @param	data	The data that is to be written to the file.
-	 *
+	 * @throws	IOException	If there is an I/O issue when writing the data to
+	 * file.
 	 */
 	public static void write(String path, String data) throws IOException {
 		File file;
@@ -116,6 +117,7 @@ public final class FileIO {
 	 * @param	path	The path to the file in which the data is to be
 	 * written.
 	 * @param	data	The data that is to be written to the file.
+	 * @throws	IOException	If there is an I/O issue when writing the data to file.
 	 *
 	 */
 	public static void write(File path, String data) throws IOException {
@@ -128,6 +130,8 @@ public final class FileIO {
 	 *
 	 * @param	path	The File where the JSONObject will be written.
 	 * @param	jsonObj	The JSONObject to be written.
+	 * @throws	IOException if there is an I/O issue when writing the
+	 * JSONObject to file.
 	 */
 	public static void writeJSONObject(File path, JSONObject jsonObj)
 			throws IOException {
@@ -142,7 +146,7 @@ public final class FileIO {
 	 * returns a string containing the file's contents.
 	 *
 	 * @param	path	The path to the file in which the data lies.
-	 *
+	 * @throws	IOException	if there is an issue reading from the file.
 	 * @return	A string containing the file's contents;
 	 */
 	public static String read(String path) throws IOException {
@@ -163,7 +167,7 @@ public final class FileIO {
 	 * returns a string containing the file's contents.
 	 *
 	 * @param	path	The path to the file in which the data lies.
-	 *
+	 * @throws	IOException	If there is an issue reading from the file.
 	 * @return	A string containing the file's contents;
 	 */
 	public static String read(File path) throws IOException {
@@ -174,6 +178,8 @@ public final class FileIO {
 	 * Takes a file path and reads a JSONObject from that file.
 	 *
 	 * @param	path	The path to the file where the JSON is stored.
+	 * @throws	IOException	If there is a problem parsing the JSON.
+	 * @return	A JSONObject representing the JSON in the supplied File.
 	 */
 	public static JSONObject readJSONObject(File path) throws IOException {
 		try {
@@ -192,6 +198,8 @@ public final class FileIO {
 	 *
 	 * @param	resources	resources so that the iso 639-3 text file can be
 	 * retrieved.
+	 * @throws	IOException	If there is an issue reading from the langcodes
+	 * file.
 	 * @return	a map from language names to their corresponding codes.
 	 */
 	public static List<Language> readLangCodes(Resources resources) throws IOException {
@@ -208,6 +216,13 @@ public final class FileIO {
 		return languages;
 	}
 
+	/**
+	 * Writes a specified list of default languages to file.
+	 *
+	 * @param	defaultLanguages	A list of default languages.
+	 * @throws	IOException	If there is a problem with writing the default
+	 * languages.
+	 */
 	public static void writeDefaultLanguages(List<Language> defaultLanguages)
 			throws IOException  {
 		CSVWriter writer = new CSVWriter(new FileWriter(
@@ -221,6 +236,12 @@ public final class FileIO {
 		writer.close();
 	}
 
+	/**
+	 * Reads from file the default languages for recording that have been
+	 * specified by the user previously.
+	 *
+	 * @return	An ArrayList of Language objects.
+	 */
 	public static List readDefaultLanguages() {
 		List<Language> defaultLanguages = new ArrayList<Language>();
 		try {
@@ -245,7 +266,9 @@ public final class FileIO {
 	/**
 	 * Writes the default sensitivity to file.
 	 *
-	 * @param	sensitivity	The default sensitivity for phone respeaking.
+	 * @param	defaultSensitivity	The default sensitivity for phone respeaking.
+	 * @throws	IOException	If the default sensitivity setting cannot be
+	 * written to file.
 	 */
 	public static void writeDefaultSensitivity(int defaultSensitivity) throws IOException {
 		write(new File(getNoSyncPath(), "sensitivity-settings.txt"),
@@ -256,6 +279,8 @@ public final class FileIO {
 	 * Reads the default sensitivity from file.
 	 *
 	 * @return	The default sensitivity for phone respeaking.
+	 * @throws	IOException	if the default sensitivity settings
+	 * file cannot be read.
 	 */
 	public static int readDefaultSensitivity() throws IOException {
 		return Integer.parseInt(read(new File(getNoSyncPath(),

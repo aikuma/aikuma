@@ -98,6 +98,7 @@ public class Speaker implements Parcelable{
 	 * Gets the Speaker's image.
 	 *
 	 * @return	A Bitmap object.
+	 * @throws	IOException	If the image cannot be retrieved.
 	 */
 	public Bitmap getImage() throws IOException {
 		return ImageUtils.getImage(getUUID());
@@ -107,6 +108,7 @@ public class Speaker implements Parcelable{
 	 * Gets the small version of the Speaker's image.
 	 *
 	 * @return	A Bitmap object.
+	 * @throws	IOException	If the image cannot be retrieved.
 	 */
 	public Bitmap getSmallImage() throws IOException {
 		return ImageUtils.getSmallImage(getUUID());
@@ -160,6 +162,8 @@ public class Speaker implements Parcelable{
 	/**
 	 * Write the Speaker to file iin a subdirectory of the Speakers directory
 	 * named as <uuid>.json
+	 *
+	 * @throws	IOException	If the speaker metadata cannot be written to file.
 	 */
 	public void write() throws IOException {
 		JSONObject encodedSpeaker = this.encode();
@@ -172,6 +176,8 @@ public class Speaker implements Parcelable{
 	 * read a Speaker from the file containing the JSON describing the speaker
 	 *
 	 * @param	uuid	A UUID object representing the UUID of the Speaker.
+	 * @return	A Speaker object corresponding to the given speaker UUID.
+	 * @throws	IOException	If the speaker metadata cannot be read from file.
 	 */
 	public static Speaker read(UUID uuid) throws IOException {
 		JSONObject jsonObj = FileIO.readJSONObject(
@@ -220,6 +226,7 @@ public class Speaker implements Parcelable{
 	 * Compares the given object with the Speaker, and returns true if the
 	 * Speaker uuid, name and languages are equal.
 	 *
+	 * @param	obj	The object to compare to.
 	 * @return	true if the uuid, name and languages of the Speaker are equal;
 	 * false otherwise.
 	 */
@@ -235,6 +242,11 @@ public class Speaker implements Parcelable{
 				.append(languages, rhs.languages).isEquals();
 	}
 
+	/**
+	 * Provides a string representation of the speaker.
+	 *
+	 * @return	A string representation of the Speaker
+	 */
 	public String toString() {
 		String s = getUUID().toString() + ", " + getName() + ", " +
 				getLanguages().toString();
@@ -256,6 +268,7 @@ public class Speaker implements Parcelable{
 	 * Sets the UUID of the Speaker.
 	 *
 	 * @param	uuid	A UUID object representing the Speaker's UUID.
+	 * @throws	IllegalArgumentException	If the speaker UUID is null.
 	 */
 	private void setUUID(UUID uuid) throws IllegalArgumentException {
 		if (uuid == null) {
@@ -278,6 +291,7 @@ public class Speaker implements Parcelable{
 	 *
 	 * @param	languages	A List<Language> object representing the languages
 	 * associated with the Speaker.
+	 * @throws	IllegalArgumentException	If the language list is null
 	 */
 	private void setLanguages(List<Language> languages) throws
 			IllegalArgumentException {
@@ -287,17 +301,27 @@ public class Speaker implements Parcelable{
 		this.languages = languages;
 	}
 
-	/* To make it Parcelable */
+	@Override
 	public int describeContents() {
 		return 0;
 	}
 
+	/**
+	 * Creates a Parcel object representing the Speaker.
+	 *
+	 * @param	out	The parcel to be written to
+	 * @param	_flags	Unused additional flags about how the object should be
+	 * written.
+	 */
 	public void writeToParcel(Parcel out, int _flags) {
 		out.writeString(uuid.toString());
 		out.writeString(name);
 		out.writeTypedList(languages);
 	}
 
+	/**
+	 * Generates instances of a Speaker from a parcel.
+	 */
 	public static final Parcelable.Creator<Speaker> CREATOR =
 			new Parcelable.Creator<Speaker>() {
 		public Speaker createFromParcel(Parcel in) {
@@ -308,6 +332,11 @@ public class Speaker implements Parcelable{
 		}
 	};
 
+	/**
+	 * Constructor that takes a parcel representing the speaker.
+	 *
+	 * @param	in	The parcel representing the Speaker to be constructed.
+	 */
 	public Speaker(Parcel in) {
 		setUUID(UUID.fromString(in.readString()));
 		setName(in.readString());

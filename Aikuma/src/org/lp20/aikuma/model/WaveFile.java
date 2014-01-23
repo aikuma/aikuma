@@ -27,6 +27,8 @@ public class WaveFile {
 	 * Constructor.
 	 *
 	 * @param	file	The file to read from.
+	 * @throws	IOException	In the event that there is an issue reading the
+	 * file.
 	 */
 	public WaveFile(File file) throws IOException {
 		setFile(file);
@@ -84,6 +86,7 @@ public class WaveFile {
 		mFile = file;
 	}
 
+	// Reads the header from the wave file.
 	private void readHeader() throws IOException {
 		BufferedInputStream in = new
 				BufferedInputStream(new FileInputStream(mFile), 44);
@@ -97,6 +100,7 @@ public class WaveFile {
 		mHeader = out.toByteArray();
 	}
 
+	// Reads the sample rate from the wave file
 	private void readSampleRate() {
 		byte[] sampleRateBytes = Arrays.copyOfRange(mHeader, 24, 28);
 		ByteBuffer bb = ByteBuffer.wrap(sampleRateBytes);
@@ -104,6 +108,7 @@ public class WaveFile {
 		mSampleRate = bb.getInt();
 	}
 
+	// Reads the bits per sample from the wave file
 	private void readBitsPerSample() {
 		byte[] bpsBytes = Arrays.copyOfRange(mHeader, 34, 36);
 		ByteBuffer bb = ByteBuffer.wrap(bpsBytes);
@@ -111,6 +116,7 @@ public class WaveFile {
 		mBitsPerSample = bb.getShort();
 	}
 
+	// Reads the number of channels from the wave file
 	private void readNumChannels() {
 		byte[] ncBytes = Arrays.copyOfRange(mHeader, 22, 24);
 		ByteBuffer bb = ByteBuffer.wrap(ncBytes);

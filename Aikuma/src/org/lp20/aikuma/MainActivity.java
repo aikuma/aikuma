@@ -57,7 +57,6 @@ import org.lp20.aikuma.model.WaveFile;
  */
 public class MainActivity extends ListActivity {
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -93,10 +92,6 @@ public class MainActivity extends ListActivity {
 		setListAdapter(adapter);
 	}
 
-	/**
-	 * When a recording item in the list is clicked, start the ListenActivity
-	 * and send the relevant UUID through.
-	 */
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Recording recording = (Recording) getListAdapter().getItem(position);
@@ -116,7 +111,7 @@ public class MainActivity extends ListActivity {
 	/**
 	 * Called when the import button is pressed; starts the import process.
 	 *
-	 * @param	view	the audio import button.
+	 * @param	_view	the audio import button.
 	 */
 	public void audioImport(View _view) {
 		mPath = Environment.getExternalStorageDirectory();

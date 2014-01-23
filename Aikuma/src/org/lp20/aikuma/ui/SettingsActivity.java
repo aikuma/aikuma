@@ -18,7 +18,8 @@ import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.UsageUtils;
 
-/** The mother activity for settings - hosts buttons that link to various
+/**
+ * The mother activity for settings - hosts buttons that link to various
  * specific settings activities.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
@@ -31,16 +32,10 @@ public class SettingsActivity extends AikumaActivity {
 	 */
 	public static final int DEFAULT_DEFAULT_SENSITIVITY  = 4000;
 
-	/**
-	 * The slider that is used to control the default sensitivity.
-	 */
 	private SeekBar sensitivitySlider;
-
-	/**
-	 * The default sensitivity
-	 */
 	private int defaultSensitivity;
 
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings);
@@ -68,6 +63,7 @@ public class SettingsActivity extends AikumaActivity {
 		}
 	}
 
+	// Define the sensitivity slider's functionality
 	private void setupSensitivitySlider() {
 
 		//Create the sensitivity slider functionality.
@@ -75,23 +71,18 @@ public class SettingsActivity extends AikumaActivity {
 		//Read the sensitivity and set the slider accordingly.
 		try {
 			defaultSensitivity = FileIO.readDefaultSensitivity();
-			Log.i("132", "read: " + defaultSensitivity);
 		} catch (IOException e) {
-			Log.i("132", "exception");
 			defaultSensitivity = DEFAULT_DEFAULT_SENSITIVITY;
 		}
 
 		sensitivitySlider.setMax(DEFAULT_DEFAULT_SENSITIVITY*2);
-		Log.i("132", "ds: " + defaultSensitivity);
 		sensitivitySlider.setProgress(defaultSensitivity);
-		Log.i("132", "ds2: " + defaultSensitivity);
 
 		sensitivitySlider.setOnSeekBarChangeListener(
 			new OnSeekBarChangeListener() {
 				public void onProgressChanged(SeekBar sensitivitySlider,
 						int sensitivity, boolean fromUser) {
 					if (sensitivity == 0) {
-						Log.i("132", "setting ds to 1");
 						defaultSensitivity = 1;
 					} else {
 						defaultSensitivity = sensitivity;
@@ -104,6 +95,7 @@ public class SettingsActivity extends AikumaActivity {
 
 	}
 
+	// Retrieves information about the Aikuma version.
 	private void getVersionInfo() {
 		TextView versionField = (TextView) findViewById(R.id.versionField);
 		try {
@@ -111,10 +103,11 @@ public class SettingsActivity extends AikumaActivity {
 						this.getPackageManager().getPackageInfo(
 						this.getPackageName(), 0).versionName);
 		} catch (android.content.pm.PackageManager.NameNotFoundException e) {
-				//Just leave the textview empty.
+			//Just leave the textview empty.
 		}
 	}
 
+	// Retrievs information about the user and displays it.
 	private void getUsageInfo() {
 		TextView usageField = (TextView) findViewById(R.id.usageField);
 		usageField.setText("Recording time used: " + UsageUtils.timeUsed(16000, 16) + 
@@ -123,11 +116,21 @@ public class SettingsActivity extends AikumaActivity {
 				"\nCommentaries: " + UsageUtils.numCommentaries());
 	}
 
+	/**
+	 * Starts up the default languages activity.
+	 *
+	 * @param	view	The default language activity button.
+	 */
 	public void onDefaultLanguagesButton(View view) {
 		Intent intent = new Intent(this, DefaultLanguagesActivity.class);
 		startActivity(intent);
 	}
 
+	/**
+	 * Starts up the sync settings activity.
+	 *
+	 * @param	view	The sync settings activity button.
+	 */
 	public void onSyncSettingsButton(View view) {
 		Intent intent = new Intent(this, SyncSettingsActivity.class);
 		startActivity(intent);

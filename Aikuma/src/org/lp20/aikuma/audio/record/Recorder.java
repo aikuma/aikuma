@@ -40,6 +40,11 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	/**
 	 * Creates a Recorder that uses an analyzer which tells the recorder to
 	 * always record regardless of input.
+	 *
+	 * @param	path	The path to the file where the recording will be stored
+	 * @param	sampleRate	The sample rate that the recording should be taken
+	 * at.
+	 * @throws	MicException	If there is an issue setting up the microphone.
 	 */
 	public Recorder(File path, long sampleRate) throws MicException {
 		this(path, sampleRate, new SimpleAnalyzer());
@@ -57,11 +62,13 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	*/
 
 	/**
-	 * Accepts and analyzer that decides whether the recorder should record or
-	 * ignore the input
+	 * Constructor
 	 *
-	 * @param Pass in an analyzer which decides whether
-	 *        the recorder should record or ignore the input.
+	 * @param	path	The path to where the recording should be stored.
+	 * @param	sampleRate	The sample rate the recording should be taken at.
+	 * @param	analyzer	The analyzer that determines whether the recorder
+	 * should record or ignore the input
+	 * @throws	MicException	If there is an issue setting up the microphone.
 	 */
 	public Recorder(File path, long sampleRate, Analyzer analyzer) throws MicException {
 		this.analyzer = analyzer;
@@ -100,6 +107,7 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 		return sampleToMsec(getCurrentSample());
 	}
 
+	// Converts a sample value to milliseconds.
 	private int sampleToMsec(long sample) {
 		long msec = sample / (microphone.getSampleRate() / 1000);
 		if (msec > Integer.MAX_VALUE) {
@@ -129,31 +137,44 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 		);
 	}
 
-	/** Stop listening to the microphone and close the file.
+	/**
+	 * Stop listening to the microphone and close the file.
 	 *
 	 * Note: Once stopped you cannot restart the recorder.
+	 *
+	 * @throws	MicException	If there was an issue stopping the microphone.
 	 */
 	public void stop() throws MicException {
 		microphone.stop();
 		file.close();
 	}
 
+	/**
+	 * Release resources associated with this recorder.
+	 */
 	public void release() {
 		if (microphone != null) {
 			microphone.release();
 		}
 	}
 
-	/** Pause listening to the microphone. */
+	/**
+	 * Pause listening to the microphone.
+	 *
+	 * @throws	MicException	If there was an issue stopping the microphone.
+	 */
 	public void pause() throws MicException {
-		//Log.e("beep", "what", new Throwable());
 		microphone.stop();
 		/*
 		beeper.beep();
 		*/
 	}
 
-	/** Callback for the microphone */
+	/**
+	 * Callback for the microphone.
+	 *
+	 * @param	buffer	The buffer containing audio data.
+	 */
 	public void onBufferFull(short[] buffer) {
 		// This will call back the methods:
 		//  * silenceTriggered
@@ -168,12 +189,23 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	// If you need a different behaviour, override.
 	//
 
-	/** By default simply writes the buffer to the file. */
+	/** 
+	 * By default simply writes the buffer to the file.
+	 * @param	buffer	The buffer containing the audio data.
+	 * @param	justChanged	Indicates whether audio has just been triggered
+	 * after a bout of silence.
+	 */
 	public void audioTriggered(short[] buffer, boolean justChanged) {
 		file.write(buffer);
 	}
 
-	/** Does nothing by default if silence is triggered. */
+	/**
+	 * Does nothing by default if silence is triggered.
+	 *
+	 * @param	buffer	The buffer containing the audio data.
+	 * @param	justChanged	Indicates whether silence has just been triggered
+	 * after a bout of audio.
+	 */
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
 		// Intentionally empty.
 	}

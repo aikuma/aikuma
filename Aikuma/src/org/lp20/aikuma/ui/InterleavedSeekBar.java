@@ -41,19 +41,17 @@ class InterleavedSeekBar extends SeekBar {
 		paint.setStrokeWidth(2);
 		paint.setColor(Color.rgb(204, 0, 0));
 
-		//lines = new ArrayList<Float>();
-		//addLine(0.0f);
-		//addLine(50.0f);
-		//addLine(100.0f);
 		drawLines(canvas, paint);
 	}
 
+	// Draws all the lines on the given canvas with the given paint.
 	private void drawLines(Canvas canvas, Paint paint) {
 		for(Float line : lines) {
 			drawLine(line, canvas, paint);
 		}
 	}
 
+	// Draws a line on the canvas with the given paint
 	private void drawLine(Float line, Canvas canvas, Paint paint) {
 		Rect bounds = canvas.getClipBounds();
 		int barWidth = (bounds.right-16) - (bounds.left+16);
@@ -62,6 +60,11 @@ class InterleavedSeekBar extends SeekBar {
 		canvas.drawLine(pixel+16, 0f, pixel+16, 32f, paint);
 	}
 
+	/**
+	 * Adds a line at the specified point in the seek bar.
+	 *
+	 * @param	x	The place to put the line, as a percentage of the seekbar.
+	 */
 	public void addLine(Float x) {
 		if (x < 0 || x > 100) {
 			throw new IllegalArgumentException(
