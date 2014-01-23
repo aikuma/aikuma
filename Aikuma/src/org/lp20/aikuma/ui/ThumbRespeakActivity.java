@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 import java.io.IOException;
 import java.util.UUID;
 import org.lp20.aikuma.R;
@@ -76,8 +77,11 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		try {
 			respeaker.stop();
 		} catch (MicException e) {
-			//Maybe make a recording metadata file that refers to the error so
-			//that the audio can be salvaged.
+			Toast.makeText(this, "There has been an error stopping the microphone.",
+					Toast.LENGTH_LONG).show();
+		} catch (IOException e) {
+			Toast.makeText(this, "There has been an error writing the mapping between original and respeaking to file",
+					Toast.LENGTH_LONG).show();
 		}
 	}
 

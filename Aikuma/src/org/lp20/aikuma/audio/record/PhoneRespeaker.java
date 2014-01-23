@@ -114,10 +114,16 @@ public class PhoneRespeaker implements
 	/**
 	 * Stops/finishes the phone respeaking process.
 	 */
-	public void stop() {
+	public void stop(){
 		stopMic();
 		player.release();
-		mapper.stop();
+		try {
+			mapper.stop();
+		} catch (IOException e) {
+			//If the mapping couldn't be written to file, the recording would
+			//not have been able to either, which would have resulted in an
+			//error. This block is unreachable.
+		}
 		file.close();
 	}
 

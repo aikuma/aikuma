@@ -90,10 +90,16 @@ public class ThumbRespeaker {
 	 *
 	 * @throws	MicException	If there is an issue stopping the microphone.
 	 */
-	public void stop() throws MicException {
+	public void stop() throws MicException, IOException {
 		recorder.stop();
 		player.pause();
-		mapper.stop();
+		//try {
+			mapper.stop();
+		//} catch (IOException e) {
+			//If the mapping couldn't be written to file, the recording would
+			//not have been able to either, which would have resulted in an
+			//error. This block is unreachable.
+		//}
 	}
 
 	public void setFinishedPlaying(boolean finishedPlaying) {
