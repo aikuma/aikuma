@@ -28,6 +28,13 @@ public class Segments {
 	private Segment finalOriginalSegment;
 	private UUID respeakingUUID;
 
+	/**
+	 * Creates a Segment mapping based on what it finds in the mapping file
+	 * corresponding to the supplied UUID.
+	 *
+	 * @param	respeakingUUID	The UUID of the respeaking whose mapping is to
+	 * be read.
+	 */
 	public Segments(UUID respeakingUUID) {
 		this();
 		this.respeakingUUID = respeakingUUID;
@@ -39,14 +46,32 @@ public class Segments {
 			//Issue with reading mapping. Maybe throw an exception?
 		}
 	}
+
+	/**
+	 * Constructor; creates an empty Segments.
+	 */
 	public Segments() {
 		segmentMap = new LinkedHashMap<Segment, Segment>();
 	}
 
+	/**
+	 * Gets the respeaking segment that corresponds to the given original
+	 * segment.
+	 *
+	 * @param	originalSegment	The segment of the original whose corresponding
+	 * respeaking segment is required.
+	 * @return	The corresponding respeaking segment.
+	 */
 	public Segment getRespeakingSegment(Segment originalSegment) {
 		return segmentMap.get(originalSegment);
 	}
 
+	/**
+	 * Adds a segment pair to the segments.
+	 *
+	 * @param	originalSegment	A segment from the original audio source.
+	 * @param	respeakingSegment	A segment from the respeaking audio source.
+	 */
 	public void put(Segment originalSegment,
 					Segment respeakingSegment) {
 		segmentMap.put(originalSegment, respeakingSegment);
@@ -56,7 +81,14 @@ public class Segments {
 		return segmentMap.keySet().iterator();
 	}
 
-	public void readSegments(File path) throws Exception {
+	/**
+	 * Reads the segments from file.
+	 *
+	 * @param	path	The file to read the segments from.
+	 * @throws	IOException	If there is an issue reading the segments from
+	 * file.
+	 */
+	public void readSegments(File path) throws IOException {
 		String mapString = FileIO.read(path);
 		String[] lines = mapString.split("\n");
 		segmentMap = 
@@ -64,7 +96,7 @@ public class Segments {
 		for (String line : lines) {
 			String[] segmentMatch = line.split(":");
 			if (segmentMatch.length != 2) {
-				throw new Exception(
+				throw new IOException (
 						"There must be just one colon on in a segment mapping line");
 			}
 			String[] originalSegment = segmentMatch[0].split(",");
@@ -76,6 +108,12 @@ public class Segments {
 		}
 	}
 
+	/**
+	 * Writes the segments to file.
+	 *
+	 * @param	path	The file to write the segments to
+	 * @throws	IOException	If there is an issue writing the segments.
+	 */
 	public void write(File path) throws IOException {
 		FileIO.write(path, toString());
 	}
@@ -86,6 +124,12 @@ public class Segments {
 	public static class Segment {
 		private Pair<Long, Long> pair;
 
+		/**
+		 * Constructor; creates a Segment bounded by a start and end sample.
+		 *
+		 * @param	startSample	The first sample of the segment
+		 * @param	endSample	The last sample of the segment
+		 */
 		public Segment(Long startSample, Long endSample) {
 			if (startSample == null) {
 				throw new IllegalArgumentException("Null start of sample");
@@ -96,18 +140,30 @@ public class Segments {
 			this.pair = new Pair<Long, Long>(startSample, endSample);
 		}
 
+		/**
+		 * Returns the initial sample of this segment.
+		 *
+		 * @return	The first sample of the segment.
+		 */
 		public Long getStartSample() {
 			return this.pair.first;
 		}
 
+		/**
+		 * Returns the final sample of this segment.
+		 *
+		 * @return	The last sample of the segment.
+		 */
 		public Long getEndSample() {
 			return this.pair.second;
 		}
 
+		@Override
 		public String toString() {
 			return getStartSample() + "," + getEndSample();
 		}
 
+		@Override
 		public boolean equals(Object obj) {
 			if (obj == null) { return false; }
 			if (obj == this) { return true; }
@@ -121,11 +177,13 @@ public class Segments {
 					.isEquals();
 		}
 
+		@Override
 		public int hashCode() {
 			return pair.hashCode();
 		}
 	}
 
+	@Override
 	public String toString() {
 		String mapString = new String();
 		Segment respeakingSegment;
