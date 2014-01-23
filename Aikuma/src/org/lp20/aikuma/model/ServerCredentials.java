@@ -69,6 +69,7 @@ public class ServerCredentials {
 				ipAddress, username, password, syncActivated);
 	}
 
+	// Encodes the server credentials as a JSON object.
 	private JSONObject encode() {
 		JSONObject encodedServerCredentials = new JSONObject();
 		encodedServerCredentials.put("ipAddress", getIPAddress());
@@ -90,6 +91,7 @@ public class ServerCredentials {
 		return password;
 	}
 
+	//Sets the IP address but will only accept valid IPv4 addresses.
 	private void setIPAddress(String ipAddress) {
 		Pattern pattern = Pattern.compile(IP_ADDRESS_PATTERN);
 		Matcher matcher = pattern.matcher(ipAddress);
@@ -100,6 +102,7 @@ public class ServerCredentials {
 		}
 	}
 
+	// Sets the username, but will not accept empty strings.
 	private void setUsername(String username) {
 		if (username.compareTo("") != 0) {
 			this.username = username;

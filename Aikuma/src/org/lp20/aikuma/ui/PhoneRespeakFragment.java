@@ -127,17 +127,20 @@ public class PhoneRespeakFragment extends Fragment {
 		Log.i("yo", "onDestroy 2");
 	}
 
+	// A safer way to interrupt threads.
 	private void stopThread(Thread thread) {
 		if (thread != null) {
 			thread.interrupt();
 		}
 	}
 
+	// Pauses the respaking process
 	private void haltRespeaking() {
 		respeaker.halt();
 		stopThread(seekBarThread);
 	}
 
+	// Resumes the respeeaking process.
 	private void resumeRespeaking() {
 		respeaker.resume();
 		seekBarThread = new Thread(new Runnable() {

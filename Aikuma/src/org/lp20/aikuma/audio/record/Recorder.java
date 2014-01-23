@@ -107,6 +107,7 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 		return sampleToMsec(getCurrentSample());
 	}
 
+	// Converts a sample value to milliseconds.
 	private int sampleToMsec(long sample) {
 		long msec = sample / (microphone.getSampleRate() / 1000);
 		if (msec > Integer.MAX_VALUE) {

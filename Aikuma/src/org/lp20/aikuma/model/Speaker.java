@@ -268,6 +268,7 @@ public class Speaker implements Parcelable{
 	 * Sets the UUID of the Speaker.
 	 *
 	 * @param	uuid	A UUID object representing the Speaker's UUID.
+	 * @throws	IllegalArgumentException	If the speaker UUID is null.
 	 */
 	private void setUUID(UUID uuid) throws IllegalArgumentException {
 		if (uuid == null) {
@@ -290,6 +291,7 @@ public class Speaker implements Parcelable{
 	 *
 	 * @param	languages	A List<Language> object representing the languages
 	 * associated with the Speaker.
+	 * @throws	IllegalArgumentException	If the language list is null
 	 */
 	private void setLanguages(List<Language> languages) throws
 			IllegalArgumentException {

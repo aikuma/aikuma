@@ -72,6 +72,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	 * Creates the view for a given speaker.
 	 *
 	 * @param	speakerUUID	The UUID of the speaker.
+	 * @return	The image view for the speaker.
 	 */
 	private ImageView makeSpeakerImageView(UUID speakerUUID) {
 		ImageView speakerImage = new ImageView(context);

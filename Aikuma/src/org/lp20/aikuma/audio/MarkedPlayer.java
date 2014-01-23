@@ -128,6 +128,7 @@ public class MarkedPlayer extends SimplePlayer {
 	/** The listener that is notified when a set marker is reached */
 	private OnMarkerReachedListener onMarkerReachedListener;
 
+	// Stops the notification marker loop.
 	private void stopNotificationMarkerLoop() {
 		if (notificationMarkerLoop != null) {
 			notificationMarkerLoop.interrupt();

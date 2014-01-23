@@ -58,6 +58,7 @@ public class ListenActivity extends AikumaActivity {
 		setUpRecordingInfo();
 	}
 
+	// Prepares the recording
 	private void setUpRecording() {
 		Intent intent = getIntent();
 		UUID recordingUUID = UUID.fromString(
@@ -74,6 +75,7 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 
+	// Prepares the information pertaining to the recording
 	private void setUpRecordingInfo() {
 		setUpRecordingName();
 		LinearLayout recordingInfoView = (LinearLayout)
@@ -85,6 +87,8 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 
+	// Prepares the displayed name for the recording (including other things
+	// such as duration and date.
 	private void setUpRecordingName() {
 		TextView nameView = (TextView) findViewById(R.id.recordingName);
 		TextView dateDurationView = 
@@ -102,6 +106,7 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 
+	// Makes the imageview for a given speaker
 	private ImageView makeSpeakerImageView(UUID speakerUUID) {
 		ImageView speakerImage = new ImageView(this);
 		speakerImage.setAdjustViewBounds(true);
@@ -116,6 +121,7 @@ public class ListenActivity extends AikumaActivity {
 		return speakerImage;
 	}
 
+	// Set up the player
 	private void setUpPlayer() {
 		try {
 			if (recording.isOriginal()) {
@@ -138,6 +144,7 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 
+	// Prepares the iimages for the respeakings.
 	private void setUpRespeakingImages() {
 		List<Recording> respeakings;
 		if (recording.isOriginal()) {

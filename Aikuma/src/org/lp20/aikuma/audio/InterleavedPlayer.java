@@ -47,6 +47,9 @@ public class InterleavedPlayer extends Player {
 		completedOnce = false;
 	}
 
+	// Initializes the completion listeners for the original and respeaking,
+	// such that when one of them completes the InterleavedPlayer's
+	// onCompletionListener is run, only once.
 	private void initializeCompletionListeners() {
 		Player.OnCompletionListener bothCompletedListener = new 
 				Player.OnCompletionListener() {
@@ -129,6 +132,7 @@ public class InterleavedPlayer extends Player {
 		respeaking.release();
 	}
 
+	// Plays the current original segment.
 	private void playOriginal() {
 		playSegment(getCurrentOriginalSegment(), original);
 	}
@@ -140,6 +144,7 @@ public class InterleavedPlayer extends Player {
 		return currentOriginalSegment;
 	}
 
+	// Plays the current respeaking segment.
 	private void playRespeaking() {
 		playSegment(getCurrentRespeakingSegment(), respeaking);
 	}
@@ -148,6 +153,7 @@ public class InterleavedPlayer extends Player {
 		return segments.getRespeakingSegment(getCurrentOriginalSegment());
 	}
 
+	// Plays the specified segment in the specified player.
 	private void playSegment(Segment segment, MarkedPlayer player) {
 		if (segment != null) {
 			player.seekTo(segment);
@@ -156,6 +162,7 @@ public class InterleavedPlayer extends Player {
 		}
 	}
 
+	// Moves forward to the next original segment in the recording.
 	private void advanceOriginalSegment() {
 		if (getOriginalSegmentIterator().hasNext()) {
 			currentOriginalSegment = getOriginalSegmentIterator().next();
@@ -170,6 +177,7 @@ public class InterleavedPlayer extends Player {
 		}
 	}
 
+	// Gets an iterator over the segments of the original recording.
 	private Iterator<Segment> getOriginalSegmentIterator() {
 		if (originalSegmentIterator == null) {
 			originalSegmentIterator = segments.getOriginalSegmentIterator();

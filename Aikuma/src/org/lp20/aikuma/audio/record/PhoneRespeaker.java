@@ -80,6 +80,7 @@ public class PhoneRespeaker implements
 				new AverageRecognizer(threshold, threshold));
 	}
 
+	// Prepares the player of the original.
 	private void setUpPlayer(Recording original) throws IOException {
 		this.player = new SimplePlayer(original, false);
 	}
@@ -127,6 +128,7 @@ public class PhoneRespeaker implements
 		file.close();
 	}
 
+	// Stops the microphone
 	private void stopMic() {
 		try {
 			microphone.stop();
@@ -143,11 +145,13 @@ public class PhoneRespeaker implements
 		file.write(buffer);
 	}
 
+	// Switches from playing to recording
 	private void switchToRecord() {
 		player.pause();
 		mapper.markRespeaking(player, file);
 	}
 
+	// Switches from recording to playing
 	private void switchToPlay() {
 		player.play();
 	}

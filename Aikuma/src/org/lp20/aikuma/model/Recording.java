@@ -475,10 +475,7 @@ public class Recording {
 				.isEquals();
 	 }
 
-
-	/**
-	 * UUID mutator.
-	 */
+	// Sets the UUID; it cannot be null.
 	private void setUUID(UUID uuid) {
 		if (uuid == null) {
 			throw new IllegalArgumentException(
@@ -494,9 +491,7 @@ public class Recording {
 		this.name = name;
 	}
 
-	/**
-	 * Date mutator.
-	 */
+	// Sets the date; the date cannot be null.
 	private void setDate(Date date) {
 		if (date == null) {
 			throw new IllegalArgumentException(
@@ -505,9 +500,7 @@ public class Recording {
 		this.date = date;
 	}
 
-	/**
-	 * languages mutator.
-	 */
+	// Sets the languages 
 	private void setLanguages(List<Language> languages) {
 		if (languages == null) {
 			throw new IllegalArgumentException(
@@ -531,9 +524,8 @@ public class Recording {
 		this.languages.add(language);
 	}
 
-	/**
-	 * Speakers mutator.
-	 */
+	// Sets the speakers UUID, but won't accept a null list (empty lists are
+	// fine).
 	private void setSpeakersUUIDs(List<UUID> speakersUUIDs) {
 		if (speakersUUIDs == null) {
 			throw new IllegalArgumentException(
@@ -557,9 +549,7 @@ public class Recording {
 		this.speakersUUIDs.add(speaker.getUUID());
 	}
 
-	/**
-	 * androidID mutator
-	 */
+	// Sets the android ID but won't accept a null string.
 	private void setAndroidID(String androidID) {
 		if (androidID == null) {
 			throw new IllegalArgumentException(
@@ -568,23 +558,14 @@ public class Recording {
 		this.androidID = androidID;
 	}
 
-	/**
-	 * originalUUID mutator.
-	 */
 	private void setOriginalUUID(UUID originalUUID) {
 		this.originalUUID = originalUUID;
 	}
 
-	/**
-	 * sampleRate mutator.
-	 */
 	private void setSampleRate(long sampleRate) {
 		this.sampleRate = sampleRate;
 	}
 
-	/**
-	 * durationMsec mutator.
-	 */
 	private void setDurationMsec(int durationMsec) {
 		this.durationMsec = durationMsec;
 	}

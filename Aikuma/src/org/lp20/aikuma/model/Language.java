@@ -30,16 +30,10 @@ public class Language implements Parcelable {
 	 */
 	private String code;
 
-	/**
-	 * Name mutator
-	 */
 	private void setName(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * Code mutator
-	 */
 	private void setCode(String code) {
 		this.code = code;
 	}

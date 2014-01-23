@@ -92,22 +92,23 @@ public class Beeper {
 	public static void longBeep(Context context, OnCompletionListener listener) {
 		start(context, listener, R.raw.longbeep);
 	}
-	
+
+	// Starts playing the given audio resource.
 	private static void start(Context context, final OnCompletionListener listener, int resource) {
 		new Beeper(context).create(listener, resource).start();
 	}
 	
-	/** Private methods */
-	
+	// Gets a mediaplayer that plays a beep.
 	private MediaPlayer getBeep(final OnCompletionListener listener) {
 		return create(listener, R.raw.beep);
 	}
 	
+	// Gets a mediaplayer that plays two beeps in succession
 	private MediaPlayer getBeepBeep(final OnCompletionListener listener) {
-		Log.i("beep", "beepin");
 		return create(listener, R.raw.beeps2);
 	}
 	
+	// Creates a mediaplayer to play the beeps with.
 	private MediaPlayer create(final OnCompletionListener listener, int resource) {
 		final MediaPlayer beeper = MediaPlayer.create(context, resource);
 		if (listener != null) {
