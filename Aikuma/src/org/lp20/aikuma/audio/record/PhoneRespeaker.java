@@ -43,6 +43,7 @@ public class PhoneRespeaker implements
 	 * speech.
 	 * @throws	MicException	If there is an issue setting up the microphone.
 	 * @throws	IOException	If there is an I/O issue.
+	 */
 	public PhoneRespeaker(Recording original, UUID respeakingUUID,
 			Analyzer analyzer) throws MicException, IOException {
 		this.analyzer = analyzer;

@@ -131,6 +131,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 
 	// Currently unused method to automatically detect the background noise and
 	// set the sensitivity accordingly.
+	/*
 	private void extractBackgroundNoiseThreshold() {
 		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
@@ -143,6 +144,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 			}
 		}, 500);
 	}
+	*/
 
 	/**
 	 * Sets the threshold which determines whether sound should be considered
