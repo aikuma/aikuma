@@ -18,6 +18,15 @@ import org.lp20.aikuma.model.Segments.Segment;
  */
 public class MarkedPlayer extends SimplePlayer {
 
+	/**
+	 * Constructor
+	 *
+	 * @param	recording	The metadata of the recording to be played.
+	 * @param	listener	The callback to call when a marker is reached.
+	 * @param	playThroughSpeaker	True if the audio is to be played through the main
+	 * speaker; false if through the ear piece (ie the private phone call style)
+	 * @throws	IOException	If there is an issue reading from the data source.
+	 */
 	public MarkedPlayer(Recording recording, OnMarkerReachedListener listener,
 			boolean playThroughSpeaker) throws IOException {
 		super(recording, playThroughSpeaker);
@@ -47,21 +56,34 @@ public class MarkedPlayer extends SimplePlayer {
 		this.notificationMarkerPosition = notificationMarkerPosition;
 	}
 
-	/** Sets the notification marker to be at the end of the supplied segment */
+	/**
+	 * Sets the notification marker to be at the end of the supplied segment
+	 *
+	 * @param	segment	The segment whose end is to be marked.
+	 */
 	public void setNotificationMarkerPosition(Segment segment) {
 		setNotificationMarkerPositionMsec(
 				sampleToMsec(segment.getEndSample()));
 	}
 
+	/**
+	 * Removes the marker if it has been set.
+	 */
 	public void unsetNotificationMarkerPosition() {
 		setNotificationMarkerPositionMsec(-1);
 	}
 
+	@Override
 	public void release() {
 		super.release();
 		stopNotificationMarkerLoop();
 	}
 
+	/**
+	 * Seeks to the beginning of the given segment.
+	 *
+	 * @param	segment	The segment to seek to.
+	 */
 	public void seekTo(Segment segment) {
 		super.seekToSample(segment.getStartSample());
 	}
@@ -71,9 +93,15 @@ public class MarkedPlayer extends SimplePlayer {
 	 * reached.
 	 */
 	public static abstract class OnMarkerReachedListener {
+		/**
+		 * The method to be called when the set marker is reached.
+		 *
+		 * @param	p	The marked player whose marker has been reached.
+		 */
 		public abstract void onMarkerReached(MarkedPlayer p);
 	}
 
+	@Override
 	public void setOnCompletionListener(final OnCompletionListener listener) {
 		super.setOnCompletionListener(
 				new Player.OnCompletionListener() {

@@ -15,6 +15,7 @@ public class Processor {
 
 	/** Evaluates the average amplitude.
 	 *
+	 * @param	buffer	The buffer containing the audio data.
 	 * @return Average amplitude of the buffer.
 	 */
 	public int getAverage(short[] buffer) {
