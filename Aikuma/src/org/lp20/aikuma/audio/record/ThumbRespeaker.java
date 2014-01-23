@@ -89,17 +89,13 @@ public class ThumbRespeaker {
 	 * Stops/finishes the respeaking process
 	 *
 	 * @throws	MicException	If there is an issue stopping the microphone.
+	 * @throws	IOException	If the mapping between original and respeaking
+	 * couldn't be written to file.
 	 */
 	public void stop() throws MicException, IOException {
 		recorder.stop();
 		player.pause();
-		//try {
-			mapper.stop();
-		//} catch (IOException e) {
-			//If the mapping couldn't be written to file, the recording would
-			//not have been able to either, which would have resulted in an
-			//error. This block is unreachable.
-		//}
+		mapper.stop();
 	}
 
 	public void setFinishedPlaying(boolean finishedPlaying) {
