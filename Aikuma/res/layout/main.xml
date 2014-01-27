@@ -10,11 +10,12 @@
 		android:layout_height="0dp"
 		android:layout_weight="1"
 	/>
-	<Button
+	<ImageButton
 		android:id="@+id/audioImport"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="Import audio file"
 		android:onClick="audioImport"
+		android:scaleType="centerInside"
+		android:src="@drawable/arrow_circle_o_down"
 	/>
 </LinearLayout>
