@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+<head>
+	<title>
+	</title>
+	<link href="transcriber.min.css" rel="stylesheet" media="screen">
+	<script src="transcriber.min.js"></script>
+</head>
+<body>
+	<div id="players">
+		<div id="player"></div>
+	</div>
+
+	<div class="container">
+
+		<div class="row">
+			<div class="col-md-1 dropdown">
+				<button class="btn dropdown-toggle" data-toggle="dropdown">
+					<span>File <b class="caret"></b></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li><a href="#" id="new-transcript-menu">
+						New Transcript
+					</a></li>
+					<li><a href="#file-dialog" data-toggle="modal">
+						Open Transcript
+					</a></li>
+					<li><a href="#dialog-open-elan" data-toggle="modal">
+						Open ELAN Transcript
+					</a></li>
+					<li><a href="#folder-dialog" data-toggle="modal">
+						Open Folder
+					</a></li>
+					<li><a href="#save-file-dialog" data-toggle="modal">
+						Save Transcript
+					</a></li>
+					<li><a href="#save-elan-dialog" data-toggle="modal">
+						Save as ELAN Format
+					</a></li>
+					<li><a id="open-remote-trans" data-toggle="modal">
+						Open Remote Index File (sample)
+					</a></li>
+					<li class="disabled"><a href="#" data-toggle="modal">
+						Open Original Recording
+					</a></li>
+					<li class="disabled"><a href="#" data-toggle="modal">
+						Open Respeaking
+					</a></li>
+					<li class="disabled"><a href="#" data-toggle="modal">
+						Open Verbal Translation
+					</a></li>
+				</ul>
+			</div>
+			<div class="col-md-11 btn-group">
+				<button id="play-btn" class="btn" disabled
+					data-play-text="Pause"
+					data-pause-text="Resume">
+					Play
+				</button>
+				<button id="stop-btn" class="btn" disabled>Stop</button>
+				<button id="create-seg-btn" class="btn" disabled>
+					Create Segment
+				</button>
+				<button id="remove-seg-btn" class="btn" disabled>
+					Remove Segment
+				</button>
+				<button id="play-rspk-btn" class="btn" disabled
+					data-play-text="Stop">
+					Play Respeaking
+				</button>
+			</div>
+		</div>
+
+		<div class="row">
+			<!-- Contents Column -->
+			<div class="col-md-9">
+
+				<br>
+
+				<!-- Waveform Row -->
+				<div class="row">
+					<div class="col-md-1">
+						<div id="pos"></div>
+						<div id="sel-beg"></div>
+						<div id="sel-dur"></div>
+					</div>
+					<div id="waveform-area" class="col-md-11"></div>
+				</div>
+
+				<br>
+
+				<!-- Swimlanes for speakers in original recording -->
+				<div class="row">
+					<div id="speakers" class="col-md-1"></div>
+					<div id="speaker-swimlanes" class="col-md-11"></div>
+				</div>
+
+				<br>
+				
+				<!-- Swimlane Row -->
+				<div class="row">
+					<div id="pictures" class="col-md-1"></div>
+					<div id="swimlane-containers" class="col-md-11"></div>
+				</div>
+
+				<br>
+
+				<!-- Text Row -->
+				<div class="row">
+					<div id="textpanel" class="col-md-11 col-md-offset-1"></div>
+				</div>
+			</div>
+
+			<!-- Menu Column -->
+			<div class="col-md-3">
+				<div class="row">
+					<select id="recording-list" class="col-md-9"></select>
+					<div class="col-md-3">
+						<button id="open-selected-recording" class="btn">Open</button>
+					</div>
+				</div>
+				<br>
+				<div id="error-pane" class="row"></div>
+			</div>
+		</div>
+	</div>
+
+	<div id="file-dialog" class="modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">x</button>
+					<h3>Open Transcription File</h3>
+				</div>
+				<div class="modal-body">
+					<form name="local-file-form">
+						<input id="local-file" type="file">
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button id="open-local-file" class="btn" data-dismiss="modal">Open</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="dialog-open-elan" class="modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">x</button>
+					<h3>Open ELAN Transcription File</h3>
+				</div>
+				<div class="modal-body">
+					<form name="form-elan-file">
+						<input id="input-elan-file" type="file">
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button id="btn-open-elan-file" class="btn" data-dismiss="modal">Open</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="folder-dialog" class="modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">x</button>
+					<h3>Open Aikuma Folder</h3>
+				</div>
+				<div class="modal-body">
+					<form name="local-folder-form">
+						<input id="local-folder-input" type="file" webkitdirectory>
+					</form>
+					<br>
+					<div class="progress">
+						<div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button id="open-local-folder-btn" class="btn" data-loading-text="Ha Ha" type="button">Open</button>
+					<button id="close-folder-dialog-btn" class="btn" data-dismiss="modal">Done</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="save-file-dialog" class="modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">x</button>
+					<h3>Save Transcription File</h3>
+				</div>
+				<div class="modal-body">
+					File name:
+					<form name="save-file-form">
+						<input id="save-file-input" type="text">
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button id="save-file-btn" class="btn" data-dismiss="modal">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="save-elan-dialog" class="modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">x</button>
+					<h3>Save as ELAN Format</h3>
+				</div>
+				<div class="modal-body">
+					File name:
+					<form name="save-elan-form">
+						<input id="save-elan-input" type="text">
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button id="save-elan-btn" class="btn" data-dismiss="modal">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="popup-container"></div>
+	<div id="hidden-container" style="display:none"></div>
+
+</body>
+</html>
