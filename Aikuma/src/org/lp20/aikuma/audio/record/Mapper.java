@@ -10,8 +10,8 @@ import java.io.File;
 import java.util.UUID;
 
 import org.lp20.aikuma.audio.Sampler;
-import org.lp20.aikuma.audio.Segments;
-import org.lp20.aikuma.audio.Segments.Segment;
+import org.lp20.aikuma.model.Segments;
+import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.model.Recording;
 
 /**
