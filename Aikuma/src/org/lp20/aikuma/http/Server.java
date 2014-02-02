@@ -1,18 +1,19 @@
 package org.lp20.aikuma.http;
 import org.apache.http.conn.util.InetAddressUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.lp20.aikuma.http.NanoHTTPD;
 import org.lp20.aikuma.http.NanoHTTPD.Response.Status;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.util.ImageUtils;
 
 import android.content.res.AssetManager;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,15 +41,38 @@ public class Server extends NanoHTTPD {
 		
 		// Sets up a request processing chain.
 		proc_ = (new Proc() {
+			@Override
+			public Response run(IHTTPSession session) {
+				return serveIndex(session.getUri());
+			}
+		}).add(new Proc() {
 			// serve recordings by uuid
 			@Override
 			public Response run(IHTTPSession session) {
 				return serveRecording(session.getUri());
 			}
 		}).add(new Proc() {
+			// serve recordings by uuid
 			@Override
 			public Response run(IHTTPSession session) {
-				return serveIndex(session.getUri());
+				return serveMapFile(session.getUri());
+			}
+		}).add(new Proc() {
+			@Override
+			public Response run(IHTTPSession session) {
+				return serveShapeFile(session.getUri());
+			}
+		}).add(new Proc() {
+			// serve recordings by uuid
+			@Override
+			public Response run(IHTTPSession session) {
+				return serveSpeakerImage(session.getUri());
+			}
+		}).add(new Proc() {
+			// serve recordings by uuid
+			@Override
+			public Response run(IHTTPSession session) {
+				return serveSpeakerSmallImage(session.getUri());
 			}
 		}).add(new Proc() {
 			// serve static assets
@@ -154,38 +178,24 @@ public class Server extends NanoHTTPD {
 	}
 	
 	private Response serveIndex(String path) {
-		if (path.startsWith("/index/")) {
-			List<Recording> rs = Recording.readAll();
-			Iterator<Recording> it = rs.iterator();
-			JSONObject index = new JSONObject();
-			while (it.hasNext()) {
-				Recording r = it.next();
-				if (r.isOriginal()) {
-					JSONObject obj = new JSONObject();
-					
-					// add speaker information
-					JSONObject speakers = new JSONObject();
-					for (UUID spkr_uuid : r.getSpeakersUUIDs()) {
-						try {
-							speakers.put(spkr_uuid.toString(), Speaker.read(spkr_uuid).encode());
-						}
-						catch (IOException e) {
-							continue;
-						}
-					}
-					obj.put("speakers", speakers);
-					
-					// add respeakings
-					JSONObject respeakings = new JSONObject();
-					for (Recording rspk : r.getRespeakings()) {
-						respeakings.put(rspk.getUUID().toString(), rspk.encode());
-					}
-					obj.put("respeakings",  respeakings);
-					obj.put("original", r.encode());
-					
-					index.put(r.getUUID().toString(), obj);
-				}
+		String a[] = path.split("/");
+		if (a[1].equals("index.json")) {
+			JSONObject originals = new JSONObject();
+			JSONObject commentaries = new JSONObject();
+			JSONObject speakers = new JSONObject();
+			for (Recording r: Recording.readAll()) {
+				if (r.isOriginal())
+					originals.put(r.getUUID().toString(), r.encode());
+				else
+					commentaries.put(r.getUUID().toString(), r.encode());
 			}
+			for (Speaker r: Speaker.readAll()) {
+				speakers.put(r.getUUID().toString(), r.encode());
+			}
+			JSONObject index = new JSONObject();
+			index.put("originals", originals);
+			index.put("commentaries", commentaries);
+			index.put("speakers", speakers);
 			return new Response(Status.OK, "application/json", index.toString());
 		}
 		else {
@@ -194,28 +204,90 @@ public class Server extends NanoHTTPD {
 	}
 	
 	private Response serveRecording(String path) {
-		if (path.startsWith("/recording/")) {
-			String[] a = path.split("/");
-			if (a.length < 3) {
-				return mkNotFoundResponse(path);
-			}
-			try {
-				UUID uuid = UUID.fromString(a[2]);
-				InputStream is = new FileInputStream(Recording.read(uuid).getFile());
-				return new Response(Status.OK, "audio/wave", is);
-			}
-			catch (IOException e) {
-				return mkNotFoundResponse(path);
-			}
-			catch (IllegalArgumentException e) {
-				return mkNotFoundResponse(path);
-			}			
-		}
-		else {
+		String[] a = path.split("/");
+		if (!a[1].equals("recording") || a.length != 3)
 			return null;
+
+		try {
+			UUID uuid = UUID.fromString(a[2]);
+			InputStream is = new FileInputStream(Recording.read(uuid).getFile());
+			return new Response(Status.OK, "audio/wave", is);
+		}
+		catch (IOException e) {
+			return mkNotFoundResponse(path);
+		}
+		catch (IllegalArgumentException e) {
+			return mkNotFoundResponse(path);
+		}			
+	}
+	
+	private Response serveMapFile(String path) {
+		String[] a = path.split("/");
+		if (!a[1].equals("recording") || a.length != 4 || !a[3].equals("mapfile"))
+			return null;
+		
+		try {
+			File mapfile = new File(Recording.getRecordingsPath(), a[2] + ".map");
+			android.util.Log.e("abc", Recording.getRecordingsPath().toString());
+			InputStream is = new FileInputStream(mapfile);
+			return new Response(Status.OK, "text/plain", is);
+		}
+		catch (FileNotFoundException e) {
+			return mkNotFoundResponse(path);
 		}
 	}
 	
+	private Response serveShapeFile(String path) {
+		String[] a = path.split("/");
+		if (!a[1].equals("recording") || a.length != 4 || !a[3].equals("shapefile"))
+			return null;
+		
+		try {
+			File mapfile = new File(Recording.getRecordingsPath(), a[2] + ".shape");
+			InputStream is = new FileInputStream(mapfile);
+			return new Response(Status.OK, "application/octet-stream", is);
+		}
+		catch (FileNotFoundException e) {
+			return mkNotFoundResponse(path);
+		}
+	}
+	
+	private Response serveSpeakerImage(String path) {
+		String[] a = path.split("/");
+		if (!a[1].equals("speaker") || a.length != 4 || !a[3].equals("image"))
+			return null;
+		
+		try {
+			UUID uuid = UUID.fromString(a[2]);
+			InputStream is = new FileInputStream(ImageUtils.getImageFile(uuid));
+			return new Response(Status.OK, "image/jpeg", is);
+		}
+		catch (IOException e) {
+			return mkNotFoundResponse(path);
+		}
+		catch (IllegalArgumentException e) {
+			return mkNotFoundResponse(path);
+		}			
+	}
+	
+	private Response serveSpeakerSmallImage(String path) {
+		String[] a = path.split("/");
+		if (!a[1].equals("speaker") || a.length != 4 || !a[3].equals("smallimage"))
+			return null;
+		
+		try {
+			UUID uuid = UUID.fromString(a[2]);
+			InputStream is = new FileInputStream(ImageUtils.getSmallImageFile(uuid));
+			return new Response(Status.OK, "image/jpeg", is);
+		}
+		catch (IOException e) {
+			return mkNotFoundResponse(path);
+		}
+		catch (IllegalArgumentException e) {
+			return mkNotFoundResponse(path);
+		}			
+	}
+
 	private Response serveAsset(String path) {
 		try {
 			InputStream is = am_.open(path.substring(1));
