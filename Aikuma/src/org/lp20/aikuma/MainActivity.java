@@ -8,6 +8,7 @@ import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,6 +58,10 @@ import org.lp20.aikuma.model.WaveFile;
  */
 public class MainActivity extends ListActivity {
 
+	// Helps us store how far down the list we are when MainActivity gets
+	// stopped.
+	private Parcelable listViewState;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -85,11 +90,20 @@ public class MainActivity extends ListActivity {
 	}
 
 	@Override
+	public void onPause() {
+		super.onPause();
+		listViewState = getListView().onSaveInstanceState();
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
 		List<Recording> recordings = Recording.readAll();
 		ArrayAdapter adapter = new RecordingArrayAdapter(this, recordings);
 		setListAdapter(adapter);
+		if (listViewState != null) {
+			getListView().onRestoreInstanceState(listViewState);
+		}
 	}
 
 	@Override
