@@ -36,8 +36,7 @@ import org.lp20.aikuma.util.SyncUtil;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class SyncSettingsActivity extends AikumaActivity {
-	
-	/** Called when the activity is first created. */
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,6 +58,7 @@ public class SyncSettingsActivity extends AikumaActivity {
 		}
 	}
 
+	// Writes the server credentials to file for later use.
 	private void commitServerCredentials() throws IOException {
 		try {
 			ServerCredentials serverCredentials =
@@ -95,6 +95,11 @@ public class SyncSettingsActivity extends AikumaActivity {
 		this.finish();
 	}
 
+	/**
+	 * Forces a sync to happen immediately.
+	 *
+	 * @param	view	The sync now button.
+	 */
 	public void onSyncNowButton(View view) {
 		try {
 			commitServerCredentials();
@@ -104,6 +109,12 @@ public class SyncSettingsActivity extends AikumaActivity {
 		SyncUtil.syncNow();
 	}
 
+	/**
+	 * Defines the behaviour that should occur when the sync checkbox is
+	 * toggled.
+	 *
+	 * @param	view	The sync CheckBox.
+	 */
 	public void onCheckBoxClicked(View view) {
 		boolean on = ((CheckBox) view).isChecked();
 		if (on) {
@@ -118,9 +129,6 @@ public class SyncSettingsActivity extends AikumaActivity {
 		}
 	}
 
-	/**
-	 * Constant to represent the request code for the LanguageFilterList calls.
-	 */
 	private EditText ipAddressField;
 	private EditText usernameField;
 	private EditText passwordField;

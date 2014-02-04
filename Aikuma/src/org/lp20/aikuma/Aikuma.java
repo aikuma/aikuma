@@ -27,16 +27,27 @@ public class Aikuma extends android.app.Application {
 	private static Aikuma instance;
 	private static List<Language> languages;
 
+	/**
+	 * The constructor.
+	 */
 	public Aikuma() {
 		instance = this;
 	}
 
+	/**
+	 * Static method that provides a context when needed by code not bound to
+	 * any meaningful context.
+	 *
+	 * @return	A Context
+	 */
 	public static Context getContext() {
 		return instance;
 	}
 
 	/**
 	 * Gets the android ID of the phone.
+	 *
+	 * @return	The android ID as a String.
 	 */
 	public static String getAndroidID() {
 		return Secure.getString(
@@ -79,6 +90,10 @@ public class Aikuma extends android.app.Application {
 		}
 	}
 
+	/**
+	 * The thread used to load the language codes without interrupting the
+	 * main thread.
+	 */
 	public static Thread loadLangCodesThread;
 }
 

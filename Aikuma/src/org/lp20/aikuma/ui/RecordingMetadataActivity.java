@@ -39,18 +39,16 @@ import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Language;
-//import org.lp20.aikuma.util.FileIO;
 import org.apache.commons.io.FileUtils;
 
 /**
- * The activity that allows audio to be recorded
+ * The activity that allows audio to be recorded.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class RecordingMetadataActivity extends AikumaListActivity {
-	
-	/** Called when the activity is first created. */
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -80,6 +78,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		nameField.addTextChangedListener(emptyTextWatcher);
 	}
 
+	// Prepares the player with the recording.
 	private void setUpPlayer(UUID uuid, long sampleRate) {
 		listenFragment = (ListenFragment)
 				getFragmentManager().findFragmentById(R.id.ListenFragment);
@@ -107,6 +106,11 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		setListAdapter(adapter);
 	}
 
+	/**
+	 * Starts the AddSpeakerActivity.
+	 *
+	 * @param	view	The AddSpeakerButton
+	 */
 	public void onAddUserButtonPressed(View view) {
 		Intent intent =
 			new Intent(RecordingMetadataActivity.this,
@@ -114,6 +118,11 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		startActivityForResult(intent, ADD_SPEAKER);
 	}
 
+	/**
+	 * Called when the user has indicated that the metadata is complete.
+	 *
+	 * @param	view	the OK button.
+	 */
 	public void onOkButtonPressed(View view) {
 		new AlertDialog.Builder(this)
 				.setMessage(R.string.share_dialog)
@@ -153,6 +162,12 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 				.setNegativeButton(R.string.cancel, null)
 				.show();
 	}
+
+	/**
+	 * When the user wants to cancel saving the metadata.
+	 *
+	 * @param	view	The cancel button.
+	 */
 	public void onCancelButtonPressed(View view) {
 		new AlertDialog.Builder(this)
 				.setMessage(R.string.discard_dialog)
@@ -172,6 +187,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 				.show();
 	}
 
+	// Used to recieve the results of taking photos and adding speakers.
+	@Override
 	protected void onActivityResult(
 			int requestCode, int resultCode, Intent intent) {
 		if (requestCode == ADD_SPEAKER) {
@@ -202,6 +219,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 			}
 		}
 	}
+
 	private void setRecording(Recording recording) {
 		this.recording = recording;
 	}
@@ -210,6 +228,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		return this.recording;
 	}
 
+	// Used to check whether the recording name is long enough based on what
+	// the user is entered, and disable/enable the okButton on the fly.
 	private TextWatcher emptyTextWatcher = new TextWatcher() {
 		public void afterTextChanged(Editable s) {
 		}

@@ -20,10 +20,20 @@ import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.R;
 
 /**
+ * The array adapter for dealing with lists of Speakers.
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
+
+	/**
+	 * Constructor.
+	 *
+	 * @param	context	The context that the array adapter will be used in.
+	 * @param	speakers	The list of speakers that the array adapter is to
+	 * deal with.
+	 */
 	public SpeakerArrayAdapter(Context context, List<Speaker> speakers) {
 		super(context, LIST_ITEM_LAYOUT, speakers);
 		inflater = (LayoutInflater)

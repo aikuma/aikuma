@@ -12,11 +12,12 @@ package org.lp20.aikuma.audio;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  */
 public class Processor {
-  
-  /** Evaluates the average amplitude.
-   *
-   * @return Average amplitude of the buffer.
-   */
+
+	/** Evaluates the average amplitude.
+	 *
+	 * @param	buffer	The buffer containing the audio data.
+	 * @return Average amplitude of the buffer.
+	 */
 	public int getAverage(short[] buffer) {
 		int sum = 0;
 		int amount = 0;

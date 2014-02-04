@@ -15,6 +15,9 @@ import java.text.SimpleDateFormat;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class StandardDateFormat extends SimpleDateFormat {
+	/**
+	 * Constructor that specifies the date format.
+	 */
 	public StandardDateFormat() {
 		super("yyyy-MM-dd HH:mm:ss.SSSZ");
 	}

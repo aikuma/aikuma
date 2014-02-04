@@ -128,8 +128,13 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 
 		this.recognizer = recognizer;
 	}
-  
-  /** Does the given buffer trigger silence? */
+
+	/**
+	 * Does the given buffer trigger silence?
+	 *
+	 * @param	buffer	The buffer to analyze
+	 * @return	true if the buffer represents silence; false otherwise.
+	 */
 	protected boolean doesTriggerSilence(short[] buffer) {
 		if (recognizer.isSilence(buffer)) {
 			silenceTriggers++;
@@ -138,8 +143,13 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 		}
 		return silenceTriggers > silenceTriggerAmount;
 	}
-  
-  /** Does the given buffer trigger speech? */
+
+	/**
+	 * Does the given buffer trigger speech?
+	 *
+	 * @param	buffer	The buffer to analyze
+	 * @return	true if the buffer represents speech; false otherwise.
+	 */
 	protected boolean doesTriggerSpeech(short[] buffer) {
 		if (recognizer.isSpeech(buffer)) {
 			speechTriggers++;
@@ -148,8 +158,12 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 		}
 		return speechTriggers > speechTriggerAmount;
 	}
-  
-  /** Shifts off a piece of the onset buffer and adds the given buffer to the end. */
+
+	/**
+	 * Shifts off a piece of the onset buffer and adds the given buffer to the end.
+	 *
+	 * @param	buffer	The buffer to be added.
+	 */
 	protected void shiftOnsetBufferWith(short[] buffer) {
 		onsetBuffer = Arrays.copyOfRange(onsetBuffer, buffer.length,
 				onsetBuffer.length);
@@ -157,15 +171,22 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 		addToOnsetBuffer(buffer);
 	}
 
-  /** Replaces the onset buffer with the given buffer. */
+	/**
+	 * Replaces the onset buffer with the given buffer.
+	 *
+	 * @param	buffer	The buffer to replace the onset buffer with.
+	 */
 	protected void replaceOnsetBufferWith(short[] buffer) {
 		onsetBuffer = Arrays.copyOf(buffer, buffer.length);
 	}
 
-	/** Adds the given buffer to the after buffer.
-   *
-   * TODO Duplicate method. See addToOnsetBuffer.
-   */
+
+	//TODO Duplicate method. See addToOnsetBuffer.
+	/**
+	 * Adds the given buffer to the after buffer.
+	 *
+	 * @param	buffer	The buffer to be added.
+	 */
 	protected void addToAfterBuffer(short[] buffer) {
 		int offset = afterBuffer.length;
 
@@ -185,10 +206,12 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 		}
 	}
 
-	/** Adds the given buffer to the onset buffer.
-   *
-   * TODO Duplicate method. See addToAfterBuffer.
-   */
+	//TODO Duplicate method. See addToAfterBuffer.
+	/**
+	 * Adds the given buffer to the onset buffer.
+	 *
+	 * @param	buffer	The buffer to be added.
+	 */
 	public void addToOnsetBuffer(short[] buffer) {
 		int offset = onsetBuffer.length;
 
@@ -218,7 +241,6 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 		afterBuffer = new short[] {};
 	}
 
-	protected int speedCount;
   
   /** Analyzes if there's speech.
    *
@@ -276,7 +298,6 @@ public class ThresholdSpeechAnalyzer extends Analyzer {
 		}
 	}
 
-	/** Mainly exposed for testing */
 	public short[] getOnsetBuffer() {
 		return onsetBuffer;
 	}

@@ -10,8 +10,8 @@ import java.io.File;
 import java.util.UUID;
 
 import org.lp20.aikuma.audio.Sampler;
-import org.lp20.aikuma.audio.Segments;
-import org.lp20.aikuma.audio.Segments.Segment;
+import org.lp20.aikuma.model.Segments;
+import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.model.Recording;
 
 /**
@@ -33,24 +33,35 @@ public class Mapper {
 	private Long originalEndOfSegment;
 	private Long respeakingStartOfSegment = 0L;
 	private Long respeakingEndOfSegment;
-	
+
 	/** The mapping file */
 	private File mappingFile;
-	
+
+	/**
+	 * Constructor
+	 *
+	 * @param	uuid	The UUID of the respeaking.
+	 */
 	public Mapper(UUID uuid) {
 		this.segments = new Segments();
 		this.mappingFile = new File(Recording.getRecordingsPath(), uuid + ".map");
 	}
-	
-	// TODO Does this need to store, also?
-	public void stop() {
-		try {
-			segments.write(mappingFile);
-		} catch (IOException e) {
-			// Couldn't write mapping. Oh well!
-		}
+
+
+	/**
+	 * Stops and writes the segments to file.
+	 *
+	 * @throws	IOException	If the segments couldn't be written.
+	 */
+	public void stop() throws IOException {
+		segments.write(mappingFile);
 	}
-	
+
+	/**
+	 * Gets the first sample of the original segment.
+	 *
+	 * @return	The start of the original segment; or 0L if there is none.
+	 */
 	public Long getOriginalStartSample() {
 		if (originalStartOfSegment != null) {
 			return originalStartOfSegment;
@@ -58,7 +69,12 @@ public class Mapper {
 			return 0L;
 		}
 	}
-	
+
+	/**
+	 * Marks the start of an original segment.
+	 *
+	 * @param	original	The source of the original segments.
+	 */
 	public void markOriginal(Sampler original) {
 		// If we have already specified an end of the segment then we're
 		// starting a new one. Otherwise just continue with the old
@@ -67,15 +83,28 @@ public class Mapper {
 			originalStartOfSegment = original.getCurrentSample();
 		}
 	}
-	
+
+	/**
+	 * Marks the end of an original segment and the start of a respeaking segment.
+	 *
+	 * @param	original	The source of the original segments.
+	 * @param	respoken	The source of the respoken segments.
+	 */
 	public void markRespeaking(Sampler original, Sampler respoken) {
 		originalEndOfSegment = original.getCurrentSample();
 		respeakingStartOfSegment = respoken.getCurrentSample();
 	}
 	
-	/** Returns true if a segment gets stored; false otherwise. A segment may
-	 * not be stored if there hasn't been an end to the current original
-	 * segment. */
+	/**
+	 * Stores a segment determined by the samplers current locations.
+	 *
+	 * A segment may not be stored if there hasn't been an end to the current
+	 * original segment.
+	 *
+	 * @param	original	The source of the original segments.
+	 * @param	respoken	The source of the respoken segments.
+	 * @return	Returns true if a segment gets stored; false otherwise.
+	 */
 	public boolean store(Sampler original, Sampler respoken) {
 		//If we're not respeaking and still playing an original segment, do
 		//nothing

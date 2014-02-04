@@ -20,6 +20,16 @@ import org.lp20.aikuma.util.FileIO;
  */
 public class ServerCredentials {
 
+	/**
+	 * Constructor
+	 *
+	 * @param	ipAddress	The IP address of the server.
+	 * @param	username	The username of a user on the server who will be
+	 * logged in as.
+	 * @param	password	The password corresponding to the user.
+	 * @param	syncActivated	A flag indicating whether automatic sync is
+	 * activated or not
+	 */
 	public ServerCredentials(String ipAddress, String username, 
 			String password, boolean syncActivated) {
 		setIPAddress(ipAddress);
@@ -28,6 +38,11 @@ public class ServerCredentials {
 		setSyncActivated(syncActivated);
 	}
 
+	/**
+	 * Write the server credentials to file.
+	 *
+	 * @throws	IOException	If the credentials cannot be written.
+	 */
 	public void write() throws IOException {
 		JSONObject encodedServerCredentials = this.encode();
 		FileIO.writeJSONObject(
@@ -35,6 +50,13 @@ public class ServerCredentials {
 				encodedServerCredentials);
 	}
 
+	/**
+	 * Reads server credentials from file.
+	 *
+	 * @return	A ServerCredentials object representing the stored server
+	 * credentials
+	 * @throws	IOException	If the credentials cannot be read.
+	 */
 	public static ServerCredentials read() throws IOException {
 		JSONObject encodedServerCredentials = FileIO.readJSONObject(
 				new File(FileIO.getAppRootPath(), "server_credentials.json"));
@@ -47,6 +69,7 @@ public class ServerCredentials {
 				ipAddress, username, password, syncActivated);
 	}
 
+	// Encodes the server credentials as a JSON object.
 	private JSONObject encode() {
 		JSONObject encodedServerCredentials = new JSONObject();
 		encodedServerCredentials.put("ipAddress", getIPAddress());
@@ -68,6 +91,7 @@ public class ServerCredentials {
 		return password;
 	}
 
+	//Sets the IP address but will only accept valid IPv4 addresses.
 	private void setIPAddress(String ipAddress) {
 		Pattern pattern = Pattern.compile(IP_ADDRESS_PATTERN);
 		Matcher matcher = pattern.matcher(ipAddress);
@@ -78,6 +102,7 @@ public class ServerCredentials {
 		}
 	}
 
+	// Sets the username, but will not accept empty strings.
 	private void setUsername(String username) {
 		if (username.compareTo("") != 0) {
 			this.username = username;

@@ -29,21 +29,25 @@ import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.R;
 
 /**
+ * A fragment used to perform audio playback; offers a seekbar, a play and
+ * pause button
+ *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class ListenFragment extends Fragment implements OnClickListener {
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-	}
-
+	/**
+	 * Called to have the ListenFragment instantiate it's interface view.
+	 *
+	 * @param	inflater	The LayoutInflater to inflate views in the
+	 * fragment.
+	 * @param	container	The parent view to attach the fragment view to.
+	 * @param	savedInstanceState	Non-null if the fragment is being
+	 * reconstructed.
+	 *
+	 * @return	The created view.
+	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -68,22 +72,19 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		return v;
 	}
 
+	/**
+	 * Called when the Fragment is obstructed by another view, or the activity has
+	 * changed.
+	 */
 	@Override
 	public void onPause() {
 		super.onPause();
 		pause();
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-	}
-
+	/**
+	 * Called when the Fragment is destroyed; ensures proper cleanup.
+	 */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -94,6 +95,12 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		}
 	}
 
+	/**
+	 * Used to evaluate what the playPauseButton should do when clicked, as
+	 * ListenFragment implements OnClickListener.
+	 *
+	 * @param	v	The view clicked
+	 */
 	@Override
 	public void onClick(View v) {
 		if (v == playPauseButton) {
@@ -105,18 +112,30 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		}
 	}
 
+	/**
+	 * A wrapper to Thread.interrupt() to prevent null-pointer
+	 * exceptions.
+	 *
+	 * @param	thread	The thread to interrupt.
+	 */
 	private void stopThread(Thread thread) {
 		if (thread != null) {
 			thread.interrupt();
 		}
 	}
 
+	/**
+	 * Pauses play of the audio and handles the GUI appropriately.
+	 */
 	private void pause() {
 		player.pause();
 		stopThread(seekBarThread);
 		playPauseButton.setImageResource(R.drawable.play);
 	}
 
+	/**
+	 * Plays the audio and handles the GUI appropriately.
+	 */
 	private void play() {
 		player.play();
 		seekBarThread = new Thread(new Runnable() {
@@ -139,23 +158,21 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		playPauseButton.setImageResource(R.drawable.pause);
 	}
 
-	public void setRecording(Recording recording) {
-		this.recording = recording;
-	}
-
-	public void setSampleRate(int sampleRate) {
-		this.sampleRate = sampleRate;
-	}
-
-	public void setUUID(UUID uuid) {
-		this.uuid = uuid;
-	}
-
+	/**
+	 * Sets the player that the ListenFragment is to use.
+	 *
+	 * @param	simplePlayer	The simple player to be used.
+	 */
 	public void setPlayer(SimplePlayer simplePlayer) {
 		this.player = simplePlayer;
 		player.setOnCompletionListener(onCompletionListener);
 	}
 
+	/**
+	 * Sets the player that the ListenFragment is to use
+	 *
+	 * @param	interleavedPlayer	The interleaved player to be used.
+	 */
 	public void setPlayer(InterleavedPlayer interleavedPlayer) {
 		this.player = interleavedPlayer;
 		Segments segments = new Segments(interleavedPlayer.getRecording().getUUID());
@@ -171,6 +188,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		player.setOnCompletionListener(onCompletionListener);
 	}
 
+	/** Defines behaviour for the fragment when a recording finishes playing.*/
 	private Player.OnCompletionListener onCompletionListener =
 			new Player.OnCompletionListener() {
 				public void onCompletion(Player _player) {
@@ -184,7 +202,4 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	private ImageButton playPauseButton;
 	private InterleavedSeekBar seekBar;
 	private Thread seekBarThread;
-	private Recording recording;
-	private UUID uuid;
-	private int sampleRate;
 }

@@ -37,6 +37,7 @@ public class UsageUtils {
 	 * @param	dir	A File representing the directory
 	 * @param	fnf	A filenamefilter that specifies what types of files to
 	 * consider
+	 * @return	A float representing the number of bytes used by a directory.
 	 */
 	private static float bytesUsed(File dir, FilenameFilter fnf) {
 		if (dir.exists()) {
@@ -62,6 +63,7 @@ public class UsageUtils {
 	 *
 	 * @param	sampleRate	The sample rate of the recordings
 	 * @param	sampleSize	The size of each sample in bits
+	 * @return	A float representing the number of seconds used.
 	 */
 	public static float secondsUsed(int sampleRate, int sampleSize) {
 		float bytesUsed = bytesUsed(new File("/sdcard/aikuma/recordings"),
@@ -79,6 +81,7 @@ public class UsageUtils {
 	 *
 	 * @param	sampleRate	The sample rate of hte recordings
 	 * @param	sampleSize	The size of each sample in bits.
+	 * @return	A float representing the number of seconds available.
 	 */
 	public static float secondsAvailable(int sampleRate, int sampleSize) {
 		float bytesUsed = bytesAvailable(new File("/sdcard"));
@@ -86,25 +89,51 @@ public class UsageUtils {
 		return bytesUsed / ((sampleSize == 16 ? 2 : 1) * sampleRate);
 	}
 
-	
 	/**
-	 * Returns the number of hours worth of recordings in the synced recordings
-	 * directory.
+	 * Returns a nicely formatted string describing how much time has been used
+	 * (in an <Hours>h <minutes>m <seconds>s format).
 	 *
 	 * @param	sampleRate	The sample rate of the recordings
-	 * @param	sampleSize	The size of each sample in bits
-	 */
-	public static float hoursUsed(int sampleRate, int sampleSize) {
-		return secondsUsed(sampleRate, sampleSize) / 3600;
-	}
-	/**
-	 * Returns the number of hours worth of recordings available.
-	 *
-	 * @param	sampleRate	The sample rate of hte recordings
 	 * @param	sampleSize	The size of each sample in bits.
+	 * @return	A String describing the mount of recording time already used.
 	 */
-	public static float hoursAvailable(int sampleRate, int sampleSize) {
-		return secondsAvailable(sampleRate, sampleSize) / 3600;
+	public static String timeUsed(int sampleRate, int sampleSize) {
+		long secondsUsed = (long) secondsUsed(sampleRate, sampleSize);
+		return formatSeconds(secondsUsed);
+	}
+
+
+	/**
+	 * Returns a nicely formatted string describing how much recording time is
+	 * available (in an <Hours>h <minutes>m <seconds>s format).
+	 *
+	 * @param	sampleRate	The sample rate of the recordings
+	 * @param	sampleSize	The size of each sample in bits.
+	 * @return	A String describing the mount of recording time available.
+	 */
+	public static String timeAvailable(int sampleRate, int sampleSize) {
+		long secondsAvailable = (long) secondsAvailable(sampleRate, sampleSize);
+		return formatSeconds(secondsAvailable);
+	}
+
+	/**
+	 * Formats a duration represented as seconds into a nicer <Hours>h
+	 * <minutes>m <seconds>s format.
+	 *
+	 * @param	seconds	A long representing the amount of seconds.
+	 * @return	A string describing the duration.
+	 */
+	private static String formatSeconds(long seconds) {
+		int hours = (int) seconds / 3600;
+		int remainder = (int) seconds - hours * 3600;
+		int mins = remainder / 60;
+		remainder = remainder - mins * 60;
+		int secs = remainder;
+
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(hours).append("h ");
+		stringBuilder.append(mins).append("m ");
+		return stringBuilder.toString();
 	}
 
 	/**

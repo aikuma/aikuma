@@ -26,10 +26,22 @@ import org.lp20.aikuma.R;
  */
 public class MenuBehaviour {
 
+	/**
+	 * The sole constructor, requires an activity.
+	 *
+	 * @param	activity	The activity whose menu behaviour we are defining.
+	 */
 	public MenuBehaviour(Activity activity) {
 		this.activity = activity;
 	}
 
+	/**
+	 * Creates the options menu appropriate for the activity.
+	 *
+	 * @param	menu	The menu in question.
+	 * @return	Always true, so that when Activity.onCreateOptionsMenu uses
+	 * this implementation, the display is shown.
+	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = activity.getMenuInflater();
 		if (activity instanceof MainActivity) {
@@ -40,8 +52,14 @@ public class MenuBehaviour {
 		return true;
 	}
 
+	/**
+	 * Defines what happens when an menu item is selected and safe transitions
+	 * are off.
+	 *
+	 * @param	item	The menu item selected.
+	 * @return	Always true.
+	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.i("issue103", "hello, " + item.getItemId());
 		Intent intent;
 		switch (item.getItemId()) {
 			case android.R.id.home:
@@ -72,6 +90,15 @@ public class MenuBehaviour {
 		}
 	}
 
+	/**
+	 * Defines what happens when an menu item is selected and safe transitions
+	 * are off.
+	 *
+	 * @param	item	The menu item selected.
+	 * @param	safeActivityTransitionMessage	The message to display warning
+	 * about data loss.
+	 * @return	Always true.
+	 */
 	public boolean safeOnOptionsItemSelected(MenuItem item,
 			String safeActivityTransitionMessage) {
 		Intent intent;
@@ -96,6 +123,9 @@ public class MenuBehaviour {
 		}
 	}
 
+	/**
+	 * Opens the howto from lp20.org in a browser.
+	 */
 	private void openHelpInBrowser() {
 		Uri uri = Uri.parse("http://lp20.org/aikuma/howto.html");
 		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -115,6 +145,8 @@ public class MenuBehaviour {
 	 * Transitions to the MainActivity prompting the user with some dialogue
 	 * with the supplied text for the message and the positive and negative
 	 * buttons.
+	 *
+	 * @param	safeActivityTransitionMessage	The string to display in a warning message.
 	 */
 	public void safeGoToMainActivity(String safeActivityTransitionMessage) {
 		String message = DEFAULT_MESSAGE;
@@ -142,6 +174,8 @@ public class MenuBehaviour {
 	 * Allows the activity to use the back button to return to the previous
 	 * activity in the stack, while ensuring the user is aware they'll lose
 	 * data.
+	 *
+	 * @param	safeActivityTransitionMessage	The string to display in a warning message.
 	 */
 	public void safeGoBack(String safeActivityTransitionMessage) {
 		String message = DEFAULT_MESSAGE;

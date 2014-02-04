@@ -68,16 +68,6 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 	>
-		<!--
-		<ToggleButton
-				android:id="@+id/phoneRespeaking"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
-				android:textOn="Phone respeak on"
-				android:textOff="Phone respeak off"
-				android:onClick="onPhoneRespeakingToggle"
-		/> -->
 		<Button
 				android:id="@+id/thumbRespeaking"
 				android:text="@string/thumb_respeaking"

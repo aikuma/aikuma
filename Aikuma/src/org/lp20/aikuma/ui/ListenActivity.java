@@ -43,17 +43,11 @@ import org.lp20.aikuma.util.ImageUtils;
  */
 public class ListenActivity extends AikumaActivity {
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listen);
 		menuBehaviour = new MenuBehaviour(this);
-		//UUID respeakingUUID = UUID.randomUUID();
-		//phoneRespeaker = new PhoneRespeaker(recording,
-		//		new File(Recording.getRecordingsPath(),
-		//				respeakingUUID.toString() + ".wav"),
-		//		sampleRate);
 		fragment =
 				(ListenFragment)
 				getFragmentManager().findFragmentById(R.id.ListenFragment);
@@ -64,6 +58,7 @@ public class ListenActivity extends AikumaActivity {
 		setUpRecordingInfo();
 	}
 
+	// Prepares the recording
 	private void setUpRecording() {
 		Intent intent = getIntent();
 		UUID recordingUUID = UUID.fromString(
@@ -80,6 +75,7 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 
+	// Prepares the information pertaining to the recording
 	private void setUpRecordingInfo() {
 		setUpRecordingName();
 		LinearLayout recordingInfoView = (LinearLayout)
@@ -91,6 +87,8 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 
+	// Prepares the displayed name for the recording (including other things
+	// such as duration and date.
 	private void setUpRecordingName() {
 		TextView nameView = (TextView) findViewById(R.id.recordingName);
 		TextView dateDurationView = 
@@ -108,6 +106,7 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 
+	// Makes the imageview for a given speaker
 	private ImageView makeSpeakerImageView(UUID speakerUUID) {
 		ImageView speakerImage = new ImageView(this);
 		speakerImage.setAdjustViewBounds(true);
@@ -122,6 +121,7 @@ public class ListenActivity extends AikumaActivity {
 		return speakerImage;
 	}
 
+	// Set up the player
 	private void setUpPlayer() {
 		try {
 			if (recording.isOriginal()) {
@@ -144,6 +144,7 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 
+	// Prepares the iimages for the respeakings.
 	private void setUpRespeakingImages() {
 		List<Recording> respeakings;
 		if (recording.isOriginal()) {
@@ -236,11 +237,6 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	@Override
-	public void onStop() {
-		super.onStop();
-	}
-
-	@Override
 	public void onResume() {
 		super.onResume();
 		this.proximityDetector = new ProximityDetector(this) {
@@ -263,20 +259,16 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	@Override
-	public void onRestart() {
-		super.onRestart();
-	}
-
-	@Override
 	public void onPause() {
 		super.onPause();
 		this.proximityDetector.stop();
 	}
 
-	public void onPhoneRespeakingToggle(View view) {
-		phoneRespeaking = ((ToggleButton) view).isChecked();
-	}
-
+	/**
+	 * Change to the thumb respeaking activity
+	 *
+	 * @param	view	The thumb respeaking button
+	 */
 	public void onThumbRespeakingButton(View view) {
 		Intent intent = new Intent(this, ThumbRespeakActivity.class);
 		intent.putExtra("uuidString", recording.getUUID().toString());
@@ -284,6 +276,11 @@ public class ListenActivity extends AikumaActivity {
 		startActivity(intent);
 	}
 
+	/**
+	 * Change to the phone respeaking activity
+	 *
+	 * @param	view	The phone respeaking button
+	 */
 	public void onPhoneRespeakingButton(View view) {
 		Intent intent = new Intent(this, PhoneRespeakActivity.class);
 		intent.putExtra("uuidString", recording.getUUID().toString());

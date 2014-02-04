@@ -26,50 +26,89 @@ public class Beeper {
 	private MediaPlayer beep;
 	private MediaPlayer beepBeep;
 	
+	/**
+	 * Constructor
+	 *
+	 * @param	context	The context that the Beeper should beep in.
+	 */
 	public Beeper(Context context) {
 		this.context = context;
 	}
 
+	/**
+	 * Plays one beep.
+	 */
 	public void beep() { beep(null); }
+
+	/**
+	 * Plays one beep.
+	 *
+	 * @param	listener	The callback to play when the beep is complete.
+	 */
 	public void beep(OnCompletionListener listener) {
 		getBeep(listener).start();
 	}
-	
+
+	/**
+	 * Plays two beeps in succession.
+	 */
 	public void beepBeep() { beepBeep(null); }
+
+	/**
+	 * Plays two beeps in succession.
+	 *
+	 * @param	listener	The callback to play when the beep is complete.
+	 */
 	public void beepBeep(OnCompletionListener listener) {
 		getBeepBeep(listener).start();
 	}
-	
-	/** Static convenience methods */
-	
+
+	/**
+	 * Plays one beep.
+	 *
+	 * @param	context	The context to play the beep in
+	 * @param	listener	The callback to play when the beep is complete.
+	 */
 	public static void beep(Context context, OnCompletionListener listener) {
 		start(context, listener, R.raw.beep);
 	}
 
-	
+	/**
+	 * Plays two beeps in succession.
+	 *
+	 * @param	context	The context to play the beep in
+	 * @param	listener	The callback to play when the beep is complete.
+	 */
 	public static void beepBeep(Context context, OnCompletionListener listener) {
 		start(context, listener, R.raw.beeps2);
 	}
 
+	/**
+	 * Plays a long beep.
+	 *
+	 * @param	context	The context to play the beep in
+	 * @param	listener	The callback to play when the beep is complete.
+	 */
 	public static void longBeep(Context context, OnCompletionListener listener) {
 		start(context, listener, R.raw.longbeep);
 	}
-	
+
+	// Starts playing the given audio resource.
 	private static void start(Context context, final OnCompletionListener listener, int resource) {
 		new Beeper(context).create(listener, resource).start();
 	}
 	
-	/** Private methods */
-	
+	// Gets a mediaplayer that plays a beep.
 	private MediaPlayer getBeep(final OnCompletionListener listener) {
 		return create(listener, R.raw.beep);
 	}
 	
+	// Gets a mediaplayer that plays two beeps in succession
 	private MediaPlayer getBeepBeep(final OnCompletionListener listener) {
-		Log.i("beep", "beepin");
 		return create(listener, R.raw.beeps2);
 	}
 	
+	// Creates a mediaplayer to play the beeps with.
 	private MediaPlayer create(final OnCompletionListener listener, int resource) {
 		final MediaPlayer beeper = MediaPlayer.create(context, resource);
 		if (listener != null) {

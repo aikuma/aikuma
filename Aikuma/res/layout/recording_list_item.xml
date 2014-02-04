@@ -3,22 +3,30 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:orientation="horizontal" android:baselineAligned="false" android:id="@+id/addNewUser">
+	<ImageView
+			android:src="@drawable/microphone"
+			android:id="@+id/recordingType"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+	/>
 	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textSize="15sp"
 			android:layout_height="wrap_content"
 			android:text=""
 			android:layout_width="0dp"
 			android:layout_weight="1"
 			android:layout_gravity="center_vertical"
 			android:id="@+id/recordingName"
-			android:padding="5dp"/>
+			android:padding="1dp"/>
 	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textSize="12sp"
 			android:layout_height="wrap_content"
-			android:text=""
 			android:layout_width="0dp"
-			android:layout_weight="1"
+			android:layout_weight="0.5"
+			android:text=""
 			android:layout_gravity="center_vertical"
 			android:id="@+id/recordingDateDuration"
-			android:padding="5dp"/>
+			android:padding="1dp"/>
 	<!-- Possible Recording image distinct from the programatically added
 	Speaker images
 	<ImageView android:src="@drawable/unknown_speaker"

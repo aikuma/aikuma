@@ -75,13 +75,9 @@ public class PhoneRespeakFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
-		Log.i("yo", "1");
 		haltRespeaking();
-		Log.i("yo", "2");
 		this.proximityDetector.stop();
-		Log.i("yo", "3");
 		Audio.reset(getActivity());
-		Log.i("yo", "4");
 	}
 
 	@Override
@@ -112,32 +108,32 @@ public class PhoneRespeakFragment extends Fragment {
 	@Override
 	public void onStop() {
 		super.onStop();
-		Log.i("yo", "onstop");
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Log.i("yo", "onDestroy 1");
 		if (respeaker != null) {
 			//If you hit the stop button really quickly, the player may not
 			//have been initialized fully.
 			respeaker.release();
 		}
-		Log.i("yo", "onDestroy 2");
 	}
 
+	// A safer way to interrupt threads.
 	private void stopThread(Thread thread) {
 		if (thread != null) {
 			thread.interrupt();
 		}
 	}
 
+	// Pauses the respaking process
 	private void haltRespeaking() {
 		respeaker.halt();
 		stopThread(seekBarThread);
 	}
 
+	// Resumes the respeeaking process.
 	private void resumeRespeaking() {
 		respeaker.resume();
 		seekBarThread = new Thread(new Runnable() {
@@ -171,6 +167,11 @@ public class PhoneRespeakFragment extends Fragment {
 		this.uuid = uuid;
 	}
 
+	/**
+	 * PhoneRespeaker mutator.
+	 *
+	 * @param	respeaker	The PhoneRespeaker
+	 */
 	public void setPhoneRespeaker(PhoneRespeaker respeaker) {
 		this.respeaker = respeaker;
 		respeaker.getSimplePlayer().setOnCompletionListener(onCompletionListener);
@@ -179,7 +180,6 @@ public class PhoneRespeakFragment extends Fragment {
 	private Player.OnCompletionListener onCompletionListener =
 			new Player.OnCompletionListener() {
 				public void onCompletion(Player _player) {
-					Log.e("yo", "yo", new Throwable());
 					stopThread(seekBarThread);
 					seekBar.setProgress(seekBar.getMax());
 					Beeper.longBeep(getActivity(), null);

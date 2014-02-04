@@ -22,7 +22,6 @@ import org.lp20.aikuma.util.FileIO;
  */
 public class DefaultLanguagesActivity extends AikumaListActivity {
 	
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,16 +49,27 @@ public class DefaultLanguagesActivity extends AikumaListActivity {
 		setListAdapter(adapter);
 	}
 
+	/**
+	 * Called when a user presses the add ISO language button.
+	 *
+	 * @param	view	The button
+	 */
 	public void onAddISOLanguageButton(View view) {
 		Intent intent = new Intent(this, LanguageFilterList.class);
 		startActivityForResult(intent, SELECT_LANGUAGE);
 	}
 
+	/**
+	 * Called when a user presses the add custom language button.
+	 *
+	 * @param	view	The button
+	 */
 	public void onAddCustomLanguageButton(View view) {
 		Intent intent = new Intent(this, AddCustomLanguageActivity.class);
 		startActivityForResult(intent, SELECT_LANGUAGE);
 	}
 
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent
 			intent) {
 		if (requestCode == SELECT_LANGUAGE) {
