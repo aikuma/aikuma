@@ -8,7 +8,7 @@ import org.lp20.aikuma.http.NanoHTTPD.IHTTPSession;
 import org.lp20.aikuma.http.NanoHTTPD.Response;
 
 /**
- * A chain of HTTP request processors.
+ * Allows to create a chain of HTTP request processors.
  * 
  * @author haejoong
  */

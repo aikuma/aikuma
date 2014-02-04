@@ -41,8 +41,7 @@
     <string name="http_server_activity_server_status">Server status</string>
     <string name="http_server_activity_host">Host</string>
     <string name="http_server_activity_port">Port</string>
-    <string name="http_server_activity_running">Running</string>
-    <string name="http_server_activity_stopped">Stopped</string>
-    <string name="http_server_activity_interface">Network interface</string>
     <string name="http_server_activity_ip">IP address</string>
+    <string name="http_ui_start">START</string>
+    <string name="http_ui_stop">STOP</string>
 </resources>
