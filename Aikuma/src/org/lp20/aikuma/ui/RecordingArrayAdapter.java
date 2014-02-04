@@ -77,9 +77,9 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	private ImageView makeSpeakerImageView(UUID speakerUUID) {
 		ImageView speakerImage = new ImageView(context);
 		speakerImage.setAdjustViewBounds(true);
-		speakerImage.setMaxHeight(60);
-		speakerImage.setMaxWidth(60);
-		speakerImage.setPaddingRelative(5,5,5,5);
+		speakerImage.setMaxHeight(40);
+		speakerImage.setMaxWidth(40);
+		speakerImage.setPaddingRelative(1,1,1,1);
 		try {
 			speakerImage.setImageBitmap(ImageUtils.getSmallImage(speakerUUID));
 		} catch (IOException e) {
