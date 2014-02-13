@@ -39,8 +39,6 @@ public class SettingsActivity extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings);
-		getVersionInfo();
-		getUsageInfo();
 	}
 
 	@Override
@@ -92,28 +90,6 @@ public class SettingsActivity extends AikumaActivity {
 				public void onStopTrackingTouch(SeekBar seekBar) {}
 			}
 		);
-
-	}
-
-	// Retrieves information about the Aikuma version.
-	private void getVersionInfo() {
-		TextView versionField = (TextView) findViewById(R.id.versionField);
-		try {
-				versionField.setText("Version: " +
-						this.getPackageManager().getPackageInfo(
-						this.getPackageName(), 0).versionName);
-		} catch (android.content.pm.PackageManager.NameNotFoundException e) {
-			//Just leave the textview empty.
-		}
-	}
-
-	// Retrievs information about the user and displays it.
-	private void getUsageInfo() {
-		TextView usageField = (TextView) findViewById(R.id.usageField);
-		usageField.setText("Recording time used: " + UsageUtils.timeUsed(16000, 16) + 
-				"\nRecording time available: " + UsageUtils.timeAvailable(16000, 16) +
-				"\nOriginal recordings: " + UsageUtils.numOriginals() +
-				"\nCommentaries: " + UsageUtils.numCommentaries());
 	}
 
 	/**
@@ -134,10 +110,5 @@ public class SettingsActivity extends AikumaActivity {
 	public void onSyncSettingsButton(View view) {
 		Intent intent = new Intent(this, SyncSettingsActivity.class);
 		startActivity(intent);
-	}
-
-	@Override
-	public void onBackPressed() {
-		this.finish();
 	}
 }

@@ -77,7 +77,10 @@ public class MenuBehaviour {
 			case R.id.settings:
 				intent = new Intent(activity, SettingsActivity.class);
 				activity.startActivity(intent);
-				//openSettingsActivity;
+				return true;
+			case R.id.about:
+				intent = new Intent(activity, AboutActivity.class);
+				activity.startActivity(intent);
 				return true;
 			default:
 				return true;
@@ -110,7 +113,10 @@ public class MenuBehaviour {
 			case R.id.settings:
 				intent = new Intent(activity, SettingsActivity.class);
 				activity.startActivity(intent);
-				//openSettingsActivity;
+				return true;
+			case R.id.about:
+				intent = new Intent(activity, AboutActivity.class);
+				activity.startActivity(intent);
 				return true;
 			default:
 				return true;
