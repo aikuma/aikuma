@@ -199,7 +199,16 @@ public class Segments {
 		return mapString;
 	}
 
+	/**
+	 * An exception thrown if the segment mapping file is incorrectly
+	 * formatted.
+	 */
 	public static class SegmentException extends Exception {
+		/**
+		 * Constructor
+		 *
+		 * @param	message	The message to be contained by the exception
+		 */
 		public SegmentException(String message) {
 			super(message);
 		}

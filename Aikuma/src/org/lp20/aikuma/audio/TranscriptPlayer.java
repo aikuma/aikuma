@@ -10,8 +10,23 @@ import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.model.Transcript;
 import org.lp20.aikuma.R;
 
+/**
+ * A player that plays a recording and additionally presents an existing
+ * transctiption in an appropriate activity.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com
+ */
 public class TranscriptPlayer extends MarkedPlayer {
 
+	/**
+	 * Constructor
+	 *
+	 * @param	recording	The recording to be played
+	 * @param	activity	The activity to modify as the transcriptions
+	 * change.
+	 * @throws	IOException	If there is an issue reading transcriptions or the
+	 * recording
+	 */
 	public TranscriptPlayer(Recording recording, final Activity activity)
 			throws IOException {
 		super(recording, true);
@@ -42,6 +57,9 @@ public class TranscriptPlayer extends MarkedPlayer {
 		setOnMarkerReachedListener(onTranscriptMarkerReachedListener);
 	}
 
+	/**
+	 * Listener to adjust the transcript view when a transcript marker gets reached.
+	 */
 	private class TranscriptMarkerReachedListener
 			extends MarkedPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedPlayer p) {

@@ -182,7 +182,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	/**
 	 * Sets the player that the ListenFragment is to use
 	 *
-	 * @param	transcript player	The transcript player to be used.
+	 * @param	transcriptPlayer	The transcript player to be used.
 	 */
 	public void setPlayer(TranscriptPlayer transcriptPlayer) {
 		this.player = transcriptPlayer;

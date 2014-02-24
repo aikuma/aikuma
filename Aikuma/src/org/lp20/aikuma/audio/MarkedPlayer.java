@@ -37,8 +37,16 @@ public class MarkedPlayer extends SimplePlayer {
 		count++;
 	}
 
-	public MarkedPlayer(Recording recording) throws IOException {
-		super(recording);
+	/**
+	 * Constructor
+	 *
+	 * @param	recording	The metadata of the recording to be played
+	 * @throws	IOException	If an I/O issue occurs in the superconstructor.
+	 * @param	playThroughSpeaker	True if the audio is to be played through the main
+	 * speaker; false if through the ear piece (ie the private phone call style)
+	 */
+	public MarkedPlayer(Recording recording, boolean playThroughSpeaker) throws IOException {
+		super(recording, true);
 		notificationMarkerLoop = new Thread(new NotificationMarkerLoop());
 		notificationMarkerLoop.start();
 		unsetNotificationMarkerPosition();
@@ -76,6 +84,9 @@ public class MarkedPlayer extends SimplePlayer {
 
 	/**
 	 * Sets the notificaiton marker position to be at the specified sample.
+	 *
+	 * @param	sample	The sample at which the notification marker is to be
+	 * set.
 	 */
 	public void setNotificationMarkerPositionSample(Long sample) {
 		setNotificationMarkerPositionMsec(sampleToMsec(sample));
