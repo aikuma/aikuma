@@ -16,13 +16,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.net.NetworkInterface;
 import java.net.InetAddress;
 
+/**
+ * A web server class designed for a web-based transcription tool
+ * (see github.com/langtech/transcriber).
+ * 
+ * @author Haejoong Lee	<haejoong@ldc.upenn.edu>
+ *
+ */
 public class Server extends NanoHTTPD {
 	private static String host_;    // hostname
 	private static int port_ = -1;  // port number
@@ -105,7 +110,7 @@ public class Server extends NanoHTTPD {
 	/**
 	 * Configure hostname.
 	 * 
-	 * @param host
+	 * @param host Hostname.
 	 */
 	public static void setHost(String host) {
 		host_ = host;
@@ -114,16 +119,17 @@ public class Server extends NanoHTTPD {
 	/**
 	 * Configure port number.
 	 * 
-	 * @param port
+	 * @param port Port number.
 	 */
 	public static void setPort(int port) {
 		port_ = port;
 	}
 	
 	/**
-	 * Set FileServer object.
+	 * Set AssetManager object to be used for serving static assets, e.g.
+	 * audio and image files.
 	 * 
-	 * @param fileServer
+	 * @param am AssetManager for the app.
 	 */
 	public static void setAssetManager(AssetManager am) {
 		am_ = am;
@@ -140,8 +146,8 @@ public class Server extends NanoHTTPD {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Identify available IP addresses of active network interfaces.
+	 * @return A hash of interface name and IP address.
 	 */
 	public static Map<String,String> getIpAddresses() {
 		Enumeration<NetworkInterface> ifs;
@@ -168,18 +174,34 @@ public class Server extends NanoHTTPD {
 		return ips;
 	}
 
+	/**
+	 * Returns the hostname set by setHost() method.
+	 * @return a hostname (IP address).
+	 */
 	public String getHost() {
 		return host_;
 	}
 	
+	/**
+	 * Returns the port number set by setPort() method.
+	 * @return a port number.
+	 */
 	public int getPort() {
 		return port_;
 	}
 	
+	/**
+	 * Returns the hostname of the active server instance.
+	 * @return hostname, or null if the server is not running.
+	 */
 	public String getActiveHost() {
 		return isAlive() ? current_host_ : null;
 	}
 	
+	/**
+	 * Returns the port number of the active server instance.
+	 * @return port number, or null if the server is not running.
+	 */
 	public int getActivePort() {
 		return isAlive() ? current_port_ : null;
 	}

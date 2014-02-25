@@ -12,6 +12,12 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.TextView;
 
+/**
+ * Activity for starting and stopping the HTTP server.
+ * 
+ * @author Haejoong Lee <haejoong@ldc.upenn.edu>
+ 
+ */
 public class HttpServerActivity extends AikumaActivity {
 	private String hostname;
 	private int port;
@@ -86,7 +92,13 @@ public class HttpServerActivity extends AikumaActivity {
 			}
 		});
 	}
-	
+
+	/**
+	 * Displays a pop-up menu from which user can select a network interface
+	 * to bind the HTTP server to.
+	 * 
+	 * @param view A view.
+	 */
 	public void showNetworkInterfaceDialog(View view) {
 		if (!findViewById(R.id.ip_address).isEnabled())
 			return;
@@ -119,6 +131,10 @@ public class HttpServerActivity extends AikumaActivity {
 		builder.show();
 	}
 	
+	/**
+	 * Start the HTTP server responding to the "START" button.
+	 * @param view A view.
+	 */
 	public void startServer(View view) {
 		Boolean success;
 		log.setText("");
@@ -141,6 +157,10 @@ public class HttpServerActivity extends AikumaActivity {
 		findViewById(R.id.button_stop_http).setEnabled(success);
 	}
 	
+	/**
+	 * Stop the HTTP server when the "STOP" button is clicked on.
+	 * @param view a View object.
+	 */
 	public void stopServer(View view) {
 		log.setText("Server stopped.");
 		Server.destroyServer();
