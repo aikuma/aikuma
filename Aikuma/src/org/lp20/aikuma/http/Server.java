@@ -26,9 +26,11 @@ import java.net.InetAddress;
 public class Server extends NanoHTTPD {
 	private static String host_;    // hostname
 	private static int port_ = -1;  // port number
-	private static Server server_;  // singleton server object
+	private static Server server_ = null;  // singleton server object
 	private static AssetManager am_;
 	private Proc proc_;
+	private String current_host_;  // hostname/ip of running instance
+	private int current_port_;     // port of running instance
 
 	/**
 	 * Protected constructor used by a factory function.
@@ -91,13 +93,12 @@ public class Server extends NanoHTTPD {
 	 * @return Server or null of server can't be created.
 	 */
 	public static Server getServer() {
-		if (port_ < 0) {
+		if (host_ == null || port_ <= 0 || port_ > 65535)
 			return null;
-		}
 		
-		if (server_ == null) {
+		if (server_ == null)
 			server_ = new Server(host_, port_);
-		}
+
 		return server_;
 	}
 	
@@ -167,8 +168,18 @@ public class Server extends NanoHTTPD {
 		return ips;
 	}
 
+	public String getHost() {
+		return current_host_;
+	}
+	
+	public int getPort() {
+		return current_port_;
+	}
+	
 	@Override
 	public void start() throws IOException {
+		current_host_ = host_;
+		current_port_ = port_;
 		super.start();
 	}
 	
@@ -178,8 +189,13 @@ public class Server extends NanoHTTPD {
 	}
 	
 	private Response serveIndex(String path) {
+		if (path.equals("/")) {
+			Response r = serveAsset("/transcriber.html");
+			return r == null ? mkNotFoundResponse(path) : r;
+		}
+		
 		String a[] = path.split("/");
-		if (a[1].equals("index.json")) {
+		if (a.length == 2 && a[1].equals("index.json")) {
 			JSONObject originals = new JSONObject();
 			JSONObject commentaries = new JSONObject();
 			JSONObject speakers = new JSONObject();
@@ -205,7 +221,7 @@ public class Server extends NanoHTTPD {
 	
 	private Response serveRecording(String path) {
 		String[] a = path.split("/");
-		if (!a[1].equals("recording") || a.length != 3)
+		if (a.length != 3 || !a[1].equals("recording"))
 			return null;
 
 		try {
@@ -218,17 +234,16 @@ public class Server extends NanoHTTPD {
 		}
 		catch (IllegalArgumentException e) {
 			return mkNotFoundResponse(path);
-		}			
+		}
 	}
 	
 	private Response serveMapFile(String path) {
 		String[] a = path.split("/");
-		if (!a[1].equals("recording") || a.length != 4 || !a[3].equals("mapfile"))
+		if (a.length != 4 || !a[1].equals("recording") || !a[3].equals("mapfile"))
 			return null;
 		
 		try {
 			File mapfile = new File(Recording.getRecordingsPath(), a[2] + ".map");
-			android.util.Log.e("abc", Recording.getRecordingsPath().toString());
 			InputStream is = new FileInputStream(mapfile);
 			return new Response(Status.OK, "text/plain", is);
 		}
@@ -239,7 +254,7 @@ public class Server extends NanoHTTPD {
 	
 	private Response serveShapeFile(String path) {
 		String[] a = path.split("/");
-		if (!a[1].equals("recording") || a.length != 4 || !a[3].equals("shapefile"))
+		if (a.length != 4 || !a[1].equals("recording") || !a[3].equals("shapefile"))
 			return null;
 		
 		try {
@@ -254,7 +269,7 @@ public class Server extends NanoHTTPD {
 	
 	private Response serveSpeakerImage(String path) {
 		String[] a = path.split("/");
-		if (!a[1].equals("speaker") || a.length != 4 || !a[3].equals("image"))
+		if (a.length != 4 || !a[1].equals("speaker") || !a[3].equals("image"))
 			return null;
 		
 		try {
@@ -267,12 +282,12 @@ public class Server extends NanoHTTPD {
 		}
 		catch (IllegalArgumentException e) {
 			return mkNotFoundResponse(path);
-		}			
+		}
 	}
 	
 	private Response serveSpeakerSmallImage(String path) {
 		String[] a = path.split("/");
-		if (!a[1].equals("speaker") || a.length != 4 || !a[3].equals("smallimage"))
+		if (a.length != 4 || !a[1].equals("speaker") || !a[3].equals("smallimage"))
 			return null;
 		
 		try {
@@ -285,7 +300,7 @@ public class Server extends NanoHTTPD {
 		}
 		catch (IllegalArgumentException e) {
 			return mkNotFoundResponse(path);
-		}			
+		}
 	}
 
 	private Response serveAsset(String path) {
@@ -296,7 +311,7 @@ public class Server extends NanoHTTPD {
 		}
 		catch (IOException e) {
 			return mkNotFoundResponse(path);
-		}		
+		}
 	}
 	
 	private String guessMimeType(String path) {

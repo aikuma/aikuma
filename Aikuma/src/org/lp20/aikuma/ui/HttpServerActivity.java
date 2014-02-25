@@ -23,25 +23,57 @@ public class HttpServerActivity extends AikumaActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_http_server);
 
-		// read default port number set in ui
-		port = Integer.parseInt(((TextView) findViewById(R.id.text_port)).getText().toString());
-		
-		log = (TextView) findViewById(R.id.text_server_log);
-		
 		Server.setAssetManager(getAssets());
-		
+
+		log = (TextView) findViewById(R.id.text_server_log);
+
+		final TextView t = (TextView) findViewById(R.id.text_port);
+
+		Boolean running = Server.getServer() != null && Server.getServer().isAlive();
+
+		findViewById(R.id.ip_address).setEnabled(!running);
+		findViewById(R.id.text_port).setEnabled(!running);
+		findViewById(R.id.button_start_http).setEnabled(!running);
+		findViewById(R.id.button_stop_http).setEnabled(running);
+		if (running == true) {
+			hostname = Server.getServer().getHost();
+			port = Server.getServer().getPort();
+			log.append("Server already running at " + hostname + ":" + Integer.toString(port) + "\n");
+			t.setText(Integer.toString(port));
+		}
+		else {
+			// read default port number set in ui
+			String p = getString(R.string.http_ui_default_port);
+			t.setText(p);
+			port = Integer.parseInt(p);
+		}
+				
 		// initially set the ip address field
 		Map<String,String> addrs = Server.getIpAddresses();
 		if (addrs.size() > 0) {
-			selected_device = (String) addrs.keySet().toArray()[0];
+			for (String dev : addrs.keySet()) {
+				if (addrs.get(dev).equals(hostname)) {
+					selected_device = dev;
+					break;
+				}
+			}				
+			if (selected_device == null)
+				selected_device = (String) addrs.keySet().toArray()[0];
+
+			hostname = addrs.get(selected_device).toString();
 			((TextView) findViewById(R.id.ip_address)).setText(addrs.get(selected_device));
 		}
 		
-		TextView t = (TextView) findViewById(R.id.text_port);
 		t.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable s) {
-				port = Integer.parseInt(s.toString());
+				try {
+					port = Integer.parseInt(s.toString());
+					findViewById(R.id.button_start_http).setEnabled(port > 0 && port < 65536);
+				}
+				catch (NumberFormatException e) {
+					findViewById(R.id.button_start_http).setEnabled(false);
+				}
 			}
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -53,6 +85,8 @@ public class HttpServerActivity extends AikumaActivity {
 	}
 	
 	public void showNetworkInterfaceDialog(View view) {
+		if (!findViewById(R.id.ip_address).isEnabled())
+			return;
 		Map<String,String> addrs = Server.getIpAddresses();
 		CharSequence[] menuitems = new CharSequence[addrs.size()];
 		final String[] devices = new String[addrs.size()];
@@ -74,6 +108,7 @@ public class HttpServerActivity extends AikumaActivity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				selected_device = devices[which];
+				hostname = ipaddrs[which].toString();
 				((TextView) findViewById(R.id.ip_address)).setText(ipaddrs[which]);
 				dialog.dismiss();
 			}
@@ -99,17 +134,19 @@ public class HttpServerActivity extends AikumaActivity {
 			log.append(e.getMessage());
 			log.append("\n");
 		}
+		log.setText("Server started.");
+		findViewById(R.id.ip_address).setEnabled(!success);
+		findViewById(R.id.text_port).setEnabled(!success);
 		view.setEnabled(!success);
 		findViewById(R.id.button_stop_http).setEnabled(success);
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.http_dialog_title).setMessage(msg);
-		AlertDialog dialog = builder.create();
-		dialog.show();
 	}
 	
 	public void stopServer(View view) {
+		log.setText("Server stopped.");
 		Server.getServer().stop();
 		findViewById(R.id.button_start_http).setEnabled(true);
 		view.setEnabled(false);
+		findViewById(R.id.ip_address).setEnabled(true);
+		findViewById(R.id.text_port).setEnabled(true);
 	}
 }

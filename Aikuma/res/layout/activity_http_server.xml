@@ -45,7 +45,7 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="numberDecimal"
-            android:text="8080" >
+            android:text="@string/http_ui_default_port" >
 
             <requestFocus />
         </EditText>
@@ -61,8 +61,8 @@
             android:id="@+id/button_start_http"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/http_ui_start"
-            android:onClick="startServer" />
+            android:onClick="startServer"
+            android:text="@string/http_ui_start" />
 
         <Button
             android:id="@+id/button_stop_http"
@@ -75,10 +75,14 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
         android:id="@+id/text_server_log"
         android:layout_width="match_parent"
-        android:layout_height="168dp"
-        android:ems="10" >
-    </TextView>
+        android:layout_height="324dp"
+        android:ems="10" />
 
 </LinearLayout>
