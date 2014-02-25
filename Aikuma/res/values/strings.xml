@@ -18,30 +18,32 @@
 			recording and start a new recording?</string>
     <string name="defaultLangHeading">Default languages used when adding a
 			speaker</string>
-    <string name="speaker_name">Name</string>
-    <string name="add_iso_language">Add language from list </string>
-    <string name="add_custom_language">Add Custom Language</string>
-    <string name="take_photo">Take photo (necessary)</string>
-    <string name="thumb_respeaking">Thumb commentary</string>
-    <string name="phone_respeaking">Voice-activated commentary</string>
-    <string name="syncSettingsHeader">Connect this phone to</string>
-    <string name="ipAddressHint">IP Address</string>
-    <string name="usernameHint">Username</string>
-    <string name="passwordHint">Password</string>
-    <string name="syncNow">Sync now</string>
-    <string name="help">Help</string>
-    <string name="speakers">Speakers</string>
-    <string name="language_name">Language name</string>
-    <string name="action_settings">Settings</string>
-    <string name="connect">Connect</string>
-    <string name="http_dialog_success">Server started at port %1$d</string>
-    <string name="http_dialog_failure">Failed to start server</string>
-    <string name="http_server_activity_title">HTTP Server</string>
-    <string name="http_server_activity_server_status">Server status</string>
-    <string name="http_server_activity_host">Host</string>
-    <string name="http_server_activity_port">Port</string>
-    <string name="http_server_activity_ip">IP address</string>
-    <string name="http_ui_start">START</string>
-    <string name="http_ui_stop">STOP</string>
-    <string name="http_ui_default_port">8080</string>
+	<string name="speaker_name">Name
+			</string>
+	<string name="add_iso_language">Add language from list </string>
+	<string name="add_custom_language">Add Custom Language
+			</string>
+	<string name="take_photo">Take photo (necessary)</string>
+	<string name="thumb_respeaking">Thumb commentary</string>
+	<string name="phone_respeaking">Voice-activated commentary</string>
+	<string name="syncSettingsHeader">Connect this phone to</string>
+	<string name="ipAddressHint">IP Address</string>
+	<string name="usernameHint">Username</string>
+	<string name="passwordHint">Password</string>
+	<string name="syncNow">Sync now</string>
+	<string name="help">Help</string>
+	<string name="speakers">Speakers</string>
+	<string name="language_name">Language name</string>
+	<string name="about">About</string>
+	<string name="connect">Connect</string>
+	<string name="http_dialog_success">Server started at port %1$d</string>
+	<string name="http_dialog_failure">Failed to start server</string>
+	<string name="http_server_activity_title">HTTP Server</string>
+	<string name="http_server_activity_server_status">Server status</string>
+	<string name="http_server_activity_host">Host</string>
+	<string name="http_server_activity_port">Port</string>
+	<string name="http_server_activity_ip">IP address</string>
+	<string name="http_ui_start">START</string>
+	<string name="http_ui_stop">STOP</string>
+	<string name="http_ui_default_port">8080</string>
 </resources>

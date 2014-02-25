@@ -4,19 +4,18 @@
 		android:icon="@drawable/record_disabled_32"
 		android:title="@string/record"
 		android:showAsAction="always"/>
-	<item android:id="@+id/help"
-		android:icon="@drawable/question"
-		android:title="@string/help"
-		android:showAsAction="always"/>
 	<item android:id="@+id/speakers"
 		android:icon="@drawable/speakers_32"
 		android:title="@string/speakers"
 		android:showAsAction="always"/>
 	<item android:id="@+id/settings"
 		android:icon="@drawable/settings_32"
-		android:title="@string/settings"
-		android:showAsAction="always"/>
-	<item android:id="@+id/start_http_server"
-	    android:title="@string/connect"
-	    android:showAsAction="never"/>
+		android:title="@string/settings"/>
+		<!--android:showAsAction="always"/>-->
+	<item android:id="@+id/help"
+		android:icon="@drawable/question"
+		android:title="@string/help"/>
+		<!--android:showAsAction="always"/>-->
+	<item android:id="@+id/about"
+		android:title="@string/about"/>
 </menu>

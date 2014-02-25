@@ -6,20 +6,6 @@
 		android:focusable="true"
 		android:focusableInTouchMode="true"
 	>
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/versionField"
-		android:text=""
-		android:textSize="15sp"
-	/>
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/usageField"
-		android:text=""
-		android:textSize="15sp"
-	/>
 	<Button
 		android:id="@+id/goToDefaultLanguages"
 		android:layout_width="match_parent"
