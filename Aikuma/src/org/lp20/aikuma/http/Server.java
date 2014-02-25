@@ -169,11 +169,19 @@ public class Server extends NanoHTTPD {
 	}
 
 	public String getHost() {
-		return current_host_;
+		return host_;
 	}
 	
 	public int getPort() {
-		return current_port_;
+		return port_;
+	}
+	
+	public String getActiveHost() {
+		return isAlive() ? current_host_ : null;
+	}
+	
+	public int getActivePort() {
+		return isAlive() ? current_port_ : null;
 	}
 	
 	@Override
