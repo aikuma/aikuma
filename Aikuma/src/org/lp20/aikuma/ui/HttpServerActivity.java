@@ -36,9 +36,9 @@ public class HttpServerActivity extends AikumaActivity {
 		findViewById(R.id.button_start_http).setEnabled(!running);
 		findViewById(R.id.button_stop_http).setEnabled(running);
 		if (running == true) {
-			hostname = Server.getServer().getHost();
-			port = Server.getServer().getPort();
-			log.append("Server already running at " + hostname + ":" + Integer.toString(port) + "\n");
+			hostname = Server.getServer().getActiveHost();
+			port = Server.getServer().getActivePort();
+			log.append("Server running at " + hostname + ":" + Integer.toString(port) + "\n");
 			t.setText(Integer.toString(port));
 		}
 		else {
@@ -67,6 +67,9 @@ public class HttpServerActivity extends AikumaActivity {
 		t.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable s) {
+				if (Server.getServer() != null && Server.getServer().isAlive())
+					return;
+				
 				try {
 					port = Integer.parseInt(s.toString());
 					findViewById(R.id.button_start_http).setEnabled(port > 0 && port < 65536);
@@ -117,24 +120,21 @@ public class HttpServerActivity extends AikumaActivity {
 	}
 	
 	public void startServer(View view) {
-		String msg;
 		Boolean success;
-		Resources res = this.getResources();
+		log.setText("");
 		try {
 			Server.setHost(hostname);
 			Server.setPort(port);
 			Server.getServer().start();
-			msg = String.format(res.getString(R.string.http_dialog_success, port));
 			success = true;
+			log.append("Server started.\n");
 		}
 		catch (java.io.IOException e) {
 			success = false;
-			msg = res.getString(R.string.http_dialog_failure);
 			log.append("error: ");
 			log.append(e.getMessage());
 			log.append("\n");
 		}
-		log.setText("Server started.");
 		findViewById(R.id.ip_address).setEnabled(!success);
 		findViewById(R.id.text_port).setEnabled(!success);
 		view.setEnabled(!success);
@@ -143,7 +143,7 @@ public class HttpServerActivity extends AikumaActivity {
 	
 	public void stopServer(View view) {
 		log.setText("Server stopped.");
-		Server.getServer().stop();
+		Server.destroyServer();
 		findViewById(R.id.button_start_http).setEnabled(true);
 		view.setEnabled(false);
 		findViewById(R.id.ip_address).setEnabled(true);
