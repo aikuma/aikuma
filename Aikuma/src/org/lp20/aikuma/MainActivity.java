@@ -5,6 +5,7 @@
 package org.lp20.aikuma;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;

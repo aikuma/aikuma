@@ -8,12 +8,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import org.lp20.aikuma.MainActivity;
+import org.lp20.aikuma.http.Server;
 import org.lp20.aikuma.R;
 
 /**
@@ -80,6 +82,10 @@ public class MenuBehaviour {
 				return true;
 			case R.id.about:
 				intent = new Intent(activity, AboutActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.start_http_server:
+				intent = new Intent(activity, HttpServerActivity.class);
 				activity.startActivity(intent);
 				return true;
 			default:
@@ -198,5 +204,4 @@ public class MenuBehaviour {
 
 	private Activity activity;
 	private String DEFAULT_MESSAGE = "This will discard the new data. Are you sure?";
-
 }

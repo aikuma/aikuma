@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Aikuma</string>
-	<string name="search">Search</string>
-	<string name="settings">Settings</string>
-	<string name="sync">Sync</string>
-	<string name="record">Record</string>
-	<string name="mainlist">Main list</string>
-	<string name="addLanguage">Add Language</string>
-	<string name="recording_description">Description</string>
-	<string name="share_dialog">
-			Your recording will be shared with everybody. Share?
-	</string>
-	<string name="discard_dialog">
-			Are you sure you want to discard this recording?
-	</string>
-	<string name="share">Share</string>
-	<string name="cancel">Cancel</string>
-	<string name="discard">Discard</string>
-	<string name="restart_recording">Are you sure you want to discard this 
-			recording and start a new recording?
-	</string>
-	<string name="defaultLangHeading">Default languages used when adding a
+    <string name="search">Search</string>
+    <string name="settings">Settings</string>
+    <string name="sync">Sync</string>
+    <string name="record">Record</string>
+    <string name="mainlist">Main list</string>
+    <string name="addLanguage">Add Language</string>
+    <string name="recording_description">Description</string>
+    <string name="share_dialog">			Your recording will be shared with everybody. Share?</string>
+    <string name="discard_dialog">			Are you sure you want to discard this recording?</string>
+    <string name="share">Share</string>
+    <string name="cancel">Cancel</string>
+    <string name="discard">Discard</string>
+    <string name="restart_recording">Are you sure you want to discard this 
+			recording and start a new recording?</string>
+    <string name="defaultLangHeading">Default languages used when adding a
 			speaker</string>
 	<string name="speaker_name">Name
 			</string>
@@ -39,4 +35,15 @@
 	<string name="speakers">Speakers</string>
 	<string name="language_name">Language name</string>
 	<string name="about">About</string>
+	<string name="connect">Connect</string>
+	<string name="http_dialog_success">Server started at port %1$d</string>
+	<string name="http_dialog_failure">Failed to start server</string>
+	<string name="http_server_activity_title">HTTP Server</string>
+	<string name="http_server_activity_server_status">Server status</string>
+	<string name="http_server_activity_host">Host</string>
+	<string name="http_server_activity_port">Port</string>
+	<string name="http_server_activity_ip">IP address</string>
+	<string name="http_ui_start">START</string>
+	<string name="http_ui_stop">STOP</string>
+	<string name="http_ui_default_port">8080</string>
 </resources>
