@@ -1,8 +1,8 @@
 package org.lp20.aikuma.http;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.json.simple.JSONObject;
-import org.lp20.aikuma.http.NanoHTTPD;
-import org.lp20.aikuma.http.NanoHTTPD.Response.Status;
+import fi.iki.elonen.NanoHTTPD;
+import fi.iki.elonen.NanoHTTPD.Response.Status;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.util.ImageUtils;

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.lp20.aikuma.http.NanoHTTPD.IHTTPSession;
-import org.lp20.aikuma.http.NanoHTTPD.Response;
+import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import fi.iki.elonen.NanoHTTPD.Response;
 
 /**
  * Allows to create a chain of HTTP request processors.
