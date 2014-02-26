@@ -11,7 +11,6 @@ import java.util.List;
 import org.json.simple.JSONObject;
 import org.lp20.aikuma.model.*;
 import org.lp20.aikuma.util.IdUtils;
-
 import com.google.common.io.Files;
 
 public class Transcript {
