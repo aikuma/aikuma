@@ -10,6 +10,8 @@ import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.model.Transcript;
 import org.lp20.aikuma.R;
 
+import android.util.Log;
+
 /**
  * A player that plays a recording and additionally presents an existing
  * transctiption in an appropriate activity.
@@ -30,12 +32,22 @@ public class TranscriptPlayer extends MarkedPlayer {
 	public TranscriptPlayer(Recording recording, final Activity activity)
 			throws IOException {
 		super(recording, true);
+
+		this.recording = recording;
+		this.activity = activity;
+
+		prepare();
+	}
+
+	private void prepare() {
 		transcript = new Transcript(recording);
 		final Iterator<Segment> segmentIterator = 
 				transcript.getSegmentIterator();
 		if (segmentIterator.hasNext()) {
 			segment = segmentIterator.next();
 			setNotificationMarkerPositionSample(segment.getStartSample());
+			Log.i("transcript", "set notification marker position to sample: "
+					+ segment.getStartSample());
 		}
 		OnMarkerReachedListener onTranscriptMarkerReachedListener =
 				new OnMarkerReachedListener() {
@@ -58,6 +70,14 @@ public class TranscriptPlayer extends MarkedPlayer {
 	}
 
 	/**
+	 * Resets the player with the initial parameters
+	 */
+	public void reset() {
+		seekToSample(0);
+		prepare();
+	}
+
+	/**
 	 * Listener to adjust the transcript view when a transcript marker gets reached.
 	 */
 	private class TranscriptMarkerReachedListener
@@ -67,50 +87,13 @@ public class TranscriptPlayer extends MarkedPlayer {
 		}
 	}
 
-/*
-	public void play() {
-		markedPlayer.play();
-	}
-
-	public void pause() {
-		markedPlayer.pause();
-	}
-
-	public boolean isPlaying() {
-		return markedPlayer.isPlaying();
-	}
-
-	public int getCurrentMsec() {
-		return markedPlayer.getCurrentMsec();
-	}
-
-	public long getCurrentSample() {
-		return markedPlayer.getCurrentSample();
-	}
-
-	public int getDurationMsec() {
-		return markedPlayer.getDurationMsec();
-	}
-
-	public void seekToMsec(int msec) {
-		markedPlayer.seekToMsec(msec);
-	}
-
-	public void seekToSample(long sample) {
-		markedPlayer.seekToSample(sample);
-	}
-
-	public void setAudioStreamType(int type) {
-		markedPlayer.setAudioStreamType(type);
-	}
-
-	public void release() {
-		markedPlayer.release();
-	}
-
-	private MarkedPlayer markedPlayer;
-	*/
 	private static Segment segment;
 	private static TextView transcriptView;
 	private Transcript transcript;
+
+	//Stored so that the TranscriptPlayer can be reset with the original
+	//parameters.
+	private Recording recording;
+	private Activity activity;
+	private Iterator<Segment> iterator;
 }
