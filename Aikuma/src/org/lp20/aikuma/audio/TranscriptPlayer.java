@@ -33,13 +33,8 @@ public class TranscriptPlayer extends MarkedPlayer {
 			throws IOException {
 		super(recording, true);
 
-		this.recording = recording;
 		this.activity = activity;
 
-		prepare();
-	}
-
-	private void prepare() {
 		transcript = new Transcript(recording);
 
 		updateTranscriptStatus(getCurrentSample());
@@ -54,7 +49,14 @@ public class TranscriptPlayer extends MarkedPlayer {
 				});
 			}
 		};
+
 		setOnMarkerReachedListener(onTranscriptMarkerReachedListener);
+	}
+
+	@Override
+	public void play() {
+		super.play();
+		updateTranscriptStatus(getCurrentSample());
 	}
 
 	// Updates the transcript Ui and prepares the notification marker position.
@@ -92,31 +94,19 @@ public class TranscriptPlayer extends MarkedPlayer {
 		updateTranscriptStatus(sample);
 	}
 
-	/**
-	 * Resets the player with the initial parameters
-	 */
-	public void reset() {
-		seekToSample(0);
-		prepare();
-	}
-
+	/*
 	/**
 	 * Listener to adjust the transcript view when a transcript marker gets reached.
-	 */
 	private class TranscriptMarkerReachedListener
 			extends MarkedPlayer.OnMarkerReachedListener {
 		public void onMarkerReached(MarkedPlayer p) {
 			transcriptView.setText("different");
 		}
 	}
+	*/
 
 	private static Segment segment;
 	private static TextView transcriptView;
 	private Transcript transcript;
-
-	//Stored so that the TranscriptPlayer can be reset with the original
-	//parameters.
-	private Recording recording;
 	private Activity activity;
-	private Iterator<Segment> iterator;
 }

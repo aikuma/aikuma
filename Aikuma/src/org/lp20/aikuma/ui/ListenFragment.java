@@ -216,9 +216,6 @@ public class ListenFragment extends Fragment implements OnClickListener {
 					playPauseButton.setImageResource(R.drawable.play);
 					stopThread(seekBarThread);
 					seekBar.setProgress(seekBar.getMax());
-					if (player instanceof TranscriptPlayer) {
-						((TranscriptPlayer) player).reset();
-					}
 				}
 			};
 
