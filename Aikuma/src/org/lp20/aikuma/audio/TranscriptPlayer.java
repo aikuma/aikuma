@@ -41,9 +41,15 @@ public class TranscriptPlayer extends MarkedPlayer {
 
 	private void prepare() {
 		transcript = new Transcript(recording);
+
+		updateTranscriptUi(getCurrentSample());
+
+		/*
 		if (transcript.getSegmentList().size() > 0) {
-			setNotificationMarkerPositionSample(transcript.getSegmentList().get(1).getStartSample());
+			updateNotificationMarkerPosition(transcript.getSegmentList().get(0));
 		}
+		*/
+
 		/*
 		final Iterator<Segment> segmentIterator = 
 				transcript.getSegmentIterator();
@@ -60,6 +66,7 @@ public class TranscriptPlayer extends MarkedPlayer {
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
 						updateTranscriptUi(getCurrentSample());
+						//Log.i("transcript", "getCurrentSample: " + sample);
 						/*
 						if (segmentIterator.hasNext()) {
 							TranscriptPlayer.segment = segmentIterator.next();
@@ -79,15 +86,20 @@ public class TranscriptPlayer extends MarkedPlayer {
 	 * following the supplied segment.
 	 */
 	private void updateNotificationMarkerPosition(Segment segment) {
+		for (Segment seg : transcript.getSegmentList()) {
+			Log.i("transcript", "\tsegment list: " + seg);
+		}
 		int segIndex = transcript.getSegmentList().indexOf(segment);
 		segIndex += 1;
 		if (segIndex < transcript.getSegmentList().size()) {
-			setNotificationMarkerPosition(transcript.getSegmentList().get(segIndex));
+			setNotificationMarkerPositionSample(
+					transcript.getSegmentList().get(segIndex).getStartSample());
 		}
 	}
 
 	private void updateTranscriptUi(long sample) {
 		Segment segment = transcript.getSegmentOfSample(sample);
+		Log.i("transcript", "get segment of sample: " + segment);
 		if (segment != null) {
 			// If the sample has a corresponding segment, update accordingly.
 			updateNotificationMarkerPosition(segment);
@@ -95,12 +107,12 @@ public class TranscriptPlayer extends MarkedPlayer {
 		} else {
 			// Otherwise just unset the notification marker position.
 			unsetNotificationMarkerPosition();
-			updateTranscriptUi();
+			emptyTranscriptUi();
 		}
 	}
 
 	// Update the UI so that the transcript segment is empty.
-	private void updateTranscriptUi() {
+	private void emptyTranscriptUi() {
 		transcriptView = (TextView)
 			activity.findViewById(R.id.transcriptView);
 		transcriptView.setText("");
@@ -119,6 +131,8 @@ public class TranscriptPlayer extends MarkedPlayer {
 
 		//Find the transcript segment that corresponds to this point in time
 		long sample = msecToSample(msec);
+		Log.i("transcript", "seekToMsec: " + msec + "sample: " + sample +
+		"getCurrentSample: " + getCurrentSample());
 
 		//Update the UI to reflect the current transcript.
 		updateTranscriptUi(sample);
