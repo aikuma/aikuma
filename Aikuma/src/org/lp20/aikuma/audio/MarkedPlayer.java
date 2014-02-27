@@ -78,8 +78,12 @@ public class MarkedPlayer extends SimplePlayer {
 	 * @param	segment	The segment whose end is to be marked.
 	 */
 	public void setNotificationMarkerPosition(Segment segment) {
-		setNotificationMarkerPositionMsec(
-				sampleToMsec(segment.getEndSample()));
+		if (segment != null) {
+			setNotificationMarkerPositionMsec(
+					sampleToMsec(segment.getEndSample()));
+		} else {
+			unsetNotificationMarkerPosition();
+		}
 	}
 
 	/**
