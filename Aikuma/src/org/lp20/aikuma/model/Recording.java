@@ -36,7 +36,7 @@ public class Recording {
 	 * Constructs a new Recording using a specified UUID, name, date,
 	 * languages, originalUUID and sample rate.
 	 *
-	 * @param	uuid	the recording's UUID.
+	 * @param	sourceUUID	the temporary UUID of the source WAV.
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
 	 * @param	languages	The languages associated with the recording
@@ -49,23 +49,46 @@ public class Recording {
 	 * @param	sampleRate	The sample rate of the recording.
 	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 */
-	public Recording(UUID uuid, String name, Date date,
+	public Recording(UUID sourceUUID, String name, Date date,
 			List<Language> languages, List<String> speakersIds,
-			String androidID, UUID originalUUID, long sampleRate,
+			String androidID, String originalId, long sampleRate,
 			int durationMsec) {
-		setUUID(uuid);
 		setName(name);
 		setDate(date);
 		setLanguages(languages);
 		setSpeakersIds(speakersIds);
 		setAndroidID(androidID);
-		setOriginalUUID(originalUUID);
 		setSampleRate(sampleRate);
 		setDurationMsec(durationMsec);
+		setOriginalId(originalId);
+		if (isOriginal()) {
+			setOriginalId(createOriginalId());
+		}
+
+		// If isOriginal(), then we need to assign an ID for the group of
+		// recordings based on this without isOriginal lying to us in future
+		// (as it checks whether originalID is null or not.
 	}
 
-	public UUID getUUID() {
-		return uuid;
+	// Create an original ID (the prefix for recordings)
+	private String createOriginalId() {
+		return sampleFromAlphabet(8, "abcdefghijklmnopqrstuvwxyz");
+	}
+
+	// Randomly generate a string of length k from a given alphabet
+	private sampleFromAlphabet(final int k, final String alphabet) {
+		final int n = alphabet.length();
+
+		Random rng = new Random();
+		StringBuilder sample = new StringBuilder();
+
+		for (int i = 0; i < k; i++) {
+			sample.append(alphabet.charAt(r.nextInt(n)));
+		}
+
+		Log.i("sampleFromAlphabet", "sampling " + k + "from " + alphabet + 
+				", yielding " + sample);
+		return sample.toString();
 	}
 
 	/**
