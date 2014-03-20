@@ -33,59 +33,6 @@ import org.json.simple.JSONArray;
 public class Recording {
 
 	/**
-	 * The minimal constructor
-	 */
-	public Recording() {
-		setUUID(UUID.randomUUID());
-		setDate(new Date());
-		setLanguages(new ArrayList<Language>());
-		setSpeakersIds(new ArrayList<String>());
-		setAndroidID(Aikuma.getAndroidID());
-	}
-
-	/**
-	 * Constructs a new Recording using a specified UUID, name and date.
-	 *
-	 * @param	uuid	the recording's UUID.
-	 * @param	name	The recording's name.
-	 * @param	date	The date of creation.
-	 */
-	public Recording(UUID uuid, String name, Date date) {
-		setUUID(uuid);
-		setName(name);
-		setDate(date);
-		setLanguages(new ArrayList<Language>());
-		setSpeakersIds(new ArrayList<String>());
-		setAndroidID(Aikuma.getAndroidID());
-	}
-
-	/**
-	 * Constructs a new Recording using a specified UUID, name, date,
-	 * languages, speakersIds and android ID
-	 *
-	 * @param	uuid	the recording's UUID.
-	 * @param	name	The recording's name.
-	 * @param	date	The date of creation.
-	 * @param	languages	The languages associated with the recording
-	 * @param	speakersIds	The IDs of the speakers associated with the
-	 * recording
-	 * @param	androidID	The android ID of the device that created the
-	 * recording
-	 * @param	sampleRate	The sample rate of the recording.
-	 */
-	public Recording(UUID uuid, String name, Date date,
-			List<Language> languages, List<String> speakersIds,
-			String androidID, long sampleRate) {
-		setUUID(uuid);
-		setName(name);
-		setDate(date);
-		setLanguages(languages);
-		setSpeakersIds(speakersIds);
-		setAndroidID(androidID);
-		setSampleRate(sampleRate);
-	}
-
-	/**
 	 * Constructs a new Recording using a specified UUID, name, date,
 	 * languages, originalUUID and sample rate.
 	 *
