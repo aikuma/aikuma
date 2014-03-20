@@ -211,8 +211,8 @@ public class Speaker implements Parcelable{
 	public void write() throws IOException {
 		JSONObject encodedSpeaker = this.encode();
 
-		FileIO.writeJSONObject(new File(getSpeakersPath(), getId() + 
-				"/metadata.json"), encodedSpeaker);
+		FileIO.writeJSONObject(new File(getSpeakersPath(), getId() +
+				"/" + getId() + "-metadata.json"), encodedSpeaker);
 	}
 
 	/**
