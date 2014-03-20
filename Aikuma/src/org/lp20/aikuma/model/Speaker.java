@@ -40,7 +40,11 @@ public class Speaker implements Parcelable{
 	}
 
 	/**
-	 * The complete constructor
+	 * The constructor used when first creating a Speaker.
+	 *
+	 * Note that it doesn't include an ID argument, as that will be generated.
+	 * For any tasks involving reading Speakers, use the constructor that takes
+	 * an ID argument
 	 *
 	 * @param	uuid	The UUID of the speaker
 	 * @param	name	The name of the speaker
@@ -51,6 +55,21 @@ public class Speaker implements Parcelable{
 		setName(name);
 		setId(createId(name));
 		setLanguages(languages);
+	}
+
+	/**
+	 * The constructor used when reading an existing speaker.
+	 *
+	 * @param	uuid	The UUID of the speaker
+	 * @param	name	The name of the speaker
+	 * @param	languages	A list of languages of the speaker.
+	 * @param	id	The 8+ char string identifier of the speaker.
+	 */
+	public Speaker(UUID uuid, String name, List<Language> languages, String id) {
+		setUUID(uuid);
+		setName(name);
+		setLanguages(languages);
+		setId(id);
 	}
 
 	/**
@@ -193,13 +212,14 @@ public class Speaker implements Parcelable{
 			throw new IOException("UUID of the filename is different to UUID" +
 					"in the file's JSON");
 		}
+		String id = (String) jsonObj.get("id");
 		String name = (String) jsonObj.get("name");
 		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
 		if (languageArray == null) {
 			throw new IOException("Null languages in the JSON file.");
 		}
 		List<Language> languages = Language.decodeJSONArray(languageArray);
-		return new Speaker(uuid, name, languages);
+		return new Speaker(uuid, name, languages, id);
 	}
 
 	/**
