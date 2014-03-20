@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.json.simple.JSONArray;
@@ -300,6 +301,7 @@ public class Speaker implements Parcelable{
 	}
 
 	private void setId(String id) {
+		Log.i("setId", "set ID: " + id);
 		this.id = id;
 	}
 
@@ -377,10 +379,24 @@ public class Speaker implements Parcelable{
 
 		// Generate random number of a specified number of digits (8 - number
 		// of initials)
+		int digitStringLength = 8 - initials.length();
+		String randomDigits = randomDigitString(digitStringLength);
 
-		// Set the ID.
+		return initials + randomDigits;
+	}
 
-		return "";
+	/**
+	 * Creates a random digit string of length n
+	 *
+	 * @param	n	The number of digits long the string is to be.
+	 */
+	private String randomDigitString(int n) {
+		Random rng = new Random();
+		StringBuilder randomDigits = new StringBuilder();
+		for (int i = 0; i < n; i++) {
+			randomDigits.append(rng.nextInt(10));
+		}
+		return randomDigits.toString();
 	}
 
 	// Extracts the first letter of each token in a string and uppercases.
