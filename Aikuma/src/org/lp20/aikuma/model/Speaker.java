@@ -399,12 +399,18 @@ public class Speaker implements Parcelable{
 		return randomDigits.toString();
 	}
 
-	// Extracts the first letter of each token in a string and uppercases.
+	// Extracts the first character of each token in a string and uppercases, but
+	// stops after 4 characters have been extracted.
 	private String extractInitials(String name) {
 		StringBuilder initials = new StringBuilder();
+		int count = 0;
 		for (String token : name.split("\\s+")) {
 			if (token.length() > 0) {
 				initials.append(Character.toUpperCase(token.charAt(0)));
+				count += 1;
+				if (count >= 4) {
+					break;
+				}
 			}
 		}
 		Log.i("extractInitials", "Extracting initials of: " + name + ". " +
