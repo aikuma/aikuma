@@ -49,6 +49,7 @@ public class Speaker implements Parcelable{
 	public Speaker(UUID uuid, String name, List<Language> languages) {
 		setUUID(uuid);
 		setName(name);
+		setId(createId(name));
 		setLanguages(languages);
 	}
 
@@ -123,6 +124,7 @@ public class Speaker implements Parcelable{
 		JSONObject encodedSpeaker = new JSONObject();
 		encodedSpeaker.put("name", this.name);
 		encodedSpeaker.put("uuid", this.uuid.toString());
+		encodedSpeaker.put("id", this.id);
 		encodedSpeaker.put("languages", Language.encodeList(languages));
 		return encodedSpeaker;
 	}
@@ -277,6 +279,10 @@ public class Speaker implements Parcelable{
 		this.uuid = uuid;
 	}
 
+	private void setId(String id) {
+		this.id = id;
+	}
+
 	/**
 	 * Sets the name of the Speaker.
 	 *
@@ -345,10 +351,40 @@ public class Speaker implements Parcelable{
 		setLanguages(languages);
 	}
 
+	private String createId(String name) {
+		// Extract the initials of the name.
+		String initials = extractInitials(name);
+
+		// Generate random number of a specified number of digits (8 - number
+		// of initials)
+
+		// Set the ID.
+
+		return "";
+	}
+
+	// Extracts the first letter of each token in a string and uppercases.
+	private String extractInitials(String name) {
+		StringBuilder initials = new StringBuilder();
+		for (String token : name.split("\\s+")) {
+			if (token.length() > 0) {
+				initials.append(Character.toUpperCase(token.charAt(0)));
+			}
+		}
+		Log.i("extractInitials", "Extracting initials of: " + name + ". " +
+				"Returning " + initials.toString());
+		return initials.toString();
+	}
+
 	/**
 	 * The UUID of the Speaker.
 	 */
 	private UUID uuid;
+
+	/**
+	 * The ID of the Speaker.
+	 */
+	 private String id;
 
 	/**
 	 * The name of the Speaker.
