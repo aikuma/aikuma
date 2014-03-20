@@ -39,7 +39,7 @@ public class Recording {
 		setUUID(UUID.randomUUID());
 		setDate(new Date());
 		setLanguages(new ArrayList<Language>());
-		setSpeakersUUIDs(new ArrayList<UUID>());
+		setSpeakersIds(new ArrayList<String>());
 		setAndroidID(Aikuma.getAndroidID());
 	}
 
@@ -55,32 +55,32 @@ public class Recording {
 		setName(name);
 		setDate(date);
 		setLanguages(new ArrayList<Language>());
-		setSpeakersUUIDs(new ArrayList<UUID>());
+		setSpeakersIds(new ArrayList<String>());
 		setAndroidID(Aikuma.getAndroidID());
 	}
 
 	/**
 	 * Constructs a new Recording using a specified UUID, name, date,
-	 * languages, speakersUUIDs and android ID
+	 * languages, speakersIds and android ID
 	 *
 	 * @param	uuid	the recording's UUID.
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
 	 * @param	languages	The languages associated with the recording
-	 * @param	speakersUUIDs	The UUIDs of the speakers associated with the
+	 * @param	speakersIds	The IDs of the speakers associated with the
 	 * recording
 	 * @param	androidID	The android ID of the device that created the
 	 * recording
 	 * @param	sampleRate	The sample rate of the recording.
 	 */
 	public Recording(UUID uuid, String name, Date date,
-			List<Language> languages, List<UUID> speakersUUIDs,
+			List<Language> languages, List<String> speakersIds,
 			String androidID, long sampleRate) {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
 		setLanguages(languages);
-		setSpeakersUUIDs(speakersUUIDs);
+		setSpeakersIds(speakersIds);
 		setAndroidID(androidID);
 		setSampleRate(sampleRate);
 	}
@@ -93,7 +93,7 @@ public class Recording {
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
 	 * @param	languages	The languages associated with the recording
-	 * @param	speakersUUIDs	The UUIDs of the speakers associated with the
+	 * @param	speakersIds	The UUIDs of the speakers associated with the
 	 * recording
 	 * @param	androidID	The android ID of the device that created the
 	 * recording
@@ -103,14 +103,14 @@ public class Recording {
 	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 */
 	public Recording(UUID uuid, String name, Date date,
-			List<Language> languages, List<UUID> speakersUUIDs,
+			List<Language> languages, List<String> speakersIds,
 			String androidID, UUID originalUUID, long sampleRate,
 			int durationMsec) {
 		setUUID(uuid);
 		setName(name);
 		setDate(date);
 		setLanguages(languages);
-		setSpeakersUUIDs(speakersUUIDs);
+		setSpeakersIds(speakersIds);
 		setAndroidID(androidID);
 		setOriginalUUID(originalUUID);
 		setSampleRate(sampleRate);
@@ -180,12 +180,12 @@ public class Recording {
 	}
 
 	/**
-	 * speakersUUIDs accessor.
+	 * speakersIds accessor.
 	 *
 	 * @return	A list of UUIDs representing the speakers of the recording.
 	 */
-	public List<UUID> getSpeakersUUIDs() {
-		return speakersUUIDs;
+	public List<String> getSpeakersIds() {
+		return speakersIds;
 	}
 
 	/**
@@ -266,11 +266,11 @@ public class Recording {
 		encodedRecording.put("name", this.name);
 		encodedRecording.put("date", new StandardDateFormat().format(this.date));
 		encodedRecording.put("languages", Language.encodeList(languages));
-		JSONArray speakersUUIDsArray = new JSONArray();
-		for (UUID uuid : speakersUUIDs) {
-			speakersUUIDsArray.add(uuid.toString());
+		JSONArray speakersIdsArray = new JSONArray();
+		for (String id : speakersIds) {
+			speakersIdsArray.add(id.toString());
 		}
-		encodedRecording.put("speakersUUIDs", speakersUUIDsArray);
+		encodedRecording.put("speakersIds", speakersIdsArray);
 		encodedRecording.put("androidID", this.androidID);
 		encodedRecording.put("sampleRate", getSampleRate());
 		encodedRecording.put("durationMsec", getDurationMsec());
@@ -283,13 +283,24 @@ public class Recording {
 	}
 
 	/**
-	 * Write the Recording to file in a subdirectory of the recordings
-	 * directory named as <uuid>.json
+	 * Write the Recording to file in a subdirectory of the recordings and move
+	 * the recording WAV data to that directory
 	 *
 	 * @throws	IOException	If the recording metadata could not be written.
 	 */
 	public void write() throws IOException {
+		// Determine the recording identifier
+
+		// make the directory
+
+		// Grab the user ID.
+
+		// Make the whole identifier
+
+		// Write the file.
+
 		JSONObject encodedRecording = this.encode();
+
 
 		FileIO.writeJSONObject(new File(
 				getRecordingsPath(), this.getUUID().toString() + ".json"),
@@ -351,11 +362,11 @@ public class Recording {
 			throw new IOException("Null languages in the JSON file.");
 		}
 		List<Language> languages = Language.decodeJSONArray(languageArray);
-		JSONArray speakerUUIDArray = (JSONArray) jsonObj.get("speakersUUIDs");
-		if (speakerUUIDArray == null) {
-			throw new IOException("Null speakersUUIDs in the JSON file.");
+		JSONArray speakerIdArray = (JSONArray) jsonObj.get("speakersIds");
+		if (speakerIdArray == null) {
+			throw new IOException("Null speakersIds in the JSON file.");
 		}
-		List<UUID> speakersUUIDs = Speaker.decodeJSONArray(speakerUUIDArray);
+		List<String> speakersIds = Speaker.decodeJSONArray(speakerIdArray);
 		String androidID = (String) jsonObj.get("androidID");
 		if (androidID == null) {
 			throw new IOException("Null androidID in the JSON file.");
@@ -384,7 +395,7 @@ public class Recording {
 			Log.i("duration", "reading: " + durationMsec);
 		}
 		Recording recording = new Recording(
-				uuid, name, date, languages, speakersUUIDs, androidID,
+				uuid, name, date, languages, speakersIds, androidID,
 				originalUUID, sampleRate, (Integer) durationMsec);
 		return recording;
 	}
@@ -468,7 +479,7 @@ public class Recording {
 				.append(name, rhs.name)
 				.append(date, rhs.date)
 				.append(languages, rhs.languages)
-				.append(speakersUUIDs, rhs.speakersUUIDs)
+				.append(speakersIds, rhs.speakersIds)
 				.append(androidID, rhs.androidID)
 				.append(originalUUID, rhs.originalUUID)
 				.append(sampleRate, rhs.sampleRate)
@@ -526,13 +537,13 @@ public class Recording {
 
 	// Sets the speakers UUID, but won't accept a null list (empty lists are
 	// fine).
-	private void setSpeakersUUIDs(List<UUID> speakersUUIDs) {
-		if (speakersUUIDs == null) {
+	private void setSpeakersIds(List<String> speakersIds) {
+		if (speakersIds == null) {
 			throw new IllegalArgumentException(
-					"Recording speakersUUIDs cannot be null. " +
-					"Set as an empty List<UUID> instead.");
+					"Recording speakersIds cannot be null. " +
+					"Set as an empty List<String> instead.");
 		}
-		this.speakersUUIDs = speakersUUIDs;
+		this.speakersIds = speakersIds;
 	}
 
 	/**
@@ -541,12 +552,12 @@ public class Recording {
 	 * @param	speaker	The speaker to be added to the Recording's list of
 	 * speaker.
 	 */
-	private void addSpeakerUUID(Speaker speaker) {
+	private void addSpeakerId(Speaker speaker) {
 		if (speaker == null) {
 			throw new IllegalArgumentException(
 					"A speaker for the recording cannot be null");
 		}
-		this.speakersUUIDs.add(speaker.getUUID());
+		this.speakersIds.add(speaker.getId());
 	}
 
 	// Sets the android ID but won't accept a null string.
@@ -628,7 +639,7 @@ public class Recording {
 	/**
 	 * The speakers of the recording.
 	 */
-	private List<UUID> speakersUUIDs;
+	private List<String> speakersIds;
 
 	/**
 	 * The Android ID of the device that the recording was made on.

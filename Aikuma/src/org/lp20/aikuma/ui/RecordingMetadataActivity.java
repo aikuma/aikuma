@@ -68,7 +68,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		setUpPlayer(uuid, sampleRate);
 		userImages =
 				(LinearLayout) findViewById(R.id.userImagesAndAddUserButton);
-		speakersUUIDs = new ArrayList<UUID>();
+		speakersIds = new ArrayList<String>();
 		languages = new ArrayList<Language>();
 		selectedLanguages = new ArrayList<Language>();
 		okButton = (ImageButton) findViewById(R.id.okButton);
@@ -144,7 +144,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 						Log.i("duration", "when recording created: " + durationMsec);
 						Recording recording = new Recording(
 								uuid, description, date, selectedLanguages,
-								speakersUUIDs, androidID, originalUUID,
+								speakersIds, androidID, originalUUID,
 								sampleRate, durationMsec);
 						try {
 							recording.write();
@@ -194,8 +194,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		if (requestCode == ADD_SPEAKER) {
 			if (resultCode == RESULT_OK) {
 				Speaker speaker = intent.getParcelableExtra("speaker");
-				if (!speakersUUIDs.contains(speaker.getUUID())) {
-					speakersUUIDs.add(speaker.getUUID());
+				if (!speakersIds.contains(speaker.getId())) {
+					speakersIds.add(speaker.getId());
 					for (Language language : speaker.getLanguages()) {
 						if (!languages.contains(language)) {
 							languages.add(language);
@@ -265,7 +265,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	static final int ADD_SPEAKER = 0;
 	private UUID uuid;
 	private Recording recording;
-	private List<UUID> speakersUUIDs;
+	private List<String> speakersIds;
 	private List<Language> languages;
 	private List<Language> selectedLanguages;
 	private LinearLayout userImages;

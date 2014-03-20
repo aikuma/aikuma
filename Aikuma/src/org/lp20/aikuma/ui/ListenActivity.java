@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
@@ -82,8 +83,8 @@ public class ListenActivity extends AikumaActivity {
 				findViewById(R.id.recordingInfo);
 		LinearLayout originalImages = (LinearLayout)
 				findViewById(R.id.originalImages);
-		for (UUID uuid : recording.getSpeakersUUIDs()) {
-			originalImages.addView(makeSpeakerImageView(uuid));
+		for (String id : recording.getSpeakersIds()) {
+			originalImages.addView(makeSpeakerImageView(id));
 		}
 	}
 
@@ -107,14 +108,14 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	// Makes the imageview for a given speaker
-	private ImageView makeSpeakerImageView(UUID speakerUUID) {
+	private ImageView makeSpeakerImageView(String speakerId) {
 		ImageView speakerImage = new ImageView(this);
 		speakerImage.setAdjustViewBounds(true);
 		speakerImage.setMaxHeight(40);
 		speakerImage.setMaxWidth(40);
 		speakerImage.setPaddingRelative(5,5,5,5);
 		try {
-			speakerImage.setImageBitmap(ImageUtils.getSmallImage(speakerUUID));
+			speakerImage.setImageBitmap(Speaker.getSmallImage(speakerId));
 		} catch (IOException e) {
 			// Not much can be done if the image can't be loaded.
 		}
@@ -185,10 +186,10 @@ public class ListenActivity extends AikumaActivity {
 				}
 			});
 			try {
-				if (respeaking.getSpeakersUUIDs().size() > 0) {
+				if (respeaking.getSpeakersIds().size() > 0) {
 					respeakingImage.setImageBitmap(
-							ImageUtils.getSmallImage(
-							respeaking.getSpeakersUUIDs().get(0)));
+							Speaker.getSmallImage(
+							respeaking.getSpeakersIds().get(0)));
 				} else {
 					continue;
 				}

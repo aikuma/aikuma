@@ -236,7 +236,7 @@ public class Server extends NanoHTTPD {
 					commentaries.put(r.getUUID().toString(), r.encode());
 			}
 			for (Speaker r: Speaker.readAll()) {
-				speakers.put(r.getUUID().toString(), r.encode());
+				speakers.put(r.getId().toString(), r.encode());
 			}
 			JSONObject index = new JSONObject();
 			index.put("originals", originals);

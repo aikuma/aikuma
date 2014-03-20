@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.ImageUtils;
 
@@ -60,8 +61,8 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				(TextView) recordingView.findViewById(R.id.recordingName);
 		TextView recordingDateDurationView = 
 				(TextView) recordingView.findViewById(R.id.recordingDateDuration);
-		for (UUID uuid : recording.getSpeakersUUIDs()) {
-			recordingView.addView(makeSpeakerImageView(uuid));
+		for (String id : recording.getSpeakersIds()) {
+			recordingView.addView(makeSpeakerImageView(id));
 		}
 		recordingNameView.setText(recording.getNameAndLang());
 		Integer duration = recording.getDurationMsec() / 1000;
@@ -79,17 +80,17 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	/**
 	 * Creates the view for a given speaker.
 	 *
-	 * @param	speakerUUID	The UUID of the speaker.
+	 * @param	speakerId	The UUID of the speaker.
 	 * @return	The image view for the speaker.
 	 */
-	private ImageView makeSpeakerImageView(UUID speakerUUID) {
+	private ImageView makeSpeakerImageView(String speakerId) {
 		ImageView speakerImage = new ImageView(context);
 		speakerImage.setAdjustViewBounds(true);
 		speakerImage.setMaxHeight(40);
 		speakerImage.setMaxWidth(40);
 		speakerImage.setPaddingRelative(1,1,1,1);
 		try {
-			speakerImage.setImageBitmap(ImageUtils.getSmallImage(speakerUUID));
+			speakerImage.setImageBitmap(Speaker.getSmallImage(speakerId));
 		} catch (IOException e) {
 			// Not much can be done if the image can't be loaded.
 		}

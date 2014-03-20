@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -42,8 +43,10 @@ public class Speaker implements Parcelable{
 	 * image files
 	 * @param	name	The name of the speaker
 	 * @param	languages	A list of languages of the speaker.
+	 * @throws	IOException	If there is an issue importing the speaker's images
 	 */
-	public Speaker(UUID imageUUID, String name, List<Language> languages) {
+	public Speaker(UUID imageUUID, String name, List<Language> languages)
+			throws IOException{
 		setName(name);
 		setId(createId(name));
 		setLanguages(languages);
@@ -53,7 +56,18 @@ public class Speaker implements Parcelable{
 
 	}
 
-	private importImage(imageUUID) {
+	private void importImage(UUID imageUUID) throws IOException {
+		// First import the full sized image
+		File imageFile = ImageUtils.getNoSyncImageFile(imageUUID);
+		FileUtils.moveFile(imageFile,
+				new File(getSpeakersPath(),
+						getId() + "/" + getId() + "-image.jpg"));
+
+		// Then import the small image
+		File smallImageFile = ImageUtils.getNoSyncSmallImageFile(imageUUID);
+		FileUtils.moveFile(smallImageFile,
+				new File(getSpeakersPath(),
+						getId() + "/" + getId() + "-image-small.jpg"));
 	}
 
 	/**
@@ -113,7 +127,9 @@ public class Speaker implements Parcelable{
 	 * @throws	IOException	If the image cannot be retrieved.
 	 */
 	public Bitmap getImage() throws IOException {
-		return ImageUtils.getImage(getUUID());
+		return ImageUtils.retrieveFromFile(
+				new File(getSpeakersPath(),
+						getId() + "/" + getId() + "-image.jpg"));
 	}
 
 	/**
@@ -123,8 +139,24 @@ public class Speaker implements Parcelable{
 	 * @throws	IOException	If the image cannot be retrieved.
 	 */
 	public Bitmap getSmallImage() throws IOException {
-		return ImageUtils.getSmallImage(getUUID());
+		return ImageUtils.retrieveFromFile(
+				new File(getSpeakersPath(),
+						getId() + "/" + getId() + "-image-small.jpg"));
 	}
+
+	/**
+	 * Gets the small version of the Speaker's image.
+	 *
+	 * @param	speakerId	The ID of the speaker whose image is to be fetched.
+	 * @return	A Bitmap object.
+	 * @throws	IOException	If the image cannot be retrieved.
+	 */
+	public static Bitmap getSmallImage(String speakerId) throws IOException {
+		return ImageUtils.retrieveFromFile(
+				new File(getSpeakersPath(),
+						speakerId + "/" + speakerId + "-image-small.jpg"));
+	}
+
 
 	/**
 	 * Encodes the Speaker object as a corresponding JSONObject.

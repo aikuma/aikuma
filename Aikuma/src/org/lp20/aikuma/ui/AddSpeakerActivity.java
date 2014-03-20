@@ -46,7 +46,7 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		safeActivityTransition = true;
 		safeActivityTransitionMessage = "This will discard the new speaker data.";
 		languages = FileIO.readDefaultLanguages();
-		uuid = UUID.randomUUID();
+		imageUUID = UUID.randomUUID();
 		ImageButton okButton = (ImageButton) findViewById(R.id.okButton);
 		okButton.setImageResource(R.drawable.ok_disabled_48);
 		okButton.setEnabled(false);
@@ -104,8 +104,8 @@ public class AddSpeakerActivity extends AikumaListActivity {
 	private void handleSmallCameraPhoto() {
 		Bitmap image;
 		try {
-			ImageUtils.createSmallSpeakerImage(this.uuid);
-			image = ImageUtils.getNoSyncSmallImage(this.uuid);
+			ImageUtils.createSmallSpeakerImage(this.imageUUID);
+			image = ImageUtils.getNoSyncSmallImage(this.imageUUID);
 		} catch (IOException e) {
 			image = null;
 		}
@@ -135,12 +135,12 @@ public class AddSpeakerActivity extends AikumaListActivity {
 	public void onOkButtonPressed(View view) {
 		EditText textField = (EditText) findViewById(R.id.Name);
 		String name = textField.getText().toString();
-		Speaker newSpeaker = new Speaker(uuid, name, languages);
 		try {
+			Speaker newSpeaker = new Speaker(imageUUID, name, languages);
 			newSpeaker.write();
-			ImageUtils.enableImageSync(uuid);
 		} catch (IOException e) {
-			Toast.makeText(this, "Failed to write the Speaker to file",
+			Toast.makeText(this, 
+					"Failed to write the Speaker to file or import speaker image",
 					Toast.LENGTH_LONG).show();
 		}
 		this.finish();
@@ -159,7 +159,7 @@ public class AddSpeakerActivity extends AikumaListActivity {
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
 		try {
-			File imageFile = ImageUtils.getNoSyncImageFile(this.uuid);
+			File imageFile = ImageUtils.getNoSyncImageFile(this.imageUUID);
 			takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
 					Uri.fromFile(imageFile));
 		} catch (Exception e) {
@@ -173,5 +173,5 @@ public class AddSpeakerActivity extends AikumaListActivity {
 	static final int SELECT_LANGUAGE = 0;
 	static final int PHOTO_REQUEST_CODE = 1;
 	private List<Language> languages = new ArrayList<Language>();
-	private UUID uuid;
+	private UUID imageUUID;
 }
