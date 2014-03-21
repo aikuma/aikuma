@@ -1,15 +1,21 @@
-package org.lp20.aikuma.util.IdUtils;
+package org.lp20.aikuma.util;
 
 import java.util.Random;
 
+/**
+ * Offers methods to create random sequences of characters.
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ */
 public class IdUtils {
 
 	/**
 	 * Creates a random digit string of length n
 	 *
 	 * @param	n	The number of digits long the string is to be.
+	 * @return	A string of random digits of length n.
 	 */
-	public String randomDigitString(int n) {
+	public static String randomDigitString(int n) {
 		Random rng = new Random();
 		StringBuilder randomDigits = new StringBuilder();
 		for (int i = 0; i < n; i++) {
@@ -25,7 +31,8 @@ public class IdUtils {
 	 * @param	alphabet	The string of characters to sample from.
 	 * @return	A sampling of k characters from alphabet
 	 */
-	public String sampleFromAlphabet(final int k, final String alphabet) {
+	public static String sampleFromAlphabet(
+			final int k, final String alphabet) {
 		final int n = alphabet.length();
 
 		Random rng = new Random();

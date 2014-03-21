@@ -23,6 +23,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * The class that stores the metadata of a recording, including it's ID,
@@ -49,7 +50,7 @@ public class Recording {
 	 * @param	sampleRate	The sample rate of the recording.
 	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 */
-	public Recording(UUID sourceUUID, String name, Date date,
+	public Recording(UUID wavUUID, String name, Date date,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String originalId, long sampleRate,
 			int durationMsec) {
@@ -69,7 +70,7 @@ public class Recording {
 			// Then we must generate the 4 digit respeaking ID.
 			setRespeakingId(IdUtils.randomDigitString(4));
 		}
-		setFilenamePrefix(determineFilenamePrefix())
+		setFilenamePrefix(determineFilenamePrefix());
 	}
 
 	/**
@@ -102,7 +103,7 @@ public class Recording {
 		setDurationMsec(durationMsec);
 		setOriginalId(originalId);
 		setRespeakingId(respeakingId);
-		setFilenamePrefix(determineFilenamePrefix())
+		setFilenamePrefix(determineFilenamePrefix());
 	}
 
 	private String determineFilenamePrefix() {
@@ -130,12 +131,16 @@ public class Recording {
 		return respeakingId.length() > 0;
 	}
 
-	private void importWav(UUID sourceUUID, String filenamePrefix)
+	// Moves a WAV file with a temporary UUID from a no-sync directory to
+	// its rightful place in the connected world of Aikuma, with a proper name
+	// and where it will find it's best friend - a JSON metadata file.
+	private void importWav(UUID wavUUID, String filenamePrefix)
 			throws IOException {
-		File sourceFile = new File(getRecordingsPath(), sourceUUID + ".wav");
+		File wavFile = new File(getNoSyncRecordingsPath(),
+				wavUUID + ".wav");
 		FileUtils.moveFile(sourceFile,
 				new File(getRecordingsPath(), getOriginalId() + "/" +
-						filenamePrefix + ".wav");
+						filenamePrefix + ".wav"));
 	}
 
 	// Create an original ID (the prefix for recordings)
@@ -242,6 +247,10 @@ public class Recording {
 		return originalId;
 	}
 
+	public String getFilenamePrefix() {
+		return filenamePrefix;
+	}
+
 	/**
 	 * sampleRate accessor
 	 *
@@ -302,7 +311,7 @@ public class Recording {
 
 
 		// Import the wave file into the new recording directory.
-		importWav(sourceUUID, filenamePrefix.toString());
+		importWav(wavUUID, filenamePrefix.toString());
 
 		JSONObject encodedRecording = this.encode();
 
@@ -337,10 +346,35 @@ public class Recording {
 	*/
 
 	/**
+	 * Returns this recordings original.
+	 *
+	 ' @return	The original recording
+	 */
+	public Recording getOriginal() {
+		File originalDir = new File(getRecordingsPath(), getOriginalId());
+
+		// Filter for files that are source metadata
+		File[] originalMetadataFileArray = f.listFiles(new FilenameFilter() {
+			public boolean accept(File dir, String filename) {
+				String[] splitFilename = filename.split("[-.]");
+				if (splitFilename[2].equals("source") &&
+					splitFilename[3].equals("metadata") &&
+					filename.endsWith(".json")) {
+					return true;
+				}
+			}
+		});
+
+		assertTrue(originalMetadataFileArray.size == 1);
+
+		return Recording.read(originalMetadataFileArray[0]);
+	}
+
+	/**
 	 * Read a recording from the file containing JSON describing the Recording
 	 *
 	 * @param	file	The file containing the metadata of the recording.
-	 * @return	A Recording object corresponding to the uuid.
+	 * @return	A Recording object corresponding to the json file.
 	 * @throws	IOException	If the recording metadata cannot be read.
 	 */
 	public static Recording read(File file) throws IOException {
@@ -421,6 +455,7 @@ public class Recording {
 	/**
 	 * Read all recordings from file
 	 *
+	 * @return	A list of all the recordings in the Aikuma directory.
 	 */
 	public static List<Recording> readAll() {
 
@@ -457,12 +492,11 @@ public class Recording {
 
 	/**
 	 * Compares the given object with the Recording, and returns true if the
-	 * Recordings uuid, name, date, languages, androidID and originalUUID are
-	 * equal
+	 * Recording's name, date, languages, androidID, originalId and
+	 * respeakingId are equal
 	 *
 	 * @param	obj	The object to be compared.
-	 * @return	true if the uuid, name, date, languages, androidID and
-	 * originalUUID are equal; false otherwise.
+	 * @return	true most fields are the same; false otherwise
 	 */
 	 public boolean equals(Object obj) {
 	 	if (obj == null) {return false;}
@@ -470,25 +504,16 @@ public class Recording {
 		if (obj.getClass() != getClass()) {return false;}
 		Recording rhs = (Recording) obj;
 		return new EqualsBuilder()
-				.append(uuid, rhs.uuid)
 				.append(name, rhs.name)
 				.append(date, rhs.date)
 				.append(languages, rhs.languages)
 				.append(speakersIds, rhs.speakersIds)
 				.append(androidID, rhs.androidID)
-				.append(originalUUID, rhs.originalUUID)
+				.append(originalId, rhs.originalId)
+				.append(respeakingId, rhs.respeakingId)
 				.append(sampleRate, rhs.sampleRate)
 				.isEquals();
 	 }
-
-	// Sets the UUID; it cannot be null.
-	private void setUUID(UUID uuid) {
-		if (uuid == null) {
-			throw new IllegalArgumentException(
-					"Recording UUID cannot be null.");
-		}
-		this.uuid = uuid;
-	}
 
 	/**
 	 * Name mutator.
@@ -530,7 +555,7 @@ public class Recording {
 		this.languages.add(language);
 	}
 
-	// Sets the speakers UUID, but won't accept a null list (empty lists are
+	// Sets the speakers Ids, but won't accept a null list (empty lists are
 	// fine).
 	private void setSpeakersIds(List<String> speakersIds) {
 		if (speakersIds == null) {
@@ -611,18 +636,15 @@ public class Recording {
 	 * Indicates that this recording is allowed to be synced by moving it to a
 	 * directory that the SyncUtil synchronizes.
 	 *
-	 * @param	uuid	The UUID of the recording to sync.
+	 * @param	id	The ID of the recording to sync.
 	 * @throws	IOException	If it cannot be moved to the synced directory.
 	 */
-	public static void enableSync(UUID uuid) throws IOException {
+	/*
+	public static void enableSync(String id) throws IOException {
 		File wavFile = new File(getNoSyncRecordingsPath(), uuid + ".wav");
 		FileUtils.moveFileToDirectory(wavFile, getRecordingsPath(), false);
 	}
-
-	/**
-	 * The recording's UUID.
-	 */
-	private UUID uuid;
+	*/
 
 	/**
 	 * The recording's name.

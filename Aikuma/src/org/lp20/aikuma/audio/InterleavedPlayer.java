@@ -38,7 +38,7 @@ public class InterleavedPlayer extends Player {
 		}
 		setSampleRate(recording.getSampleRate());
 		original = new MarkedPlayer(
-				Recording.read(recording.getOriginalUUID()),
+				Recording.read(recording.getOriginal()),
 				new OriginalMarkerReachedListener(), true);
 		respeaking = new MarkedPlayer(recording,
 				new RespeakingMarkerReachedListener(), true);
