@@ -7,6 +7,7 @@ package org.lp20.aikuma.model;
 import android.util.Log;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.util.FileIO;
+import org.lp20.aikuma.util.IdUtils;
 import org.lp20.aikuma.util.StandardDateFormat;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -24,8 +25,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
 /**
- * The class that stores the metadata of a recording, including it's UUID,
- * creator's UUID, name, date, originalUUID (if applicable), and languages.
+ * The class that stores the metadata of a recording, including it's ID,
+ * creator's ID, name, date, originalID, and languages.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
@@ -33,18 +34,17 @@ import org.json.simple.JSONArray;
 public class Recording {
 
 	/**
-	 * Constructs a new Recording using a specified UUID, name, date,
-	 * languages, originalUUID and sample rate.
+	 * The constructor used when first creating a Recording.
 	 *
-	 * @param	sourceUUID	the temporary UUID of the source WAV.
+	 * @param	wavUUID	the temporary UUID of the WAV in question.
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
 	 * @param	languages	The languages associated with the recording
-	 * @param	speakersIds	The UUIDs of the speakers associated with the
+	 * @param	speakersIds	The IDs of the speakers associated with the
 	 * recording
 	 * @param	androidID	The android ID of the device that created the
 	 * recording
-	 * @param	originalUUID	The UUID of the recording that this recording
+	 * @param	originalId	The ID of the recording that this recording
 	 * is a respeaking of
 	 * @param	sampleRate	The sample rate of the recording.
 	 * @param	durationMsec	The duration of the recording in milliseconds.
@@ -53,6 +53,7 @@ public class Recording {
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String originalId, long sampleRate,
 			int durationMsec) {
+		this.wavUUID = wavUUID;
 		setName(name);
 		setDate(date);
 		setLanguages(languages);
@@ -61,34 +62,85 @@ public class Recording {
 		setSampleRate(sampleRate);
 		setDurationMsec(durationMsec);
 		setOriginalId(originalId);
-		if (isOriginal()) {
+		// If there isn't an original Id, ie this is an original
+		if (originalId == null) {
 			setOriginalId(createOriginalId());
+		} else {
+			// Then we must generate the 4 digit respeaking ID.
+			setRespeakingId(IdUtils.randomDigitString(4));
 		}
+		setFilenamePrefix(determineFilenamePrefix())
+	}
 
-		// If isOriginal(), then we need to assign an ID for the group of
-		// recordings based on this without isOriginal lying to us in future
-		// (as it checks whether originalID is null or not.
+	/**
+	 * The constructor used when reading in an existing Recording.
+	 *
+	 * @param	name	The recording's name.
+	 * @param	date	The date of creation.
+	 * @param	languages	The languages associated with the recording
+	 * @param	speakersIds	The IDs of the speakers associated with the
+	 * recording
+	 * @param	androidID	The android ID of the device that created the
+	 * recording
+	 * @param	originalId	The ID of the recording that this recording
+	 * is a respeaking of
+	 * @param	respeakingId	The ID of the recording that this recording
+	 * is a respeaking of
+	 * @param	sampleRate	The sample rate of the recording.
+	 * @param	durationMsec	The duration of the recording in milliseconds.
+	 */
+	public Recording(String name, Date date,
+			List<Language> languages, List<String> speakersIds,
+			String androidID, String originalId, String respeakingId,
+			long sampleRate, int durationMsec) {
+		setName(name);
+		setDate(date);
+		setLanguages(languages);
+		setSpeakersIds(speakersIds);
+		setAndroidID(androidID);
+		setSampleRate(sampleRate);
+		setDurationMsec(durationMsec);
+		setOriginalId(originalId);
+		setRespeakingId(respeakingId);
+		setFilenamePrefix(determineFilenamePrefix())
+	}
+
+	private String determineFilenamePrefix() {
+		// Build up the filename prefix
+		StringBuilder filenamePrefix = new StringBuilder();
+		filenamePrefix.append(getOriginalId());
+		filenamePrefix.append("-");
+		filenamePrefix.append(getSpeakersIds().get(0));
+		filenamePrefix.append("-");
+		if (isOriginal()) {
+			filenamePrefix.append("source");
+		} else {
+			filenamePrefix.append("respeaking-");
+			filenamePrefix.append(respeakingId);
+		}
+		return filenamePrefix.toString();
+	}
+
+	/**
+	 * Returns true if the Recording is an original; false if respeaking
+	 *
+	 * @return	True if the recording is an original.
+	 */
+	public boolean isOriginal() {
+		return respeakingId.length() > 0;
+	}
+
+	private void importWav(UUID sourceUUID, String filenamePrefix)
+			throws IOException {
+		File sourceFile = new File(getRecordingsPath(), sourceUUID + ".wav");
+		FileUtils.moveFile(sourceFile,
+				new File(getRecordingsPath(), getOriginalId() + "/" +
+						filenamePrefix + ".wav");
 	}
 
 	// Create an original ID (the prefix for recordings)
 	private String createOriginalId() {
-		return sampleFromAlphabet(8, "abcdefghijklmnopqrstuvwxyz");
-	}
-
-	// Randomly generate a string of length k from a given alphabet
-	private sampleFromAlphabet(final int k, final String alphabet) {
-		final int n = alphabet.length();
-
-		Random rng = new Random();
-		StringBuilder sample = new StringBuilder();
-
-		for (int i = 0; i < k; i++) {
-			sample.append(alphabet.charAt(r.nextInt(n)));
-		}
-
-		Log.i("sampleFromAlphabet", "sampling " + k + "from " + alphabet + 
-				", yielding " + sample);
-		return sample.toString();
+		return IdUtils.sampleFromAlphabet(8, "abcdefghijklmnopqrstuvwxyz");
 	}
 
 	/**
@@ -97,7 +149,8 @@ public class Recording {
 	 * @return	The file the recording is stored in.
 	 */
 	public File getFile() {
-		return new File(getRecordingsPath(), getUUID() + ".wav");
+		return new File(getRecordingsPath(), getOriginalId() + "/"
+				+ filenamePrefix + ".wav");
 	}
 
 	/**
@@ -152,7 +205,7 @@ public class Recording {
 	/**
 	 * speakersIds accessor.
 	 *
-	 * @return	A list of UUIDs representing the speakers of the recording.
+	 * @return	A list of IDs representing the speakers of the recording.
 	 */
 	public List<String> getSpeakersIds() {
 		return speakersIds;
@@ -180,18 +233,13 @@ public class Recording {
 	}
 
 	/**
-	 * originalUUID accessor.
+	 * originalId accessor.
 	 *
-	 * @return	The UUID of the original recording that this is a respeaking
+	 * @return	The Id of the original recording that this is a respeaking
 	 * of.
 	 */
-	public UUID getOriginalUUID() {
-		if (originalUUID == null) {
-			throw new IllegalStateException(
-					"Cannot call getOriginalUUID when originalUUID is null." + 
-					" Call isOriginal().");
-		}
-		return originalUUID;
+	public String getOriginalId() {
+		return originalId;
 	}
 
 	/**
@@ -217,13 +265,6 @@ public class Recording {
 	 *
 	 * @return	True if the recording is an original.
 	 */
-	public boolean isOriginal() {
-		if (originalUUID == null) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 
 	/**
 	 * Encode the Recording as a corresponding JSONObject.
@@ -232,7 +273,6 @@ public class Recording {
 	 */
 	public JSONObject encode() {
 		JSONObject encodedRecording = new JSONObject();
-		encodedRecording.put("uuid", this.uuid.toString());
 		encodedRecording.put("name", this.name);
 		encodedRecording.put("date", new StandardDateFormat().format(this.date));
 		encodedRecording.put("languages", Language.encodeList(languages));
@@ -244,11 +284,8 @@ public class Recording {
 		encodedRecording.put("androidID", this.androidID);
 		encodedRecording.put("sampleRate", getSampleRate());
 		encodedRecording.put("durationMsec", getDurationMsec());
-		if (this.originalUUID == null) {
-			encodedRecording.put("originalUUID", null);
-		} else {
-			encodedRecording.put("originalUUID", this.originalUUID.toString());
-		}
+		encodedRecording.put("originalId", this.originalUUID);
+		encodedRecording.put("respeakingId", this.respeakingId);
 		return encodedRecording;
 	}
 
@@ -259,21 +296,21 @@ public class Recording {
 	 * @throws	IOException	If the recording metadata could not be written.
 	 */
 	public void write() throws IOException {
-		// Determine the recording identifier
+		// Ensure the directory exists
+		File dir = new File(getRecordingsPath(), getOriginalId());
+		dir.mkdir();
 
-		// make the directory
 
-		// Grab the user ID.
-
-		// Make the whole identifier
-
-		// Write the file.
+		// Import the wave file into the new recording directory.
+		importWav(sourceUUID, filenamePrefix.toString());
 
 		JSONObject encodedRecording = this.encode();
 
 
+		// Write the json metadata.
 		FileIO.writeJSONObject(new File(
-				getRecordingsPath(), this.getUUID().toString() + ".json"),
+				getRecordingsPath(), getOriginalId() + "/" +
+						filenamePrefix + ".json"),
 				encodedRecording);
 	}
 
@@ -282,6 +319,7 @@ public class Recording {
 	 *
 	 * @return	true if successful; false otherwise.
 	 */
+	 /*
 	public boolean delete() {
 		File file = new File(getRecordingsPath(), this.getUUID().toString() +
 				".json");
@@ -296,25 +334,20 @@ public class Recording {
 		}
 		return file.delete();
 	}
+	*/
 
 	/**
 	 * Read a recording from the file containing JSON describing the Recording
 	 *
-	 * @param	uuid	The uuid of the recording to be read.
+	 * @param	file	The file containing the metadata of the recording.
 	 * @return	A Recording object corresponding to the uuid.
 	 * @throws	IOException	If the recording metadata cannot be read.
 	 */
-	public static Recording read(UUID uuid) throws IOException {
-		JSONObject jsonObj = FileIO.readJSONObject(
-				new File(getRecordingsPath(), uuid.toString() + ".json"));
-		String uuidString = (String) jsonObj.get("uuid");
-		if (uuidString == null) {
-			throw new IOException("Null UUID in the JSON file.");
-		}
-		UUID readUUID = UUID.fromString(uuidString);
-		if (!readUUID.equals(uuid)) {
-			throw new IOException("UUID of the filename is different to UUID" +
-					"in the file's JSON");
+	public static Recording read(File file) throws IOException {
+		JSONObject jsonObj = FileIO.readJSONObject(file);
+		String originalIdString = (String) jsonObj.get("originalId");
+		if (originalIdString == null) {
+			throw new IOException("Null originalId in the JSON file.");
 		}
 		String name = (String) jsonObj.get("name");
 		String dateString = (String) jsonObj.get("date");
@@ -341,12 +374,9 @@ public class Recording {
 		if (androidID == null) {
 			throw new IOException("Null androidID in the JSON file.");
 		}
-		UUID originalUUID;
-
-		if (jsonObj.get("originalUUID") == null) {
-			originalUUID = null;
-		} else {
-			originalUUID = UUID.fromString((String) jsonObj.get("originalUUID"));
+		String respeakingId = (String) jsonObj.get("respeakingId");
+		if (respeakingId == null) {
+			throw new IOException("Null respeakingId in the JSON file.");
 		}
 
 		long sampleRate;
@@ -364,9 +394,9 @@ public class Recording {
 			durationMsec = ((Long) jsonObj.get("durationMsec")).intValue();
 			Log.i("duration", "reading: " + durationMsec);
 		}
-		Recording recording = new Recording(
-				uuid, name, date, languages, speakersIds, androidID,
-				originalUUID, sampleRate, (Integer) durationMsec);
+		Recording recording = new Recording(name, date, languages, speakersIds,
+				androidID, originalId, respeakingId, sampleRate, (Integer)
+				durationMsec);
 		return recording;
 	}
 
@@ -391,39 +421,34 @@ public class Recording {
 	/**
 	 * Read all recordings from file
 	 *
-	 * @return	A list of the users found in the users directory.
 	 */
 	public static List<Recording> readAll() {
 
-		String[] recordingUUIDsArray =
-				getRecordingsPath().list(new FilenameFilter() {
+		List<Recording> recordings = new ArrayList<Recording>();
+
+		// Constructs a list of directories in the recordings directory.
+		File[] recordingPathFiles = getRecordingsPath.listFiles();
+		for (File f : recordingPathFiles) {
+			if (f.isDirectory()) {
+				// For each of those subdirectories, creates a list of files
+				// within that end in .json
+				File[] originalIdDirFiles = f.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
 						return filename.endsWith(".json");
 					}
 				});
 
-		List<String> recordingUUIDs;
-		// Get a list of all the UUIDs of users in the "recordings" directory.
-		if (recordingUUIDsArray != null) {
-			recordingUUIDs = Arrays.asList(recordingUUIDsArray);
-		} else {
-			return new ArrayList<Recording>();
-		}
-
-		for (int i = 0; i < recordingUUIDs.size(); i++) {
-			recordingUUIDs.set(i,
-					FilenameUtils.removeExtension(recordingUUIDs.get(i)));
-		}
-
-		// Get the recordings data from the metadata.json files.
-		List<Recording> recordings = new ArrayList<Recording>();
-		for (String recordingUUID : recordingUUIDs) {
-			try {
-				recordings.add(Recording.read(UUID.fromString(recordingUUID)));
-			} catch (IOException e) {
-				// Couldn't read that recording for whateve rreason (perhaps
-				// json file wasn't formatted correctly). Let's just ignore
-				// that user.
+				// Iterate over those recording metadata files and add the
+				// recordings they refer to to the recordings list
+				for (File jsonFile : originalIdDirFiles) {
+					try {
+						recordings.add(Recording.read(jsonFile));
+					} catch (IOException e) {
+						// Couldn't read that recording for whateve rreason
+						// (perhaps json file wasn't formatted correctly).
+						// Let's just ignore that user.
+					}
+				}
 			}
 		}
 
@@ -539,12 +564,20 @@ public class Recording {
 		this.androidID = androidID;
 	}
 
-	private void setOriginalUUID(UUID originalUUID) {
-		this.originalUUID = originalUUID;
+	private void setOriginalId(String originalId) {
+		this.originalId = originalId;
+	}
+
+	private void setFilenamePrefix(String filenamePrefix) {
+		this.filenamePrefix = filenamePrefix;
 	}
 
 	private void setSampleRate(long sampleRate) {
 		this.sampleRate = sampleRate;
+	}
+
+	private void setRespeakingId(String respeakingId) {
+		this.respeakingId = respeakingId;
 	}
 
 	private void setDurationMsec(int durationMsec) {
@@ -630,5 +663,14 @@ public class Recording {
 	 * The duration of the recording in seconds (floored)
 	 */
 	private int durationMsec;
+
+	// The UUID of the source WAV.
+	private UUID wavUUID;
+
+	// The respeaking ID that is at the end of the filename prefix.
+	private String respeakingUUID;
+
+	// The filename prefix that comes before .wav, .json etc.
+	private String filenamePrefix;
 
 }
