@@ -71,7 +71,7 @@ public class Recording {
 			// Then we must generate the 4 digit respeaking ID.
 			setRespeakingId(IdUtils.randomDigitString(4));
 		}
-		setFilenamePrefix(determineFilenamePrefix());
+		setId(determineId());
 	}
 
 	/**
@@ -104,23 +104,23 @@ public class Recording {
 		setDurationMsec(durationMsec);
 		setOriginalId(originalId);
 		setRespeakingId(respeakingId);
-		setFilenamePrefix(determineFilenamePrefix());
+		setId(determineId());
 	}
 
-	private String determineFilenamePrefix() {
+	private String determineId() {
 		// Build up the filename prefix
-		StringBuilder filenamePrefix = new StringBuilder();
-		filenamePrefix.append(getOriginalId());
-		filenamePrefix.append("-");
-		filenamePrefix.append(getSpeakersIds().get(0));
-		filenamePrefix.append("-");
+		StringBuilder id = new StringBuilder();
+		id.append(getOriginalId());
+		id.append("-");
+		id.append(getSpeakersIds().get(0));
+		id.append("-");
 		if (isOriginal()) {
-			filenamePrefix.append("source");
+			id.append("source");
 		} else {
-			filenamePrefix.append("respeaking-");
-			filenamePrefix.append(respeakingId);
+			id.append("respeaking-");
+			id.append(respeakingId);
 		}
-		return filenamePrefix.toString();
+		return id.toString();
 	}
 
 	/**
@@ -135,23 +135,19 @@ public class Recording {
 	// Moves a WAV file with a temporary UUID from a no-sync directory to
 	// its rightful place in the connected world of Aikuma, with a proper name
 	// and where it will find it's best friend - a JSON metadata file.
-	private void importWav(UUID wavUUID, String filenamePrefix)
+	private void importWav(UUID wavUUID, String id)
 			throws IOException {
-		File wavFile = new File(getNoSyncRecordingsPath(),
-				wavUUID + ".wav");
-		FileUtils.moveFile(wavFile,
-				new File(getRecordingsPath(), getOriginalId() + "/" +
-						filenamePrefix + ".wav"));
+		File wavFile = new File(getNoSyncRecordingsPath(), wavUUID + ".wav");
+		FileUtils.moveFile(wavFile, this.getFile());
 	}
 
 	// Similar to importWav, except for the mapping file.
-	private void importMapping(UUID wavUUID, String filenamePrefix)
+	private void importMapping(UUID wavUUID, String id)
 			throws IOException {
-		File mappingFile = new File(getNoSyncRecordingsPath(),
-				wavUUID + ".map");
-		FileUtils.moveFile(mappingFile,
+		File mapFile = new File(getNoSyncRecordingsPath(), wavUUID + ".map");
+		FileUtils.moveFile(mapFile,
 				new File(getRecordingsPath(), getOriginalId() + "/" +
-						filenamePrefix + ".map"));
+						id + ".map"));
 	}
 
 	// Create an original ID (the prefix for recordings)
@@ -166,7 +162,7 @@ public class Recording {
 	 */
 	public File getFile() {
 		return new File(getRecordingsPath(), getOriginalId() + "/"
-				+ filenamePrefix + ".wav");
+				+ id + ".wav");
 	}
 
 	/**
@@ -258,8 +254,8 @@ public class Recording {
 		return originalId;
 	}
 
-	public String getFilenamePrefix() {
-		return filenamePrefix;
+	public String getId() {
+		return id;
 	}
 
 	/**
@@ -320,13 +316,12 @@ public class Recording {
 		File dir = new File(getRecordingsPath(), getOriginalId());
 		dir.mkdir();
 
-
 		// Import the wave file into the new recording directory.
-		importWav(wavUUID, filenamePrefix);
+		importWav(wavUUID, getId());
 
 		// Try and import the mapping file, if the recording is a respeaking.
 		if (!isOriginal()) {
-			importMapping(wavUUID, filenamePrefix);
+			importMapping(wavUUID, getId());
 		}
 
 		JSONObject encodedRecording = this.encode();
@@ -335,7 +330,7 @@ public class Recording {
 		// Write the json metadata.
 		FileIO.writeJSONObject(new File(
 				getRecordingsPath(), getOriginalId() + "/" +
-						filenamePrefix + ".json"),
+						id + "-metadata.json"),
 				encodedRecording);
 	}
 
@@ -393,27 +388,26 @@ public class Recording {
 	/**
 	 * Read a recording corresponding to the given filename prefix.
 	 *
-	 * @param	filenamePrefix	The prefix of the file that identifies the
-	 * recording.
+	 * @param	id	The recording's ID
 	 * @return	A Recording object corresponding to the json file.
 	 * @throws	IOException	If the recording metadata cannot be read.
 	 */
-	public static Recording read(String filenamePrefix) throws IOException {
-		String originalId = getOriginalIdFromPrefix(filenamePrefix);
-		File file = new File(getRecordingsPath(), originalId + "/"
-				+ filenamePrefix + ".json");
-		return read(file);
+	public static Recording read(String id) throws IOException {
+		String originalId = getOriginalIdFromId(id);
+		File metadataFile = new File(getRecordingsPath(), originalId + "/"
+				+ id + "-metadata.json");
+		return read(metadataFile);
 	}
 
 	/**
 	 * Read a recording from the file containing JSON describing the Recording
 	 *
-	 * @param	file	The file containing the metadata of the recording.
+	 * @param	metadataFile	The file containing the metadata of the recording.
 	 * @return	A Recording object corresponding to the json file.
 	 * @throws	IOException	If the recording metadata cannot be read.
 	 */
-	public static Recording read(File file) throws IOException {
-		JSONObject jsonObj = FileIO.readJSONObject(file);
+	public static Recording read(File metadataFile) throws IOException {
+		JSONObject jsonObj = FileIO.readJSONObject(metadataFile);
 		String originalIdString = (String) jsonObj.get("originalId");
 		if (originalIdString == null) {
 			throw new IOException("Null originalId in the JSON file.");
@@ -634,8 +628,8 @@ public class Recording {
 		this.originalId = originalId;
 	}
 
-	private void setFilenamePrefix(String filenamePrefix) {
-		this.filenamePrefix = filenamePrefix;
+	private void setId(String id) {
+		this.id = id;
 	}
 
 	private void setSampleRate(long sampleRate) {
@@ -674,16 +668,16 @@ public class Recording {
 	}
 
 	/**
-	 * Returns the originalId given a filenamePrefix
+	 * Returns the originalId given an id
 	 *
-	 * @param	filenamePrefix	The filename prefix of the file whose
+	 * @param	id	The filename prefix of the file whose
 	 * originalId we seek
 	 * @return	The corresponding original ID.
 	 */
-	public static String getOriginalIdFromPrefix(String filenamePrefix) {
-		String[] splitFilenamePrefix = filenamePrefix.split("-");
-		assertTrue(splitFilenamePrefix.length >= 3);
-		return splitFilenamePrefix[0];
+	public static String getOriginalIdFromId(String id) {
+		String[] splitId = id.split("-");
+		assertTrue(splitId.length >= 3);
+		return splitId[0];
 	}
 
 	/**
@@ -746,7 +740,10 @@ public class Recording {
 	// The respeaking ID that is at the end of the filename prefix.
 	private String respeakingId;
 
-	// The filename prefix that comes before .wav, .json etc.
-	private String filenamePrefix;
-
+	// The ID of a recording, which is of one of the following structures:
+	//
+	//		<originalId>-<speakerId>-source (for originals)
+	//		<originalId>-<speakerId>-<respeaking type>-<respeakingId> (for
+	//		respeakings, transcriptions, commentaries, etc.)
+	private String id;
 }

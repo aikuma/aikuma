@@ -56,11 +56,11 @@ public class PhoneRespeakActivity extends AikumaActivity {
 	// Prepares the respeaker.
 	private void setUpPhoneRespeaker() {
 		Intent intent = getIntent();
-		filenamePrefix = (String) intent.getExtras().get("filenamePrefix");
+		id = (String) intent.getExtras().get("id");
 		sampleRate = (Long) intent.getExtras().get("sampleRate");
 		respeakingUUID = UUID.randomUUID();
 		try {
-			originalRecording = Recording.read(filenamePrefix);
+			originalRecording = Recording.read(id);
 			//The threshold speech analyzer here should be automatically
 			//detected using Florian's method.
 			respeaker = new PhoneRespeaker(originalRecording, respeakingUUID,
@@ -114,7 +114,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		intent.putExtra("uuidString", respeakingUUID.toString());
 		intent.putExtra("sampleRate", originalRecording.getSampleRate());
 		intent.putExtra("originalId",
-				Recording.getOriginalIdFromPrefix(filenamePrefix));
+				Recording.getOriginalIdFromId(id));
 		intent.putExtra("durationMsec", respeaker.getCurrentMsec());
 		startActivity(intent);
 		PhoneRespeakActivity.this.finish();
@@ -159,7 +159,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 
 	private PhoneRespeakFragment fragment;
 	private PhoneRespeaker respeaker;
-	private String filenamePrefix;
+	private String id;
 	private UUID respeakingUUID;
 	private Recording originalRecording;
 	private long sampleRate;

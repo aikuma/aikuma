@@ -150,8 +150,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 							recording.write();
 						} catch (IOException e) {
 							Toast.makeText(RecordingMetadataActivity.this,
-								"Failed to write the Recording metadata.",
-								Toast.LENGTH_LONG).show();
+								"Failed to write the Recording metadata:\t" +
+								e.getMessage(), Toast.LENGTH_LONG).show();
 						}
 						startActivity(intent);
 					}

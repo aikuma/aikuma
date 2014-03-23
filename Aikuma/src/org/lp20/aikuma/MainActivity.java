@@ -111,7 +111,7 @@ public class MainActivity extends ListActivity {
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		Intent intent = new Intent(this, ListenActivity.class);
-		intent.putExtra("filenamePrefix", recording.getFilenamePrefix());
+		intent.putExtra("id", recording.getId());
 		startActivity(intent);
 	}
 

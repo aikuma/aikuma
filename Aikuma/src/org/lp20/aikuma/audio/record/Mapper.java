@@ -44,7 +44,7 @@ public class Mapper {
 	 */
 	public Mapper(UUID uuid) {
 		this.segments = new Segments();
-		this.mappingFile = new File(Recording.getRecordingsPath(), uuid + ".map");
+		this.mappingFile = new File(Recording.getNoSyncRecordingsPath(), uuid + ".map");
 	}
 
 

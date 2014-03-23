@@ -61,10 +61,10 @@ public class ListenActivity extends AikumaActivity {
 	// Prepares the recording
 	private void setUpRecording() {
 		Intent intent = getIntent();
-		String filenamePrefix = (String)
-				intent.getExtras().get("filenamePrefix");
+		String id = (String)
+				intent.getExtras().get("id");
 		try {
-			recording = Recording.read(filenamePrefix);
+			recording = Recording.read(id);
 			setUpRecordingName();
 		} catch (IOException e) {
 			//The recording metadata cannot be read, so let's wrap up this
@@ -178,8 +178,8 @@ public class ListenActivity extends AikumaActivity {
 				public void onClick(View _) {
 					Intent intent = new Intent(ListenActivity.this,
 							ListenActivity.class);
-					intent.putExtra("filenamePrefix",
-							respeaking.getFilenamePrefix().toString());
+					intent.putExtra("id",
+							respeaking.getId().toString());
 					startActivity(intent);
 					ListenActivity.this.finish();
 				}
@@ -271,7 +271,7 @@ public class ListenActivity extends AikumaActivity {
 	 */
 	public void onThumbRespeakingButton(View view) {
 		Intent intent = new Intent(this, ThumbRespeakActivity.class);
-		intent.putExtra("filenamePrefix", recording.getFilenamePrefix());
+		intent.putExtra("id", recording.getId());
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
 	}
@@ -283,7 +283,7 @@ public class ListenActivity extends AikumaActivity {
 	 */
 	public void onPhoneRespeakingButton(View view) {
 		Intent intent = new Intent(this, PhoneRespeakActivity.class);
-		intent.putExtra("filenamePrefix", recording.getFilenamePrefix());
+		intent.putExtra("id", recording.getId());
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
 	}
