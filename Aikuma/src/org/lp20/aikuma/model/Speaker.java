@@ -47,13 +47,10 @@ public class Speaker implements Parcelable{
 	 */
 	public Speaker(UUID imageUUID, String name, List<Language> languages)
 			throws IOException{
+		this.imageUUID = imageUUID;
 		setName(name);
 		setId(createId(name));
 		setLanguages(languages);
-
-		// Move the image to the Speaker directory with an appropriate name
-		importImage(imageUUID);
-
 	}
 
 	private void importImage(UUID imageUUID) throws IOException {
@@ -209,6 +206,9 @@ public class Speaker implements Parcelable{
 	 * @throws	IOException	If the speaker metadata cannot be written to file.
 	 */
 	public void write() throws IOException {
+		// Move the image to the Speaker directory with an appropriate name
+		importImage(imageUUID);
+
 		JSONObject encodedSpeaker = this.encode();
 
 		FileIO.writeJSONObject(new File(getSpeakersPath(), getId() +
@@ -430,5 +430,8 @@ public class Speaker implements Parcelable{
 	 * The languages of the Speaker.
 	 */
 	private List<Language> languages;
+
+	// The temporary UUID of the image before it gets renamed appropriately.
+	private UUID imageUUID;
 
 }
