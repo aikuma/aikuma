@@ -1,5 +1,6 @@
 package org.lp20.aikuma.util;
 
+import android.util.Log;
 import java.util.Random;
 
 /**
@@ -39,7 +40,7 @@ public class IdUtils {
 		StringBuilder sample = new StringBuilder();
 
 		for (int i = 0; i < k; i++) {
-			sample.append(alphabet.charAt(r.nextInt(n)));
+			sample.append(alphabet.charAt(rng.nextInt(n)));
 		}
 
 		Log.i("sampleFromAlphabet", "sampling " + k + "from " + alphabet +

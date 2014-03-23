@@ -26,14 +26,15 @@ public class Segments {
 	 * Creates an object that represents a mapping of recording segments between
 	 * the original and the respeaking.
 	 *
-	 * @param	respeakingUUID	the UUID of the respeaking.
+	 * @param	respeaking	the respeaking in question.
 	 */
-	public Segments(UUID respeakingUUID) {
+	public Segments(Recording respeaking) {
 		this();
-		this.respeakingUUID = respeakingUUID;
+		this.respeaking = respeaking;
 		try {
-			readSegments(new File(
-					Recording.getRecordingsPath(), respeakingUUID + ".map"));
+			readSegments(new File(Recording.getRecordingsPath(),
+					respeaking.getOriginalId() + "/" +
+					respeaking.getFilenamePrefix() + ".map"));
 		} catch (Exception e) {
 			//Issue with reading mapping. Maybe throw an exception?
 		}
@@ -197,5 +198,5 @@ public class Segments {
 
 	private LinkedHashMap<Segment, Segment> segmentMap;
 	private Segment finalOriginalSegment;
-	private UUID respeakingUUID;
+	private Recording respeaking;
 }

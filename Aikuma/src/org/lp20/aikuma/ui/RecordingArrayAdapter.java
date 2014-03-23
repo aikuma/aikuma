@@ -16,7 +16,6 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.R;
@@ -80,7 +79,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	/**
 	 * Creates the view for a given speaker.
 	 *
-	 * @param	speakerId	The UUID of the speaker.
+	 * @param	speakerId	The ID of the speaker.
 	 * @return	The image view for the speaker.
 	 */
 	private ImageView makeSpeakerImageView(String speakerId) {

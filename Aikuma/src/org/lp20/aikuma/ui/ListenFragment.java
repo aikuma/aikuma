@@ -19,7 +19,6 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
@@ -175,7 +174,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	 */
 	public void setPlayer(InterleavedPlayer interleavedPlayer) {
 		this.player = interleavedPlayer;
-		Segments segments = new Segments(interleavedPlayer.getRecording().getUUID());
+		Segments segments = new Segments(interleavedPlayer.getRecording());
 		Iterator<Segment> originalSegmentIterator =
 				segments.getOriginalSegmentIterator();
 		while (originalSegmentIterator.hasNext()) {

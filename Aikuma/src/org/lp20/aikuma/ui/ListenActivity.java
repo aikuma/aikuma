@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.UUID;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
@@ -62,10 +61,10 @@ public class ListenActivity extends AikumaActivity {
 	// Prepares the recording
 	private void setUpRecording() {
 		Intent intent = getIntent();
-		UUID recordingUUID = UUID.fromString(
-				(String) intent.getExtras().get("uuidString"));
+		String filenamePrefix = (String)
+				intent.getExtras().get("filenamePrefix");
 		try {
-			recording = Recording.read(recordingUUID);
+			recording = Recording.read(filenamePrefix);
 			setUpRecordingName();
 		} catch (IOException e) {
 			//The recording metadata cannot be read, so let's wrap up this
@@ -145,7 +144,7 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 
-	// Prepares the iimages for the respeakings.
+	// Prepares the images for the respeakings.
 	private void setUpRespeakingImages() {
 		List<Recording> respeakings;
 		if (recording.isOriginal()) {
@@ -153,7 +152,7 @@ public class ListenActivity extends AikumaActivity {
 		} else {
 			try {
 				respeakings =
-						Recording.read(recording.getOriginalUUID()).getRespeakings();
+						recording.getOriginal().getRespeakings();
 			} catch (IOException e) {
 				//If the original recording can't be loaded, then we can't
 				//display any other respeaking images, so we should just return
@@ -179,8 +178,8 @@ public class ListenActivity extends AikumaActivity {
 				public void onClick(View _) {
 					Intent intent = new Intent(ListenActivity.this,
 							ListenActivity.class);
-					intent.putExtra("uuidString",
-							respeaking.getUUID().toString());
+					intent.putExtra("filenamePrefix",
+							respeaking.getFilenamePrefix().toString());
 					startActivity(intent);
 					ListenActivity.this.finish();
 				}
@@ -272,7 +271,7 @@ public class ListenActivity extends AikumaActivity {
 	 */
 	public void onThumbRespeakingButton(View view) {
 		Intent intent = new Intent(this, ThumbRespeakActivity.class);
-		intent.putExtra("uuidString", recording.getUUID().toString());
+		intent.putExtra("filenamePrefix", recording.getFilenamePrefix());
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
 	}
@@ -284,7 +283,7 @@ public class ListenActivity extends AikumaActivity {
 	 */
 	public void onPhoneRespeakingButton(View view) {
 		Intent intent = new Intent(this, PhoneRespeakActivity.class);
-		intent.putExtra("uuidString", recording.getUUID().toString());
+		intent.putExtra("filenamePrefix", recording.getFilenamePrefix());
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
 	}

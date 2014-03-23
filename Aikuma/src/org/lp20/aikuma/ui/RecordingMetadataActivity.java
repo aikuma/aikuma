@@ -61,10 +61,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 				(String) intent.getExtras().get("uuidString"));
 		sampleRate = (Long) intent.getExtras().get("sampleRate");
 		durationMsec = (Integer) intent.getExtras().get("durationMsec");
-		String originalUUIDString = (String) intent.getExtras().get("originalUUIDString");
-		if (originalUUIDString != null) {
-			originalUUID = UUID.fromString(originalUUIDString);
-		}
+		originalId = (String)
+				intent.getExtras().get("originalId");
 		setUpPlayer(uuid, sampleRate);
 		userImages =
 				(LinearLayout) findViewById(R.id.userImagesAndAddUserButton);
@@ -144,13 +142,12 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 						Log.i("duration", "when recording created: " + durationMsec);
 						Recording recording = new Recording(
 								uuid, description, date, selectedLanguages,
-								speakersIds, androidID, originalUUID,
+								speakersIds, androidID, originalId,
 								sampleRate, durationMsec);
 						try {
+							// Move the wave file from the nosync directory to
+							// the synced directory and write the metadata
 							recording.write();
-							//Move the wave file from the nosync directory to the
-							//synced directory
-							Recording.enableSync(uuid);
 						} catch (IOException e) {
 							Toast.makeText(RecordingMetadataActivity.this,
 								"Failed to write the Recording metadata.",
@@ -272,7 +269,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	private long sampleRate;
 	private int durationMsec;
 	private ListenFragment listenFragment;
-	private UUID originalUUID;
+	private String originalId;
 	private EditText nameField;
 	private ImageButton okButton;
 	private boolean recordingHasSpeaker;

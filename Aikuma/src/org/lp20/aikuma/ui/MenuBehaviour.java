@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import org.lp20.aikuma.MainActivity;
-import org.lp20.aikuma.http.Server;
 import org.lp20.aikuma.R;
 
 /**
@@ -85,8 +84,8 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				return true;
 			case R.id.start_http_server:
-				intent = new Intent(activity, HttpServerActivity.class);
-				activity.startActivity(intent);
+				//intent = new Intent(activity, HttpServerActivity.class);
+				//activity.startActivity(intent);
 				return true;
 			default:
 				return true;

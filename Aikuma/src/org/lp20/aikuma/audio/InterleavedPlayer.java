@@ -38,11 +38,11 @@ public class InterleavedPlayer extends Player {
 		}
 		setSampleRate(recording.getSampleRate());
 		original = new MarkedPlayer(
-				Recording.read(recording.getOriginal()),
+				recording.getOriginal(),
 				new OriginalMarkerReachedListener(), true);
 		respeaking = new MarkedPlayer(recording,
 				new RespeakingMarkerReachedListener(), true);
-		segments = new Segments(recording.getUUID());
+		segments = new Segments(recording);
 		initializeCompletionListeners();
 		completedOnce = false;
 	}
