@@ -8,8 +8,6 @@ import android.graphics.Bitmap;
 import android.os.Parcelable;
 import android.os.Parcel;
 import android.util.Log;
-import org.lp20.aikuma.util.FileIO;
-import org.lp20.aikuma.util.ImageUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -22,6 +20,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.lp20.aikuma.util.FileIO;
+import org.lp20.aikuma.util.IdUtils;
+import org.lp20.aikuma.util.ImageUtils;
 
 /**
  * The class that stores the data pertaining to a speaker who has contributed
@@ -378,23 +379,9 @@ public class Speaker implements Parcelable{
 		// Generate random number of a specified number of digits (8 - number
 		// of initials)
 		int digitStringLength = 8 - initials.length();
-		String randomDigits = randomDigitString(digitStringLength);
+		String randomDigits = IdUtils.randomDigitString(digitStringLength);
 
 		return initials + randomDigits;
-	}
-
-	/**
-	 * Creates a random digit string of length n
-	 *
-	 * @param	n	The number of digits long the string is to be.
-	 */
-	private String randomDigitString(int n) {
-		Random rng = new Random();
-		StringBuilder randomDigits = new StringBuilder();
-		for (int i = 0; i < n; i++) {
-			randomDigits.append(rng.nextInt(10));
-		}
-		return randomDigits.toString();
 	}
 
 	// Extracts the first character of each token in a string and uppercases, but
