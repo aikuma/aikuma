@@ -33,7 +33,7 @@ public class Segments {
 		this.respeaking = respeaking;
 		try {
 			readSegments(new File(Recording.getRecordingsPath(),
-					respeaking.getOriginalId() + "/" +
+					respeaking.getGroupId() + "/" +
 					respeaking.getId() + ".map"));
 		} catch (Exception e) {
 			//Issue with reading mapping. Maybe throw an exception?

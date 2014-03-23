@@ -27,7 +27,7 @@ import static junit.framework.Assert.assertTrue;
 
 /**
  * The class that stores the metadata of a recording, including it's ID,
- * creator's ID, name, date, originalID, and languages.
+ * creator's ID, name, date, group ID, and languages.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
@@ -45,14 +45,14 @@ public class Recording {
 	 * recording
 	 * @param	androidID	The android ID of the device that created the
 	 * recording
-	 * @param	originalId	The ID of the recording that this recording
-	 * is a respeaking of
+	 * @param	groupId	The ID of the group of recordings this recording
+	 * belongs in (Some source recording and respeakings/commentaries)
 	 * @param	sampleRate	The sample rate of the recording.
 	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 */
 	public Recording(UUID wavUUID, String name, Date date,
 			List<Language> languages, List<String> speakersIds,
-			String androidID, String originalId, long sampleRate,
+			String androidID, String groupId, long sampleRate,
 			int durationMsec) {
 		this.wavUUID = wavUUID;
 		setName(name);
@@ -62,10 +62,10 @@ public class Recording {
 		setAndroidID(androidID);
 		setSampleRate(sampleRate);
 		setDurationMsec(durationMsec);
-		setOriginalId(originalId);
-		// If there isn't an original Id, ie this is an original
-		if (originalId == null) {
-			setOriginalId(createOriginalId());
+		setGroupId(groupId);
+		// If there isn't an group Id, ie this is an original
+		if (groupId == null) {
+			setGroupId(createGroupId());
 			setRespeakingId("");
 		} else {
 			// Then we must generate the 4 digit respeaking ID.
@@ -84,8 +84,8 @@ public class Recording {
 	 * recording
 	 * @param	androidID	The android ID of the device that created the
 	 * recording
-	 * @param	originalId	The ID of the recording that this recording
-	 * is a respeaking of
+	 * @param	groupId	The ID of the group of recordings this recording
+	 * belongs in (Some source recording and respeakings/commentaries)
 	 * @param	respeakingId	The ID of the recording that this recording
 	 * is a respeaking of
 	 * @param	sampleRate	The sample rate of the recording.
@@ -93,7 +93,7 @@ public class Recording {
 	 */
 	public Recording(String name, Date date,
 			List<Language> languages, List<String> speakersIds,
-			String androidID, String originalId, String respeakingId,
+			String androidID, String groupId, String respeakingId,
 			long sampleRate, int durationMsec) {
 		setName(name);
 		setDate(date);
@@ -102,7 +102,7 @@ public class Recording {
 		setAndroidID(androidID);
 		setSampleRate(sampleRate);
 		setDurationMsec(durationMsec);
-		setOriginalId(originalId);
+		setGroupId(groupId);
 		setRespeakingId(respeakingId);
 		setId(determineId());
 	}
@@ -110,7 +110,7 @@ public class Recording {
 	private String determineId() {
 		// Build up the filename prefix
 		StringBuilder id = new StringBuilder();
-		id.append(getOriginalId());
+		id.append(getGroupId());
 		id.append("-");
 		id.append(getSpeakersIds().get(0));
 		id.append("-");
@@ -146,12 +146,12 @@ public class Recording {
 			throws IOException {
 		File mapFile = new File(getNoSyncRecordingsPath(), wavUUID + ".map");
 		FileUtils.moveFile(mapFile,
-				new File(getRecordingsPath(), getOriginalId() + "/" +
+				new File(getRecordingsPath(), getGroupId() + "/" +
 						id + ".map"));
 	}
 
-	// Create an original ID (the prefix for recordings)
-	private String createOriginalId() {
+	// Create a group ID (the prefix for recordings)
+	private String createGroupId() {
 		return IdUtils.sampleFromAlphabet(8, "abcdefghijklmnopqrstuvwxyz");
 	}
 
@@ -161,7 +161,7 @@ public class Recording {
 	 * @return	The file the recording is stored in.
 	 */
 	public File getFile() {
-		return new File(getRecordingsPath(), getOriginalId() + "/"
+		return new File(getRecordingsPath(), getGroupId() + "/"
 				+ id + ".wav");
 	}
 
@@ -245,13 +245,13 @@ public class Recording {
 	}
 
 	/**
-	 * originalId accessor.
+	 * groupId accessor.
 	 *
-	 * @return	The Id of the original recording that this is a respeaking
+	 * @return	The Id of the group this recording belongs in.
 	 * of.
 	 */
-	public String getOriginalId() {
-		return originalId;
+	public String getGroupId() {
+		return groupId;
 	}
 
 	public String getId() {
@@ -277,12 +277,6 @@ public class Recording {
 	}
 
 	/**
-	 * Returns true if the Recording is an original; false if respeaking
-	 *
-	 * @return	True if the recording is an original.
-	 */
-
-	/**
 	 * Encode the Recording as a corresponding JSONObject.
 	 *
 	 * @return	A JSONObject instance representing the Recording;
@@ -300,7 +294,7 @@ public class Recording {
 		encodedRecording.put("androidID", this.androidID);
 		encodedRecording.put("sampleRate", getSampleRate());
 		encodedRecording.put("durationMsec", getDurationMsec());
-		encodedRecording.put("originalId", this.originalId);
+		encodedRecording.put("groupId", this.groupId);
 		encodedRecording.put("respeakingId", this.respeakingId);
 		return encodedRecording;
 	}
@@ -313,7 +307,7 @@ public class Recording {
 	 */
 	public void write() throws IOException {
 		// Ensure the directory exists
-		File dir = new File(getRecordingsPath(), getOriginalId());
+		File dir = new File(getRecordingsPath(), getGroupId());
 		dir.mkdir();
 
 		// Import the wave file into the new recording directory.
@@ -329,7 +323,7 @@ public class Recording {
 
 		// Write the json metadata.
 		FileIO.writeJSONObject(new File(
-				getRecordingsPath(), getOriginalId() + "/" +
+				getRecordingsPath(), getGroupId() + "/" +
 						id + "-metadata.json"),
 				encodedRecording);
 	}
@@ -364,10 +358,10 @@ public class Recording {
 	 * file
 	 */
 	public Recording getOriginal() throws IOException {
-		File originalDir = new File(getRecordingsPath(), getOriginalId());
+		File groupDir = new File(getRecordingsPath(), getGroupId());
 
 		// Filter for files that are source metadata
-		File[] originalMetadataFileArray = originalDir.listFiles(
+		File[] groupMetadataFileArray = groupDir.listFiles(
 				new FilenameFilter() {
 			public boolean accept(File dir, String filename) {
 				String[] splitFilename = filename.split("[-.]");
@@ -380,9 +374,9 @@ public class Recording {
 			}
 		});
 
-		assertTrue(originalMetadataFileArray.length == 1);
+		assertTrue(groupMetadataFileArray.length == 1);
 
-		return Recording.read(originalMetadataFileArray[0]);
+		return Recording.read(groupMetadataFileArray[0]);
 	}
 
 	/**
@@ -393,8 +387,8 @@ public class Recording {
 	 * @throws	IOException	If the recording metadata cannot be read.
 	 */
 	public static Recording read(String id) throws IOException {
-		String originalId = getOriginalIdFromId(id);
-		File metadataFile = new File(getRecordingsPath(), originalId + "/"
+		String groupId = getGroupIdFromId(id);
+		File metadataFile = new File(getRecordingsPath(), groupId + "/"
 				+ id + "-metadata.json");
 		return read(metadataFile);
 	}
@@ -408,9 +402,9 @@ public class Recording {
 	 */
 	public static Recording read(File metadataFile) throws IOException {
 		JSONObject jsonObj = FileIO.readJSONObject(metadataFile);
-		String originalIdString = (String) jsonObj.get("originalId");
-		if (originalIdString == null) {
-			throw new IOException("Null originalId in the JSON file.");
+		String groupId = (String) jsonObj.get("groupId");
+		if (groupId == null) {
+			throw new IOException("Null groupId in the JSON file.");
 		}
 		String name = (String) jsonObj.get("name");
 		String dateString = (String) jsonObj.get("date");
@@ -441,10 +435,6 @@ public class Recording {
 		if (respeakingId == null) {
 			throw new IOException("Null respeakingId in the JSON file.");
 		}
-		String originalId = (String) jsonObj.get("originalId");
-		if (originalId == null) {
-			throw new IOException("Null originalId in the JSON file.");
-		}
 
 		long sampleRate;
 		if (jsonObj.get("sampleRate") == null) {
@@ -462,7 +452,7 @@ public class Recording {
 			Log.i("duration", "reading: " + durationMsec);
 		}
 		Recording recording = new Recording(name, date, languages, speakersIds,
-				androidID, originalId, respeakingId, sampleRate, (Integer)
+				androidID, groupId, respeakingId, sampleRate, (Integer)
 				durationMsec);
 		return recording;
 	}
@@ -475,7 +465,7 @@ public class Recording {
 	 * @return	A list of all the respeakings of the recording.
 	 */
 	public List<Recording> getRespeakings() {
-		File groupDir = new File(getRecordingsPath(), getOriginalId());
+		File groupDir = new File(getRecordingsPath(), getGroupId());
 		File[] groupDirMetaFiles = groupDir.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
 						return filename.endsWith("-metadata.json");
@@ -512,7 +502,7 @@ public class Recording {
 			if (f.isDirectory()) {
 				// For each of those subdirectories, creates a list of files
 				// within that end in .json
-				File[] originalIdDirFiles = f.listFiles(new FilenameFilter() {
+				File[] groupDirFiles = f.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
 						return filename.endsWith("-metadata.json");
 					}
@@ -520,7 +510,7 @@ public class Recording {
 
 				// Iterate over those recording metadata files and add the
 				// recordings they refer to to the recordings list
-				for (File jsonFile : originalIdDirFiles) {
+				for (File jsonFile : groupDirFiles) {
 					try {
 						recordings.add(Recording.read(jsonFile));
 					} catch (IOException e) {
@@ -537,7 +527,7 @@ public class Recording {
 
 	/**
 	 * Compares the given object with the Recording, and returns true if the
-	 * Recording's name, date, languages, androidID, originalId and
+	 * Recording's name, date, languages, androidID, groupId and
 	 * respeakingId are equal
 	 *
 	 * @param	obj	The object to be compared.
@@ -554,7 +544,7 @@ public class Recording {
 				.append(languages, rhs.languages)
 				.append(speakersIds, rhs.speakersIds)
 				.append(androidID, rhs.androidID)
-				.append(originalId, rhs.originalId)
+				.append(groupId, rhs.groupId)
 				.append(respeakingId, rhs.respeakingId)
 				.append(sampleRate, rhs.sampleRate)
 				.isEquals();
@@ -634,8 +624,8 @@ public class Recording {
 		this.androidID = androidID;
 	}
 
-	private void setOriginalId(String originalId) {
-		this.originalId = originalId;
+	private void setGroupId(String groupId) {
+		this.groupId = groupId;
 	}
 
 	private void setId(String id) {
@@ -678,13 +668,13 @@ public class Recording {
 	}
 
 	/**
-	 * Returns the originalId given an id
+	 * Returns the groupId given an id
 	 *
 	 * @param	id	The filename prefix of the file whose
-	 * originalId we seek
-	 * @return	The corresponding original ID.
+	 * groupId we seek
+	 * @return	The corresponding group ID.
 	 */
-	public static String getOriginalIdFromId(String id) {
+	public static String getGroupIdFromId(String id) {
 		String[] splitId = id.split("-");
 		assertTrue(splitId.length >= 3);
 		return splitId[0];
@@ -730,9 +720,9 @@ public class Recording {
 	private String androidID;
 
 	/**
-	 * The ID that represents the original recording.
+	 * The ID that represents the group of recordings.
 	 */
-	private String originalId;
+	private String groupId;
 
 	/**
 	 * The sample rate of the recording in Hz
@@ -752,8 +742,8 @@ public class Recording {
 
 	// The ID of a recording, which is of one of the following structures:
 	//
-	//		<originalId>-<speakerId>-source (for originals)
-	//		<originalId>-<speakerId>-<respeaking type>-<respeakingId> (for
+	//		<groupId>-<speakerId>-source (for originals)
+	//		<groupId>-<speakerId>-<respeaking type>-<respeakingId> (for
 	//		respeakings, transcriptions, commentaries, etc.)
 	private String id;
 }

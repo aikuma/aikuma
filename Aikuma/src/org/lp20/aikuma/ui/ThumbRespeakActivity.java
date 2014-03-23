@@ -70,8 +70,8 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
 		intent.putExtra("uuidString", respeakingUUID.toString());
 		intent.putExtra("sampleRate", recording.getSampleRate());
-		intent.putExtra("originalId",
-				Recording.getOriginalIdFromId(id));
+		intent.putExtra("groupId",
+				Recording.getGroupIdFromId(id));
 		intent.putExtra("durationMsec", respeaker.getCurrentMsec());
 		startActivity(intent);
 		ThumbRespeakActivity.this.finish();
