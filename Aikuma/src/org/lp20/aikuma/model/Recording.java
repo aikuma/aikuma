@@ -468,20 +468,30 @@ public class Recording {
 	}
 
 	/**
-	 * Returns a list of all the respeakings of this Recording.
+	 * Returns a list of all the respeakings of this Recording. Ff it is a
+	 * respeaking it will return an list of the other respeakings in the
+	 * group.
 	 *
 	 * @return	A list of all the respeakings of the recording.
 	 */
 	public List<Recording> getRespeakings() {
-		List<Recording> allRecordings = readAll();
-		List<Recording> respeakings = new ArrayList();
-		for (Recording recording : allRecordings) {
-			if (!recording.isOriginal()) {
-				if (this.isOriginal()) {
-					if (recording.getOriginalId().equals(getOriginalId())) {
-						respeakings.add(recording);
+		File groupDir = new File(getRecordingsPath(), getOriginalId());
+		File[] groupDirMetaFiles = groupDir.listFiles(new FilenameFilter() {
+					public boolean accept(File dir, String filename) {
+						return filename.endsWith("-metadata.json");
 					}
+				});
+		List<Recording> respeakings = new ArrayList();
+		Recording recording;
+		for (File recordingMetaFile : groupDirMetaFiles) {
+			try {
+				recording = Recording.read(recordingMetaFile);
+				if (!recording.isOriginal()) {
+					respeakings.add(recording);
 				}
+			} catch (IOException e) {
+				// Well we can't read the recordings metadata file, so just
+				// continue on.
 			}
 		}
 		return respeakings;
@@ -504,7 +514,7 @@ public class Recording {
 				// within that end in .json
 				File[] originalIdDirFiles = f.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
-						return filename.endsWith(".json");
+						return filename.endsWith("-metadata.json");
 					}
 				});
 
