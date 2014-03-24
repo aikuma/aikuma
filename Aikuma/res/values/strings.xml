@@ -35,7 +35,7 @@
 	<string name="speakers">Speakers</string>
 	<string name="language_name">Language name</string>
 	<string name="about">About</string>
-	<string name="connect">Connect</string>
+	<string name="connect">HTTP Server</string>
 	<string name="http_dialog_success">Server started at port %1$d</string>
 	<string name="http_dialog_failure">Failed to start server</string>
 	<string name="http_server_activity_title">HTTP Server</string>
