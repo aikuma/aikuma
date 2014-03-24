@@ -498,9 +498,14 @@ public class Recording {
 
 		// Constructs a list of directories in the recordings directory.
 		File[] recordingPathFiles = getRecordingsPath().listFiles();
+
+		if (recordingPathFiles == null) {
+			return recordings;
+		}
+
 		for (File f : recordingPathFiles) {
 			if (f.isDirectory()) {
-				// For each of those subdirectories, creates a list of files
+	d			// For each of those subdirectories, creates a list of files
 				// within that end in .json
 				File[] groupDirFiles = f.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
