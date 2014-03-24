@@ -198,11 +198,11 @@ public class PCMWriter implements Sampler {
 			// Random access file.
 			//
 			File file = new File(this.fullFilename);
-			file.getParentFile().mkdirs();
+			Log.i("mkdirs", " " + file.getParentFile().mkdirs() + ", on " +
+			file.getParentFile());
 			randomAccessWriter = new RandomAccessFile(file, "rw");
 		} catch (FileNotFoundException e) {
-			Log.e(PCMWriter.class.getName(),
-					"Could not create RandomAccessFile: " + this.fullFilename);
+			throw new RuntimeException(e);
 		}
 	}
 

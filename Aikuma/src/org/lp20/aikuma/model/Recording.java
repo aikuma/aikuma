@@ -505,7 +505,7 @@ public class Recording {
 
 		for (File f : recordingPathFiles) {
 			if (f.isDirectory()) {
-	d			// For each of those subdirectories, creates a list of files
+				// For each of those subdirectories, creates a list of files
 				// within that end in .json
 				File[] groupDirFiles = f.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
