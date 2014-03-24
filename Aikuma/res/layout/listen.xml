@@ -18,6 +18,14 @@
 				android:textSize="20sp"
 				android:padding="5dp"
 		/>
+		<ImageButton
+			android:id="@+id/starButton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:src="@drawable/star"
+			android:onClick="onStarButtonPressed"
+		/>
 		<LinearLayout
 				android:id="@+id/recordingInfo"
 				android:orientation="horizontal"
