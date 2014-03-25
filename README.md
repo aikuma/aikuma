@@ -1,15 +1,28 @@
 Installation
-------------
+============
 
-There are two approaches to installing Aikuma. The simplest is to install it
-on an android phone via Google Play
+There are two approaches to installing Aikuma:
+
+Google Play
+-----------
+
+The simplest is to install it on an android phone via Google Play
 (https://play.google.com/store/apps/details?id=org.lp20.aikuma).
 
-The second approach involves building Aikuma. In order to build Aikuma the
-Android SDK is required. For information on how to set up the Android SDK,
-visit http://developer.android.com/sdk/index.html.
+Building from Source
+--------------------
 
-With the Android SDK set up and an Android phone connected to the computer,
-run:
+The second approach involves downloading the Aikuma source from Github and
+building it.
+
+Dependencies:
+	* Android SDK (https://developer.android.com/sdk/index.html)
+	* Android 4.2.2 SDK Platform (download using the `android` command included in the Android SDK)
+	* JDK 6 (for the Android SDK)
+	* Apache Ant (for the Android SDK)
+
+With the dependencies installed and an Android phone connected to your computer, run:
 
 $ Aikuma/build.sh
+
+Aikuma should now be installed on your phone!
