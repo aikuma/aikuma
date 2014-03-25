@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.List;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
@@ -41,6 +42,20 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+		// Sort so that the recordings with the most likes are displayed first.
+		this.sort(new Comparator<Recording>() {
+			@Override
+			public int compare(Recording lhs, Recording rhs) {
+				if (lhs.numLikes() < rhs.numLikes()) {
+					return +1;
+				} else if (lhs.numLikes() > rhs.numLikes()) {
+					return -1;
+				} else {
+					return 0;
+				}
+			}
+		});
 	}
 
 	@Override
