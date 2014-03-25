@@ -75,8 +75,10 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				(TextView) recordingView.findViewById(R.id.recordingName);
 		TextView recordingDateDurationView = 
 				(TextView) recordingView.findViewById(R.id.recordingDateDuration);
+		LinearLayout speakerImagesView = (LinearLayout)
+				recordingView.findViewById(R.id.speakerImages);
 		for (String id : recording.getSpeakersIds()) {
-			recordingView.addView(makeSpeakerImageView(id));
+			speakerImagesView.addView(makeSpeakerImageView(id));
 		}
 		recordingNameView.setText(recording.getNameAndLang());
 		Integer duration = recording.getDurationMsec() / 1000;
