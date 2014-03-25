@@ -239,6 +239,7 @@ public class ListenActivity extends AikumaActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
+		updateStarButton();
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
 				WindowManager.LayoutParams params = getWindow().getAttributes();
@@ -297,6 +298,34 @@ public class ListenActivity extends AikumaActivity {
 		intent.putExtra("id", recording.getId());
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
+	}
+
+	/**
+	 * When the star / like button is pressed
+	 *
+	 * @param	view	The star button
+	 */
+	public void onStarButtonPressed(View view) {
+		try {
+			recording.like();
+		} catch (IOException e) {
+			// This isn't thrown if the file already exists (rather, if the
+			// file cannot be made for other reasons, so it's probably a
+			// programmer bug or some sort of permissions error. To throw or
+			// not to throw...
+			throw new RuntimeException(e);
+		}
+		updateStarButton();
+	}
+
+	private void updateStarButton() {
+		ImageButton starButton = (ImageButton)
+				findViewById(R.id.starButton);
+		if (recording.isLikedByThisPhone()) {
+			starButton.setEnabled(false);
+		} else {
+			starButton.setEnabled(true);
+		}
 	}
 
 	@Override

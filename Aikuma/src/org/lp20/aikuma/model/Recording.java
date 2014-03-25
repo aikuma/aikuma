@@ -686,6 +686,33 @@ public class Recording {
 	}
 
 	/**
+	 * Like the recording with this phone's androidID
+	 *
+	 * @throws	IOException	In case there is an issue writing the like file.
+	 * Note that this will not be thrown if the file already exists.
+	 */
+	public void like() throws IOException {
+		String androidID = Aikuma.getAndroidID();
+		File likeFile = new File(getRecordingsPath(),
+				getGroupId() + "/social/" + androidID + ".like");
+		likeFile.getParentFile().mkdirs();
+		likeFile.createNewFile();
+	}
+
+	/**
+	 * Tells us whether this phone has already liked the Recording
+	 *
+	 * @return	true if a like file with this androidID is present; false
+	 * otherwise
+	 */
+	public boolean isLikedByThisPhone() {
+		String androidID = Aikuma.getAndroidID();
+		File likeFile = new File(getRecordingsPath(),
+				getGroupId() + "/social/" + androidID + ".like");
+		return likeFile.exists();
+	}
+
+	/**
 	 * Indicates that this recording is allowed to be synced by moving it to a
 	 * directory that the SyncUtil synchronizes.
 	 *
