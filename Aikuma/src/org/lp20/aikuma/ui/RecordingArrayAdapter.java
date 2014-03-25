@@ -43,13 +43,13 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-		// Sort so that the recordings with the most likes are displayed first.
+		// Sort so that the recordings with the most stars are displayed first.
 		this.sort(new Comparator<Recording>() {
 			@Override
 			public int compare(Recording lhs, Recording rhs) {
-				if (lhs.numLikes() < rhs.numLikes()) {
+				if (lhs.numStars() < rhs.numStars()) {
 					return +1;
-				} else if (lhs.numLikes() > rhs.numLikes()) {
+				} else if (lhs.numStars() > rhs.numStars()) {
 					return -1;
 				} else {
 					return 0;
@@ -91,10 +91,10 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				duration.toString() + "s)");
 		}
 
-		// Add the number of likes information
-		TextView numLikesView = (TextView)
-				recordingView.findViewById(R.id.numLikes);
-		numLikesView.setText(String.valueOf(recording.numLikes()));
+		// Add the number of stars information
+		TextView numStarsView = (TextView)
+				recordingView.findViewById(R.id.numStars);
+		numStarsView.setText(String.valueOf(recording.numStars()));
 		return recordingView;
 	}
 

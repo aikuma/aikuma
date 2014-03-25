@@ -686,17 +686,17 @@ public class Recording {
 	}
 
 	/**
-	 * Like the recording with this phone's androidID
+	 * Star the recording with this phone's androidID
 	 *
-	 * @throws	IOException	In case there is an issue writing the like file.
+	 * @throws	IOException	In case there is an issue writing the star file.
 	 * Note that this will not be thrown if the file already exists.
 	 */
-	public void like() throws IOException {
+	public void star() throws IOException {
 		String androidID = Aikuma.getAndroidID();
-		File likeFile = new File(getRecordingsPath(),
-				getGroupId() + "/social/" + androidID + ".like");
-		likeFile.getParentFile().mkdirs();
-		likeFile.createNewFile();
+		File starFile = new File(getRecordingsPath(),
+				getGroupId() + "/social/" + androidID + ".star");
+		starFile.getParentFile().mkdirs();
+		starFile.createNewFile();
 	}
 
 	/**
@@ -714,22 +714,22 @@ public class Recording {
 	}
 
 	/**
-	 * Tells us whether this phone has already liked the Recording
+	 * Tells us whether this phone has already starred the Recording
 	 *
-	 * @return	true if a like file with this androidID is present; false
+	 * @return	true if a star file with this androidID is present; false
 	 * otherwise
 	 */
-	public boolean isLikedByThisPhone() {
+	public boolean isStarredByThisPhone() {
 		String androidID = Aikuma.getAndroidID();
-		File likeFile = new File(getRecordingsPath(),
-				getGroupId() + "/social/" + androidID + ".like");
-		return likeFile.exists();
+		File starFile = new File(getRecordingsPath(),
+				getGroupId() + "/social/" + androidID + ".star");
+		return starFile.exists();
 	}
 
 	/**
 	 * Tells us whether this phone has already flagged the Recording
 	 *
-	 * @return	true if a like file with this androidID is present; false
+	 * @return	true if a flag file with this androidID is present; false
 	 * otherwise
 	 */
 	public boolean isFlaggedByThisPhone() {
@@ -740,25 +740,25 @@ public class Recording {
 	}
 
 	/**
-	 * Gives the number of likes this recording has received.
+	 * Gives the number of stars this recording has received.
 	 *
-	 * @return	The number of likes this recording has recieved
+	 * @return	The number of stars this recording has recieved
 	 */
-	public int numLikes() {
-		File likeDir = new File(getRecordingsPath(), getGroupId() + "/social");
-		File[] likeFiles = likeDir.listFiles(
+	public int numStars() {
+		File starDir = new File(getRecordingsPath(), getGroupId() + "/social");
+		File[] starFiles = starDir.listFiles(
 				new FilenameFilter() {
 			public boolean accept(File dir, String filename) {
-				if (filename.endsWith(".like")) {
+				if (filename.endsWith(".star")) {
 					return true;
 				}
 				return false;
 			}
 		});
-		if (likeFiles == null) {
+		if (starFiles == null) {
 			return 0;
 		}
-		return likeFiles.length;
+		return starFiles.length;
 	}
 
 	/**

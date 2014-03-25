@@ -18,22 +18,28 @@
 				android:textSize="20sp"
 				android:padding="5dp"
 		/>
-		<ImageButton
-			android:id="@+id/starButton"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:scaleType="centerInside"
-			android:src="@drawable/star"
-			android:onClick="onStarButtonPressed"
-		/>
-		<ImageButton
-			android:id="@+id/flagButton"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:scaleType="centerInside"
-			android:src="@drawable/flag"
-			android:onClick="onFlagButtonPressed"
-		/>
+		<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				>
+			<ImageButton
+				android:id="@+id/starButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:scaleType="centerInside"
+				android:src="@drawable/star"
+				android:onClick="onStarButtonPressed"
+			/>
+			<ImageButton
+				android:id="@+id/flagButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:scaleType="centerInside"
+				android:src="@drawable/flag"
+				android:onClick="onFlagButtonPressed"
+			/>
+		</LinearLayout>
 		<LinearLayout
 				android:id="@+id/recordingInfo"
 				android:orientation="horizontal"

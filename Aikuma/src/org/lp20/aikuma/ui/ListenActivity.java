@@ -302,13 +302,13 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	/**
-	 * When the star / like button is pressed
+	 * When the star button is pressed
 	 *
 	 * @param	view	The star button
 	 */
 	public void onStarButtonPressed(View view) {
 		try {
-			recording.like();
+			recording.star();
 		} catch (IOException e) {
 			// This isn't thrown if the file already exists (rather, if the
 			// file cannot be made for other reasons, so it's probably a
@@ -341,7 +341,7 @@ public class ListenActivity extends AikumaActivity {
 	private void updateStarButton() {
 		ImageButton starButton = (ImageButton)
 				findViewById(R.id.starButton);
-		if (recording.isLikedByThisPhone()) {
+		if (recording.isStarredByThisPhone()) {
 			starButton.setEnabled(false);
 		} else {
 			starButton.setEnabled(true);
