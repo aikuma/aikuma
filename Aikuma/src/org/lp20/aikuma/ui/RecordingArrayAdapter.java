@@ -73,6 +73,11 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				simpleDateFormat.format(recording.getDate()) + " (" +
 				duration.toString() + "s)");
 		}
+
+		// Add the number of likes information
+		TextView numLikesView = (TextView)
+				recordingView.findViewById(R.id.numLikes);
+		numLikesView.setText(String.valueOf(recording.numLikes()));
 		return recordingView;
 	}
 

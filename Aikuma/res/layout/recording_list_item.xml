@@ -27,6 +27,14 @@
 			android:layout_gravity="center_vertical"
 			android:id="@+id/recordingDateDuration"
 			android:padding="1dp"/>
+	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textSize="12sp"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text=""
+			android:layout_gravity="center_vertical"
+			android:id="@+id/numLikes"
+			android:padding="1dp"/>
 	<!-- Possible Recording image distinct from the programatically added
 	Speaker images
 	<ImageView android:src="@drawable/unknown_speaker"

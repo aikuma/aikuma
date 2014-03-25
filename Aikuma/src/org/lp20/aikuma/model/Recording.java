@@ -713,6 +713,28 @@ public class Recording {
 	}
 
 	/**
+	 * Gives the number of likes this recording has received.
+	 *
+	 * @return	The number of likes this recording has recieved
+	 */
+	public int numLikes() {
+		File likeDir = new File(getRecordingsPath(), getGroupId() + "/social");
+		File[] likeFiles = likeDir.listFiles(
+				new FilenameFilter() {
+			public boolean accept(File dir, String filename) {
+				if (filename.endsWith(".like")) {
+					return true;
+				}
+				return false;
+			}
+		});
+		if (likeFiles == null) {
+			return 0;
+		}
+		return likeFiles.length;
+	}
+
+	/**
 	 * Indicates that this recording is allowed to be synced by moving it to a
 	 * directory that the SyncUtil synchronizes.
 	 *
