@@ -700,6 +700,20 @@ public class Recording {
 	}
 
 	/**
+	 * Flag the recording with this phone's androidID
+	 *
+	 * @throws	IOException	In case there is an issue writing the flag file.
+	 * Note that this will not be thrown if the file already exists.
+	 */
+	public void flag() throws IOException {
+		String androidID = Aikuma.getAndroidID();
+		File flagFile = new File(getRecordingsPath(),
+				getGroupId() + "/social/" + androidID + ".flag");
+		flagFile.getParentFile().mkdirs();
+		flagFile.createNewFile();
+	}
+
+	/**
 	 * Tells us whether this phone has already liked the Recording
 	 *
 	 * @return	true if a like file with this androidID is present; false
@@ -710,6 +724,19 @@ public class Recording {
 		File likeFile = new File(getRecordingsPath(),
 				getGroupId() + "/social/" + androidID + ".like");
 		return likeFile.exists();
+	}
+
+	/**
+	 * Tells us whether this phone has already flagged the Recording
+	 *
+	 * @return	true if a like file with this androidID is present; false
+	 * otherwise
+	 */
+	public boolean isFlaggedByThisPhone() {
+		String androidID = Aikuma.getAndroidID();
+		File flagFile = new File(getRecordingsPath(),
+				getGroupId() + "/social/" + androidID + ".flag");
+		return flagFile.exists();
 	}
 
 	/**

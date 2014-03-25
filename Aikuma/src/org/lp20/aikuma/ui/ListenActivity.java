@@ -240,6 +240,7 @@ public class ListenActivity extends AikumaActivity {
 	public void onResume() {
 		super.onResume();
 		updateStarButton();
+		updateFlagButton();
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
 				WindowManager.LayoutParams params = getWindow().getAttributes();
@@ -316,6 +317,25 @@ public class ListenActivity extends AikumaActivity {
 			throw new RuntimeException(e);
 		}
 		updateStarButton();
+		updateFlagButton();
+	}
+
+	/**
+	 * When the flag button is pressed
+	 *
+	 * @param	view	The flag button
+	 */
+	public void onFlagButtonPressed(View view) {
+		try {
+			recording.flag();
+		} catch (IOException e) {
+			// This isn't thrown if the file already exists (rather, if the
+			// file cannot be made for other reasons, so it's probably a
+			// programmer bug or some sort of permissions error. To throw or
+			// not to throw...
+			throw new RuntimeException(e);
+		}
+		updateFlagButton();
 	}
 
 	private void updateStarButton() {
@@ -327,6 +347,17 @@ public class ListenActivity extends AikumaActivity {
 			starButton.setEnabled(true);
 		}
 	}
+
+	private void updateFlagButton() {
+		ImageButton flagButton = (ImageButton)
+				findViewById(R.id.flagButton);
+		if (recording.isFlaggedByThisPhone()) {
+			flagButton.setEnabled(false);
+		} else {
+			flagButton.setEnabled(true);
+		}
+	}
+
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {

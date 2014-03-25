@@ -26,6 +26,14 @@
 			android:src="@drawable/star"
 			android:onClick="onStarButtonPressed"
 		/>
+		<ImageButton
+			android:id="@+id/flagButton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:src="@drawable/flag"
+			android:onClick="onFlagButtonPressed"
+		/>
 		<LinearLayout
 				android:id="@+id/recordingInfo"
 				android:orientation="horizontal"
