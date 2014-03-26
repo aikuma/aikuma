@@ -158,14 +158,9 @@ public class AddSpeakerActivity extends AikumaListActivity {
 	private void dispatchTakePictureIntent(int actionCode) {
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-		try {
-			File imageFile = ImageUtils.getNoSyncImageFile(this.imageUUID);
-			takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-					Uri.fromFile(imageFile));
-		} catch (Exception e) {
-			Toast.makeText(this, "Failed to take a photo.",
-					Toast.LENGTH_LONG).show();
-		}
+		File imageFile = ImageUtils.getNoSyncImageFile(this.imageUUID);
+		takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+				Uri.fromFile(imageFile));
 
 		startActivityForResult(takePictureIntent, actionCode);
 	}
