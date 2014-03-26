@@ -1,0 +1,20 @@
+In order to publish Aikuma, there are three main steps:
+
+1. Ensure that the versionCode variable in Aikuma/AndroidManifest.xml is > the
+version code on Google Play. You can just increment this number
+by 1 as the currently displayed version code would have been the last one
+uploaded to google play.
+
+2. Included in this directory is sign.sh, which will take care of building,
+aligning, and signing the release APK. Run the script and it will eventually
+prompt you to enter a passphrase for the keystore. Enter the password. When the
+script completes, note the new file bin/Aikuma.apk
+
+3. Uploading the APK to Google Play:
+	- Log into https://play.google.com/apps/publish with the Aikuma account
+	  (this may require logging out of your own Google account).
+	- There are two old instances of Aikuma that are
+	  "unpublished", and a third that is published. Click on the published one.
+	- Click APK on the list of options on the left hand side.
+	- Click "Upload new APK to Production" and follow the steps to their
+	  obvious conclusion.
