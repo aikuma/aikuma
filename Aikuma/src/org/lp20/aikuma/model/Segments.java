@@ -5,6 +5,7 @@
 package org.lp20.aikuma.model;
 
 import android.util.Pair;
+import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -35,8 +36,9 @@ public class Segments {
 			readSegments(new File(Recording.getRecordingsPath(),
 					respeaking.getGroupId() + "/" +
 					respeaking.getId() + ".map"));
-		} catch (Exception e) {
-			//Issue with reading mapping. Maybe throw an exception?
+		} catch (IOException e) {
+			//Issue with reading mapping.
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -84,9 +86,10 @@ public class Segments {
 	 * Reads the segments from a file.
 	 *
 	 * @param	path	The path to the file.
-	 * @throws	Exception	If the segments cannot be read.
+	 * @param	IOException	In case there is an issue reading from the segments
+	 * file
 	 */
-	private void readSegments(File path) throws Exception {
+	private void readSegments(File path) throws IOException {
 		String mapString = FileIO.read(path);
 		String[] lines = mapString.split("\n");
 		segmentMap = 
@@ -94,7 +97,7 @@ public class Segments {
 		for (String line : lines) {
 			String[] segmentMatch = line.split(":");
 			if (segmentMatch.length != 2) {
-				throw new Exception(
+				throw new RuntimeException(
 						"There must be just one colon on in a segment mapping line");
 			}
 			String[] originalSegment = segmentMatch[0].split(",");
