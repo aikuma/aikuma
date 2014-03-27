@@ -144,56 +144,47 @@ public class PCMWriter implements Sampler {
 	 */
 	public PCMWriter(int sampleRate, int channelConfig, int audioFormat) {
 		currentSample = 0;
-		try {
-			// Convert the Android attributes to internal attributes.
+		// Convert the Android attributes to internal attributes.
+		//
+
+		// Sample size.
+		//
+		if (audioFormat == AudioFormat.ENCODING_PCM_16BIT) {
+			sampleSize = 16;
+		} else {
+			sampleSize = 8;
+		}
+
+		// Channels.
+		//
+		if (channelConfig == AudioFormat.CHANNEL_IN_MONO) {
+			numberOfChannels = 1;
+		} else {
+			numberOfChannels = 2;
+		}
+
+		// These are needed to save the file correctly.
+		//
+		this.sampleRate = sampleRate;
+
+		framePeriod = sampleRate * TIMER_INTERVAL / 1000;
+		bufferSize = framePeriod * 2 * sampleSize * numberOfChannels / 8;
+
+		// Check to make sure buffer size is not smaller than
+		// the smallest allowed size.
+		//
+		if (bufferSize < AudioRecord.getMinBufferSize(sampleRate,
+				channelConfig, audioFormat)) {
+			bufferSize = AudioRecord.getMinBufferSize(sampleRate,
+					channelConfig, audioFormat);
+
+			// Set frame period and timer interval accordingly
 			//
+			framePeriod = bufferSize
+					/ (2 * sampleSize * numberOfChannels / 8);
 
-			// Sample size.
-			//
-			if (audioFormat == AudioFormat.ENCODING_PCM_16BIT) {
-				sampleSize = 16;
-			} else {
-				sampleSize = 8;
-			}
-
-			// Channels.
-			//
-			if (channelConfig == AudioFormat.CHANNEL_IN_MONO) {
-				numberOfChannels = 1;
-			} else {
-				numberOfChannels = 2;
-			}
-
-			// These are needed to save the file correctly.
-			//
-			this.sampleRate = sampleRate;
-
-			framePeriod = sampleRate * TIMER_INTERVAL / 1000;
-			bufferSize = framePeriod * 2 * sampleSize * numberOfChannels / 8;
-
-			// Check to make sure buffer size is not smaller than
-			// the smallest allowed size.
-			//
-			if (bufferSize < AudioRecord.getMinBufferSize(sampleRate,
-					channelConfig, audioFormat)) {
-				bufferSize = AudioRecord.getMinBufferSize(sampleRate,
-						channelConfig, audioFormat);
-
-				// Set frame period and timer interval accordingly
-				//
-				framePeriod = bufferSize
-						/ (2 * sampleSize * numberOfChannels / 8);
-
-				Log.w(PCMWriter.class.getName(), "Increasing buffer size to "
-						+ Integer.toString(bufferSize));
-			}
-		} catch (Exception e) {
-			if (e.getMessage() != null) {
-				Log.e(PCMWriter.class.getName(), e.getMessage());
-			} else {
-				Log.e(PCMWriter.class.getName(),
-						"Unknown error occured while initializing recording");
-			}
+			Log.w(PCMWriter.class.getName(), "Increasing buffer size to "
+					+ Integer.toString(bufferSize));
 		}
 	}
 	
@@ -221,7 +212,7 @@ public class PCMWriter implements Sampler {
 	 */
 	public void prepare(String fullFilename) {
 		this.fullFilename = fullFilename;
-		
+
 		try {
 			createRandomAccessFile(fullFilename);
 
@@ -292,13 +283,10 @@ public class PCMWriter implements Sampler {
 			// buffer = new byte[framePeriod * sampleSize / 8 *
 			// numberOfChannels];
 			//
-		} catch (Exception e) {
-			if (e.getMessage() != null) {
-				Log.e(PCMWriter.class.getName(), e.getMessage());
-			} else {
-				Log.e(PCMWriter.class.getName(),
-						"Unknown error occurred in prepare()");
-			}
+		} catch (IOException e) {
+			//If there is an issue here, throw a RuntimeException because
+			//there's not much the app can do.
+			throw new RuntimeException(e);
 		}
 	}
 
