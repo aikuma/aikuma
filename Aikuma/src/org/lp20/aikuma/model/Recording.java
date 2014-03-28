@@ -693,8 +693,8 @@ public class Recording {
 	 */
 	public void star() throws IOException {
 		String androidID = Aikuma.getAndroidID();
-		File starFile = new File(getRecordingsPath(),
-				getGroupId() + "/social/" + androidID + ".star");
+		File starFile = new File(FileIO.getAppRootPath(), "/social/" +
+				getGroupId() + "/" + getId() + "/" + androidID + ".star");
 		starFile.getParentFile().mkdirs();
 		starFile.createNewFile();
 	}
@@ -707,8 +707,8 @@ public class Recording {
 	 */
 	public void flag() throws IOException {
 		String androidID = Aikuma.getAndroidID();
-		File flagFile = new File(getRecordingsPath(),
-				getGroupId() + "/social/" + androidID + ".flag");
+		File flagFile = new File(FileIO.getAppRootPath(), "/social/" +
+				getGroupId() + "/" + getId() + "/" + androidID + ".flag");
 		flagFile.getParentFile().mkdirs();
 		flagFile.createNewFile();
 	}
@@ -721,8 +721,8 @@ public class Recording {
 	 */
 	public boolean isStarredByThisPhone() {
 		String androidID = Aikuma.getAndroidID();
-		File starFile = new File(getRecordingsPath(),
-				getGroupId() + "/social/" + androidID + ".star");
+		File starFile = new File(FileIO.getAppRootPath(), "/social/" +
+				getGroupId() + "/" + getId() + "/" + androidID + ".star");
 		return starFile.exists();
 	}
 
@@ -734,8 +734,8 @@ public class Recording {
 	 */
 	public boolean isFlaggedByThisPhone() {
 		String androidID = Aikuma.getAndroidID();
-		File flagFile = new File(getRecordingsPath(),
-				getGroupId() + "/social/" + androidID + ".flag");
+		File flagFile = new File(FileIO.getAppRootPath(), "/social/" +
+				getGroupId() + "/" + getId() + "/" + androidID + ".flag");
 		return flagFile.exists();
 	}
 
@@ -745,7 +745,8 @@ public class Recording {
 	 * @return	The number of stars this recording has recieved
 	 */
 	public int numStars() {
-		File starDir = new File(getRecordingsPath(), getGroupId() + "/social");
+		File starDir = new File(FileIO.getAppRootPath(), "/social/" +
+				getGroupId() + "/" + getId());
 		File[] starFiles = starDir.listFiles(
 				new FilenameFilter() {
 			public boolean accept(File dir, String filename) {
