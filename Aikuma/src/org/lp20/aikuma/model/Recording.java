@@ -262,6 +262,10 @@ public class Recording {
 		return groupId;
 	}
 
+	public String getRespeakingId() {
+		return respeakingId;
+	}
+
 	public String getId() {
 		return id;
 	}

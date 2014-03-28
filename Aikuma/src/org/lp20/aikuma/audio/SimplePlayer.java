@@ -11,7 +11,9 @@ import android.util.Log;
 import android.media.MediaPlayer;
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.util.FileIO;
 
 /**
  * A wrapper class for android.media.MediaPlayer that makes simpler the task of
@@ -30,7 +32,9 @@ public class SimplePlayer extends Player implements Sampler {
 	 * speaker; false if through the ear piece (ie the private phone call style)
 	 * @throws	IOException	If there is an issue reading the audio source.
 	 */
-	public SimplePlayer(Recording recording, boolean playThroughSpeaker) throws IOException {
+	public SimplePlayer(Recording recording, boolean playThroughSpeaker)
+			throws IOException {
+		setRecording(recording);
 		mediaPlayer = new MediaPlayer();
 		if (playThroughSpeaker) {
 			mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -40,6 +44,10 @@ public class SimplePlayer extends Player implements Sampler {
 		mediaPlayer.setDataSource(recording.getFile().getCanonicalPath());
 		mediaPlayer.prepare();
 		setSampleRate(recording.getSampleRate());
+	}
+
+	private void setRecording(Recording recording) {
+		this.recording = recording;
 	}
 
 	/**
@@ -164,9 +172,29 @@ public class SimplePlayer extends Player implements Sampler {
 				new MediaPlayer.OnCompletionListener() {
 					public void onCompletion(MediaPlayer _mp) {
 						listener.onCompletion(SimplePlayer.this);
+						try {
+							incrementViewCount();
+						} catch (IOException e) {
+							// There is likely an issue writing to the
+							// filesystem, but it's probably not worth
+							// reporting to the user with at Toast.
+						}
 						SimplePlayer.this.finishedPlaying = true;
 					}
 				});
+	}
+
+	/**
+	 * Increment the view count by adding a view file to the Recording's view
+	 * directory.
+	 */
+	private void incrementViewCount() throws IOException {
+		File viewDir = new File(FileIO.getAppRootPath(), "views/" +
+				recording.getGroupId() + "/" + recording.getRespeakingId());
+		viewDir.mkdirs();
+
+		File viewFile = new File(viewDir, UUID.randomUUID() + ".view");
+		viewFile.createNewFile();
 	}
 
 	/**
@@ -222,4 +250,5 @@ public class SimplePlayer extends Player implements Sampler {
 	private MediaPlayer mediaPlayer;
 	private long sampleRate;
 	private boolean finishedPlaying;
+	private Recording recording;
 }
