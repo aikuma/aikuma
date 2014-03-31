@@ -62,27 +62,13 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/ListenFragment"
 	/>
-	<LinearLayout
-		android:orientation="vertical"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-	>
-		<Button
-				android:id="@+id/thumbRespeaking"
-				android:text="@string/thumb_respeaking"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
-				android:onClick="onThumbRespeakingButton"
-		/>
-		<Button
-				android:id="@+id/phoneRespeaking"
-				android:text="@string/phone_respeaking"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
-				android:onClick="onPhoneRespeakingButton"
-		/>
-	</LinearLayout>
+	<ImageButton
+			android:id="@+id/respeaking"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:onClick="onRespeakingButton"
+			android:src="@drawable/exchange_48"
+			android:scaleType="centerInside"
+			android:layout_alignParentBottom="true"
+	/>
 </RelativeLayout>

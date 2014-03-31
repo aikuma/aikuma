@@ -9,7 +9,9 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -128,12 +131,9 @@ public class ListenActivity extends AikumaActivity {
 				setPlayer(new SimplePlayer(recording, true));
 			} else {
 				setPlayer(new InterleavedPlayer(recording));
-				Button thumbRespeakingButton =
-						(Button) findViewById(R.id.thumbRespeaking);
-				thumbRespeakingButton.setVisibility(View.GONE);
-				Button phoneRespeakingButton =
-						(Button) findViewById(R.id.phoneRespeaking);
-				phoneRespeakingButton.setVisibility(View.GONE);
+				ImageButton respeakingButton =
+						(ImageButton) findViewById(R.id.respeaking);
+				respeakingButton.setVisibility(View.GONE);
 			}
 		} catch (IOException e) {
 			//The player couldn't be created from the recoridng, so lets wrap
@@ -267,10 +267,21 @@ public class ListenActivity extends AikumaActivity {
 	/**
 	 * Change to the thumb respeaking activity
 	 *
-	 * @param	view	The thumb respeaking button
+	 * @param	respeakingButton	The thumb respeaking button
 	 */
-	public void onThumbRespeakingButton(View view) {
-		Intent intent = new Intent(this, ThumbRespeakActivity.class);
+	public void onRespeakingButton(View respeakingButton) {
+		SharedPreferences preferences =
+				PreferenceManager.getDefaultSharedPreferences(this);
+		String respeakingMode = preferences.getString(
+				"respeaking_mode", "nothing");
+		Log.i("ListenActivity", "respeakingMode: " + respeakingMode);
+		Intent intent;
+		if (respeakingMode.equals("phone")) {
+			intent = new Intent(this, PhoneRespeakActivity.class);
+		} else {
+			// Lets just default to thumb respeaking
+			intent = new Intent(this, ThumbRespeakActivity.class);
+		}
 		intent.putExtra("id", recording.getId());
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
