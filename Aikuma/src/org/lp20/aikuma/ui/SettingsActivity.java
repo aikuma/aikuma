@@ -5,9 +5,14 @@
 package org.lp20.aikuma.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -34,6 +39,7 @@ public class SettingsActivity extends AikumaActivity {
 
 	private SeekBar sensitivitySlider;
 	private int defaultSensitivity;
+	private SharedPreferences preferences;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +50,23 @@ public class SettingsActivity extends AikumaActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
+		preferences =
+				PreferenceManager.getDefaultSharedPreferences(this);
+		readRespeakingMode();
 		setupSensitivitySlider();
+	}
+
+	// Set the respeaking mode radio buttons as per the settings.
+	private void readRespeakingMode() {
+		String respeakingMode = preferences.getString(
+				"respeaking_mode", "thumb");
+		RadioGroup radioGroup = (RadioGroup)
+				findViewById(R.id.respeaking_radio_group);
+		if (respeakingMode.equals("thumb")) {
+			radioGroup.check(R.id.radio_thumb_respeaking);
+		} else if (respeakingMode.equals("phone")) {
+			radioGroup.check(R.id.radio_phone_respeaking);
+		}
 	}
 
 	@Override
@@ -110,5 +132,33 @@ public class SettingsActivity extends AikumaActivity {
 	public void onSyncSettingsButton(View view) {
 		Intent intent = new Intent(this, SyncSettingsActivity.class);
 		startActivity(intent);
+	}
+
+	/**
+	 * Adjusts the settings when the respeaking mode radio buttons are pressed.
+	 *
+	 * @param	radioButton	The radio button pressed
+	 */
+	public void onRespeakingRadioButtonClicked(View radioButton) {
+		// Is the button now checked?
+		boolean checked = ((RadioButton) radioButton).isChecked();
+		// Allows us to edit the preferences
+		Editor prefsEditor = preferences.edit();
+
+		// Check which radio button was clicked
+		switch (radioButton.getId()) {
+			case R.id.radio_phone_respeaking:
+				if (checked) {
+					prefsEditor.putString("respeaking_mode", "phone");
+					prefsEditor.commit();
+				}
+				break;
+			case R.id.radio_thumb_respeaking:
+				if (checked) {
+					prefsEditor.putString("respeaking_mode", "thumb");
+					prefsEditor.commit();
+				}
+				break;
+		}
 	}
 }
