@@ -290,12 +290,13 @@ public class Recording {
 		for (String id : speakersIds) {
 			speakersIdsArray.add(id.toString());
 		}
-		encodedRecording.put("speakersIds", speakersIdsArray);
+		encodedRecording.put("people", speakersIdsArray);
 		encodedRecording.put("androidID", this.androidID);
 		encodedRecording.put("sampleRate", getSampleRate());
 		encodedRecording.put("durationMsec", getDurationMsec());
-		encodedRecording.put("groupId", this.groupId);
-		encodedRecording.put("respeakingId", this.respeakingId);
+		encodedRecording.put("recording", this.groupId);
+		encodedRecording.put("suffix", this.respeakingId);
+		encodedRecording.put("source", this.respeakingId);
 		return encodedRecording;
 	}
 
@@ -402,7 +403,7 @@ public class Recording {
 	 */
 	public static Recording read(File metadataFile) throws IOException {
 		JSONObject jsonObj = FileIO.readJSONObject(metadataFile);
-		String groupId = (String) jsonObj.get("groupId");
+		String groupId = (String) jsonObj.get("recording");
 		if (groupId == null) {
 			throw new IOException("Null groupId in the JSON file.");
 		}
@@ -422,7 +423,7 @@ public class Recording {
 			throw new IOException("Null languages in the JSON file.");
 		}
 		List<Language> languages = Language.decodeJSONArray(languageArray);
-		JSONArray speakerIdArray = (JSONArray) jsonObj.get("speakersIds");
+		JSONArray speakerIdArray = (JSONArray) jsonObj.get("people");
 		if (speakerIdArray == null) {
 			throw new IOException("Null speakersIds in the JSON file.");
 		}
@@ -431,7 +432,7 @@ public class Recording {
 		if (androidID == null) {
 			throw new IOException("Null androidID in the JSON file.");
 		}
-		String respeakingId = (String) jsonObj.get("respeakingId");
+		String respeakingId = (String) jsonObj.get("suffix");
 		if (respeakingId == null) {
 			throw new IOException("Null respeakingId in the JSON file.");
 		}
