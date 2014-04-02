@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.UUID;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
+import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
 import org.lp20.aikuma.model.Recording;
 
@@ -74,6 +75,10 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		intent.putExtra("groupId",
 				Recording.getGroupIdFromId(sourceId));
 		intent.putExtra("durationMsec", respeaker.getCurrentMsec());
+		Recorder recorder = respeaker.getRecorder();
+		intent.putExtra("numChannels", recorder.getNumChannels());
+		intent.putExtra("format", recorder.getFormat());
+		intent.putExtra("bitsPerSample", recorder.getBitsPerSample());
 		startActivity(intent);
 		ThumbRespeakActivity.this.finish();
 		try {

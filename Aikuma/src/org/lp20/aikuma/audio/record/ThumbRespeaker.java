@@ -139,6 +139,10 @@ public class ThumbRespeaker {
 		}
 	}
 
+	public Recorder getRecorder() {
+		return this.recorder;
+	}
+
 	/** Player to play the original with. */
 	private SimplePlayer player;
 

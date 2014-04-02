@@ -117,6 +117,9 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		intent.putExtra("groupId",
 				Recording.getGroupIdFromId(sourceId));
 		intent.putExtra("durationMsec", respeaker.getCurrentMsec());
+		intent.putExtra("numChannels", respeaker.getNumChannels());
+		intent.putExtra("format", respeaker.getFormat());
+		intent.putExtra("bitsPerSample", respeaker.getBitsPerSample());
 		startActivity(intent);
 		PhoneRespeakActivity.this.finish();
 	}
