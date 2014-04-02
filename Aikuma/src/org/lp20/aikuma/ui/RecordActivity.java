@@ -211,6 +211,9 @@ public class RecordActivity extends AikumaActivity {
 		intent.putExtra("sampleRate", sampleRate);
 		Log.i("duration", "RecordActivity end: " + duration);
 		intent.putExtra("durationMsec", duration);
+		intent.putExtra("numChannels", recorder.getNumChannels());
+		intent.putExtra("format", recorder.getFormat());
+		intent.putExtra("bitsPerSample", recorder.getBitsPerSample());
 		startActivity(intent);
 		RecordActivity.this.finish();
 	}

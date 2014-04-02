@@ -50,11 +50,14 @@ public class Recording {
 	 * @param	sourceId	The ID of the source recording of this recording
 	 * @param	sampleRate	The sample rate of the recording.
 	 * @param	durationMsec	The duration of the recording in milliseconds.
+	 * @param	format	The mime type
+	 * @param	bitsPerSample	The bits per sample of the audio
+	 * @param	numChannels	The number of channels of the audio
 	 */
 	public Recording(UUID wavUUID, String name, Date date,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String sourceId, long sampleRate,
-			int durationMsec) {
+			int durationMsec, String format, int numChannels, int bitsPerSample) {
 		this.wavUUID = wavUUID;
 		setName(name);
 		setDate(date);
@@ -65,6 +68,9 @@ public class Recording {
 		setDurationMsec(durationMsec);
 		setGroupId(groupId);
 		this.sourceId = sourceId;
+		this.format = format;
+		this.numChannels = numChannels;
+		this.bitsPerSample = bitsPerSample;
 		// If there isn't an group Id, ie this is an original
 		if (groupId == null) {
 			setGroupId(createGroupId());
@@ -314,6 +320,9 @@ public class Recording {
 				// written.
 			}
 		}
+		encodedRecording.put("Format", this.format);
+		encodedRecording.put("BitsPerSample", this.bitsPerSample);
+		encodedRecording.put("NumChannels", this.numChannels);
 		return encodedRecording;
 	}
 
@@ -872,4 +881,9 @@ public class Recording {
 
 	//The ID of the source recording.
 	private String sourceId;
+
+	// Some info regarding the recording format.
+	private String format;
+	private int bitsPerSample;
+	private int numChannels;
 }
