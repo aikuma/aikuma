@@ -50,6 +50,26 @@ public class RecordActivity extends AikumaActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
 		this.uuid = UUID.randomUUID();
+		// Set up the Beeper that will make beeps when recording starts and
+		// pauses
+		beeper = new Beeper(this, new MediaPlayer.OnCompletionListener() {
+				public void onCompletion(MediaPlayer _) {
+					// There is a reason for this conditional. The beeps take
+					// time to be played. If the user reaches the far state 
+					// before recording actually starts, then recording will 
+					// be then be triggered when the display suggests otherwise.
+					Log.i("RecordActivity", "in onCompletion, recording:" + recording);
+					if (recording) {
+						recorder.listen();
+						ImageButton recordButton =
+								(ImageButton) findViewById(R.id.recordButton);
+						ImageButton pauseButton =
+								(ImageButton) findViewById(R.id.pauseButton);
+						recordButton.setVisibility(View.GONE);
+						pauseButton.setVisibility(View.VISIBLE);
+					}
+				}
+			});
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
 		safeActivityTransition = true;
@@ -129,23 +149,7 @@ public class RecordActivity extends AikumaActivity {
 			ImageButton recordButton =
 					(ImageButton) findViewById(R.id.recordButton);
 			recordButton.setEnabled(false);
-			Beeper.beepBeep(this, new MediaPlayer.OnCompletionListener() {
-				public void onCompletion(MediaPlayer _) {
-					// There is a reason for this conditional. The beeps take
-					// time to be played. If the user reaches the far state 
-					// before recording actually starts, then recording will 
-					// be then be triggered when the display suggests otherwise.
-					if (recording) {
-						recorder.listen();
-						ImageButton recordButton =
-								(ImageButton) findViewById(R.id.recordButton);
-						ImageButton pauseButton =
-								(ImageButton) findViewById(R.id.pauseButton);
-						recordButton.setVisibility(View.GONE);
-						pauseButton.setVisibility(View.VISIBLE);
-					}
-				}
-			});
+			beeper.beepBeep();
 		}
 	}
 
@@ -226,4 +230,5 @@ public class RecordActivity extends AikumaActivity {
 	private long sampleRate = 16000l;
 	private TextView timeDisplay;
 	private ProximityDetector proximityDetector;
+	private Beeper beeper;
 }
