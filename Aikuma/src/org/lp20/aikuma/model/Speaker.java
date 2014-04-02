@@ -372,16 +372,10 @@ public class Speaker implements Parcelable{
 		setLanguages(languages);
 	}
 
+	// Creates a purely numeric speaker ID
 	private String createId(String name) {
-		// Extract the initials of the name.
-		String initials = extractInitials(name);
-
-		// Generate random number of a specified number of digits (8 - number
-		// of initials)
-		int digitStringLength = 8 - initials.length();
-		String randomDigits = IdUtils.randomDigitString(digitStringLength);
-
-		return initials + randomDigits;
+		// Generate 8 random digits.
+		return IdUtils.randomDigitString(8);
 	}
 
 	// Extracts the first character of each token in a string and uppercases, but
