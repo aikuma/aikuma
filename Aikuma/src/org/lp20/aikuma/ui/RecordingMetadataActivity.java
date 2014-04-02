@@ -63,6 +63,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		durationMsec = (Integer) intent.getExtras().get("durationMsec");
 		groupId = (String)
 				intent.getExtras().get("groupId");
+		sourceId = (String)
+				intent.getExtras().get("sourceId");
 		setUpPlayer(uuid, sampleRate);
 		userImages =
 				(LinearLayout) findViewById(R.id.userImagesAndAddUserButton);
@@ -140,9 +142,10 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 						Date date = new Date();
 						String androidID = Aikuma.getAndroidID();
 						Log.i("duration", "when recording created: " + durationMsec);
+
 						Recording recording = new Recording(
 								uuid, description, date, selectedLanguages,
-								speakersIds, androidID, groupId,
+								speakersIds, androidID, groupId, sourceId,
 								sampleRate, durationMsec);
 						try {
 							// Move the wave file from the nosync directory to
@@ -274,4 +277,5 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	private ImageButton okButton;
 	private boolean recordingHasSpeaker;
 	private boolean recordingHasName;
+	private String sourceId;
 }

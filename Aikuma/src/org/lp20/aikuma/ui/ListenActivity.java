@@ -284,7 +284,7 @@ public class ListenActivity extends AikumaActivity {
 			// Lets just default to thumb respeaking
 			intent = new Intent(this, ThumbRespeakActivity.class);
 		}
-		intent.putExtra("id", recording.getId());
+		intent.putExtra("sourceId", recording.getId());
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
 	}
@@ -296,7 +296,7 @@ public class ListenActivity extends AikumaActivity {
 	 */
 	public void onPhoneRespeakingButton(View view) {
 		Intent intent = new Intent(this, PhoneRespeakActivity.class);
-		intent.putExtra("id", recording.getId());
+		intent.putExtra("sourceId", recording.getId());
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
 	}

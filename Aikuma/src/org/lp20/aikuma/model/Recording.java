@@ -47,12 +47,13 @@ public class Recording {
 	 * recording
 	 * @param	groupId	The ID of the group of recordings this recording
 	 * belongs in (Some source recording and respeakings/commentaries)
+	 * @param	sourceId	The ID of the source recording of this recording
 	 * @param	sampleRate	The sample rate of the recording.
 	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 */
 	public Recording(UUID wavUUID, String name, Date date,
 			List<Language> languages, List<String> speakersIds,
-			String androidID, String groupId, long sampleRate,
+			String androidID, String groupId, String sourceId, long sampleRate,
 			int durationMsec) {
 		this.wavUUID = wavUUID;
 		setName(name);
@@ -63,6 +64,7 @@ public class Recording {
 		setSampleRate(sampleRate);
 		setDurationMsec(durationMsec);
 		setGroupId(groupId);
+		this.sourceId = sourceId;
 		// If there isn't an group Id, ie this is an original
 		if (groupId == null) {
 			setGroupId(createGroupId());
@@ -296,7 +298,7 @@ public class Recording {
 		encodedRecording.put("durationMsec", getDurationMsec());
 		encodedRecording.put("recording", this.groupId);
 		encodedRecording.put("suffix", this.respeakingId);
-		encodedRecording.put("source", this.respeakingId);
+		encodedRecording.put("source", this.sourceId);
 		return encodedRecording;
 	}
 
@@ -852,4 +854,7 @@ public class Recording {
 	//		<groupId>-<speakerId>-<respeaking type>-<respeakingId> (for
 	//		respeakings, transcriptions, commentaries, etc.)
 	private String id;
+
+	//The ID of the source recording.
+	private String sourceId;
 }
