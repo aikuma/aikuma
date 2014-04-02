@@ -299,6 +299,21 @@ public class Recording {
 		encodedRecording.put("recording", this.groupId);
 		encodedRecording.put("suffix", this.respeakingId);
 		encodedRecording.put("source", this.sourceId);
+		if (this.sourceId == null) {
+			encodedRecording.put("type", "source");
+		} else {
+			// Then this is either a respeaking or a translation.
+			try {
+				if (this.languages.equals(getOriginal().getLanguages())) {
+					encodedRecording.put("type", "respeaking");
+				} else {
+					encodedRecording.put("type", "translation");
+				}
+			} catch (IOException e) {
+				// There is an issue reading the original. A type won't be
+				// written.
+			}
+		}
 		return encodedRecording;
 	}
 
