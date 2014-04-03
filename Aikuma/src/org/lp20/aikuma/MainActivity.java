@@ -18,7 +18,7 @@ import android.view.View;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import com.musicg.wave.WaveHeader;
+import com.musicg.wave.Wave;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -195,52 +195,47 @@ public class MainActivity extends ListActivity {
 						//Then it must be a .wav file.
 
 						UUID uuid = UUID.randomUUID();
-						long sampleRate = -1;
-						int durationMsec = -1;
 
 						// Use musicg WaveHeader to extract information.
 						try {
-							WaveHeader waveHeader = new WaveHeader(
+							Wave wave = new Wave(
 									new FileInputStream(mPath));
-							String format = waveHeader.getFormat();
-							int sampleRate = waveHeader.getSampleRate();
-							int bitsPerSample = waveHeader.getBitsPerSample();
-							int numChannels = waveHeader.getChannels();
+							String format = wave.getWaveHeader().getFormat();
+							int sampleRate = wave.getWaveHeader().
+									getSampleRate();
+							int durationMsec = (int) wave.length() * 1000;
+							int bitsPerSample = wave.getWaveHeader().
+									getBitsPerSample();
+							int numChannels = wave.getWaveHeader().
+									getChannels();
+
+							//Copy the file to the no-sync directory.
+							try {
+								FileUtils.copyFile(mPath,
+										new File(Recording.getNoSyncRecordingsPath(),
+										uuid.toString() + ".wav"));
+							} catch (IOException e) {
+								Toast.makeText(getActivity(),
+										"Failed to import the recording.",
+										Toast.LENGTH_LONG).show();
+							}
+
+							// Pass the info along to RecordingMetadataActivity.
+							Intent intent = new Intent(getActivity(),
+									RecordingMetadataActivity.class);
+							intent.putExtra("uuidString", uuid.toString());
+							intent.putExtra("sampleRate", (long) sampleRate);
+							intent.putExtra("durationMsec", durationMsec);
+							intent.putExtra("numChannels", numChannels);
+							intent.putExtra("format", format);
+							intent.putExtra("bitsPerSample", bitsPerSample);
+							startActivity(intent);
+
 						} catch (FileNotFoundException e) {
 							// This shouldn't be happening.
 							throw new RuntimeException(e);
 						}
 
-						// Determine sample rate and duration from the actual
-						// file.
-						try {
-							WaveFile waveFile = new WaveFile(mPath);
-							sampleRate = (long) waveFile.getSampleRate();
-							durationMsec = (int) (waveFile.getDuration() * 1000);
-						} catch (IOException e) {
-							Toast.makeText(getActivity(),
-									"Failed to read the WAVE file.",
-									Toast.LENGTH_LONG).show();
-						}
-
-						//Copy the file to the no-sync directory.
-						try {
-							FileUtils.copyFile(mPath,
-									new File(Recording.getNoSyncRecordingsPath(),
-									uuid.toString() + ".wav"));
-						} catch (IOException e) {
-							Toast.makeText(getActivity(),
-									"Failed to import the recording.",
-									Toast.LENGTH_LONG).show();
-						}
-
-						// Pass the info along to RecordingMetadataActivity.
-						Intent intent = new Intent(getActivity(),
-								RecordingMetadataActivity.class);
-						intent.putExtra("uuidString", uuid.toString());
-						intent.putExtra("sampleRate", sampleRate);
-						intent.putExtra("durationMsec", durationMsec);
-						startActivity(intent);
 					}
 				}
 			});
