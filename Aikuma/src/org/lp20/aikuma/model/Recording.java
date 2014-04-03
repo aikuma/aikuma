@@ -763,6 +763,29 @@ public class Recording {
 	}
 
 	/**
+	 * Gives the number of flags this recording has received.
+	 *
+	 * @return	The number of flags this recording has recieved
+	 */
+	public int numFlags() {
+		File socialDir = new File(FileIO.getAppRootPath(), "/social/" +
+				getGroupId() + "/" + getId());
+		File[] flagFiles = socialDir.listFiles(
+				new FilenameFilter() {
+			public boolean accept(File dir, String filename) {
+				if (filename.endsWith(".flag")) {
+					return true;
+				}
+				return false;
+			}
+		});
+		if (flagFiles == null) {
+			return 0;
+		}
+		return flagFiles.length;
+	}
+
+	/**
 	 * Indicates that this recording is allowed to be synced by moving it to a
 	 * directory that the SyncUtil synchronizes.
 	 *

@@ -47,9 +47,11 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		this.sort(new Comparator<Recording>() {
 			@Override
 			public int compare(Recording lhs, Recording rhs) {
-				if (lhs.numStars() < rhs.numStars()) {
+				if (lhs.numStars() - 2*lhs.numFlags() < rhs.numStars() -
+						2*rhs.numFlags()) {
 					return +1;
-				} else if (lhs.numStars() > rhs.numStars()) {
+				} else if (lhs.numStars() - 2*lhs.numFlags() > rhs.numStars() -
+						2*rhs.numFlags()) {
 					return -1;
 				} else {
 					return 0;
@@ -95,6 +97,12 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		TextView numStarsView = (TextView)
 				recordingView.findViewById(R.id.numStars);
 		numStarsView.setText(String.valueOf(recording.numStars()));
+
+		// Add the number of flags information
+		TextView numFlagsView = (TextView)
+				recordingView.findViewById(R.id.numFlags);
+		numFlagsView.setText(String.valueOf(recording.numFlags()));
+
 		return recordingView;
 	}
 
