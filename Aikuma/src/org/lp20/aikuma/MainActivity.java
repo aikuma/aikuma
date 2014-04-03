@@ -18,6 +18,9 @@ import android.view.View;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import com.musicg.wave.WaveHeader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -194,6 +197,19 @@ public class MainActivity extends ListActivity {
 						UUID uuid = UUID.randomUUID();
 						long sampleRate = -1;
 						int durationMsec = -1;
+
+						// Use musicg WaveHeader to extract information.
+						try {
+							WaveHeader waveHeader = new WaveHeader(
+									new FileInputStream(mPath));
+							String format = waveHeader.getFormat();
+							int sampleRate = waveHeader.getSampleRate();
+							int bitsPerSample = waveHeader.getBitsPerSample();
+							int numChannels = waveHeader.getChannels();
+						} catch (FileNotFoundException e) {
+							// This shouldn't be happening.
+							throw new RuntimeException(e);
+						}
 
 						// Determine sample rate and duration from the actual
 						// file.
