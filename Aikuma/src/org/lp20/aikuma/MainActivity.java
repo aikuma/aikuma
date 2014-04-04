@@ -103,7 +103,16 @@ public class MainActivity extends ListActivity {
 	public void onResume() {
 		super.onResume();
 		List<Recording> recordings = Recording.readAll();
-		ArrayAdapter adapter = new RecordingArrayAdapter(this, recordings);
+
+		// Filter the recordings for originals
+		List<Recording> originals = new ArrayList<Recording>();
+		for (Recording recording : recordings) {
+			if (recording.isOriginal()) {
+				originals.add(recording);
+			}
+		}
+
+		ArrayAdapter adapter = new RecordingArrayAdapter(this, originals);
 		setListAdapter(adapter);
 		if (listViewState != null) {
 			getListView().onRestoreInstanceState(listViewState);

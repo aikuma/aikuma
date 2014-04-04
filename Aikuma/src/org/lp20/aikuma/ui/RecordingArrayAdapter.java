@@ -66,12 +66,14 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				(LinearLayout) inflater.inflate(LIST_ITEM_LAYOUT, parent, false);
 		Recording recording = getItem(position);
 
+		/*
 		ImageView recordingTypeView = (ImageView) recordingView.findViewById(
 				R.id.recordingType);
 		if (!recording.isOriginal()) {
 			// Set it to be a two way arrow icon to indicate respeaking.
 			recordingTypeView.setImageResource(R.drawable.exchange);
 		}
+		*/
 
 		TextView recordingNameView = 
 				(TextView) recordingView.findViewById(R.id.recordingName);
