@@ -186,7 +186,7 @@ public class MainActivity extends ListActivity {
 			Dialog dialog = null;
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-			builder.setTitle("Choose your file");
+			builder.setTitle("Import audio file");
 			if(mFileList == null) {
 				Log.e("importfile", "Showing file picker before loading the file list");
 				dialog = builder.create();
