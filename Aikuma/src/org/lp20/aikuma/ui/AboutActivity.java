@@ -7,6 +7,7 @@ package org.lp20.aikuma.ui;
 import android.os.Bundle;
 //import android.view.View;
 import android.widget.TextView;
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.UsageUtils;
 
@@ -22,6 +23,7 @@ public class AboutActivity extends AikumaActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about);
 		setupVersionInfo();
+		setupAndroidIdInfo();
 		setupUsageInfo();
 	}
 
@@ -35,6 +37,12 @@ public class AboutActivity extends AikumaActivity {
 		} catch (android.content.pm.PackageManager.NameNotFoundException e) {
 			//Just leave the textview empty.
 		}
+	}
+
+	// Displays the android ID.
+	private void setupAndroidIdInfo() {
+		TextView androidId = (TextView) findViewById(R.id.androidIdField);
+		androidId.setText("Android ID: " + Aikuma.getAndroidID());
 	}
 
 	// Retrievs information about the user and displays it.
