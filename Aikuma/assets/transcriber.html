@@ -3,8 +3,20 @@
 <head>
 	<title>
 	</title>
-	<link href="transcriber.min.css" rel="stylesheet" media="screen">
-	<script src="transcriber.min.js"></script>
+	<link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link href="transcriber.css" rel="stylesheet" media="screen">
+	<script src="../../bower_components/jquery/jquery.min.js"></script>
+	<script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="../../js/ccv/ccv.js"></script>
+	<script src="../../js/ccv/face.js"></script>
+	<script src="../../js/closure-library/closure/goog/base.js"></script>
+	<script src="../../js/ldc/deps.js"></script>
+	<script src="../../bower_components/q/q.js"></script>
+	<script src="../../bower_components/FileSaver/FileSaver.js"></script>
+	<script src="transcriber.js"></script>
+	<!--
+    <script src="transcriber.min.js"></script>
+    -->
 </head>
 <body>
 	<div id="players">
@@ -40,11 +52,11 @@
 						Open ELAN Transcript
 					</a></li>
 					<li class="divider"></li>
-					<li><a href="#save-file-dialog" data-toggle="modal">
-						Save Transcript
+					<li><a href="#download-file-dialog" data-toggle="modal">
+						Download Transcript
 					</a></li>
-					<li><a href="#save-elan-dialog" data-toggle="modal">
-						Save as ELAN Format
+					<li><a href="#download-elan-dialog" data-toggle="modal">
+						Download as ELAN Format
 					</a></li>
 				</ul>
 			</div>
@@ -184,41 +196,41 @@
 		</div>
 	</div>
 
-	<div id="save-file-dialog" class="modal">
+	<div id="download-file-dialog" class="modal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button class="close" data-dismiss="modal">x</button>
-					<h3>Save Transcription File</h3>
+					<h3>Download Transcription File</h3>
 				</div>
 				<div class="modal-body">
 					File name:
-					<form name="save-file-form">
-						<input id="save-file-input" type="text">
+					<form name="download-file-form">
+						<input id="download-file-input" type="text">
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button id="save-file-btn" class="btn" data-dismiss="modal">Save</button>
+					<button id="download-file-btn" class="btn" data-dismiss="modal">Download</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="save-elan-dialog" class="modal">
+	<div id="download-elan-dialog" class="modal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button class="close" data-dismiss="modal">x</button>
-					<h3>Save as ELAN Format</h3>
+					<h3>Download as ELAN Format</h3>
 				</div>
 				<div class="modal-body">
 					File name:
-					<form name="save-elan-form">
-						<input id="save-elan-input" type="text">
+					<form name="download-elan-form">
+						<input id="download-elan-input" type="text">
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button id="save-elan-btn" class="btn" data-dismiss="modal">Save</button>
+					<button id="download-elan-btn" class="btn" data-dismiss="modal">Download</button>
 				</div>
 			</div>
 		</div>
