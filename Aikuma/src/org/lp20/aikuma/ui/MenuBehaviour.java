@@ -73,7 +73,8 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				return true;
 			case R.id.help:
-				openHelpInBrowser();
+				intent = new Intent(activity, HowtoActivity.class);
+				activity.startActivity(intent);
 				return true;
 			case R.id.settings:
 				intent = new Intent(activity, SettingsActivity.class);
@@ -113,7 +114,8 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				return true;
 			case R.id.help:
-				openHelpInBrowser();
+				intent = new Intent(activity, HowtoActivity.class);
+				activity.startActivity(intent);
 				return true;
 			case R.id.settings:
 				intent = new Intent(activity, SettingsActivity.class);

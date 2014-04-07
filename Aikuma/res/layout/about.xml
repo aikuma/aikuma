@@ -9,6 +9,17 @@
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:text="Aikuma N.N, Crowdsourcing oral language documentation."
+		android:textSize="15sp"
+	/>
+	<View
+		android:layout_width="fill_parent"
+		android:layout_height="2dip"
+		android:background="#999999"
+	/>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
 		android:id="@+id/versionField"
 		android:text=""
 		android:textSize="15sp"
@@ -25,6 +36,17 @@
 		android:layout_height="wrap_content"
 		android:id="@+id/usageField"
 		android:text=""
+		android:textSize="15sp"
+	/>
+	<View
+		android:layout_width="fill_parent"
+		android:layout_height="2dip"
+		android:background="#999999"
+	/>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="Copyright (C) 2013, The Aikuma Project"
 		android:textSize="15sp"
 	/>
 </LinearLayout>
