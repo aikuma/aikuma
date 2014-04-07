@@ -9,15 +9,19 @@ import org.lp20.aikuma.util.ImageUtils;
 
 import android.content.res.AssetManager;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.net.NetworkInterface;
 import java.net.InetAddress;
 
@@ -56,7 +60,24 @@ public class Server extends NanoHTTPD {
 			// serve recordings by uuid
 			@Override
 			public Response run(IHTTPSession session) {
-				return serveRecording(session.getUri());
+				Map<String,String> headers = session.getHeaders();
+				int offset = 0;
+				int len = 0;
+				String v = headers.get("range");
+				if (v != null) {
+					android.util.Log.d("aa", v);
+					Pattern p = Pattern.compile("bytes=(\\d+)-(\\d*)");
+					Matcher m = p.matcher(v);
+					if (m.matches()) {
+						offset = Integer.parseInt(m.group(1));
+						if (!m.group(2).trim().equals("")) {
+							int i = Integer.parseInt(m.group(2));
+							len = i - offset + 1;
+						}
+					}
+					android.util.Log.d("aa", ".." + offset + ".." + len);
+				}
+				return serveRecording(session.getUri(), offset, len);
 			}
 		}).add(new Proc() {
 			// serve recordings by uuid
@@ -231,9 +252,9 @@ public class Server extends NanoHTTPD {
 			JSONObject speakers = new JSONObject();
 			for (Recording r: Recording.readAll()) {
 				if (r.isOriginal())
-					originals.put(r.getId(), r.encode());
+					originals.put(r.getId().toString(), r.encode());
 				else
-					commentaries.put(r.getId(), r.encode());
+					commentaries.put(r.getId().toString(), r.encode());
 			}
 			for (Speaker r: Speaker.readAll()) {
 				speakers.put(r.getId().toString(), r.encode());
@@ -249,22 +270,40 @@ public class Server extends NanoHTTPD {
 		}
 	}
 	
-	private Response serveRecording(String path) {
+	private Response serveRecording(String path, int offset, int len) {
 		String[] a = path.split("/");
 		if (a.length != 3 || !a[1].equals("recording"))
 			return null;
 
 		try {
-			String id = a[2];
-			InputStream is = new FileInputStream(Recording.read(id).getFile());
-			return new Response(Status.OK, "audio/wave", is);
+			File f = Recording.read(a[2]).getFile();
+			if (f == null) {
+				return mkNotFoundResponse(path);
+			}
+			RandomAccessFile rf = new RandomAccessFile(f, "r");
+			int n = (int) rf.length();
+			if (len == 0) {
+				len = n - offset;
+			}
+			if (n < offset + len || offset < 0) {
+				rf.close();
+				return new Response(Status.RANGE_NOT_SATISFIABLE, "text/plain", "invalid range");
+			}
+			if (len > 2 * 1024 * 1024) {
+				len = 2 * 1024 * 1024;
+			}
+			byte[] buffer = new byte[2 * 1024 * 1024];
+			rf.read(buffer, offset, len);
+			rf.close();
+			InputStream is = new ByteArrayInputStream(buffer, 0, len);
+			Response r = new Response(Status.PARTIAL_CONTENT, "audio/wave", is);
+			r.addHeader("content-range", "bytes " + offset + "-" + (offset+len-1) + "/" + len);
+			return r;
 		}
 		catch (IOException e) {
 			return mkNotFoundResponse(path);
 		}
-		catch (IllegalArgumentException e) {
-			return mkNotFoundResponse(path);
-		}
+			
 	}
 	
 	private Response serveMapFile(String path) {
