@@ -311,8 +311,10 @@ public class Server extends NanoHTTPD {
 		if (a.length != 4 || !a[1].equals("recording") || !a[3].equals("mapfile"))
 			return null;
 		
+		String group_id = Recording.getGroupIdFromId(a[2]);
+
 		try {
-			File mapfile = new File(Recording.getRecordingsPath(), a[2] + ".map");
+			File mapfile = new File(Recording.getRecordingsPath(), group_id + "/" + a[2] + ".map");
 			InputStream is = new FileInputStream(mapfile);
 			return new Response(Status.OK, "text/plain", is);
 		}
@@ -342,8 +344,7 @@ public class Server extends NanoHTTPD {
 			return null;
 		
 		try {
-			UUID uuid = UUID.fromString(a[2]);
-			InputStream is = new FileInputStream(ImageUtils.getImageFile(uuid));
+			InputStream is = new FileInputStream(Speaker.read(a[2]).getImageFile());
 			return new Response(Status.OK, "image/jpeg", is);
 		}
 		catch (IOException e) {
@@ -360,8 +361,7 @@ public class Server extends NanoHTTPD {
 			return null;
 		
 		try {
-			UUID uuid = UUID.fromString(a[2]);
-			InputStream is = new FileInputStream(ImageUtils.getSmallImageFile(uuid));
+			InputStream is = new FileInputStream(Speaker.read(a[2]).getSmallImageFile());
 			return new Response(Status.OK, "image/jpeg", is);
 		}
 		catch (IOException e) {
