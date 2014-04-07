@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
@@ -18,30 +18,4 @@
 		android:layout_height="0dp"
 		android:layout_weight="1"
 	/>
-	<LinearLayout
-		android:orientation="horizontal"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-		android:id="@+id/cancelAndOkButtons"
-		>
-		<ImageButton
-			android:id="@+id/cancelButton"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:scaleType="centerInside"
-			android:src="@drawable/cancel_48"
-			android:layout_weight="1"
-			android:onClick="onCancelButtonPressed"
-		/>
-		<ImageButton
-			android:id="@+id/okButton"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:scaleType="centerInside"
-			android:src="@drawable/ok_48"
-			android:layout_weight="1"
-			android:onClick="onOkButtonPressed"
-		/>
-	</LinearLayout>
-</RelativeLayout>
+</LinearLayout>
