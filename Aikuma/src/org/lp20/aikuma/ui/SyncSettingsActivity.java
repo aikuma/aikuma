@@ -79,14 +79,20 @@ public class SyncSettingsActivity extends AikumaActivity {
 
 		try {
 			ServerCredentials serverCredentials = ServerCredentials.read();
-			ipAddressField.setText(serverCredentials.getIPAddress());
+			if (serverCredentials.getIPAddress().equals("")) {
+				ipAddressField.setText("192.168.0.1");
+			} else {
+				ipAddressField.setText(serverCredentials.getIPAddress());
+			}
 			usernameField.setText(serverCredentials.getUsername());
 			passwordField.setText(serverCredentials.getPassword());
 			automaticSyncCheckBox.setChecked(
 					serverCredentials.getSyncActivated());
 			syncActivated = serverCredentials.getSyncActivated();
 		} catch (IOException e) {
-			//If reading fails, then no text is put into the fields.
+			//If reading fails, then no text is put into the fields, except for
+			//the default IP.
+			ipAddressField.setText("192.168.0.1");
 		}
 	}
 
