@@ -34,10 +34,14 @@
 					</a></li>
 					<li class="divider"></li>
 					<li><a href="#file-dialog" data-toggle="modal">
-						Open Transcript
+						Open Local Transcript
 					</a></li>
 					<li><a href="#dialog-open-elan" data-toggle="modal">
-						Open ELAN Transcript
+						Open Local ELAN Transcript
+					</a></li>
+					<li class="divider"></li>
+					<li><a href="#save-file-dialog" data-toggle="modal">
+						Save Transcript
 					</a></li>
 					<li class="divider"></li>
 					<li><a href="#download-file-dialog" data-toggle="modal">
@@ -48,7 +52,7 @@
 					</a></li>
 				</ul>
 			</div>
-			<div class="col-md-11 btn-group">
+			<div class="col-md-8 btn-group">
 				<button id="play-btn" class="btn" disabled
 					data-play-text="Pause"
 					data-pause-text="Resume">
@@ -65,6 +69,11 @@
 					data-play-text="Stop">
 					Play Respeaking
 				</button>
+			</div>
+			<div class="col-md-3">
+				User:
+				<b><span id="person-name"></span></b> - 
+				<small><span id="person-id"></span></small>
 			</div>
 		</div>
 
@@ -111,9 +120,27 @@
 			<!-- Menu Column -->
 			<div class="col-md-3">
 				<div class="row">
+					<div class="well well-sm">
+						<div>
+							<small>Recording: <span id="audio-id"></span></small>
+						</div>
+						<div>
+							<small>Transcript: <span id="transcript-id"></span></small>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<p>Recordings:</p>
 					<select id="recording-list" class="col-md-9"></select>
 					<div class="col-md-3">
-						<button id="open-selected-recording" class="btn">Open</button>
+						<button id="open-selected-recording" class="btn btn-xs btn-default">Open</button>
+					</div>
+				</div>
+				<div class="row">
+					<p>Transcripts:</p>
+					<select id="transcript-list" class="col-md-9"></select>
+					<div class="col-md-3">
+						<button id="open-selected-transcript" class="btn btn-xs btn-default">Open</button>
 					</div>
 				</div>
 				<br>
@@ -184,6 +211,25 @@
 		</div>
 	</div>
 
+	<div id="save-file-dialog" class="modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">x</button>
+					<h3>Save Transcription File</h3>
+				</div>
+				<div id="save-file-dialog-body" class="modal-body">
+					<o>You are not the creator of the transcript.</p>
+					<p>Do you want to create a new transcript?</p>
+				</div>
+				<div class="modal-footer">
+					<button id="save-file-btn-yes" class="btn" data-dismiss="modal">Yes</button>
+					<button class="btn" data-dismiss="modal">No</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div id="download-file-dialog" class="modal">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -223,6 +269,26 @@
 			</div>
 		</div>
 	</div>
+
+	<div id="transcriber-id-dialog" class="modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>Transcriber Identification</h3>
+				</div>
+				<div class="modal-body">
+					Please identify yourself:
+					<select id="transcriber-list"></select>
+				</div>
+				<div class="modal-footer">
+					<button id="transcriber-select-btn" class="btn" data-dismiss="modal">
+						OK
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div id="popup-container"></div>
 	<div id="hidden-container" style="display:none"></div>
 
