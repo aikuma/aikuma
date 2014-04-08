@@ -817,6 +817,21 @@ public class Recording {
 	}
 
 	/**
+	 * Gives the number of times this recording has been views.
+	 *
+	 * @return	The number of times this recording has been viewed.
+	 */
+	public int numViews() {
+		File socialDir = new File(FileIO.getAppRootPath(), "/views/" +
+				getGroupId() + "/" + getId());
+		File[] flagFiles = socialDir.listFiles();
+		if (flagFiles == null) {
+			return 0;
+		}
+		return flagFiles.length;
+	}
+
+	/**
 	 * Indicates that this recording is allowed to be synced by moving it to a
 	 * directory that the SyncUtil synchronizes.
 	 *

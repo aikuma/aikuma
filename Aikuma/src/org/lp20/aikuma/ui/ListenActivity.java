@@ -59,6 +59,7 @@ public class ListenActivity extends AikumaActivity {
 		setUpPlayer();
 		setUpRespeakingImages();
 		setUpRecordingInfo();
+		updateViewCount();
 	}
 
 	// Prepares the recording
@@ -366,6 +367,16 @@ public class ListenActivity extends AikumaActivity {
 		} else {
 			return super.dispatchTouchEvent(event);
 		}
+	}
+
+	/**
+	 * Updates the view that tracks the number of times the recording has been
+	 * listened to.
+	 */
+	public void updateViewCount() {
+		TextView viewCount = (TextView) findViewById(R.id.viewCount);
+		int numViews = recording.numViews();
+		viewCount.setText("# views: " + numViews);
 	}
 
 	private boolean phoneRespeaking = false;

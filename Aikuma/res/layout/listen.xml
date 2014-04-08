@@ -39,6 +39,15 @@
 				android:src="@drawable/flag"
 				android:onClick="onFlagButtonPressed"
 			/>
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text=""
+				android:id="@+id/viewCount"
+				android:textSize="20sp"
+				android:padding="5dp"
+				android:layout_gravity="center"
+			/>
 		</LinearLayout>
 		<LinearLayout
 				android:id="@+id/recordingInfo"
