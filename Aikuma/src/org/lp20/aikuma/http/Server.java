@@ -1,21 +1,26 @@
 package org.lp20.aikuma.http;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.json.simple.JSONObject;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.model.Transcript;
 import org.lp20.aikuma.util.ImageUtils;
 
 import android.content.res.AssetManager;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.io.StringWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +29,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.net.NetworkInterface;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
 /**
  * A web server class designed for a web-based transcription tool
@@ -101,6 +108,12 @@ public class Server extends NanoHTTPD {
 			@Override
 			public Response run(IHTTPSession session) {
 				return serveSpeakerSmallImage(session.getUri());
+			}
+		}).add(new Proc() {
+			// create, save and load transcripts
+			@Override
+			public Response run(IHTTPSession session) {
+				return serveTranscript(session);
 			}
 		}).add(new Proc() {
 			// serve static assets
@@ -250,6 +263,7 @@ public class Server extends NanoHTTPD {
 			JSONObject originals = new JSONObject();
 			JSONObject commentaries = new JSONObject();
 			JSONObject speakers = new JSONObject();
+			JSONObject transcripts = new JSONObject();
 			for (Recording r: Recording.readAll()) {
 				if (r.isOriginal())
 					originals.put(r.getId().toString(), r.encode());
@@ -259,10 +273,14 @@ public class Server extends NanoHTTPD {
 			for (Speaker r: Speaker.readAll()) {
 				speakers.put(r.getId().toString(), r.encode());
 			}
+			for (Transcript t: Transcript.readAll()) {
+				transcripts.put(t.getId().toString(), t.encode());
+			}
 			JSONObject index = new JSONObject();
 			index.put("originals", originals);
 			index.put("commentaries", commentaries);
 			index.put("speakers", speakers);
+			index.put("transcripts", transcripts);
 			return new Response(Status.OK, "application/json", index.toString());
 		}
 		else {
@@ -372,6 +390,66 @@ public class Server extends NanoHTTPD {
 		}
 	}
 
+	private Response serveTranscript(IHTTPSession session) {
+		// GET /transcript/ignored/new_id
+		// GET /transcript/filename
+		// PUT /transcript/filename
+		String path = session.getUri();
+		String[] a = path.split("/");
+		if (a.length < 2 || !a[1].equals("transcript"))
+			return null;
+		Method method = session.getMethod();
+		if (a.length == 3 && method == Method.GET) {
+			// GET /transcript/FILENAME
+			Transcript trs = new Transcript(a[2]);
+			try {
+				InputStream is = new FileInputStream(trs.getFile());
+				return new Response(Status.OK, MIME_PLAINTEXT, is);
+			}
+			catch (FileNotFoundException e) {
+				return mkNotFoundResponse(path);
+			}
+		}
+		else if (a.length == 3 && method == Method.PUT) {
+			InputStream is = session.getInputStream();
+			String text;
+			try {
+				// TODO: Coundn't use IOUtil due to IOException.
+				// Hopefully, N is not too big.
+				int N = Integer.parseInt(session.getHeaders().get("content-length"));
+				byte[] buffer = new byte[N];
+				is.read(buffer);
+				text = new String(buffer, 0, N, "UTF-8");
+			}
+			catch (IOException e) {
+				return new Response(Status.INTERNAL_ERROR, MIME_PLAINTEXT, "Failed to read input data.");
+			}
+
+			try {
+				Transcript trs = new Transcript(a[2]);
+				trs.save(text);
+				return new Response(Status.OK, MIME_PLAINTEXT, trs.getId());
+			}
+			catch (IOException e) {
+				return new Response(Status.INTERNAL_ERROR, MIME_PLAINTEXT, "Failed to save transcript (I/O error).");
+			}
+			catch (RuntimeException e) {
+				return new Response(Status.INTERNAL_ERROR, MIME_PLAINTEXT, "Failed to save transcript.");
+			}
+		}
+		else if (a.length == 4 && a[3].equals("new_id") && method == Method.GET) {
+			// GET /transcript/FILENAME/new_id
+			String filename = newTranscript(a[2]);
+			if (filename == null)
+				return mkNotFoundResponse(path);
+			else
+				return new Response(Status.OK, MIME_PLAINTEXT, filename);
+		}
+		else {
+			return null;
+		}
+	}
+	
 	private Response serveAsset(String path) {
 		try {
 			InputStream is = am_.open(path.substring(1));
@@ -380,6 +458,28 @@ public class Server extends NanoHTTPD {
 		}
 		catch (IOException e) {
 			return mkNotFoundResponse(path);
+		}
+	}
+	
+	/**
+	 * Create a new transcript object and a new filename for the transcript.
+	 * From the filename given as the first parameter, only the group ID and
+	 * the user ID are used. The rest of the filename is ignored.
+	 * 
+	 * The transcript file is not actually created in the file system until
+	 * save() is called.
+	 * 
+	 * @param filename 
+	 * @return a new filename of the transcript.
+	 */
+	private String newTranscript(String filename) {
+		String a[] = filename.split("-");
+		try {
+			Transcript trs = new Transcript(a[0], a[1]);
+			return trs.getId();
+		}
+		catch (RuntimeException e) {
+			return null;
 		}
 	}
 	
