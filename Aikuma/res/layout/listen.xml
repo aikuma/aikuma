@@ -123,6 +123,7 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/middleLine"
 		android:text=""
+		android:textStyle="italic"
 	/>
 	<View
 		android:layout_width="fill_parent"
