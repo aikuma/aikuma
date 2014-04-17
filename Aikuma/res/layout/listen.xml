@@ -93,18 +93,42 @@
 			android:scaleType="centerInside"
 			android:layout_alignParentBottom="true"
 	/>
+	<View
+		android:layout_width="fill_parent"
+		android:layout_height="2dip"
+		android:background="#999999"
+		android:layout_margin="5dp"
+		android:layout_below="@id/RespeakingImages"
+		android:id="@+id/topLine"
+
+	/>
 	<TextView
 		android:id="@+id/transcriptView"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/RespeakingImages"
+		android:layout_below="@id/topLine"
 		android:text=""
+	/>
+	<View
+		android:id="@+id/middleLine"
+		android:layout_width="fill_parent"
+		android:layout_height="2dip"
+		android:background="#999999"
+		android:layout_below="@id/transcriptView"
+		android:layout_margin="5dp"
 	/>
 	<TextView
 		android:id="@+id/transcriptView2"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/transcriptView"
+		android:layout_below="@id/middleLine"
 		android:text=""
+	/>
+	<View
+		android:layout_width="fill_parent"
+		android:layout_height="2dip"
+		android:background="#999999"
+		android:layout_below="@id/transcriptView2"
+		android:layout_margin="5dp"
 	/>
 </RelativeLayout>
