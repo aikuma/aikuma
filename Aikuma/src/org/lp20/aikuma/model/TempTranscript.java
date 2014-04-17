@@ -1,19 +1,72 @@
 package org.lp20.aikuma.model;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import org.lp20.aikuma.model.Segments;
 import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.util.FileIO;
 
-public class Transcript {
+/**
+ * Represents a transcript of a recording
+ *
+ * @author	Oliver Adams	<oliver.adams@gmail.com>
+ */
+public class TempTranscript {
 	private LinkedHashMap<Segment, String> transcriptMap;
+	// The recording the transcript is of. Needed to obtain the sample rate.
+	private Recording recording;
 
-	public Transcript(Recording original) {
+	/**
+	 * Constructor for an empty transcript.
+	 */
+	public TempTranscript() {
 		transcriptMap = new LinkedHashMap<Segment, String>();
-		//readTranscript(new File(Recording.getRecordingsPath(),
-		//		original.getUUID() + ".trans"));
-		genDummyMap();
+	}
+
+	/**
+	 * Constructor
+	 *
+	 * @param	recording	The recording this is a transcript of
+	 * @param	transcriptFile	The file the transcript data is contained in.
+	 * @throws	IOException	If there is an issue reading the transcript file.
+	 */
+	public TempTranscript(Recording recording, File transcriptFile)
+			throws IOException {
+		this.recording = recording;
+		transcriptMap = new LinkedHashMap<Segment, String>();
+		parseFile(transcriptFile);
+	}
+
+	/**
+	 * Parses the segments from the given file into the mapping.
+	 *
+	 * @param	transcriptFile	The file containing the transcript
+	 */
+	private void parseFile(File transcriptFile) throws IOException {
+		String data = FileIO.read(transcriptFile);
+		String[] lines = data.split("\n");
+		String[] splitLine;
+		for (String line : lines) {
+			if (!line.startsWith(";;")) {
+				splitLine = line.split("\t");
+				transcriptMap.put(new Segment(
+						secondsToSample(Float.parseFloat(splitLine[0])),
+						secondsToSample(Float.parseFloat(splitLine[1]))),
+						splitLine[2]);
+			}
+		}
+	}
+
+	/**
+	 * Converts seconds to samples given the recordings sample rate.
+	 */
+	private long secondsToSample(float seconds) {
+		return (long) (seconds * recording.getSampleRate());
 	}
 
 	private void genDummyMap() {
@@ -22,12 +75,43 @@ public class Transcript {
 		transcriptMap.put(new Segment(109728l, 142496l), "third shhh");
 	}
 
-	public Iterator<Segment> getSegmentIterator() {
+	/*
+	private Iterator<Segment> getSegmentIterator() {
 		return transcriptMap.keySet().iterator();
 	}
+	*/
 
-	public String getTranscriptSegment(Segment segment) {
+	public List<Segment> getSegmentList() {
+		return new ArrayList<Segment>(transcriptMap.keySet());
+	}
+
+	/**
+	 * Gets the text that corresponds to a given segment
+	 *
+	 * @param	segment	The segment to obtain a transcription of
+	 * @return	A string transcription of the given segment.
+	 */
+	public String getTranscriptSegmentText(Segment segment) {
 		return transcriptMap.get(segment);
+	}
+
+	/**
+	 * Gets the segment that this sample is in.
+	 *
+	 * @param	sample	The sample whose corresponding segment is required.
+	 * @return	The segment corresponding to the input sample; null if not
+	 * present
+	 */
+	public Segment getSegmentOfSample(long sample) {
+		for (Segment segment : getSegmentList()) {
+			if (sample >= segment.getStartSample() &&
+				sample <= segment.getEndSample()) {
+				return segment;
+			}
+		}
+		//throw new IllegalArgumentException(
+		//		"Specified sample does not exist in transcript: " + sample);
+		return null;
 	}
 
 
@@ -74,4 +158,5 @@ public class Transcript {
 		return null;
 	}
 	*/
+
 }

@@ -9,10 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
-import org.lp20.aikuma.model.*;
+//import org.lp20.aikuma.model.*;
 import org.lp20.aikuma.util.IdUtils;
 import com.google.common.io.Files;
 
+/**
+ * hleeldc's Transcript class
+ *
+ * @author	Haejoong Lee <haejoong@ldc.upenn.edu>
+ */
 public class Transcript {
 	private String id;  // transcript file name
 	private String group_id;
@@ -26,6 +31,7 @@ public class Transcript {
 	 * @param groupId The group ID of the original recording that is going
 	 * 	to be transcribed by this Transcript object.
 	 * @param transcriberId The person ID of the transcriber.
+	 * @throws	RuntimeException	When people or recordings don't exist.
 	 */
 	public Transcript(String groupId, String transcriberId) throws RuntimeException {
 		try {
@@ -63,8 +69,9 @@ public class Transcript {
 	
 	/**
 	 * The constructor used when reading an existing transcript.
-	 * @param id Transcript file ID.
-	 * @throws RuntimeException
+	 * @param	id	Transcript file ID.
+	 * @throws	RuntimeException	When transcript IDs are invalid, files
+	 * don't exist or people don't exist.
 	 */
 	public Transcript(String id) throws RuntimeException {
 		String[] a = id.split("-");
@@ -138,6 +145,7 @@ public class Transcript {
 	/**
 	 * Store the transcript to file system.
 	 * @param text Transcription data.
+	 * @throws	IOException	If there is an IO issue when saving the transcript.
 	 */
 	public void save(String text) throws IOException {
 		File f = new File(path);

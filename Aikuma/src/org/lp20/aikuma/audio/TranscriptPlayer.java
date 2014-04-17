@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Segments.Segment;
-import org.lp20.aikuma.model.Transcript;
+import org.lp20.aikuma.model.TempTranscript;
 import org.lp20.aikuma.R;
 
 import android.util.Log;
@@ -35,7 +35,7 @@ public class TranscriptPlayer extends MarkedPlayer {
 
 		this.activity = activity;
 
-		transcript = new Transcript(recording);
+		transcript = recording.getTranscript();
 
 		updateTranscriptStatus(getCurrentSample());
 
@@ -107,6 +107,6 @@ public class TranscriptPlayer extends MarkedPlayer {
 
 	private static Segment segment;
 	private static TextView transcriptView;
-	private Transcript transcript;
+	private TempTranscript transcript;
 	private Activity activity;
 }
