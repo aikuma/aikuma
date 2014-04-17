@@ -61,10 +61,17 @@ public class TempTranscript {
 				Log.i("transcript2", "end sample: " +
 						secondsToSample(Float.parseFloat(splitLine[1])));
 				Log.i("transcript2", "text: " + splitLine[3]);
-				transcriptMap.put(new Segment(
-						secondsToSample(Float.parseFloat(splitLine[0])),
-						secondsToSample(Float.parseFloat(splitLine[1]))),
-						new TranscriptPair(splitLine[3], splitLine[4]));
+				if (splitLine.length > 4) {
+					transcriptMap.put(new Segment(
+							secondsToSample(Float.parseFloat(splitLine[0])),
+							secondsToSample(Float.parseFloat(splitLine[1]))),
+							new TranscriptPair(splitLine[3], splitLine[4]));
+				} else {
+					transcriptMap.put(new Segment(
+							secondsToSample(Float.parseFloat(splitLine[0])),
+							secondsToSample(Float.parseFloat(splitLine[1]))),
+							new TranscriptPair(splitLine[3], ""));
+				}
 			}
 		}
 	}
