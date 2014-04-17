@@ -76,8 +76,13 @@ public class TranscriptPlayer extends MarkedPlayer {
 	private void updateTranscriptUi(Segment segment) {
 		transcriptView = (TextView)
 			activity.findViewById(R.id.transcriptView);
+		transcriptView2 = (TextView)
+			activity.findViewById(R.id.transcriptView2);
 		if (segment != null) {
-			transcriptView.setText(transcript.getTranscriptSegmentText(segment));
+			transcriptView.setText(
+					transcript.getTranscriptPair(segment).transcript);
+			transcriptView2.setText(
+					transcript.getTranscriptPair(segment).translation);
 		} else {
 			transcriptView.setText("");
 		}
@@ -107,6 +112,7 @@ public class TranscriptPlayer extends MarkedPlayer {
 
 	private static Segment segment;
 	private static TextView transcriptView;
+	private static TextView transcriptView2;
 	private TempTranscript transcript;
 	private Activity activity;
 }

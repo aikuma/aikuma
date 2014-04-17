@@ -18,15 +18,16 @@ import org.lp20.aikuma.util.FileIO;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  */
 public class TempTranscript {
-	private LinkedHashMap<Segment, String> transcriptMap;
+	private LinkedHashMap<Segment, TranscriptPair> transcriptMap;
 	// The recording the transcript is of. Needed to obtain the sample rate.
 	private Recording recording;
+
 
 	/**
 	 * Constructor for an empty transcript.
 	 */
 	public TempTranscript() {
-		transcriptMap = new LinkedHashMap<Segment, String>();
+		transcriptMap = new LinkedHashMap<Segment, TranscriptPair>();
 	}
 
 	/**
@@ -39,7 +40,7 @@ public class TempTranscript {
 	public TempTranscript(Recording recording, File transcriptFile)
 			throws IOException {
 		this.recording = recording;
-		transcriptMap = new LinkedHashMap<Segment, String>();
+		transcriptMap = new LinkedHashMap<Segment, TranscriptPair>();
 		parseFile(transcriptFile);
 	}
 
@@ -63,7 +64,7 @@ public class TempTranscript {
 				transcriptMap.put(new Segment(
 						secondsToSample(Float.parseFloat(splitLine[0])),
 						secondsToSample(Float.parseFloat(splitLine[1]))),
-						splitLine[3]);
+						new TranscriptPair(splitLine[3], splitLine[4]));
 			}
 		}
 	}
@@ -75,11 +76,13 @@ public class TempTranscript {
 		return (long) (seconds * recording.getSampleRate());
 	}
 
+	/*
 	private void genDummyMap() {
 		transcriptMap.put(new Segment(0l, 49264l), "first shhh");
 		transcriptMap.put(new Segment(49264l, 109728l), "second shhh");
 		transcriptMap.put(new Segment(109728l, 142496l), "third shhh");
 	}
+	*/
 
 	/*
 	private Iterator<Segment> getSegmentIterator() {
@@ -92,12 +95,12 @@ public class TempTranscript {
 	}
 
 	/**
-	 * Gets the text that corresponds to a given segment
+	 * Gets the TranscriptPair that corresponds to a given segment
 	 *
 	 * @param	segment	The segment to obtain a transcription of
-	 * @return	A string transcription of the given segment.
+	 * @return	A TranscriptPair that contains a transcript and a translation.
 	 */
-	public String getTranscriptSegmentText(Segment segment) {
+	public TranscriptPair getTranscriptPair(Segment segment) {
 		return transcriptMap.get(segment);
 	}
 
@@ -119,6 +122,27 @@ public class TempTranscript {
 		return getSegmentList().get(0);
 	}
 
+	/**
+	 * Represents the text associated with a segment of the transcription,
+	 * which includes a transcript and a translation.
+	 */
+	public class TranscriptPair {
+		/** A segment of the transcript */
+		public String transcript;
+		/** A segment of the translation */
+		public String translation;
+
+		/**
+		 * Constructor
+		 *
+		 * @param	transcript	The transcript segment
+		 * @param	translation	The translation segment
+		 */
+		public TranscriptPair(String transcript, String translation) {
+			this.transcript = transcript;
+			this.translation = translation;
+		}
+	}
 
 	/*
 	public void readSegments(File path) {
