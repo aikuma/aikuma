@@ -50,12 +50,21 @@ public class TempTranscript {
 	 * @param	transcriptFile	The file containing the transcript
 	 */
 	private void parseFile(File transcriptFile) throws IOException {
+		boolean firstSegment = true;
 		String data = FileIO.read(transcriptFile);
 		String[] lines = data.split("\n");
 		String[] splitLine;
 		for (String line : lines) {
 			if (!line.startsWith(";;")) {
 				splitLine = line.split("\t");
+				// If it's the first segment, put a blank segment between 0l
+				// samples and the start of the first segment.
+				if (firstSegment) {
+					firstSegment = false;
+					transcriptMap.put(new Segment(0l,
+							secondsToSample(Float.parseFloat(splitLine[0]))),
+							new TranscriptPair("",""));
+				}
 				Log.i("transcript2", "start sample: " +
 						secondsToSample(Float.parseFloat(splitLine[0])));
 				Log.i("transcript2", "end sample: " +
