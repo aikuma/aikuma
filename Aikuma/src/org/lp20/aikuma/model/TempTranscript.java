@@ -1,5 +1,6 @@
 package org.lp20.aikuma.model;
 
+import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -54,10 +55,15 @@ public class TempTranscript {
 		for (String line : lines) {
 			if (!line.startsWith(";;")) {
 				splitLine = line.split("\t");
+				Log.i("transcript2", "start sample: " +
+						secondsToSample(Float.parseFloat(splitLine[0])));
+				Log.i("transcript2", "end sample: " +
+						secondsToSample(Float.parseFloat(splitLine[1])));
+				Log.i("transcript2", "text: " + splitLine[3]);
 				transcriptMap.put(new Segment(
 						secondsToSample(Float.parseFloat(splitLine[0])),
 						secondsToSample(Float.parseFloat(splitLine[1]))),
-						splitLine[2]);
+						splitLine[3]);
 			}
 		}
 	}
@@ -95,8 +101,9 @@ public class TempTranscript {
 		return transcriptMap.get(segment);
 	}
 
-	/**
-	 * Gets the segment that this sample is in.
+	/** 
+	 * Gets the segment that this sample is in. If there is no segment in
+	 * the sample, we should grab the first segment.
 	 *
 	 * @param	sample	The sample whose corresponding segment is required.
 	 * @return	The segment corresponding to the input sample; null if not
@@ -109,9 +116,7 @@ public class TempTranscript {
 				return segment;
 			}
 		}
-		//throw new IllegalArgumentException(
-		//		"Specified sample does not exist in transcript: " + sample);
-		return null;
+		return getSegmentList().get(0);
 	}
 
 
