@@ -70,9 +70,6 @@ public class RecordActivity extends AikumaActivity {
 					}
 				}
 			});
-		//Lets method in superclass know to ask user if they are willing to
-		//discard new data on an activity transition via the menu.
-		safeActivityTransition = true;
 		try {
 			recorder = new Recorder(new File(Recording.getNoSyncRecordingsPath(),
 					uuid.toString() + ".wav"), sampleRate);
@@ -144,6 +141,11 @@ public class RecordActivity extends AikumaActivity {
 
 	// Activates recording
 	private void record() {
+		//Lets method in superclass know to ask user if they are willing to
+		//discard new data on an activity transition via the menu.
+		safeActivityTransition = true;
+		safeActivityTransitionMessage = "Discard Audio?";
+
 		if (!recording) {
 			recording = true;
 			ImageButton recordButton =
