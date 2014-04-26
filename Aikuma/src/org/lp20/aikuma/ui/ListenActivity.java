@@ -344,8 +344,10 @@ public class ListenActivity extends AikumaActivity {
 				findViewById(R.id.starButton);
 		if (recording.isStarredByThisPhone()) {
 			starButton.setEnabled(false);
+			starButton.setImageResource(R.drawable.star_grey);
 		} else {
 			starButton.setEnabled(true);
+			starButton.setImageResource(R.drawable.star);
 		}
 	}
 
@@ -354,8 +356,10 @@ public class ListenActivity extends AikumaActivity {
 				findViewById(R.id.flagButton);
 		if (recording.isFlaggedByThisPhone()) {
 			flagButton.setEnabled(false);
+			flagButton.setImageResource(R.drawable.flag_grey);
 		} else {
 			flagButton.setEnabled(true);
+			flagButton.setImageResource(R.drawable.flag);
 		}
 	}
 
