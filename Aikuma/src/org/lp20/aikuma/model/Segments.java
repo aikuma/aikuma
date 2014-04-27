@@ -97,8 +97,7 @@ public class Segments {
 		for (String line : lines) {
 			String[] segmentMatch = line.split(":");
 			if (segmentMatch.length != 2) {
-				throw new RuntimeException(
-						"There must be just one colon on in a segment mapping line");
+				continue;
 			}
 			String[] originalSegment = segmentMatch[0].split(",");
 			String[] respeakingSegment = segmentMatch[1].split(",");
