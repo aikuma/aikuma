@@ -116,7 +116,6 @@ public class ListenActivity extends AikumaActivity {
 		speakerImage.setAdjustViewBounds(true);
 		speakerImage.setMaxHeight(40);
 		speakerImage.setMaxWidth(40);
-		speakerImage.setPaddingRelative(5,5,5,5);
 		try {
 			speakerImage.setImageBitmap(Speaker.getSmallImage(speakerId));
 		} catch (IOException e) {
@@ -171,7 +170,6 @@ public class ListenActivity extends AikumaActivity {
 			respeakingImage.setMaxHeight(60);
 			respeakingImage.setMaxWidth(60);
 			respeakingImage.setPadding(5,5,5,5);
-			respeakingImage.setPaddingRelative(2,2,2,2);
 			if (respeaking.equals(recording)) {
 				respeakingImage.setBackgroundColor(0xFFCC0000);
 			}

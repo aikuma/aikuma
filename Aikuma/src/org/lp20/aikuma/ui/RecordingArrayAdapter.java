@@ -119,7 +119,6 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		speakerImage.setAdjustViewBounds(true);
 		speakerImage.setMaxHeight(40);
 		speakerImage.setMaxWidth(40);
-		speakerImage.setPaddingRelative(1,1,1,1);
 		try {
 			speakerImage.setImageBitmap(Speaker.getSmallImage(speakerId));
 		} catch (IOException e) {

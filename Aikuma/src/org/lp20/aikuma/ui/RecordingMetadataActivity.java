@@ -211,7 +211,6 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 					speakerImage.setAdjustViewBounds(true);
 					speakerImage.setMaxHeight(60);
 					speakerImage.setMaxWidth(60);
-					speakerImage.setPaddingRelative(5,5,5,5);
 					try {
 						speakerImage.setImageBitmap(speaker.getSmallImage());
 					} catch (IOException e) {
