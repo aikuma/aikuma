@@ -27,6 +27,7 @@ public interface Index {
 	 * For metadata, the following keys are required:
 	 * 
 	 *   - data_store_uri
+	 *   - item_id
 	 *   - file_type
 	 *   - language
 	 *   - spakers (comma-separated list)
