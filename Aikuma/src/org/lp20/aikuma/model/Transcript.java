@@ -1,3 +1,7 @@
+/*
+	Copyright (C) 2013, The Aikuma Project
+	AUTHORS: Oliver Adams and Florian Hanke
+*/
 package org.lp20.aikuma.model;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,11 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
-import org.lp20.aikuma.model.*;
 import org.lp20.aikuma.util.IdUtils;
 
 import com.google.common.io.Files;
 
+/**
+ * An "abstract" representation of a transcript file entity.
+ *
+ * @author	...
+ */
 public class Transcript {
 	private String id;  // transcript file name
 	private String group_id;
@@ -27,6 +35,7 @@ public class Transcript {
 	 * @param groupId The group ID of the original recording that is going
 	 * 	to be transcribed by this Transcript object.
 	 * @param transcriberId The person ID of the transcriber.
+	 * @throws RuntimeException if the file can't be made.
 	 */
 	public Transcript(String groupId, String transcriberId) throws RuntimeException {
 		try {
@@ -65,7 +74,7 @@ public class Transcript {
 	/**
 	 * The constructor used when reading an existing transcript.
 	 * @param id Transcript file ID.
-	 * @throws RuntimeException
+	 * @throws RuntimeException if the file can't be made.
 	 */
 	public Transcript(String id) throws RuntimeException {
 		String[] a = id.split("-");
@@ -139,6 +148,7 @@ public class Transcript {
 	/**
 	 * Store the transcript to file system.
 	 * @param text Transcription data.
+	 * @throws IOException if there is an exception in the file I/O.
 	 */
 	public void save(String text) throws IOException {
 		File f = new File(path);
