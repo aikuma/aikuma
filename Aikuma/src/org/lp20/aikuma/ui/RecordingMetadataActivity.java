@@ -67,6 +67,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 				intent.getExtras().get("sourceId");
 		numChannels = (Integer) intent.getExtras().get("numChannels");
 		bitsPerSample = (Integer) intent.getExtras().get("bitsPerSample");
+		latitude = (Double) intent.getExtras().get("latitude");
+		longitude = (Double) intent.getExtras().get("longitude");
 		format = (String)
 				intent.getExtras().get("format");
 		setUpPlayer(uuid, sampleRate);
@@ -151,7 +153,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 								uuid, description, date, selectedLanguages,
 								speakersIds, androidID, groupId, sourceId,
 								sampleRate, durationMsec, format, numChannels,
-								bitsPerSample);
+								bitsPerSample, latitude, longitude);
 						try {
 							// Move the wave file from the nosync directory to
 							// the synced directory and write the metadata
@@ -286,4 +288,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;
+	
+	private double latitude;
+	private double longitude;
 }

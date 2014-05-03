@@ -35,6 +35,7 @@ import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.ui.sensors.LocationDetector;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 
 /**
@@ -115,6 +116,7 @@ public class RecordActivity extends AikumaActivity {
 		super.onPause();
 		pause();
 		this.proximityDetector.stop();
+		this.locationDetector.stop();
 	}
 
 	@Override
@@ -137,6 +139,9 @@ public class RecordActivity extends AikumaActivity {
 			}
 		};
 		this.proximityDetector.start();
+		
+		this.locationDetector = new LocationDetector(this);
+		this.locationDetector.start();
 	}
 
 	// Activates recording
@@ -208,6 +213,9 @@ public class RecordActivity extends AikumaActivity {
 			// Maybe make a recording metadata file that refers to the error so
 			// that the audio can be salvaged.
 		}
+		double latitude = this.locationDetector.getLatitude();
+		double longitude = this.locationDetector.getLongitude();
+		
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
 		intent.putExtra("uuidString", uuid.toString());
 		intent.putExtra("sampleRate", sampleRate);
@@ -216,6 +224,8 @@ public class RecordActivity extends AikumaActivity {
 		intent.putExtra("numChannels", recorder.getNumChannels());
 		intent.putExtra("format", recorder.getFormat());
 		intent.putExtra("bitsPerSample", recorder.getBitsPerSample());
+		intent.putExtra("latitude", latitude);
+		intent.putExtra("longitude", longitude);
 		startActivity(intent);
 		RecordActivity.this.finish();
 	}
@@ -235,5 +245,6 @@ public class RecordActivity extends AikumaActivity {
 	private long sampleRate = 16000l;
 	private TextView timeDisplay;
 	private ProximityDetector proximityDetector;
+	private LocationDetector locationDetector;
 	private Beeper beeper;
 }
