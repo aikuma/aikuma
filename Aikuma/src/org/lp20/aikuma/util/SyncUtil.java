@@ -74,6 +74,7 @@ public class SyncUtil {
 					//For some reason we get an EPIPE unless we instantiate a new
 					//Client at each iteration.
 					if (forceSync || serverCredentials.getSyncActivated()) {
+						setSyncFlag();
 						forceSync = false;
 						Client client = new Client();
 						client.setClientBaseDir(
@@ -101,6 +102,7 @@ public class SyncUtil {
 					Log.i("npe", "ioexception on serverCredentials.read()");
 					//We'll cope and assume the old serverCredentials work.
 				}
+				unsetSyncFlag();
 				try {
 					TimeUnit.MINUTES.sleep(waitMins);
 				} catch (InterruptedException e) {
@@ -119,13 +121,29 @@ public class SyncUtil {
 	}
 
 	private static void updateSyncTextView() {
-		TextView syncTextView = (TextView) 
-				syncSettingsActivity.findViewById(R.id.syncTextNotification);
-		if (syncing) {
-			syncTextView.setText("Syncing");
-		} else {
-			syncTextView.setText("Not syncing");
+		if (syncSettingsActivity != null) {
+			syncSettingsActivity.runOnUiThread(new Runnable() {
+				public void run() {
+					TextView syncTextView = (TextView)
+							syncSettingsActivity.findViewById(R.id.syncTextNotification);
+					if (syncing) {
+						syncTextView.setText("Syncing");
+					} else {
+						syncTextView.setText("Not syncing");
+					}
+				}
+			});
 		}
+	}
+
+	private static void setSyncFlag() {
+		syncing = true;
+		updateSyncTextView();
+	}
+
+	private static void unsetSyncFlag() {
+		syncing = false;
+		updateSyncTextView();
 	}
 
 	private static ServerCredentials serverCredentials;
