@@ -145,7 +145,6 @@ public class SyncUtil {
 		syncing = false;
 		updateSyncTextView();
 	}
-
 	private static ServerCredentials serverCredentials;
 	private static Thread syncThread;
 	private static Activity syncSettingsActivity;
