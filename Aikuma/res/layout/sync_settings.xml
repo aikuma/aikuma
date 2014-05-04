@@ -47,4 +47,10 @@
 		android:onClick="onSyncNowButton"
 		android:layout_alignParentBottom="true"
 	/>
+	<TextView
+		android:id="@+id/syncTextNotification"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="not syncing"
+	/>
 </LinearLayout>

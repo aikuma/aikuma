@@ -4,14 +4,17 @@
 */
 package org.lp20.aikuma.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.lp20.aikuma.model.ServerCredentials;
 //import org.lp20.sync.FTPSyncUtil;
+import org.lp20.aikuma.R;
 
 /**
  * Periodically syncs with to a server specified in a ServerCredentials object
@@ -110,6 +113,23 @@ public class SyncUtil {
 		private boolean forceSync;
 	}
 
+	public static void setSyncSettingsActivity(Activity syncSettingsActivity) {
+		SyncUtil.syncSettingsActivity = syncSettingsActivity;
+		updateSyncTextView();
+	}
+
+	private static void updateSyncTextView() {
+		TextView syncTextView = (TextView) 
+				syncSettingsActivity.findViewById(R.id.syncTextNotification);
+		if (syncing) {
+			syncTextView.setText("Syncing");
+		} else {
+			syncTextView.setText("Not syncing");
+		}
+	}
+
 	private static ServerCredentials serverCredentials;
 	private static Thread syncThread;
+	private static Activity syncSettingsActivity;
+	private static boolean syncing;
 }

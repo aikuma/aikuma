@@ -77,6 +77,8 @@ public class SyncSettingsActivity extends AikumaActivity {
 	public void onResume() {
 		super.onResume();
 
+		SyncUtil.setSyncSettingsActivity(this);
+
 		try {
 			ServerCredentials serverCredentials = ServerCredentials.read();
 			if (serverCredentials.getIPAddress().equals("")) {
