@@ -53,11 +53,14 @@ public class Recording {
 	 * @param	format	The mime type
 	 * @param	bitsPerSample	The bits per sample of the audio
 	 * @param	numChannels	The number of channels of the audio
+	 * @param	latitude The location data
+	 * @param	longitude The location data
 	 */
 	public Recording(UUID wavUUID, String name, Date date,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String sourceId, long sampleRate,
-			int durationMsec, String format, int numChannels, int bitsPerSample) {
+			int durationMsec, String format, int numChannels, 
+			int bitsPerSample, double latitude, double longitude) {
 		this.wavUUID = wavUUID;
 		setName(name);
 		setDate(date);
@@ -71,6 +74,8 @@ public class Recording {
 		this.format = format;
 		this.numChannels = numChannels;
 		this.bitsPerSample = bitsPerSample;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		// If there isn't an group Id, ie this is an original
 		if (groupId == null) {
 			setGroupId(createGroupId());
@@ -309,6 +314,10 @@ public class Recording {
 		encodedRecording.put("recording", this.groupId);
 		encodedRecording.put("suffix", this.respeakingId);
 		encodedRecording.put("source", this.sourceId);
+		JSONArray locationData = new JSONArray();
+		locationData.add(latitude+"");
+		locationData.add(longitude+"");
+		encodedRecording.put("location", locationData);
 		if (this.sourceId == null) {
 			encodedRecording.put("type", "source");
 		} else {
@@ -905,4 +914,8 @@ public class Recording {
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;
+	
+	//Location data
+	private double latitude;
+	private double longitude;
 }
