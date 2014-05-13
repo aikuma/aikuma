@@ -74,11 +74,13 @@ public class LocationDetector implements LocationListener {
 	 * Start the locationListener
 	 */
 	public void start() {
-		locationManager.requestLocationUpdates(
-				provider, 
-				MIN_TIME_INTERVAL,
-				MIN_DISTANCE_INTERVAL,
-				this);
+		if(provider != null) {
+			locationManager.requestLocationUpdates(
+					provider, 
+					MIN_TIME_INTERVAL,
+					MIN_DISTANCE_INTERVAL,
+					this);
+		}
 	}
 	
 	/**
@@ -93,9 +95,12 @@ public class LocationDetector implements LocationListener {
 	 */
 	public double getLatitude() { 
 		if(isLocation) return bestLocation.getLatitude();
-		else {
+		else if(provider != null){
 			bestLocation = locationManager.getLastKnownLocation(provider);
-			return bestLocation.getLatitude();
+			if(bestLocation != null) return bestLocation.getLatitude();
+			else return 0;
+		} else {
+			return 0;
 		}
 	}
 	/**
@@ -104,9 +109,12 @@ public class LocationDetector implements LocationListener {
 	 */
 	public double getLongitude() {
 		if(isLocation) return bestLocation.getLongitude();
-		else {
+		else if(provider != null){
 			bestLocation = locationManager.getLastKnownLocation(provider);
-			return bestLocation.getLongitude();
+			if(bestLocation != null) return bestLocation.getLongitude();
+			else return 0;
+		} else {
+			return 0;
 		}
 	}
 	
