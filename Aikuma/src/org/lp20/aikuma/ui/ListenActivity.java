@@ -336,6 +336,20 @@ public class ListenActivity extends AikumaActivity {
 		}
 		updateFlagButton();
 	}
+	
+	/**
+	 * When the share button is pressed
+	 *
+	 * @param	view	The share button
+	 */
+	public void onShareButtonPressed(View view) {
+		String urlToShare = "http://example.com/" + recording.getGroupId();
+		Intent intent = new Intent();
+		intent.setAction(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.putExtra(Intent.EXTRA_TEXT, urlToShare);
+		startActivity(Intent.createChooser(intent, "Share the link via"));
+	}
 
 	private void updateStarButton() {
 		ImageButton starButton = (ImageButton)
