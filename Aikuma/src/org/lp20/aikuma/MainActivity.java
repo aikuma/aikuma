@@ -32,6 +32,7 @@ import org.lp20.aikuma.ui.RecordActivity;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;
 import org.lp20.aikuma.ui.RecordingMetadataActivity;
 import org.lp20.aikuma.ui.SettingsActivity;
+import org.lp20.aikuma.ui.sensors.LocationDetector;
 import org.lp20.aikuma.util.SyncUtil;
 
 // For audio imports
@@ -41,6 +42,7 @@ import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Toast;
@@ -81,6 +83,9 @@ public class MainActivity extends ListActivity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowHomeEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
+		
+		// Start gathering location data
+		MainActivity.locationDetector = new LocationDetector(this);
 	}
 
 	@Override
@@ -97,6 +102,7 @@ public class MainActivity extends ListActivity {
 	public void onPause() {
 		super.onPause();
 		listViewState = getListView().onSaveInstanceState();
+		MainActivity.locationDetector.stop();
 	}
 
 	@Override
@@ -117,6 +123,14 @@ public class MainActivity extends ListActivity {
 		if (listViewState != null) {
 			getListView().onRestoreInstanceState(listViewState);
 		}
+		
+		MainActivity.locationDetector.start();
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		MainActivity.locationDetector.stop();
 	}
 
 	@Override
@@ -257,5 +271,9 @@ public class MainActivity extends ListActivity {
 	private File mPath;
 	private String mChosenFile;
 	private static final String FILE_TYPE = ".wav";
+	/**
+	 *  Location-service variable which can be accessed  by all other activities
+	 */
+	public static LocationDetector locationDetector;
 
 }

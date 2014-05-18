@@ -60,7 +60,7 @@ public class Recording {
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String sourceId, long sampleRate,
 			int durationMsec, String format, int numChannels, 
-			int bitsPerSample, double latitude, double longitude) {
+			int bitsPerSample, Double latitude, Double longitude) {
 		this.wavUUID = wavUUID;
 		setName(name);
 		setDate(date);
@@ -314,10 +314,15 @@ public class Recording {
 		encodedRecording.put("recording", this.groupId);
 		encodedRecording.put("suffix", this.respeakingId);
 		encodedRecording.put("source", this.sourceId);
-		JSONArray locationData = new JSONArray();
-		locationData.add(latitude+"");
-		locationData.add(longitude+"");
-		encodedRecording.put("location", locationData);
+		if(latitude != null && longitude != null) {
+			JSONArray locationData = new JSONArray();
+			locationData.add(latitude+"");
+			locationData.add(longitude+"");
+			encodedRecording.put("location", locationData);
+		} else {
+			encodedRecording.put("location", null);
+		}
+		
 		if (this.sourceId == null) {
 			encodedRecording.put("type", "source");
 		} else {
@@ -916,6 +921,6 @@ public class Recording {
 	private int numChannels;
 	
 	//Location data
-	private double latitude;
-	private double longitude;
+	private Double latitude;
+	private Double longitude;
 }
