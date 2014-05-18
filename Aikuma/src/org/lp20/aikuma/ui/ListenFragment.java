@@ -129,7 +129,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	private void pause() {
 		player.pause();
 		stopThread(seekBarThread);
-		playPauseButton.setImageResource(R.drawable.play);
+		playPauseButton.setImageResource(R.drawable.play_g);
 	}
 
 	/**
