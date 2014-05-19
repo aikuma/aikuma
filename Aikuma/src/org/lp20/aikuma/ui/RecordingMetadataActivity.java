@@ -107,7 +107,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	public void onResume() {
 		super.onResume();
 		ArrayAdapter<Language> adapter =
-				new RecordingLanguagesArrayAdapter(this, languages,
+				new LanguagesArrayAdapter(this, languages,
 						selectedLanguages);
 		setListAdapter(adapter);
 	}
@@ -288,6 +288,6 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	private int bitsPerSample;
 	private int numChannels;
 	
-	private double latitude;
-	private double longitude;
+	private Double latitude;
+	private Double longitude;
 }

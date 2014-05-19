@@ -51,6 +51,12 @@ public class RecordActivity extends AikumaActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
 		this.uuid = UUID.randomUUID();
+		// Disable the stopButton(saveButton) before the recording starts
+		ImageButton stopButton = 
+				(ImageButton) findViewById(R.id.stopButton);
+		stopButton.setImageResource(R.drawable.save48);
+		stopButton.setEnabled(false);
+		
 		// Set up the Beeper that will make beeps when recording starts and
 		// pauses
 		beeper = new Beeper(this, new MediaPlayer.OnCompletionListener() {
@@ -116,7 +122,6 @@ public class RecordActivity extends AikumaActivity {
 		super.onPause();
 		pause();
 		this.proximityDetector.stop();
-		this.locationDetector.stop();
 	}
 
 	@Override
@@ -140,8 +145,6 @@ public class RecordActivity extends AikumaActivity {
 		};
 		this.proximityDetector.start();
 		
-		this.locationDetector = new LocationDetector(this);
-		this.locationDetector.start();
 	}
 
 	// Activates recording
@@ -168,7 +171,11 @@ public class RecordActivity extends AikumaActivity {
 					(ImageButton) findViewById(R.id.recordButton);
 			ImageButton pauseButton =
 					(ImageButton) findViewById(R.id.pauseButton);
+			ImageButton stopButton =
+					(ImageButton) findViewById(R.id.stopButton);
 			recordButton.setEnabled(true);
+			stopButton.setImageResource(R.drawable.save_activate48);
+			stopButton.setEnabled(true);
 			recordButton.setVisibility(View.VISIBLE);
 			pauseButton.setVisibility(View.GONE);
 			try {
@@ -213,8 +220,8 @@ public class RecordActivity extends AikumaActivity {
 			// Maybe make a recording metadata file that refers to the error so
 			// that the audio can be salvaged.
 		}
-		double latitude = this.locationDetector.getLatitude();
-		double longitude = this.locationDetector.getLongitude();
+		Double latitude = MainActivity.locationDetector.getLatitude();
+		Double longitude = MainActivity.locationDetector.getLongitude();
 		
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
 		intent.putExtra("uuidString", uuid.toString());
@@ -224,8 +231,12 @@ public class RecordActivity extends AikumaActivity {
 		intent.putExtra("numChannels", recorder.getNumChannels());
 		intent.putExtra("format", recorder.getFormat());
 		intent.putExtra("bitsPerSample", recorder.getBitsPerSample());
-		intent.putExtra("latitude", latitude);
-		intent.putExtra("longitude", longitude);
+		if(latitude != null && longitude != null) {
+			// if location data is available, put else don't put
+			intent.putExtra("latitude", latitude);
+			intent.putExtra("longitude", longitude);
+		}
+		
 		startActivity(intent);
 		RecordActivity.this.finish();
 	}
@@ -245,6 +256,5 @@ public class RecordActivity extends AikumaActivity {
 	private long sampleRate = 16000l;
 	private TextView timeDisplay;
 	private ProximityDetector proximityDetector;
-	private LocationDetector locationDetector;
 	private Beeper beeper;
 }

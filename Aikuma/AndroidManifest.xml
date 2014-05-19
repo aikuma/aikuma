@@ -57,7 +57,17 @@
 				android:label="@string/app_name"
 				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
-		<activity android:name="org.lp20.aikuma.ui.AddSpeakerActivity"
+		<activity android:name="org.lp20.aikuma.ui.AddSpeakerActivity1"
+				android:configChanges="orientation"
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
+		</activity>
+		<activity android:name="org.lp20.aikuma.ui.AddSpeakerActivity2"
+				android:configChanges="orientation"
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
+		</activity>
+		<activity android:name="org.lp20.aikuma.ui.AddSpeakerActivity3"
 				android:configChanges="orientation"
 				android:label="@string/app_name"
 				android:parentActivityName="org.lp20.aikuma.MainActivity">
