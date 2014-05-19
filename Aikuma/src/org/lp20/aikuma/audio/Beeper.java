@@ -126,7 +126,6 @@ public class Beeper {
 			beeper.setOnCompletionListener(new OnCompletionListener() {
 				public void onCompletion(MediaPlayer mediaPlayer) {
 					listener.onCompletion(mediaPlayer);
-					beeper.release();
 				}
 			});
 		}
