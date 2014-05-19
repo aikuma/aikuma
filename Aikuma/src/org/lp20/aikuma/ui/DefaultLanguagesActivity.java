@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.R;
@@ -26,27 +27,44 @@ public class DefaultLanguagesActivity extends AikumaListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.default_languages);
+		// Default languages are initially selected
+		defaultLanguages = FileIO.readDefaultLanguages();
+		selectedDefaultLanguages=  FileIO.readDefaultLanguages();
+		adapter = new LanguagesArrayAdapter(this, defaultLanguages, 
+						selectedDefaultLanguages);
+		setListAdapter(adapter);
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 		try {
+			FileIO.writeDefaultLanguages(selectedDefaultLanguages);
+		} catch (IOException e) {
+			// Not much that can be done if writing fails, except perhaps
+			// toasting the user.
+		}
+		/*
+		try {
 			FileIO.writeDefaultLanguages(defaultLanguages);
 		} catch (IOException e) {
 			// Not much that can be done if writing fails, except perhaps
 			// toasting the user.
 		}
+		*/
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-
+		
+		/*
 		defaultLanguages = FileIO.readDefaultLanguages();
 		ArrayAdapter<Language> adapter =
-				new SpeakerLanguagesArrayAdapter(this, defaultLanguages);
+				new SpeakerLanguagesArrayAdapter(this, defaultLanguages, 
+						selectedDefaultLanguages);
 		setListAdapter(adapter);
+		*/
 	}
 
 	/**
@@ -78,6 +96,8 @@ public class DefaultLanguagesActivity extends AikumaListActivity {
 						(Language) intent.getParcelableExtra("language");
 				if (!defaultLanguages.contains(language)) {
 					defaultLanguages.add(language);
+					adapter.notifyDataSetChanged();
+					selectedDefaultLanguages.add(language);
 				}
 				try {
 					FileIO.writeDefaultLanguages(defaultLanguages);
@@ -89,6 +109,10 @@ public class DefaultLanguagesActivity extends AikumaListActivity {
 		}
 	}
 
+	
 	static final int SELECT_LANGUAGE = 0;
+	// Languages shown in the list, and selected by the user.
 	private List<Language> defaultLanguages;
+	private List<Language> selectedDefaultLanguages = new ArrayList<Language>();
+	ArrayAdapter<Language> adapter;
 }
