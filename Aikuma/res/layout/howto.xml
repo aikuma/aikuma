@@ -52,7 +52,7 @@
 		<TextView android:textAppearance="?android:attr/textAppearanceMedium"
 			android:textSize="15sp"
 			android:layout_height="wrap_content"
-			android:text="Make a respeaking"
+			android:text="Make a commentary"
 			android:layout_width="wrap_content"
 			android:id="@+id/recordingName"
 			android:padding="1dp"/>
