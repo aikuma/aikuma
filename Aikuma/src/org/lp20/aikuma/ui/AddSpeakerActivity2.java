@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.TextView;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,23 +36,29 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 		
 		Intent intent = getIntent();
 		name = (String) intent.getExtras().getString("name");
+		TextView nameView = (TextView) findViewById(R.id.nameView1);
+		nameView.setText("Name: " + name);
 		
 		//Lets method in superclass(AikumaAcitivity) know 
 		//to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
-		safeActivityTransition = true;
-		safeActivityTransitionMessage = "This will discard the new speaker data.";
+		safeActivityTransition = false;
+		safeActivityTransitionMessage = 
+				"This will discard the new speaker's language information.";
+		
 		languages = FileIO.readDefaultLanguages();
 		selectedLanguages = new ArrayList<Language>();
-
-		//ImageButton okButton = (ImageButton) findViewById(R.id.okButton2);
-		//okButton.setImageResource(R.drawable.ok_disabled_48);
-		//okButton.setEnabled(false);
-		ImageButton okButton = (ImageButton) findViewById(R.id.okButton2);
-		okButton.setImageResource(R.drawable.ok_48);
-		okButton.setEnabled(true);
 		
-		adapter = new LanguagesArrayAdapter(this, languages, selectedLanguages);
+		okButton = (ImageButton) findViewById(R.id.okButton2);
+		okButton.setImageResource(R.drawable.ok_disabled_48);
+		okButton.setEnabled(false);
+
+		adapter = new LanguagesArrayAdapter(this, languages, selectedLanguages) {
+			@Override
+			public void updateActivityState() {
+				updateOkButton();
+			}
+		};
 		setListAdapter(adapter);
 	}
 
@@ -80,13 +88,14 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent
-			intent) {
+	protected void onActivityResult(int requestCode, int resultCode, 
+			Intent intent) {
 		if (resultCode == RESULT_OK) {
 			Language language =
 					(Language) intent.getParcelableExtra("language");
 			if (!languages.contains(language)) {
 				languages.add(language);
+				selectedLanguages.add(language);
 				adapter.notifyDataSetChanged();
 			}
 		}
@@ -104,12 +113,30 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 		startActivity(intent);
 	}
 
+	/**
+	 * Disables or enables the OK button if at least one language is selected
+	 * used by LanguageArrayAdapter each time checkbox is checked
+	 */
+	private void updateOkButton() {
+		if (selectedLanguages.size() > 0) {
+			okButton.setImageResource(R.drawable.ok_48);
+			okButton.setEnabled(true);
+			safeActivityTransition = true;
+		} else {
+			okButton.setImageResource(R.drawable.ok_disabled_48);
+			okButton.setEnabled(false);
+			safeActivityTransition = false;
+		}
+	}
+	
 
 	static final int SELECT_LANGUAGE = 0;
 	//Speaker-name
 	private String name;
 	
+	private ImageButton okButton;
+	
 	private List<Language> languages = new ArrayList<Language>();
 	private ArrayList<Language> selectedLanguages;
-	ArrayAdapter<Language> adapter;
+	private ArrayAdapter<Language> adapter;
 }

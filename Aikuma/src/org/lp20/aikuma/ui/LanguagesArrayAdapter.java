@@ -77,12 +77,21 @@ public class LanguagesArrayAdapter extends ArrayAdapter<Language> {
 					selectedLanguages.remove(language);
 					checked = false;
 				}
+				updateActivityState();
 			}
 		});
 
 		recordingNameView.setText(language.toString());
 		return recordingView;
 	}
+	
+	/**
+	 * Overriden by the Activity which makes an instance of this class
+	 * When the state of a checkbox changes, 
+	 * This function will change the Activity's state
+	 */
+	public void updateActivityState() {}
+	
 
 	private static final int LIST_ITEM_LAYOUT =
 			R.layout.languages_list_item;

@@ -92,13 +92,20 @@ public class RecordActivity extends AikumaActivity {
 				while (true) {
 					timeDisplay.post(new Runnable() {
 						public void run() {
-							Float time = recorder.getCurrentMsec()/1000f;
+							int time = recorder.getCurrentMsec();
 							/*
 							BigDecimal bd = new
 									BigDecimal(recorder.getCurrentMsec()/1000f);
 							bd = bd.round(new MathContext(1));
 							*/
-							timeDisplay.setText(Float.toString(time) + "s");
+							//Lets method in superclass know to ask user if
+							//they are willing to discard audio if time>250msec
+							if(time > 250) {
+								safeActivityTransition = true;
+								safeActivityTransitionMessage = "Discard Audio?";
+							}
+								
+							timeDisplay.setText(Float.toString(time/1000f) + "s");
 						}
 					});
 					try {
@@ -149,11 +156,7 @@ public class RecordActivity extends AikumaActivity {
 
 	// Activates recording
 	private void record() {
-		//Lets method in superclass know to ask user if they are willing to
-		//discard new data on an activity transition via the menu.
-		safeActivityTransition = true;
-		safeActivityTransitionMessage = "Discard Audio?";
-
+		
 		if (!recording) {
 			recording = true;
 			ImageButton recordButton =

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
-		android:orientation="horizontal" android:baselineAligned="false" android:id="@+id/addNewUser">
+		android:orientation="horizontal" android:baselineAligned="false" android:id="@+id/addRecordingSpeaker">
 	<ImageView android:src="@drawable/unknown_speaker"
 			android:layout_gravity="center"
 			android:padding="5dip"
@@ -10,19 +10,24 @@
 			android:scaleType="centerInside"
 			android:layout_width="60dip"
 			android:layout_height="60dip"
-			android:id="@+id/speakerImage"/>
+			android:id="@+id/recordingSpeakerImage"/>
 	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
 			android:layout_height="wrap_content"
 			android:text=""
 			android:layout_width="0dp"
 			android:layout_weight="1"
 			android:layout_gravity="center_vertical"
-			android:id="@+id/speakerName"/>
+			android:id="@+id/recordingSpeakerName"/>
 	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
 			android:layout_height="wrap_content"
 			android:text=""
 			android:layout_width="0dp"
 			android:layout_weight="1"
 			android:layout_gravity="center_vertical"
-			android:id="@+id/speakerLanguages"/>
+			android:id="@+id/recordingSpeakerLanguages"/>
+	<CheckBox
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:id="@+id/speakerCheckBox" />
 </LinearLayout>

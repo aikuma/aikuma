@@ -9,7 +9,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import org.lp20.aikuma.R;
@@ -29,8 +32,10 @@ public class AddSpeakerActivity1 extends AikumaActivity {
 		//Lets method in superclass(AikumaAcitivity) know 
 		//to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
-		safeActivityTransition = true;
-		safeActivityTransitionMessage = "This will discard the new speaker data.";
+		safeActivityTransition = false;
+		safeActivityTransitionMessage = 
+				"This will discard the new speaker's name.";
+		
 		ImageButton okButton = (ImageButton) findViewById(R.id.okButton1);
 		okButton.setImageResource(R.drawable.ok_disabled_48);
 		okButton.setEnabled(false);
@@ -41,13 +46,17 @@ public class AddSpeakerActivity1 extends AikumaActivity {
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
 				if(s.toString().length() > 0) {
-					ImageButton okButton = (ImageButton) findViewById(R.id.okButton1);
+					ImageButton okButton = 
+							(ImageButton) findViewById(R.id.okButton1);
 					okButton.setImageResource(R.drawable.ok_48);
 					okButton.setEnabled(true);
+					safeActivityTransition = true;
 				} else {
-					ImageButton okButton = (ImageButton) findViewById(R.id.okButton1);
+					ImageButton okButton = 
+							(ImageButton) findViewById(R.id.okButton1);
 					okButton.setImageResource(R.drawable.ok_disabled_48);
 					okButton.setEnabled(false);
+					safeActivityTransition = false;
 				}
 			}
 			@Override
@@ -57,6 +66,21 @@ public class AddSpeakerActivity1 extends AikumaActivity {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {}	
+		});
+		
+		textField.setOnKeyListener(new OnKeyListener() {
+
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				// TODO Auto-generated method stub
+				if((event.getAction() == KeyEvent.ACTION_DOWN && 
+						(event.getKeyCode() == KeyEvent.KEYCODE_ENTER))) {
+					onOkButtonPressed(null);
+					return true;
+				}
+				return false;
+			}
+			
 		});
 	}
 

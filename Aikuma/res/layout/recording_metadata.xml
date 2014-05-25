@@ -13,6 +13,7 @@
 		android:layout_alignParentBottom="true"
 		android:id="@+id/cancelAndOkButtons"
 		>
+		<!--
 		<ImageButton
 			android:id="@+id/cancelButton"
 			android:layout_width="0dp"
@@ -22,6 +23,7 @@
 			android:layout_weight="1"
 			android:onClick="onCancelButtonPressed"
 		/>
+		-->
 		<ImageButton
 			android:id="@+id/okButton"
 			android:layout_width="0dp"
