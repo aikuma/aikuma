@@ -99,9 +99,4 @@ public class AddSpeakerActivity1 extends AikumaActivity {
 		intent.putExtra("name", name);
 		startActivity(intent);
 	}
-
-
-	static final int SELECT_LANGUAGE = 0;
-	static final int PHOTO_REQUEST_CODE = 1;
-
 }

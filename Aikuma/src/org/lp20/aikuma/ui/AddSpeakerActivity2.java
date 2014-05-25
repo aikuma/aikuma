@@ -55,6 +55,7 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 
 		adapter = new LanguagesArrayAdapter(this, languages, selectedLanguages) {
 			@Override
+			// When checkbox in a listview is checked/unchecked
 			public void updateActivityState() {
 				updateOkButton();
 			}

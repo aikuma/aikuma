@@ -66,27 +66,7 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 		safeActivityTransition = true;
 		safeActivityTransitionMessage = 
 				"This will discard the new speaker's photo.";
-
-//		ImageButton okButton = (ImageButton) findViewById(R.id.okButton4);
-//		okButton.setImageResource(R.drawable.ok_disabled_48);
-//		okButton.setEnabled(false);
 	}
-
-/*
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent
-			intent) {
-		if (resultCode == RESULT_OK) {
-			Intent lastIntent = new Intent(this, AddSpeakerActivity4.class);
-			lastIntent.putExtra("name", name);
-			lastIntent.putParcelableArrayListExtra("languages", selectedLanguages);
-			lastIntent.putExtra("imageUUID", imageUUID.toString());
-			startActivity(intent);
-			
-			handleSmallCameraPhoto();
-		}
-	}
-	*/
 
 	// Creates a smaller version of the photo taken and uses it for the speaker
 	// image view.
@@ -100,13 +80,6 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 		}
 		ImageView speakerImage = (ImageView) findViewById(R.id.speakerImage);
 		speakerImage.setImageBitmap(image);
-		
-//		if (image != null) {
-//			ImageButton okButton = (ImageButton) findViewById(R.id.okButton4);
-//		okButton.setImageResource(R.drawable.ok_48);
-//		okButton.setEnabled(true);
-//		safeActivityTransition = true;
-//		}
 	}
 
 	/**

@@ -80,6 +80,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
+		//if duration of the file > 250msec
 		if(durationMsec > 250) {
 			safeActivityTransition = true;
 		}
@@ -180,33 +181,6 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 				.setNegativeButton(R.string.cancel, null)
 				.show();
 	}
-
-
-	/**
-	 * When the user wants to cancel saving the metadata.
-	 *
-	 * @param	view	The cancel button.
-	 */
-	/*
-	public void onCancelButtonPressed(View view) {
-		new AlertDialog.Builder(this)
-				.setMessage(R.string.discard_dialog)
-				.setPositiveButton(R.string.discard, new
-				DialogInterface.OnClickListener() {
-				
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Intent intent =
-								new Intent(RecordingMetadataActivity.this,
-										MainActivity.class);
-						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						startActivity(intent);
-					}
-				})
-				.setNegativeButton(R.string.cancel, null)
-				.show();
-	}
-	*/
 
 	// Used to recieve the results of taking photos and adding speakers.
 	@Override

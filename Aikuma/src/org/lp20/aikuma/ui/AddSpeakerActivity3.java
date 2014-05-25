@@ -65,9 +65,6 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 				"This will discard the new speaker's photo.";
 
 		imageUUID = UUID.randomUUID();
-//		ImageButton okButton = (ImageButton) findViewById(R.id.okButton3);
-//		okButton.setImageResource(R.drawable.ok_disabled_48);
-//		okButton.setEnabled(false);
 	}
 
 
@@ -82,26 +79,6 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 			startActivity(lastIntent);
 		}
 	}
-
-	/**
-	 * Called when the user is ready to confirm the creation of the speaker.
-	 *
-	 * @param	view	The OK button.
-	 */
-//	public void onOkButtonPressed(View view) {
-//		try {
-//			Speaker newSpeaker = new Speaker(imageUUID, name, selectedLanguages);
-//			newSpeaker.write();
-//		} catch (IOException e) {
-//			Toast.makeText(this, 
-//					"Failed to write the Speaker to file or import speaker image",
-//					Toast.LENGTH_LONG).show();
-//		}
-//		
-//		Intent intent = new Intent(this, MainSpeakersActivity.class);
-//		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//		startActivity(intent);
-//	}
 
 	/**
 	 * When the take photo button is pressed.

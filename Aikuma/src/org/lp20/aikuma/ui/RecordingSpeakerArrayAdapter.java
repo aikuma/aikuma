@@ -92,12 +92,21 @@ public class RecordingSpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 					selectedSpeakers.remove(speaker);
 					checked = false;
 				}
+				updateActivityState();
 			}
 		});
 		
 		
 		return speakerView;
 	}
+	
+	/**
+	 * Overriden by the Activity which makes an instance of this class
+	 * When the state of a checkbox changes, 
+	 * This function will change the Activity's state
+	 */
+	public void updateActivityState() {}
+	
 
 	private static final int LIST_ITEM_LAYOUT = 
 			R.layout.recordingspeaker_list_item;
