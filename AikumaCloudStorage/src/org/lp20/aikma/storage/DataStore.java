@@ -15,5 +15,5 @@ public interface DataStore {
 	 * @param identifier Unique identifier for the data item to store.
 	 * @param data An InputStream containing the data.
 	 */
-	public void store(String identifier, InputStream data);
+	public boolean store(String identifier, Data data);
 }

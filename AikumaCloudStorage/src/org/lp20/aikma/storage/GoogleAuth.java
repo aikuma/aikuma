@@ -1,8 +1,6 @@
 package org.lp20.aikma.storage;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -85,15 +83,7 @@ public class GoogleAuth {
 			writer.flush();
 			writer.close();
 			if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-				BufferedReader in = new BufferedReader(
-						new InputStreamReader(con.getInputStream())
-				);
-				String line;
-				StringBuffer sb = new StringBuffer();
-				while ((line = in.readLine()) != null) {
-					sb.append(line);
-				}
-				accessToken_ = sb.toString();
+				accessToken_ = Utils.readStream(con.getInputStream());
 				lastError_ = null;
 				return true;
 			} else {
