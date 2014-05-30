@@ -115,6 +115,13 @@ public class SyncUtil {
 		private boolean forceSync;
 	}
 
+	/**
+	 * Sets the sync settings activity so that SyncUtil knows what activity to
+	 * use to update the sync notification views.
+	 *
+	 * @param	syncSettingsActivity	the Activity whose views are to be
+	 * updated by SyncUtil to reflect syncing progress.
+	 */
 	public static void setSyncSettingsActivity(Activity syncSettingsActivity) {
 		SyncUtil.syncSettingsActivity = syncSettingsActivity;
 		updateSyncTextView();
