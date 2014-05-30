@@ -45,10 +45,17 @@
 		android:layout_above="@id/bottomGroup"
 		>
 		<TextView
+	    	android:id="@+id/nameView1"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+			android:layout_marginBottom="10dp"
+	    	android:text="" />
+	    
+		<TextView
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:text="@string/defaultLangHeading"
-		/>
+			android:text="Languages:" 
+		/>			<!-- "@string/defaultLangHeading" -->
 		<LinearLayout
 			android:orientation="horizontal"
 			android:layout_width="fill_parent"
@@ -62,5 +69,7 @@
 			/>
 		</LinearLayout>
 	</LinearLayout>
+
+	
 	
 </RelativeLayout>

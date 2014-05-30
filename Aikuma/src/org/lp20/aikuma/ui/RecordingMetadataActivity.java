@@ -53,9 +53,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recording_metadata);
-		//Lets method in superclass know to ask user if they are willing to
-		//discard new data on an activity transition via the menu.
-		safeActivityTransition = true;
+
 		Intent intent = getIntent();
 		uuid = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
@@ -80,8 +78,26 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		okButton = (ImageButton) findViewById(R.id.okButton);
 		updateOkButton();
 
+		//Lets method in superclass know to ask user if they are willing to
+		//discard new data on an activity transition via the menu.
+		//if duration of the file > 250msec
+		if(durationMsec > 250) {
+			safeActivityTransition = true;
+		}
+		safeActivityTransitionMessage = "Are you sure you want to discard this recording?";
+		
+		
 		nameField = (EditText) findViewById(R.id.recordingDescription);
 		nameField.addTextChangedListener(emptyTextWatcher);
+		
+		adapter = new LanguagesArrayAdapter(this, languages, selectedLanguages) {
+			@Override
+			// When checkbox in a listview is checked/unchecked
+			public void updateActivityState() {
+				updateOkButton();
+			}
+		};
+		setListAdapter(adapter);
 	}
 
 	// Prepares the player with the recording.
@@ -106,10 +122,6 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		ArrayAdapter<Language> adapter =
-				new LanguagesArrayAdapter(this, languages,
-						selectedLanguages);
-		setListAdapter(adapter);
 	}
 
 	/**
@@ -120,7 +132,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	public void onAddUserButtonPressed(View view) {
 		Intent intent =
 			new Intent(RecordingMetadataActivity.this,
-						SpeakersActivity.class);
+						RecordingSpeakersActivity.class);
 		startActivityForResult(intent, ADD_SPEAKER);
 	}
 
@@ -170,57 +182,39 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 				.show();
 	}
 
-	/**
-	 * When the user wants to cancel saving the metadata.
-	 *
-	 * @param	view	The cancel button.
-	 */
-	public void onCancelButtonPressed(View view) {
-		new AlertDialog.Builder(this)
-				.setMessage(R.string.discard_dialog)
-				.setPositiveButton(R.string.discard, new
-				DialogInterface.OnClickListener() {
-				
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Intent intent =
-								new Intent(RecordingMetadataActivity.this,
-										MainActivity.class);
-						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						startActivity(intent);
-					}
-				})
-				.setNegativeButton(R.string.cancel, null)
-				.show();
-	}
-
 	// Used to recieve the results of taking photos and adding speakers.
 	@Override
 	protected void onActivityResult(
 			int requestCode, int resultCode, Intent intent) {
 		if (requestCode == ADD_SPEAKER) {
 			if (resultCode == RESULT_OK) {
-				Speaker speaker = intent.getParcelableExtra("speaker");
-				if (!speakersIds.contains(speaker.getId())) {
-					speakersIds.add(speaker.getId());
-					for (Language language : speaker.getLanguages()) {
-						if (!languages.contains(language)) {
-							languages.add(language);
+				ArrayList<Speaker> speakers = intent.getParcelableArrayListExtra("speakers");
+				
+				//Speaker speaker = intent.getParcelableExtra("speaker");
+				for(Speaker speaker : speakers) {
+					if (!speakersIds.contains(speaker.getId())) {
+						speakersIds.add(speaker.getId());
+						for (Language language : speaker.getLanguages()) {
+							if (!languages.contains(language)) {
+								languages.add(language);
+								adapter.notifyDataSetChanged();
+							}
 						}
+						
+						ImageView speakerImage = new ImageView(this);
+						speakerImage.setAdjustViewBounds(true);
+						speakerImage.setMaxHeight(60);
+						speakerImage.setMaxWidth(60);
+						//speakerImage.setPaddingRelative(5,5,5,5);
+						try {
+							speakerImage.setImageBitmap(speaker.getSmallImage());
+						} catch (IOException e) {
+							// If the image can't be loaded, we just leave it at that.
+						}
+						userImages.addView(speakerImage);
+						recordingHasSpeaker = true;
+						updateOkButton();
 					}
-					selectedLanguages = new ArrayList<Language>();
-					ImageView speakerImage = new ImageView(this);
-					speakerImage.setAdjustViewBounds(true);
-					speakerImage.setMaxHeight(60);
-					speakerImage.setMaxWidth(60);
-					try {
-						speakerImage.setImageBitmap(speaker.getSmallImage());
-					} catch (IOException e) {
-						// If the image can't be loaded, we just leave it at that.
-					}
-					userImages.addView(speakerImage);
-					recordingHasSpeaker = true;
-					updateOkButton();
 				}
 			}
 		}
@@ -257,15 +251,23 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	/**
 	 * Disables or enables the OK button depending on whether the recording now
 	 * has a speaker and name.
+	 * Turn on safeGoBackTransition when at least one thing is input by a user.
 	 */
 	private void updateOkButton() {
-		if (recordingHasSpeaker && recordingHasName) {
+		if (recordingHasSpeaker && recordingHasName && selectedLanguages.size() > 0) {
 			okButton.setImageResource(R.drawable.ok_48);
 			okButton.setEnabled(true);
 		} else {
 			okButton.setImageResource(R.drawable.ok_disabled_48);
 			okButton.setEnabled(false);
 		}
+		
+		/*
+		if (recordingHasSpeaker || recordingHasName || selectedLanguages.size() > 0) {
+			safeActivityTransition = true;
+		} else {
+			safeActivityTransition = false;
+		}*/
 	}
 
 	static final int ADD_SPEAKER = 0;
@@ -274,6 +276,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	private List<String> speakersIds;
 	private List<Language> languages;
 	private List<Language> selectedLanguages;
+	private ArrayAdapter<Language> adapter;
 	private LinearLayout userImages;
 	private long sampleRate;
 	private int durationMsec;

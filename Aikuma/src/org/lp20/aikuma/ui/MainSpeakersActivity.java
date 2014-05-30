@@ -7,11 +7,14 @@ package org.lp20.aikuma.ui;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import java.util.Collections;
 import java.util.List;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.R;
@@ -36,6 +39,8 @@ public class MainSpeakersActivity extends AikumaListActivity {
 		super.onResume();
 
 		speakers = Speaker.readAll();
+		Collections.reverse(speakers);
+		
 		ArrayAdapter<Speaker> adapter =
 				new SpeakerArrayAdapter(this, speakers);
 		setListAdapter(adapter);
@@ -59,6 +64,21 @@ public class MainSpeakersActivity extends AikumaListActivity {
 		setResult(RESULT_OK, intent);
 		this.finish();
 		*/
+	}
+	
+	/**
+	 * When new speaker is added,
+	 * scroll down to the bottom to show the new user
+	 */
+	private void scrollMyListViewToBottom() {
+		final ListView listView = getListView();
+		listView.post(new Runnable() {
+	        @Override
+	        public void run() {
+	            // Select the last row so it will scroll into view...
+	            listView.setSelection(getListAdapter().getCount() - 1);
+	        }
+	    });
 	}
 
 	private List<Speaker> speakers;
