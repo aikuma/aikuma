@@ -99,6 +99,7 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 				selectedLanguages.add(language);
 				adapter.notifyDataSetChanged();
 			}
+			updateOkButton();
 		}
 	}
 
