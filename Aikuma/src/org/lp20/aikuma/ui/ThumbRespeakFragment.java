@@ -5,6 +5,8 @@
 package org.lp20.aikuma.ui;
 
 import android.app.Fragment;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -79,11 +81,14 @@ public class ThumbRespeakFragment extends Fragment {
 				v.findViewById(R.id.PlayButton);
 		final ImageButton respeakButton = (ImageButton)
 				v.findViewById(R.id.RespeakButton);
-
+		final int greyColor = 0xffd6d6d6;
 		playButton.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					// Color change
+					//playButton.setBackgroundColor(0xff00d500);
+					
 					respeaker.playOriginal();
 					seekBarThread = new Thread(new Runnable() {
 							public void run() {
@@ -105,6 +110,7 @@ public class ThumbRespeakFragment extends Fragment {
 					seekBarThread.start();
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
+					//playButton.setBackgroundColor(greyColor);
 					respeaker.pauseOriginal();
 					stopThread(seekBarThread);
 				}
@@ -116,10 +122,12 @@ public class ThumbRespeakFragment extends Fragment {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					//respeakButton.setBackgroundColor(0xffff2020);
 					respeaker.pauseOriginal();
 					respeaker.recordRespeaking();
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
+					//respeakButton.setBackgroundColor(greyColor);
 					try {
 						respeaker.pauseRespeaking();
 					} catch (MicException e) {

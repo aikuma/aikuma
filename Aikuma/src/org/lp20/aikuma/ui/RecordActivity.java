@@ -35,6 +35,7 @@ import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.ui.sensors.LocationDetector;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 
 /**
@@ -50,6 +51,12 @@ public class RecordActivity extends AikumaActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
 		this.uuid = UUID.randomUUID();
+		// Disable the stopButton(saveButton) before the recording starts
+		ImageButton stopButton = 
+				(ImageButton) findViewById(R.id.stopButton);
+		stopButton.setImageResource(R.drawable.save48);
+		stopButton.setEnabled(false);
+		
 		// Set up the Beeper that will make beeps when recording starts and
 		// pauses
 		beeper = new Beeper(this, new MediaPlayer.OnCompletionListener() {
@@ -70,9 +77,6 @@ public class RecordActivity extends AikumaActivity {
 					}
 				}
 			});
-		//Lets method in superclass know to ask user if they are willing to
-		//discard new data on an activity transition via the menu.
-		safeActivityTransition = true;
 		try {
 			recorder = new Recorder(new File(Recording.getNoSyncRecordingsPath(),
 					uuid.toString() + ".wav"), sampleRate);
@@ -88,13 +92,20 @@ public class RecordActivity extends AikumaActivity {
 				while (true) {
 					timeDisplay.post(new Runnable() {
 						public void run() {
-							Float time = recorder.getCurrentMsec()/1000f;
+							int time = recorder.getCurrentMsec();
 							/*
 							BigDecimal bd = new
 									BigDecimal(recorder.getCurrentMsec()/1000f);
 							bd = bd.round(new MathContext(1));
 							*/
-							timeDisplay.setText(Float.toString(time) + "s");
+							//Lets method in superclass know to ask user if
+							//they are willing to discard audio if time>250msec
+							if(time > 250) {
+								safeActivityTransition = true;
+								safeActivityTransitionMessage = "Discard Audio?";
+							}
+								
+							timeDisplay.setText(Float.toString(time/1000f) + "s");
 						}
 					});
 					try {
@@ -140,10 +151,12 @@ public class RecordActivity extends AikumaActivity {
 			}
 		};
 		this.proximityDetector.start();
+		
 	}
 
 	// Activates recording
 	private void record() {
+		
 		if (!recording) {
 			recording = true;
 			ImageButton recordButton =
@@ -161,7 +174,11 @@ public class RecordActivity extends AikumaActivity {
 					(ImageButton) findViewById(R.id.recordButton);
 			ImageButton pauseButton =
 					(ImageButton) findViewById(R.id.pauseButton);
+			ImageButton stopButton =
+					(ImageButton) findViewById(R.id.stopButton);
 			recordButton.setEnabled(true);
+			stopButton.setImageResource(R.drawable.save_activate48);
+			stopButton.setEnabled(true);
 			recordButton.setVisibility(View.VISIBLE);
 			pauseButton.setVisibility(View.GONE);
 			try {
@@ -206,6 +223,9 @@ public class RecordActivity extends AikumaActivity {
 			// Maybe make a recording metadata file that refers to the error so
 			// that the audio can be salvaged.
 		}
+		Double latitude = MainActivity.locationDetector.getLatitude();
+		Double longitude = MainActivity.locationDetector.getLongitude();
+		
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
 		intent.putExtra("uuidString", uuid.toString());
 		intent.putExtra("sampleRate", sampleRate);
@@ -214,6 +234,12 @@ public class RecordActivity extends AikumaActivity {
 		intent.putExtra("numChannels", recorder.getNumChannels());
 		intent.putExtra("format", recorder.getFormat());
 		intent.putExtra("bitsPerSample", recorder.getBitsPerSample());
+		if(latitude != null && longitude != null) {
+			// if location data is available, put else don't put
+			intent.putExtra("latitude", latitude);
+			intent.putExtra("longitude", longitude);
+		}
+		
 		startActivity(intent);
 		RecordActivity.this.finish();
 	}

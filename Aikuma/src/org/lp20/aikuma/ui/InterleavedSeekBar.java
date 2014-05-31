@@ -9,9 +9,13 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.SeekBar;
+import org.lp20.aikuma.R;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,14 +27,33 @@ class InterleavedSeekBar extends SeekBar {
 
 	public InterleavedSeekBar(Context context) {
 		super(context);
+		//this.getThumb().setColorFilter(0xff4c516d, Mode.SRC_IN);
+		Drawable thumb = context.getResources().
+				getDrawable(R.drawable.thumb);
+		Drawable progressColor = context.getResources().
+				getDrawable(R.drawable.seekbar_background);
+		this.setThumb(thumb);
+		this.setProgressDrawable(progressColor);
 	}
 
 	public InterleavedSeekBar(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		Drawable thumb = context.getResources().
+				getDrawable(R.drawable.thumb);
+		Drawable progressColor = context.getResources().
+				getDrawable(R.drawable.seekbar_background);
+		this.setThumb(thumb);
+		this.setProgressDrawable(progressColor);
 	}
 
 	public InterleavedSeekBar(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		Drawable thumb = context.getResources().
+				getDrawable(R.drawable.thumb);
+		Drawable progressColor = context.getResources().
+				getDrawable(R.drawable.seekbar_background);
+		this.setThumb(thumb);
+		this.setProgressDrawable(progressColor);
 	}
 
 	protected void onDraw(Canvas canvas) {
@@ -39,7 +62,7 @@ class InterleavedSeekBar extends SeekBar {
 		Paint paint = new Paint();
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setStrokeWidth(2);
-		paint.setColor(Color.rgb(204, 0, 0));
+		paint.setColor(Color.rgb(196, 0, 1));
 
 		drawLines(canvas, paint);
 	}

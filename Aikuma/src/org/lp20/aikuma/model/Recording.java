@@ -53,11 +53,14 @@ public class Recording {
 	 * @param	format	The mime type
 	 * @param	bitsPerSample	The bits per sample of the audio
 	 * @param	numChannels	The number of channels of the audio
+	 * @param	latitude The location data
+	 * @param	longitude The location data
 	 */
 	public Recording(UUID wavUUID, String name, Date date,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String sourceId, long sampleRate,
-			int durationMsec, String format, int numChannels, int bitsPerSample) {
+			int durationMsec, String format, int numChannels, 
+			int bitsPerSample, Double latitude, Double longitude) {
 		this.wavUUID = wavUUID;
 		setName(name);
 		setDate(date);
@@ -71,6 +74,8 @@ public class Recording {
 		this.format = format;
 		this.numChannels = numChannels;
 		this.bitsPerSample = bitsPerSample;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		// If there isn't an group Id, ie this is an original
 		if (groupId == null) {
 			setGroupId(createGroupId());
@@ -262,6 +267,10 @@ public class Recording {
 		return groupId;
 	}
 
+	public String getRespeakingId() {
+		return respeakingId;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -305,6 +314,15 @@ public class Recording {
 		encodedRecording.put("recording", this.groupId);
 		encodedRecording.put("suffix", this.respeakingId);
 		encodedRecording.put("source", this.sourceId);
+		if(latitude != null && longitude != null) {
+			JSONArray locationData = new JSONArray();
+			locationData.add(latitude+"");
+			locationData.add(longitude+"");
+			encodedRecording.put("location", locationData);
+		} else {
+			encodedRecording.put("location", null);
+		}
+		
 		if (this.sourceId == null) {
 			encodedRecording.put("type", "source");
 		} else {
@@ -813,6 +831,21 @@ public class Recording {
 	}
 
 	/**
+	 * Gives the number of times this recording has been views.
+	 *
+	 * @return	The number of times this recording has been viewed.
+	 */
+	public int numViews() {
+		File socialDir = new File(FileIO.getAppRootPath(), "/views/" +
+				getGroupId() + "/" + getId());
+		File[] flagFiles = socialDir.listFiles();
+		if (flagFiles == null) {
+			return 0;
+		}
+		return flagFiles.length;
+	}
+
+	/**
 	 * Indicates that this recording is allowed to be synced by moving it to a
 	 * directory that the SyncUtil synchronizes.
 	 *
@@ -886,4 +919,8 @@ public class Recording {
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;
+	
+	//Location data
+	private Double latitude;
+	private Double longitude;
 }

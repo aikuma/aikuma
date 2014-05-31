@@ -59,6 +59,7 @@ public class ListenActivity extends AikumaActivity {
 		setUpPlayer();
 		setUpRespeakingImages();
 		setUpRecordingInfo();
+		updateViewCount();
 	}
 
 	// Prepares the recording
@@ -115,7 +116,6 @@ public class ListenActivity extends AikumaActivity {
 		speakerImage.setAdjustViewBounds(true);
 		speakerImage.setMaxHeight(40);
 		speakerImage.setMaxWidth(40);
-		speakerImage.setPaddingRelative(5,5,5,5);
 		try {
 			speakerImage.setImageBitmap(Speaker.getSmallImage(speakerId));
 		} catch (IOException e) {
@@ -170,7 +170,6 @@ public class ListenActivity extends AikumaActivity {
 			respeakingImage.setMaxHeight(60);
 			respeakingImage.setMaxWidth(60);
 			respeakingImage.setPadding(5,5,5,5);
-			respeakingImage.setPaddingRelative(2,2,2,2);
 			if (respeaking.equals(recording)) {
 				respeakingImage.setBackgroundColor(0xFFCC0000);
 			}
@@ -337,14 +336,30 @@ public class ListenActivity extends AikumaActivity {
 		}
 		updateFlagButton();
 	}
+	
+	/**
+	 * When the share button is pressed
+	 *
+	 * @param	view	The share button
+	 */
+	public void onShareButtonPressed(View view) {
+		String urlToShare = "http://example.com/" + recording.getGroupId();
+		Intent intent = new Intent();
+		intent.setAction(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.putExtra(Intent.EXTRA_TEXT, urlToShare);
+		startActivity(Intent.createChooser(intent, "Share the link via"));
+	}
 
 	private void updateStarButton() {
 		ImageButton starButton = (ImageButton)
 				findViewById(R.id.starButton);
 		if (recording.isStarredByThisPhone()) {
 			starButton.setEnabled(false);
+			starButton.setImageResource(R.drawable.star_grey);
 		} else {
 			starButton.setEnabled(true);
+			starButton.setImageResource(R.drawable.star);
 		}
 	}
 
@@ -353,8 +368,10 @@ public class ListenActivity extends AikumaActivity {
 				findViewById(R.id.flagButton);
 		if (recording.isFlaggedByThisPhone()) {
 			flagButton.setEnabled(false);
+			flagButton.setImageResource(R.drawable.flag_grey);
 		} else {
 			flagButton.setEnabled(true);
+			flagButton.setImageResource(R.drawable.flag);
 		}
 	}
 
@@ -366,6 +383,16 @@ public class ListenActivity extends AikumaActivity {
 		} else {
 			return super.dispatchTouchEvent(event);
 		}
+	}
+
+	/**
+	 * Updates the view that tracks the number of times the recording has been
+	 * listened to.
+	 */
+	public void updateViewCount() {
+		TextView viewCount = (TextView) findViewById(R.id.viewCount);
+		int numViews = recording.numViews();
+		viewCount.setText("# views: " + numViews);
 	}
 
 	private boolean phoneRespeaking = false;

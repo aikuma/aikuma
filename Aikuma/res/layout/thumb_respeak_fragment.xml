@@ -31,6 +31,7 @@
 			android:layout_weight="0.5"
 			android:scaleType="centerInside"
 			android:src="@drawable/play_48"
+			style="@style/ImageButtonGreenTheme"
 		/>
 		<ImageButton
 			android:id="@+id/RespeakButton"
@@ -39,6 +40,7 @@
 			android:layout_weight="0.5"
 			android:scaleType="centerInside"
 			android:src="@drawable/record_48"
+			style="@style/ImageButtonRedTheme"
 		/>
 	</LinearLayout>
 </LinearLayout>

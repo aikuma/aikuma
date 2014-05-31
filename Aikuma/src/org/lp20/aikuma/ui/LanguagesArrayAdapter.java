@@ -11,13 +11,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import java.io.IOException;
 import java.util.List;
+
+
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.R;
-import org.lp20.aikuma.util.FileIO;
 
 /**
  * An array adapter to handle the list of languages associated with speakers.
@@ -25,21 +26,24 @@ import org.lp20.aikuma.util.FileIO;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
+public class LanguagesArrayAdapter extends ArrayAdapter<Language> {
 
 	/**
 	 * Default constructor.
 	 *
 	 * @param	context	The application context.
-	 * @param	languages	The list of languages to be dealt with.
-	 */
-	public SpeakerLanguagesArrayAdapter(Context context, List<Language>
-			languages) {
+	 * @param	languages	The list of languages shown in the list
+	 * @param	selectedLanguages	The list of languages selected.
+	 */	
+	public LanguagesArrayAdapter(Context context, List<Language>
+			languages, List<Language> selectedLanguages) {
 		super(context, LIST_ITEM_LAYOUT, languages);
-		this.languages = languages;
+		this.selectedLanguages = selectedLanguages;
 		inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
+	
+	
 
 	/**
 	 * Given a position, gets the appropriate list element as a View.
@@ -56,30 +60,42 @@ public class SpeakerLanguagesArrayAdapter extends ArrayAdapter<Language> {
 		final Language language = getItem(position);
 		TextView recordingNameView = 
 				(TextView) recordingView.findViewById(R.id.recordingName);
-		ImageButton removeLanguageButton = 
-				(ImageButton) recordingView.findViewById(R.id.removeButton);
-		removeLanguageButton.setOnClickListener(new OnClickListener() {
+		CheckBox defaultLangCheckBox = (CheckBox)
+				recordingView.findViewById(R.id.defaultLangCheckBox);
+		
+		if (selectedLanguages.contains(language)) {
+			defaultLangCheckBox.setChecked(true);
+		}
+		
+		defaultLangCheckBox.setOnClickListener(new OnClickListener() {
 			public void onClick(View view) {
-				languages.remove(language);
-				notifyDataSetChanged();
-				/*
-				try {
-					FileIO.writeDefaultLanguages(languages);
-				} catch (IOException e) {
-					// If it can't be written, then not much can be done.
-					// Perhaps toast the user.
+				boolean checked = ((CheckBox) view).isChecked();
+				if (checked) {
+					selectedLanguages.add(language);
+					checked = true;
+				} else {
+					selectedLanguages.remove(language);
+					checked = false;
 				}
-				*/
+				updateActivityState();
 			}
 		});
 
 		recordingNameView.setText(language.toString());
 		return recordingView;
 	}
+	
+	/**
+	 * Overriden by the Activity which makes an instance of this class
+	 * When the state of a checkbox changes, 
+	 * This function will change the Activity's state
+	 */
+	public void updateActivityState() {}
+	
 
 	private static final int LIST_ITEM_LAYOUT =
-			R.layout.speakerlanguages_list_item;
+			R.layout.languages_list_item;
 	private LayoutInflater inflater;
-	private List<Language> languages;
-
+	private List<Language> selectedLanguages;
 }
+

@@ -4,6 +4,12 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 	>
+	<ListView
+		android:id="@android:id/list"
+		android:layout_width="fill_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+	/>
 	<ImageButton
 		android:id="@+id/addSpeakerButton"
 		android:layout_height="wrap_content"
@@ -11,11 +17,5 @@
 		android:scaleType="centerInside"
 		android:src="@drawable/add_speaker48"
 		android:onClick="addSpeakerButtonPressed"
-	/>
-	<ListView
-		android:id="@android:id/list"
-		android:layout_width="fill_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1"
 	/>
 </LinearLayout>

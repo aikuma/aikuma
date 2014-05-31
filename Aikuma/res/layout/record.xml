@@ -12,14 +12,6 @@
 		android:layout_centerVertical="true"
 		android:textSize="25sp"
 	/>
-	<ImageButton
-		android:id="@+id/stopButton"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:scaleType="centerInside"
-		android:src="@drawable/save48"
-		android:onClick="onStopButton"
-	/>
 	<LinearLayout
 		android:orientation="vertical"
 		android:layout_width="match_parent"
@@ -45,4 +37,12 @@
 			android:onClick="onRecordButton"
 		/>
 	</LinearLayout>
+	<ImageButton
+		android:id="@+id/stopButton"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:scaleType="centerInside"
+		android:src="@drawable/save48"
+		android:onClick="onStopButton"
+	/>
 </LinearLayout>

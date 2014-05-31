@@ -57,4 +57,29 @@
 			android:text="@string/phone_respeaking"
 			android:onClick="onRespeakingRadioButtonClicked"/>
 	</RadioGroup>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="Respeaking segment rewind amount" 
+		android:textSize="15sp"
+	/>
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		>
+		<EditText
+			android:id="@+id/rewindAmount"
+			android:layout_width="67dp"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:inputType="text"
+			/>
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="milliseconds"
+			android:textSize="15sp"
+		/>
+	</LinearLayout>
 </LinearLayout>

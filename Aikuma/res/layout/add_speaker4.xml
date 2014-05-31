@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:focusable="true"
+		android:focusableInTouchMode="true"
+	>
+
+	<ImageButton
+		android:id="@+id/okButton4"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:scaleType="centerInside"
+		android:src="@drawable/ok_48"
+		android:layout_alignParentBottom="true"
+		android:onClick="onOkButtonPressed"
+	/>
+
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_alignParentTop="true"
+		android:layout_above="@id/okButton4"
+		>
+		
+		<TextView
+	    	android:id="@+id/nameView3"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+			android:layout_marginBottom="10dp"
+	    	android:text="" />
+		
+		<TextView
+		    android:id="@+id/languageView2"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginBottom="10dp"
+		    />
+		<TextView 
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginBottom="10dp"
+		    android:text="Photo:"
+		    />
+		<ImageView
+			android:id="@+id/speakerImage"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+		/>
+	</LinearLayout>
+</RelativeLayout>
