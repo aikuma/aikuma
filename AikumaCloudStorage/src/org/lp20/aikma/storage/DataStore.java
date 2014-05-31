@@ -16,4 +16,10 @@ public interface DataStore {
 	 * @param data An InputStream containing the data.
 	 */
 	public boolean store(String identifier, Data data);
+	
+	public interface ListItemHandler {
+		public boolean processItem(String identifier);
+	}
+	
+	public void list(ListItemHandler handler);
 }
