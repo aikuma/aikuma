@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +32,8 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recordingspeakers);
-		//Lets method in superclass know to ask user if they are willing to
-		//discard new data on an activity transition via the menu.
+		// Lets method in superclass know to ask user if they are willing to
+		// discard new data on an activity transition via the menu.
 		safeActivityTransition = false;
 		safeActivityTransitionMessage = 
 				"This will discard the selected speakers";
@@ -42,6 +43,8 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 		okButton.setEnabled(false);
 		
 		selectedSpeakers = new ArrayList<Speaker>();
+
+		Toast.makeText(this, "onCreate", Toast.LENGTH_LONG).show();
 	}
 
 	@Override
@@ -50,7 +53,8 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 
 		speakers = Speaker.readAll();
 		ArrayAdapter<Speaker> adapter =
-				new RecordingSpeakerArrayAdapter(this, speakers, selectedSpeakers) {
+				new RecordingSpeakerArrayAdapter(
+						this, speakers, selectedSpeakers) {
 			@Override
 			// When checkbox in a listview is checked/unchecked
 			public void updateActivityState() {
