@@ -11,11 +11,32 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 
+/**
+ * A collection of utility methods.
+ * 
+ * @author haejoong
+ */
 public class Utils {
+	/**
+	 * Copy data from an InputStream to an OutputStream.
+	 * 
+	 * @param is
+	 * @param os
+	 * @throws IOException
+	 */
 	static public void copyStream(InputStream is, OutputStream os) throws IOException {
 		copyStream(is, os, false);
 	}
 	
+	/**
+	 * Copy data from an InputStream to an OutputStream. Close the OutputStream
+	 * after copying if closeOs is set to {@code true}.
+	 * 
+	 * @param is
+	 * @param os
+	 * @param closeOs
+	 * @throws IOException
+	 */
 	static public void copyStream(InputStream is, OutputStream os, boolean closeOs) throws IOException {
 		byte[] buf = new byte[8192];
 		int n;
@@ -27,6 +48,13 @@ public class Utils {
 			os.close();
 	}
 
+	/**
+	 * Read all data from the InputStream and turn it into a string.
+	 * 
+	 * @param is
+	 * @return
+	 * @throws IOException
+	 */
 	static public String readStream(InputStream is) throws IOException {
 		BufferedReader in = new BufferedReader(
 			new InputStreamReader(is)
@@ -39,21 +67,43 @@ public class Utils {
 		return sb.toString();		
 	}
 	
+	/**
+	 * Helps build a URL.
+	 * 
+	 * @author haejoong
+	 */
 	static class UrlBuilder {
 		String query_;
 		String joiner_;
 		URL context_;
 		
+		/**
+		 * Constructor a builder object with an initial URL.
+		 * 
+		 * @param base
+		 * @throws MalformedURLException
+		 */
 		public UrlBuilder(String base) throws MalformedURLException {
 			context_ = new URL(base);
 			query_ = "";
 			joiner_ = "?";
 		}
 		
+		/**
+		 * Append to or reset the path component of the current URL.
+		 * @param path
+		 * @throws MalformedURLException
+		 */
 		public void setPath(String path) throws MalformedURLException {
 			context_ = new URL(context_, path);
 		}
 		
+		/**
+		 * Add a query element to the current URL.
+		 * @param key
+		 * @param value
+		 * @throws UnsupportedEncodingException
+		 */
 		public void addQuery(String key, String value) throws UnsupportedEncodingException {
 			String k = URLEncoder.encode(key, "UTF-8");
 			String v = URLEncoder.encode(value, "UTF-8");
@@ -61,10 +111,16 @@ public class Utils {
 			joiner_ = "&";
 		}
 		
+		/**
+		 * Return the current URL.
+		 * @return
+		 * @throws MalformedURLException
+		 */
 		public URL toUrl() throws MalformedURLException {
 			return new URL(context_, query_);
 		}
 	}
+	
 	/**
 	 * Turns a set of key value pairs into a query string used to compose a
 	 * url.
