@@ -48,6 +48,11 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 	}
 
 	@Override
+	public void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
 
