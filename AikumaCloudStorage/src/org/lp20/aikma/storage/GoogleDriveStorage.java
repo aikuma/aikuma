@@ -2,40 +2,43 @@ package org.lp20.aikma.storage;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 /**
- * Implements DataStore interface using Google Drive.
+ * Implementation of DataStore backed by Google Drive.
  * 
  * @author haejoong
  */
 public class GoogleDriveStorage implements DataStore {
-	GoogleAuth gauth_;
-	String authUrl_;     // authentication/authorization page url
-	boolean gapiReady_;  // tells whether access token is obtained
+	String accessToken_;
 	
 	/**
-	 * The object is not usable until authentication and authorization is done.
-	 * In order to activate the object, the obtainAccessToken method must be
-	 * called with a valid authorization code. For example,
+	 * GoogleDriveStorage allows saving and retrieving data to and from the
+	 * Google Drive. It requires an access token for the scopes specified by
+	 * the {@code getScopes()} method. The access token can be obtained in
+	 * different ways. The following example uses GoogleAuth class.
 	 * 
+	 * {@code
+	 * GoogleAuth auth = new GoogleAuth(myClientId, myClientSecret);
+	 * String authCode = get_auth_code_for_scopes(GoogleDriveStorage.getScopes());
+	 * auth.requestAccessToken(authCode);
+	 * GoogleDriveStorage gd = new GoogleDriveStorage(auth.getAccessToken());
+	 * }
 	 * 
-	 * @param clientId Google API client ID
-	 * @param clientSecret Google API client secret
+	 * @param accessToken 
 	 */
-	public GoogleDriveStorage(String clientId, String clientSecret) {
-		gauth_ = new GoogleAuth(clientId, clientSecret);
-		ArrayList<String> apis = new ArrayList<String>();
-		apis.add("https://www.googleapis.com/auth/drive.file");
-		authUrl_ = gauth_.getAuthUrl(apis);
-		gapiReady_ = false;
+	public GoogleDriveStorage(String accessToken) {
+		accessToken_ = accessToken;
 	}
 	
 	@Override
@@ -53,8 +56,6 @@ public class GoogleDriveStorage implements DataStore {
 	@Override
 	public boolean store(String identifier, Data data) {
 		// identifier - aikuma file path
-		if (gapiReady_ == false)
-			return false;
 		JSONObject obj = gapi_insert(data);
 		if (obj == null)
 			return false;
@@ -72,8 +73,20 @@ public class GoogleDriveStorage implements DataStore {
 		while (obj != null) {
 			JSONArray arr = (JSONArray) obj.get("items");
 			for (Object item: arr) {
-				String identifier = (String) ((JSONObject) item).get("title");
-				listItemHandler.processItem(identifier);
+				JSONObject o = (JSONObject) item;
+				String identifier = (String) o.get("title");
+				String datestr = (String) o.get("modifiedDate");
+				SimpleDateFormat datefmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+				Date date;
+				try {
+					date = datefmt.parse(datestr);
+				}
+				catch (ParseException e) {
+					date = null;
+				}
+				boolean cont = listItemHandler.processItem(identifier, date);
+				if (cont == false)
+					return;
 			}
 			String nextPageToken = (String) obj.get("nextPageToken");
 			if (nextPageToken != null)
@@ -83,24 +96,40 @@ public class GoogleDriveStorage implements DataStore {
 		}
 	}
 	
-	public String getAuthUrl() {
-		return authUrl_;
+	/**
+	 * Returns a list of api scopes required to access files.
+	 * 
+	 * @return List of scopes.
+	 */
+	public static List<String> getScopes() {
+		ArrayList<String> apis = new ArrayList<String>();
+		apis.add("https://www.googleapis.com/auth/drive.file");
+		return apis;
 	}
 	
-	public boolean obtainAccessToken(String authCode) {
-		gapiReady_ = gauth_.requestAccessToken(authCode);
-		return gapiReady_;
-	}
-	
+	/**
+	 * Make an http connection that is common to all http requests used in this
+	 * class.
+	 * 
+	 * @param url
+	 * @param method
+	 * @return
+	 * @throws IOException
+	 */
 	private HttpURLConnection gapi_connect(URL url, String method) throws IOException {
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		con.setInstanceFollowRedirects(true);
 		con.setDoOutput(true);
 		con.setRequestMethod(method);
-		con.setRequestProperty("Authorization", "Bearer " + gauth_.getAccessToken());
+		con.setRequestProperty("Authorization", "Bearer " + accessToken_);
 		return con;
 	}
 	
+	/**
+	 * Upload a file.
+	 * @param data
+	 * @return JSONObject if successful, null otherwise.
+	 */
 	private JSONObject gapi_insert(Data data) {		
 		try {
 			URL url = new URL("https://www.googleapis.com/upload/drive/v2/files?uploadType=media");
@@ -120,6 +149,12 @@ public class GoogleDriveStorage implements DataStore {
 		}
 	}
 	
+	/**
+	 * Update metadata of an existing file.
+	 * @param fileid
+	 * @param obj
+	 * @return JSONObject if successful, null otherwise.
+	 */
 	private JSONObject gapi_update_metadata(String fileid, JSONObject obj) {
 		try {
 			String metajson = obj.toJSONString();
@@ -142,6 +177,12 @@ public class GoogleDriveStorage implements DataStore {
 		}
 	}
 	
+	/**
+	 * List files.
+	 * @param searchQuery
+	 * @param pageToken
+	 * @return JSONObject if successful, null otherwise.
+	 */
 	private JSONObject gapi_list_files(String searchQuery, String pageToken) {
 		try {
 			String base = "https://www.googleapis.com/drive/v2/files/";
@@ -161,6 +202,11 @@ public class GoogleDriveStorage implements DataStore {
 		}
 	}
 	
+	/**
+	 * Download a file.
+	 * @param url
+	 * @return InputStream if successful, null otherwise.
+	 */
 	private InputStream gapi_download(String url) {
 		try {
 			HttpURLConnection con = gapi_connect(new URL(url), "GET");
