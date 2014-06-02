@@ -3,7 +3,11 @@ package org.lp20.aikma.storage;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -69,8 +73,20 @@ public class GoogleDriveStorage implements DataStore {
 		while (obj != null) {
 			JSONArray arr = (JSONArray) obj.get("items");
 			for (Object item: arr) {
-				String identifier = (String) ((JSONObject) item).get("title");
-				listItemHandler.processItem(identifier);
+				JSONObject o = (JSONObject) item;
+				String identifier = (String) o.get("title");
+				String datestr = (String) o.get("modifiedDate");
+				SimpleDateFormat datefmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+				Date date;
+				try {
+					date = datefmt.parse(datestr);
+				}
+				catch (ParseException e) {
+					date = null;
+				}
+				boolean cont = listItemHandler.processItem(identifier, date);
+				if (cont == false)
+					return;
 			}
 			String nextPageToken = (String) obj.get("nextPageToken");
 			if (nextPageToken != null)

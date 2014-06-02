@@ -1,3 +1,5 @@
+import java.util.Date;
+
 import org.lp20.aikma.storage.GoogleDriveStorage;
 
 
@@ -12,10 +14,11 @@ public class ListFiles {
 		
 		gd.list(new GoogleDriveStorage.ListItemHandler() {
 			@Override
-			public boolean processItem(String identifier) {
+			public boolean processItem(String identifier, Date date) {
 				// TODO Auto-generated method stub
-				System.out.println(identifier);
-				return false;
+				String datestr = date == null ? "?" : date.toString();
+				System.out.format("%s [%s]\n", identifier, datestr);
+				return true;
 			}
 		});
 	}
