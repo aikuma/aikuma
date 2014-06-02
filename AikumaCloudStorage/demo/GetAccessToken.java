@@ -14,7 +14,14 @@ public class GetAccessToken {
 		GoogleAuth auth = new GoogleAuth(client_id, client_secret);
 		Desktop desktop = Desktop.getDesktop();
 		ArrayList<String> apis = new ArrayList<String>();
-		apis.add("https://www.googleapis.com/auth/drive.file");
+		for (String scope: GoogleDriveStorage.getScopes()) {
+			apis.add(scope);
+		}
+		/*
+		for (String scope: GoogleDriveStorage.getScopes()) {
+			apis.add(scope);
+		}
+		*/
 		URI uri = URI.create(auth.getAuthUrl(apis));
 		
 		System.out.println("A google page will open where you can login and give permission to access your google drive.");

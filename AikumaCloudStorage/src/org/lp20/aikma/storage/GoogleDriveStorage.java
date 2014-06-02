@@ -2,10 +2,9 @@ package org.lp20.aikma.storage;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -17,9 +16,7 @@ import org.json.simple.JSONValue;
  * @author haejoong
  */
 public class GoogleDriveStorage implements DataStore {
-	GoogleAuth gauth_;
-	String authUrl_;     // authentication/authorization page url
-	boolean gapiReady_;  // tells whether access token is obtained
+	String accessToken_;
 	
 	/**
 	 * The object is not usable until authentication and authorization is done.
@@ -30,12 +27,8 @@ public class GoogleDriveStorage implements DataStore {
 	 * @param clientId Google API client ID
 	 * @param clientSecret Google API client secret
 	 */
-	public GoogleDriveStorage(String clientId, String clientSecret) {
-		gauth_ = new GoogleAuth(clientId, clientSecret);
-		ArrayList<String> apis = new ArrayList<String>();
-		apis.add("https://www.googleapis.com/auth/drive.file");
-		authUrl_ = gauth_.getAuthUrl(apis);
-		gapiReady_ = false;
+	public GoogleDriveStorage(String accessToken) {
+		accessToken_ = accessToken;
 	}
 	
 	@Override
@@ -53,8 +46,6 @@ public class GoogleDriveStorage implements DataStore {
 	@Override
 	public boolean store(String identifier, Data data) {
 		// identifier - aikuma file path
-		if (gapiReady_ == false)
-			return false;
 		JSONObject obj = gapi_insert(data);
 		if (obj == null)
 			return false;
@@ -83,13 +74,10 @@ public class GoogleDriveStorage implements DataStore {
 		}
 	}
 	
-	public String getAuthUrl() {
-		return authUrl_;
-	}
-	
-	public boolean obtainAccessToken(String authCode) {
-		gapiReady_ = gauth_.requestAccessToken(authCode);
-		return gapiReady_;
+	public static List<String> getScopes() {
+		ArrayList<String> apis = new ArrayList<String>();
+		apis.add("https://www.googleapis.com/auth/drive.file");
+		return apis;
 	}
 	
 	private HttpURLConnection gapi_connect(URL url, String method) throws IOException {
@@ -97,7 +85,7 @@ public class GoogleDriveStorage implements DataStore {
 		con.setInstanceFollowRedirects(true);
 		con.setDoOutput(true);
 		con.setRequestMethod(method);
-		con.setRequestProperty("Authorization", "Bearer " + gauth_.getAccessToken());
+		con.setRequestProperty("Authorization", "Bearer " + accessToken_);
 		return con;
 	}
 	
