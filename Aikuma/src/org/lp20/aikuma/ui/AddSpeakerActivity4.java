@@ -97,8 +97,9 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 					Toast.LENGTH_LONG).show();
 		}
 		
-		Intent intent = new Intent(this, MainSpeakersActivity.class);
+		Intent intent = new Intent(this, RecordingSpeakersActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		startActivity(intent);
 	}
 

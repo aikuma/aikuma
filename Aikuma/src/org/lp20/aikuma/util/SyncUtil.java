@@ -4,14 +4,17 @@
 */
 package org.lp20.aikuma.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.lp20.aikuma.model.ServerCredentials;
 //import org.lp20.sync.FTPSyncUtil;
+import org.lp20.aikuma.R;
 
 /**
  * Periodically syncs with to a server specified in a ServerCredentials object
@@ -71,6 +74,7 @@ public class SyncUtil {
 					//For some reason we get an EPIPE unless we instantiate a new
 					//Client at each iteration.
 					if (forceSync || serverCredentials.getSyncActivated()) {
+						setSyncFlag();
 						forceSync = false;
 						Client client = new Client();
 						client.setClientBaseDir(
@@ -79,14 +83,18 @@ public class SyncUtil {
 						if (!client.login(serverCredentials.getIPAddress(),
 								serverCredentials.getUsername(),
 								serverCredentials.getPassword())) {
+							unsetSyncFlag("Login failed");
 							Log.i("sync", "login failed: " +
 									serverCredentials.getIPAddress());
 						} else if (!client.sync()) {
 							Log.i("sync", "sync failed.");
+							unsetSyncFlag("Transfer failed");
 						} else if (!client.logout()) {
 							Log.i("sync", "Logout failed.");
+							unsetSyncFlag("Logout failed");
 						} else {
 							Log.i("sync", "sync complete.");
+							unsetSyncFlag("Sync successful");
 						}
 						Log.i("sync", "end of conditional block");
 						waitMins = 1;
@@ -96,6 +104,7 @@ public class SyncUtil {
 					}
 				} catch (IOException e) {
 					Log.i("npe", "ioexception on serverCredentials.read()");
+					unsetSyncFlag("IOException on serverCredentials.read()");
 					//We'll cope and assume the old serverCredentials work.
 				}
 				try {
@@ -110,6 +119,46 @@ public class SyncUtil {
 		private boolean forceSync;
 	}
 
+	/**
+	 * Sets the sync settings activity so that SyncUtil knows what activity to
+	 * use to update the sync notification views.
+	 *
+	 * @param	syncSettingsActivity	the Activity whose views are to be
+	 * updated by SyncUtil to reflect syncing progress.
+	 */
+	public static void setSyncSettingsActivity(Activity syncSettingsActivity) {
+		SyncUtil.syncSettingsActivity = syncSettingsActivity;
+		updateSyncTextView("Not syncing");
+	}
+
+	private static void updateSyncTextView(final String status) {
+		if (syncSettingsActivity != null) {
+			syncSettingsActivity.runOnUiThread(new Runnable() {
+				public void run() {
+					TextView syncTextView = (TextView)
+							syncSettingsActivity.findViewById(R.id.syncTextNotification);
+					if (syncing) {
+						syncTextView.setText("Syncing");
+					} else {
+						syncTextView.setText(status);
+					}
+				}
+			});
+		}
+	}
+
+	private static void setSyncFlag() {
+		syncing = true;
+		updateSyncTextView("Syncing");
+	}
+
+	private static void unsetSyncFlag(String status) {
+		syncing = false;
+		updateSyncTextView(status);
+	}
+
 	private static ServerCredentials serverCredentials;
 	private static Thread syncThread;
+	private static Activity syncSettingsActivity;
+	private static boolean syncing;
 }

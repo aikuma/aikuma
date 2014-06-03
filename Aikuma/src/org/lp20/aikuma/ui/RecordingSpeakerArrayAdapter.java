@@ -39,7 +39,7 @@ public class RecordingSpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 	 * @param	selectedSpeakers	List of speakers selected for recording
 	 * 
 	 */
-	public RecordingSpeakerArrayAdapter(Context context, 
+	public RecordingSpeakerArrayAdapter(Context context,
 			List<Speaker> speakers, List<Speaker> selectedSpeakers) {
 		super(context, LIST_ITEM_LAYOUT, speakers);
 		this.selectedSpeakers = selectedSpeakers;
