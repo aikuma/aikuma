@@ -51,6 +51,7 @@
 		android:id="@+id/syncTextNotification"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="not syncing"
+		android:textSize="30sp"
+		android:gravity="center"
 	/>
 </LinearLayout>

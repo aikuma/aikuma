@@ -83,14 +83,18 @@ public class SyncUtil {
 						if (!client.login(serverCredentials.getIPAddress(),
 								serverCredentials.getUsername(),
 								serverCredentials.getPassword())) {
+							unsetSyncFlag("Login failed");
 							Log.i("sync", "login failed: " +
 									serverCredentials.getIPAddress());
 						} else if (!client.sync()) {
 							Log.i("sync", "sync failed.");
+							unsetSyncFlag("Transfer failed");
 						} else if (!client.logout()) {
 							Log.i("sync", "Logout failed.");
+							unsetSyncFlag("Logout failed");
 						} else {
 							Log.i("sync", "sync complete.");
+							unsetSyncFlag("Sync successful");
 						}
 						Log.i("sync", "end of conditional block");
 						waitMins = 1;
@@ -100,9 +104,9 @@ public class SyncUtil {
 					}
 				} catch (IOException e) {
 					Log.i("npe", "ioexception on serverCredentials.read()");
+					unsetSyncFlag("IOException on serverCredentials.read()");
 					//We'll cope and assume the old serverCredentials work.
 				}
-				unsetSyncFlag();
 				try {
 					TimeUnit.MINUTES.sleep(waitMins);
 				} catch (InterruptedException e) {
@@ -124,10 +128,10 @@ public class SyncUtil {
 	 */
 	public static void setSyncSettingsActivity(Activity syncSettingsActivity) {
 		SyncUtil.syncSettingsActivity = syncSettingsActivity;
-		updateSyncTextView();
+		updateSyncTextView("Not syncing");
 	}
 
-	private static void updateSyncTextView() {
+	private static void updateSyncTextView(final String status) {
 		if (syncSettingsActivity != null) {
 			syncSettingsActivity.runOnUiThread(new Runnable() {
 				public void run() {
@@ -136,7 +140,7 @@ public class SyncUtil {
 					if (syncing) {
 						syncTextView.setText("Syncing");
 					} else {
-						syncTextView.setText("Not syncing");
+						syncTextView.setText(status);
 					}
 				}
 			});
@@ -145,12 +149,12 @@ public class SyncUtil {
 
 	private static void setSyncFlag() {
 		syncing = true;
-		updateSyncTextView();
+		updateSyncTextView("Syncing");
 	}
 
-	private static void unsetSyncFlag() {
+	private static void unsetSyncFlag(String status) {
 		syncing = false;
-		updateSyncTextView();
+		updateSyncTextView(status);
 	}
 
 	private static ServerCredentials serverCredentials;
