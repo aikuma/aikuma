@@ -352,9 +352,7 @@ public class Client {
 			OutputStream stream = null;
 			Boolean result = null;
 			for (FTPFile serverFile : serverFiles) {
-				file = new File(
-						clientBaseDir + directoryPath + "/" +
-						serverFile.getName());
+				file = new File(clientDir, serverFile.getName());
 				if (!file.getName().endsWith(".inprogress")) {
 					if (serverFile.isDirectory()) {
 						file.mkdirs();
