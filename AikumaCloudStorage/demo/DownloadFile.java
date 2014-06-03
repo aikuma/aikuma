@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.lp20.aikma.storage.GoogleDriveStorage;
-import org.lp20.aikma.storage.Utils;
+import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.Utils;
 
 
 public class DownloadFile {

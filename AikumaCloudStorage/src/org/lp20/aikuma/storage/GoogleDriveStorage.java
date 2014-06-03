@@ -1,4 +1,4 @@
-package org.lp20.aikma.storage;
+package org.lp20.aikuma.storage;
 
 import java.io.*;
 import java.net.HttpURLConnection;
