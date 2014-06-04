@@ -30,7 +30,7 @@ public interface Index {
 	 *   - item_id
 	 *   - file_type
 	 *   - language
-	 *   - spakers (comma-separated list)
+	 *   - speakers (comma-separated list)
 	 * 
 	 * @param identifier
 	 * @param metadata
