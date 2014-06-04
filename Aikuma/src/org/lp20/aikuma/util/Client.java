@@ -196,11 +196,16 @@ public class Client {
 	 * @return	true if successful; false otherwise.
 	 */
 	public boolean pushDirectory(String directoryPath) {
+
+		Log.i("sync", "Pushing directory: " + directoryPath);
 		// Get the specified client side directory.
+		Log.i("sync", "clientBaseDir: " + clientBaseDir);
 		File clientDir;
 		if (clientBaseDir.endsWith("/")) {
+			Log.i("sync", "endswith /");
 			clientDir = new File(clientBaseDir + directoryPath);
 		} else {
+			Log.i("sync", "doesn't end with /");
 			clientDir = new File(clientBaseDir + "/" + directoryPath);
 		}
 		if (!clientDir.isDirectory()) {
@@ -317,6 +322,8 @@ public class Client {
 	 */
 	public boolean pullDirectory(String directoryPath) {
 
+	Log.i("sync", "Pulling directory: " + directoryPath);
+
 		// Attempt to change to the directory on the server side.
 		try {
 			boolean result;
@@ -329,7 +336,12 @@ public class Client {
 			return false;
 		}
 
-		File clientDir = new File(clientBaseDir + directoryPath);
+		File clientDir;
+		if (clientBaseDir.endsWith("/")) {
+			clientDir = new File(clientBaseDir + directoryPath);
+		} else {
+			clientDir = new File(clientBaseDir + "/" + directoryPath);
+		}
 		clientDir.mkdirs();
 
 		try {
@@ -340,9 +352,7 @@ public class Client {
 			OutputStream stream = null;
 			Boolean result = null;
 			for (FTPFile serverFile : serverFiles) {
-				file = new File(
-						clientBaseDir + directoryPath + "/" +
-						serverFile.getName());
+				file = new File(clientDir, serverFile.getName());
 				if (!file.getName().endsWith(".inprogress")) {
 					if (serverFile.isDirectory()) {
 						file.mkdirs();

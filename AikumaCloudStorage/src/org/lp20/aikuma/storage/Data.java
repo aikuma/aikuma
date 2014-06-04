@@ -1,7 +1,7 @@
-package org.lp20.aikma.storage;
+package org.lp20.aikuma.storage;
 
 import java.io.*;
-import java.nio.file.Files;
+//import java.nio.file.Files;
 
 /**
  * A container of the data to be uploaded to a DataStore.
@@ -75,6 +75,7 @@ public class Data {
 	 * @param file
 	 * @return
 	 */
+	/*
 	public static Data fromFile2(File file) {
 		String mimeType;
 		try {
@@ -90,6 +91,7 @@ public class Data {
 		}
 		return new Data(is, mimeType);
 	}
+	*/
 	
 	/**
 	 * Make a Data object from the file name and mime type.
@@ -121,10 +123,12 @@ public class Data {
 	 * @param filename
 	 * @return
 	 */
+	/*
 	public static Data fromFileName2(String filename) {
 		File file = new File(filename);
 		return fromFile2(file);
 	}
+	*/
 
 	/**
 	 * @return The current InputStream object.

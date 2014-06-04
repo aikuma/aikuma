@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 
-import org.lp20.aikma.storage.*;
+import org.lp20.aikuma.storage.*;
 
 public class GetAccessToken {
 	public static void main(String[] args) {
