@@ -3,6 +3,8 @@ package org.lp20.aikuma.storage;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
 
@@ -18,6 +20,12 @@ public class GoogleAuth {
 	private String clientSecret_;
 	private String lastError_;
 	private String accessToken_;
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    private String refreshToken;
 	
 	/**
 	 * Construct an authentication/authorization object. Example,
@@ -61,45 +69,102 @@ public class GoogleAuth {
 		return url;
 	}
 
-	/**
-	 * Obtain an access token. Use getAccessToken() to get the obtained token.
-	 * 
-	 * @param authCode
-	 * @return true if successful, false, otherwise
-	 */
-	public boolean requestAccessToken(String authCode) {
-		try {
-			URL url = new URL("https://accounts.google.com/o/oauth2/token");
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setInstanceFollowRedirects(true);
-			con.setDoOutput(true);
-			con.setRequestMethod("POST");
-			OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
-			writer.write("redirect_uri=urn:ietf:wg:oauth:2.0:oob&");
-			writer.write("grant_type=authorization_code&");
-			writer.write("code=" + authCode + "&");
-			writer.write("client_id=" + clientId_ + "&");
-			writer.write("client_secret=" + clientSecret_);
-			writer.flush();
-			writer.close();
-			if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-				accessToken_ = Utils.readStream(con.getInputStream());
-				lastError_ = null;
-				return true;
-			} else {
-				// TODO: Error logging?
-				accessToken_ = null;
-				lastError_ = "HTTP error: " + con.getResponseMessage();
-				return false;
-			}
-		}
-		catch (IOException e) {
-			// TODO: Logging? e.printStackTrace();
-			accessToken_ = null;
-			lastError_ = "Exception: " + e.getMessage();
-			return false;
-		}
-	}
+    public static boolean validateAccessToken(String accessToken) {
+
+        try {
+            URL url = new URL("https://accounts.google.com/o/oauth2/token");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setInstanceFollowRedirects(true);
+            con.setDoOutput(true);
+            con.setRequestMethod("POST");
+            OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+            writer.write("access_token="+ accessToken);
+            writer.flush();
+            writer.close();
+            if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                return true;
+            } else if (con.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
+                return false;
+            } else {
+                System.err.println(con.getResponseCode());
+                System.err.println(con.getResponseMessage());
+                throw new RuntimeException("Unexpected response code");
+            }
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Obtain an access_token given a refresh_token. Use getAccessToken() to get the obtained token.
+     *
+     * @param refreshToken Google supplied OATH2.0 refresh_token
+     * @return true if successful, false, otherwise
+     */
+    public boolean refreshAccessToken(String refreshToken) {
+        return handleTokenRequest("grant_type=refresh_token" +
+                "&refresh_token=" + refreshToken +
+                "&client_id=" + clientId_ +
+                "&client_secret=" + clientSecret_);
+    }
+
+    /**
+     * Obtain an access token. Use getAccessToken() to get the obtained token.
+     *
+     * @param authCode
+     * @return true if successful, false, otherwise
+     */
+    public boolean requestAccessToken(String authCode) {
+        return handleTokenRequest("redirect_uri=urn:ietf:wg:oauth:2.0:oob" +
+                "&grant_type=authorization_code" +
+                "&code=" + authCode +
+                "&client_id=" + clientId_ +
+                "&client_secret=" + clientSecret_);
+    }
+
+    private boolean handleTokenRequest(String body) {
+        try {
+            URL url = new URL("https://accounts.google.com/o/oauth2/token");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setInstanceFollowRedirects(true);
+            con.setDoOutput(true);
+            con.setRequestMethod("POST");
+            OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+            writer.write(body);
+            writer.flush();
+            writer.close();
+            if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                parseTokenResponse(Utils.readStream(con.getInputStream()));
+                lastError_ = null;
+                return true;
+            } else {
+                // TODO: Error logging?
+                accessToken_ = null;
+                lastError_ = "HTTP error: " + con.getResponseMessage();
+                return false;
+            }
+        }
+        catch (IOException e) {
+            // TODO: Logging? e.printStackTrace();
+            accessToken_ = null;
+            lastError_ = "Exception: " + e.getMessage();
+            return false;
+        }
+    }
+
+    private void parseTokenResponse(String resp) {
+        JSONObject obj = (JSONObject) JSONValue.parse(resp);
+        accessToken_ = (String) obj.get("access_token");
+        if (obj.containsKey("refresh_token"))
+            refreshToken = (String) obj.get("refresh_token");
+    }
+
 
 	/**
 	 * Return the access token obtained by requestAccessToken().
@@ -108,13 +173,7 @@ public class GoogleAuth {
 	 * @return String token if token exists, null otherwise.
 	 */
 	public String getAccessToken() {
-		if (accessToken_ != null) {
-			JSONObject obj = (JSONObject) JSONValue.parse(accessToken_);
-			return (String) obj.get("access_token");
-		}
-		else {
-			return null;
-		}
+        return accessToken_;
 	}
 	
 	/**
