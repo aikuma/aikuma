@@ -69,6 +69,12 @@ public class GoogleAuth {
 		return url;
 	}
 
+    /**
+     * Check to see if an access_token is valid
+     *
+     * @param accessToken an OATH2 access token
+     * @return true if valid, false otherwise
+     */
     public static boolean validateAccessToken(String accessToken) {
 
         try {
@@ -88,13 +94,7 @@ public class GoogleAuth {
             } else {
                 System.err.println(con.getResponseCode());
                 System.err.println(con.getResponseMessage());
-                throw new RuntimeException("Unexpected response code");
             }
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
