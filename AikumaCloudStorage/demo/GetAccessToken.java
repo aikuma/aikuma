@@ -17,13 +17,11 @@ public class GetAccessToken {
 		for (String scope: GoogleDriveStorage.getScopes()) {
 			apis.add(scope);
 		}
-		/*
-		for (String scope: GoogleDriveStorage.getScopes()) {
+		for (String scope: FusionIndex.getScopes()) {
 			apis.add(scope);
 		}
-		*/
+
 		URI uri = URI.create(auth.getAuthUrl(apis));
-		
 		System.out.println("A google page will open where you can login and give permission to access your google drive.");
 		try {
 			desktop.browse(uri);
@@ -33,7 +31,7 @@ public class GetAccessToken {
 			System.err.println(e.getMessage());
 			System.exit(1);
 		}
-		
+
 		System.out.println("Once you give the permission, a new page opens with authorization code.");
 		System.out.print("Please copy and paste the token here: ");
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
