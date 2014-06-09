@@ -26,11 +26,11 @@ public interface Index {
 	 * Index an item. If item already exists, it gets updated.
 	 * For metadata, the following keys are required:
 	 * 
-	 *   - data_store_uri
-	 *   - item_id
-	 *   - file_type
-	 *   - language
-	 *   - speakers (comma-separated list)
+	 *   - data_store_uri - the Google Drive URI
+	 *   - item_id        - A way of grouping multiple items under a single identifier
+	 *   - file_type      - Mime type
+	 *   - language       - language
+	 *   - speakers (comma-separated list) - speakers
 	 * 
 	 * @param identifier
 	 * @param metadata
