@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -142,4 +143,22 @@ public class Utils {
 		}
 		return s;
 	}
+
+    /**
+     * Make an http connection that is common to all http requests used in this
+     * class.
+     *
+     * @param url
+     * @param method
+     * @return
+     * @throws IOException
+     */
+    public static HttpURLConnection gapi_connect(URL url, String method, String accessToken) throws IOException {
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setInstanceFollowRedirects(true);
+        con.setDoOutput(true);
+        con.setRequestMethod(method);
+        con.setRequestProperty("Authorization", "Bearer " + accessToken);
+        return con;
+    }
 }
