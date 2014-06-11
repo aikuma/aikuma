@@ -3,7 +3,6 @@ package org.lp20.aikuma.storage;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +12,8 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+
+import static org.lp20.aikuma.storage.Utils.gapi_connect;
 
 /**
  * Implementation of DataStore backed by Google Drive.
@@ -107,24 +108,8 @@ public class GoogleDriveStorage implements DataStore {
 		return apis;
 	}
 	
-	/**
-	 * Make an http connection that is common to all http requests used in this
-	 * class.
-	 * 
-	 * @param url
-	 * @param method
-	 * @return
-	 * @throws IOException
-	 */
-	private HttpURLConnection gapi_connect(URL url, String method) throws IOException {
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		con.setInstanceFollowRedirects(true);
-		con.setDoOutput(true);
-		con.setRequestMethod(method);
-		con.setRequestProperty("Authorization", "Bearer " + accessToken_);
-		return con;
-	}
-	
+
+
 	/**
 	 * Upload a file.
 	 * @param data
@@ -133,7 +118,7 @@ public class GoogleDriveStorage implements DataStore {
 	private JSONObject gapi_insert(Data data) {		
 		try {
 			URL url = new URL("https://www.googleapis.com/upload/drive/v2/files?uploadType=media");
-			HttpURLConnection con = gapi_connect(url, "POST");
+			HttpURLConnection con = gapi_connect(url, "POST", accessToken_);
 			con.setRequestProperty("Content-Type", data.getMimeType());
 			con.setChunkedStreamingMode(8192);
 			Utils.copyStream(data.getInputStream(), con.getOutputStream(), false);
@@ -159,7 +144,7 @@ public class GoogleDriveStorage implements DataStore {
 		try {
 			String metajson = obj.toJSONString();
 			URL url = new URL("https://www.googleapis.com/drive/v2/files/" + fileid);
-			HttpURLConnection con = gapi_connect(url, "PUT");
+			HttpURLConnection con = gapi_connect(url, "PUT", accessToken_);
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Content-Length", String.valueOf(metajson.length()));
 			OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
@@ -191,7 +176,7 @@ public class GoogleDriveStorage implements DataStore {
 				ub.addQuery("pageToken",  pageToken);
 			else if (searchQuery != null && !searchQuery.isEmpty())
 				ub.addQuery("q", searchQuery);
-			HttpURLConnection con = gapi_connect(ub.toUrl(), "GET");
+			HttpURLConnection con = gapi_connect(ub.toUrl(), "GET", accessToken_);
 			if (con.getResponseCode() != HttpURLConnection.HTTP_OK)
 				return null;			
 			String json = Utils.readStream(con.getInputStream());
@@ -209,7 +194,7 @@ public class GoogleDriveStorage implements DataStore {
 	 */
 	private InputStream gapi_download(String url) {
 		try {
-			HttpURLConnection con = gapi_connect(new URL(url), "GET");
+			HttpURLConnection con = gapi_connect(new URL(url), "GET", accessToken_);
 			if (con.getResponseCode() != HttpURLConnection.HTTP_OK)
 				return null;
 			return con.getInputStream();

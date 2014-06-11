@@ -17,3 +17,7 @@ local.properties
 **/gen/*
 **/test/bin/*
 **/test/gen/*
+
+**/.idea/*
+*.iml
+**/out/*
