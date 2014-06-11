@@ -59,7 +59,7 @@ public class FusionIndex implements Index {
     static {
         multivalueKeys = new HashSet<String>(2);
         multivalueKeys.add("speakers");
-        multivalueKeys.add("tag");
+        multivalueKeys.add("tags");
 
     }
 
@@ -141,7 +141,7 @@ public class FusionIndex implements Index {
 
         validateMetadata(metadata);
         if (!catalogInitalized) initializeCatalog();
-        deleteMetadata(identifier);
+        deleteMetadata(identifier); // easier to delete than try to update
         String body = makeIndexSQL(identifier, metadata);
 
         try {
@@ -153,24 +153,25 @@ public class FusionIndex implements Index {
             out.close();
             if (cn.getResponseCode() == cn.HTTP_OK)
                 return;
-            System.out.println(cn.getResponseCode());
-            System.out.println(cn.getResponseMessage());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            else if (cn.getResponseCode() == cn.HTTP_UNAUTHORIZED)
+                throw new InvalidAccessTokenException();
+            else {
+                System.out.println(cn.getResponseCode());
+                System.out.println(cn.getResponseMessage());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        throw new RuntimeException("Unable to insert metadata");
+        System.err.println("Error inserting metadata");
     }
 
-    private static final String DELETE_SQL_TEMPLATE = "DELETE FROM %s WHERE ROWID='%s';";
+    private static final String DELETE_SQL_TEMPLATE = "DELETE FROM %s WHERE ROWID ='%s';";
     private boolean deleteMetadata(String identifier) {
         String table =  (String) catalog.get("aikuma_metadata");
         JSONObject json = (JSONObject) JSONValue.parse(getMetadata(identifier));
         StringBuilder sql = new StringBuilder();
-        for (Object tmp: (JSONArray) json.get("rows")) {
-            JSONArray row = (JSONArray) tmp;
-            String rowid = (String) row.get(1);
+        for (Object row: (JSONArray) json.get("rows")) {
+            String rowid = (String)((List) row).get(0);
             sql.append(String.format(DELETE_SQL_TEMPLATE, table, rowid));
         }
         HttpURLConnection cn = null;
@@ -183,6 +184,8 @@ public class FusionIndex implements Index {
             out.close();
             if (cn.getResponseCode() == cn.HTTP_OK)
                 return true;
+            else if (cn.getResponseCode() == cn.HTTP_UNAUTHORIZED)
+                throw new InvalidAccessTokenException();
             else {
                 System.err.println("Unable to delete metadata for: " + identifier);
                 System.err.println("Got: " + cn.getResponseCode() + "(" +  cn.getResponseMessage()+ ")");
