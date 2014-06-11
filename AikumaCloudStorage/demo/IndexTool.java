@@ -1,3 +1,5 @@
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.GoogleAuth;
 import org.lp20.aikuma.storage.InvalidAccessTokenException;
@@ -19,7 +21,7 @@ public class IndexTool {
     String identifier;
 
     public static void usage() {
-        System.err.println("Usage: IndexTool <action>");
+        System.err.println("Usage: IndexTool <action> <identifier> [data.json]");
 
     }
     public static void main(String[] args) {
@@ -52,33 +54,41 @@ public class IndexTool {
             e.printStackTrace();
         }
 
+        String identifier = null;
 
         try {
             action = args[0];
+            identifier = args[1];
+
         } catch (IndexOutOfBoundsException e) {
             usage();
             System.exit(1);
         }
 
-
-        String identifier = "item1";
-        Map<String, String> metadata = new HashMap<String, String>(7);
-        metadata.put("data_store_uri", "http://foo.bar/drive/thisisalongfakeidentifier");
-        metadata.put("item_id", "aikuma-12345");
-        metadata.put("file_type", "audio/wav");
-        metadata.put("language", "gbb"); //Kaytetye, an indigenous Austrailian language spoken natively by ~200 people
-        metadata.put("speakers", "bob,steve,haejoong");
+        // TODO this should take a json file from the command line
 
         IndexTool index = new IndexTool(accessToken);
         try {
-            if ("add".equals(action))
+            if ("add".equals(action)) {
+                Map<String, String> metadata = new HashMap<String, String>(7);
+                try {
+                    metadata = (Map) JSONValue.parse(new FileReader(new File(args[2])));
+                } catch (IndexOutOfBoundsException e) {
+                    usage();
+                    System.exit(1);
+                } catch (FileNotFoundException e) {
+                    usage();
+                    System.exit(2);
+                    e.printStackTrace();
+                }
                 index.addItem(identifier, metadata);
-            else if ("get".equals(action))
+            } else if ("get".equals(action))
                 index.getItem(identifier);
             else if ("search".equals(action))
-                index.doSearch("item_id=" + metadata.get("item_id"));
-        } catch (InvalidAccessTokenException e) {
+                System.out.println("Not implemented (yet)");
 
+        } catch (InvalidAccessTokenException e) {
+            System.err.println("Invalid token; not caught by refresh code.");
         }
     }
 
