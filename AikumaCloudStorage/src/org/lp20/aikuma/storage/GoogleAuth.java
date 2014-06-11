@@ -78,7 +78,7 @@ public class GoogleAuth {
     public static boolean validateAccessToken(String accessToken) {
 
         try {
-            URL url = new URL("https://accounts.google.com/o/oauth2/token");
+            URL url = new URL("https://www.googleapis.com/oauth2/v2/tokeninfo");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setInstanceFollowRedirects(true);
             con.setDoOutput(true);
