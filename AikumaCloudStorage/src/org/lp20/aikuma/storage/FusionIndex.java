@@ -6,9 +6,11 @@ import org.json.simple.JSONValue;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.*;
 
 import static org.lp20.aikuma.storage.Utils.gapi_connect;
@@ -169,33 +171,35 @@ public class FusionIndex implements Index {
     private boolean deleteMetadata(String identifier) {
         String table =  (String) catalog.get("aikuma_metadata");
         JSONObject json = (JSONObject) JSONValue.parse(getMetadata(identifier));
-        StringBuilder sql = new StringBuilder();
-        for (Object row: (JSONArray) json.get("rows")) {
+        if (!((Map)json).containsKey("rows")) return true;
+        for (Object row: (List) ((Map) json).get("rows")) {
             String rowid = (String)((List) row).get(0);
-            sql.append(String.format(DELETE_SQL_TEMPLATE, table, rowid));
-        }
-        HttpURLConnection cn = null;
-        try {
-            cn = gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/query"),
-                                                "POST", accessToken);
-            OutputStreamWriter out = new OutputStreamWriter(cn.getOutputStream());
-            out.write("sql=" + sql.toString());
-            out.flush();
-            out.close();
-            if (cn.getResponseCode() == cn.HTTP_OK)
-                return true;
-            else if (cn.getResponseCode() == cn.HTTP_UNAUTHORIZED)
-                throw new InvalidAccessTokenException();
-            else {
-                System.err.println("Unable to delete metadata for: " + identifier);
-                System.err.println("Got: " + cn.getResponseCode() + "(" +  cn.getResponseMessage()+ ")");
+            try {
+                HttpURLConnection cn = gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/query"),
+                        "POST", accessToken);
+
+                OutputStreamWriter out = new OutputStreamWriter(cn.getOutputStream());
+                out.write("sql=" + String.format(DELETE_SQL_TEMPLATE, table, rowid));
+                out.flush();
+                out.close();
+                if (cn.getResponseCode() == cn.HTTP_OK)
+                    continue;
+                else if (cn.getResponseCode() == cn.HTTP_UNAUTHORIZED)
+                    throw new InvalidAccessTokenException();
+                else if (cn.getResponseCode() == cn.HTTP_BAD_REQUEST)
+                    return false;
+                else {
+                    System.err.println("Unable to delete metadata for: " + identifier);
+                    System.err.println("Got: " + cn.getResponseCode() + "(" +  cn.getResponseMessage()+ ")");
+                    return false;
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
             }
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return false;
+        return true;
 
     }
 
@@ -227,7 +231,14 @@ public class FusionIndex implements Index {
                 ));
             }
         }
-        return sql.toString();
+        try {
+            return(URLEncoder.encode(sql.toString(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            // Why the hell do I have to do this? Checked exceptions sound like a
+            // great idea till you actually use them.
+            return "";
+        }
+
     }
 
     private void validateMetadata(Map<String, String> metadata) {
