@@ -19,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -44,7 +45,7 @@ import org.lp20.aikuma.util.ImageUtils;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class ListenActivity extends AikumaActivity {
+public class ListenActivity extends AikumaListActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -57,9 +58,14 @@ public class ListenActivity extends AikumaActivity {
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		setUpRecording();
 		setUpPlayer();
-		setUpRespeakingImages();
+//		setUpRespeakingImages();
 		setUpRecordingInfo();
-		updateViewCount();
+//		updateViewCount();
+		
+		// respeakings load
+		List<Recording> respeakings = recording.getRespeakings();
+		ArrayAdapter adapter = new RecordingArrayAdapter(this, respeakings);
+		setListAdapter(adapter);
 	}
 
 	// Prepares the recording
@@ -82,10 +88,10 @@ public class ListenActivity extends AikumaActivity {
 	// Prepares the information pertaining to the recording
 	private void setUpRecordingInfo() {
 		setUpRecordingName();
-		LinearLayout recordingInfoView = (LinearLayout)
-				findViewById(R.id.recordingInfo);
+//		LinearLayout recordingInfoView = (LinearLayout)
+//				findViewById(R.id.recordingInfo);
 		LinearLayout originalImages = (LinearLayout)
-				findViewById(R.id.originalImages);
+				findViewById(R.id.speakerImages);
 		for (String id : recording.getSpeakersIds()) {
 			originalImages.addView(makeSpeakerImageView(id));
 		}
@@ -94,11 +100,20 @@ public class ListenActivity extends AikumaActivity {
 	// Prepares the displayed name for the recording (including other things
 	// such as duration and date.
 	private void setUpRecordingName() {
-		TextView nameView = (TextView) findViewById(R.id.recordingName);
+		LinearLayout l1 = (LinearLayout) findViewById(R.id.selectedOriginal);
+		LinearLayout l2 = (LinearLayout) findViewById(R.id.recordingInterface);
+		
+		TextView nameView2 = (TextView) l2.findViewById(R.id.recordingName);
+		nameView2.setText("hihihi");
+		
+		TextView nameView = (TextView) l1.findViewById(R.id.recordingName);
 		TextView dateDurationView = 
 				(TextView) findViewById(R.id.recordingDateDuration);
-		TextView langView = (TextView) findViewById(R.id.recordingLangCode);
+//		TextView langView = (TextView) findViewById(R.id.recordingLangCode);
+		
+
 		nameView.setText(recording.getNameAndLang());
+		
 		Integer duration = recording.getDurationMsec() / 1000;
 		if (recording.getDurationMsec() == -1) {
 			dateDurationView.setText(
@@ -108,14 +123,51 @@ public class ListenActivity extends AikumaActivity {
 				simpleDateFormat.format(recording.getDate()) + " (" +
 				duration.toString() + "s)");
 		}
+
+		// Add the number of views information
+		TextView viewCountsView = (TextView) findViewById(R.id.viewCounts);
+		viewCountsView.setText(String.valueOf(recording.numViews()));
+
+		// Add the number of comments information
+		// (all recording objects in this class are original)
+		TextView numCommentsView = (TextView) findViewById(R.id.numComments);
+		List<Recording> respeakings = recording.getRespeakings();
+		int numComments = respeakings.size();
+		numCommentsView.setText(String.valueOf(numComments));
+		
+		// Add the number of stars information
+		TextView numStarsView = (TextView)
+				findViewById(R.id.numStars);
+		numStarsView.setText(String.valueOf(recording.numStars()));
+
+		// Add the number of flags information
+		TextView numFlagsView = (TextView)
+				findViewById(R.id.numFlags);
+		numFlagsView.setText(String.valueOf(recording.numFlags()));
+		
+		List<String> speakers = recording.getSpeakersIds();
+		StringBuilder sb = new StringBuilder("Speakers:\n");
+		for(String speakerId : speakers) {
+			try {
+				sb.append(Speaker.read(speakerId).getName()+" ");
+			} catch (IOException e) {
+				// If the reader can't be read for whatever reason 
+				// (perhaps JSON file wasn't formatted correctly),
+				// Empty the speakersName
+				e.printStackTrace();
+			}
+		}
+		TextView speakersNameView = (TextView)
+				findViewById(R.id.speakersName);
+		speakersNameView.setText(sb);
 	}
 
 	// Makes the imageview for a given speaker
 	private ImageView makeSpeakerImageView(String speakerId) {
 		ImageView speakerImage = new ImageView(this);
 		speakerImage.setAdjustViewBounds(true);
-		speakerImage.setMaxHeight(40);
-		speakerImage.setMaxWidth(40);
+		speakerImage.setMaxHeight(60);
+		speakerImage.setMaxWidth(60);
 		try {
 			speakerImage.setImageBitmap(Speaker.getSmallImage(speakerId));
 		} catch (IOException e) {
@@ -160,8 +212,8 @@ public class ListenActivity extends AikumaActivity {
 				return;
 			}
 		}
-		LinearLayout respeakingImages = (LinearLayout)
-				findViewById(R.id.RespeakingImages);
+//		LinearLayout respeakingImages = (LinearLayout)
+//				findViewById(R.id.RespeakingImages);
 		for (final Recording respeaking : respeakings) {
 			LinearLayout respeakingImageContainer = new LinearLayout(this);
 			respeakingImageContainer.setOrientation(LinearLayout.VERTICAL);
@@ -206,7 +258,7 @@ public class ListenActivity extends AikumaActivity {
 			}
 			*/
 			respeakingImageContainer.addView(respeakingLang);
-			respeakingImages.addView(respeakingImageContainer);
+//			respeakingImages.addView(respeakingImageContainer);
 		}
 	}
 
@@ -257,6 +309,11 @@ public class ListenActivity extends AikumaActivity {
 			}
 		};
 		this.proximityDetector.start();
+		
+		// respeakings load
+		List<Recording> respeakings = recording.getRespeakings();
+		ArrayAdapter adapter = new RecordingArrayAdapter(this, respeakings);
+		setListAdapter(adapter);
 	}
 
 	@Override
@@ -389,11 +446,11 @@ public class ListenActivity extends AikumaActivity {
 	 * Updates the view that tracks the number of times the recording has been
 	 * listened to.
 	 */
-	public void updateViewCount() {
-		TextView viewCount = (TextView) findViewById(R.id.viewCount);
-		int numViews = recording.numViews();
-		viewCount.setText("# views: " + numViews);
-	}
+//	public void updateViewCount() {
+//		TextView viewCount = (TextView) findViewById(R.id.viewCount);
+//		int numViews = recording.numViews();
+//		viewCount.setText("# views: " + numViews);
+//	}
 
 	private boolean phoneRespeaking = false;
 	private Player player;

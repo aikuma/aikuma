@@ -4,26 +4,36 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 	>
+
+	<include 
+	    android:id="@+id/selectedOriginal"
+	    android:layout_height="wrap_content"
+	    android:layout_width="fill_parent"
+	    layout="@layout/recording_list_item"/>
+	
 	<LinearLayout
-			android:id="@+id/recordingInfo"
+			android:id="@+id/recordingInterface"
 			android:orientation="vertical"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_below="@id/selectedOriginal"
 			>
-		<TextView
+		<LinearLayout 
+		    android:orientation="horizontal"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    >
+		    
+		    <TextView
 				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
+				android:layout_width="0dp"
+				android:layout_weight="1"
 				android:text=""
-				android:id="@+id/recordingName"
-				android:textSize="20sp"
+				android:id="@+id/speakersName"
+				android:textSize="16sp"
 				android:padding="5dp"
-		/>
-		<LinearLayout
-				android:orientation="horizontal"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				>
-			<ImageButton
+			/>
+		    <ImageButton
 				android:id="@+id/starButton"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -39,16 +49,6 @@
 				android:src="@drawable/flag"
 				android:onClick="onFlagButtonPressed"
 			/>
-			<TextView
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:text=""
-				android:id="@+id/viewCount"
-				android:textSize="20sp"
-				android:padding="5dp"
-				android:layout_gravity="center"
-			/>
-
 			<ImageButton
 			    android:id="@+id/shareButton"
 			    android:layout_width="wrap_content"
@@ -56,52 +56,28 @@
 			    android:scaleType="centerInside"
 			    android:src="@drawable/share"
 			    android:onClick="onShareButtonPressed" />
+		</LinearLayout>
 		
-		</LinearLayout>
-		<LinearLayout
-				android:id="@+id/recordingInfo"
-				android:orientation="horizontal"
+		<fragment
+				android:name="org.lp20.aikuma.ui.ListenFragment"
+				android:id="@+id/ListenFragment"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				>
-			<TextView
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"
-					android:text=""
-					android:id="@+id/recordingDateDuration"
-					android:textSize="20sp"
-					android:padding="5dp"
-			/>
-			<TextView
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"
-					android:text=""
-					android:id="@+id/recordingLangCode"
-					android:textSize="20sp"
-					android:padding="5dp"
-			/>
-			<LinearLayout
-				android:id="@+id/originalImages"
-				android:orientation="horizontal"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-			/>
-		</LinearLayout>
+				android:layout_below="@id/speakersName"
+		/>
+
 	</LinearLayout>
-	<fragment
-			android:name="org.lp20.aikuma.ui.ListenFragment"
-			android:id="@+id/ListenFragment"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/recordingInfo"
-	/>
+	<!-- 
 	<LinearLayout
 		android:id="@+id/RespeakingImages"
 		android:orientation="horizontal"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/ListenFragment"
+		android:layout_below="@id/recordingInterface"
 	/>
+	
+	 -->
+	
 	<ImageButton
 			android:id="@+id/respeaking"
 			android:layout_width="fill_parent"
@@ -111,4 +87,12 @@
 			android:scaleType="centerInside"
 			android:layout_alignParentBottom="true"
 	/>
+	
+	<ListView
+	    android:id="@android:id/list"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/recordingInterface"
+	    android:layout_above="@id/respeaking" 
+	    />
 </RelativeLayout>

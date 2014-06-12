@@ -85,6 +85,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 			speakerImagesView.addView(makeSpeakerImageView(id));
 		}
 		recordingNameView.setText(recording.getNameAndLang());
+		
 		Integer duration = recording.getDurationMsec() / 1000;
 		if (recording.getDurationMsec() == -1) {
 			recordingDateDurationView.setText(
@@ -95,6 +96,18 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				duration.toString() + "s)");
 		}
 
+		// Add the number of views information
+		TextView viewCountsView = (TextView)
+				recordingView.findViewById(R.id.viewCounts);
+		viewCountsView.setText(""+recording.numViews());
+
+		// Add the number of comments information
+		TextView numCommentsView = (TextView)
+				recordingView.findViewById(R.id.numComments);
+		List<Recording> respeakings = recording.getRespeakings();
+		int numComments = respeakings.size();
+		numCommentsView.setText(""+numComments);
+		
 		// Add the number of stars information
 		TextView numStarsView = (TextView)
 				recordingView.findViewById(R.id.numStars);
@@ -117,8 +130,9 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	private ImageView makeSpeakerImageView(String speakerId) {
 		ImageView speakerImage = new ImageView(context);
 		speakerImage.setAdjustViewBounds(true);
-		speakerImage.setMaxHeight(40);
-		speakerImage.setMaxWidth(40);
+//		speakerImage.setScaleType(ImageView.ScaleType.FIT_END);
+		speakerImage.setMaxHeight(60);//40
+		speakerImage.setMaxWidth(60);//40
 		try {
 			speakerImage.setImageBitmap(Speaker.getSmallImage(speakerId));
 		} catch (IOException e) {
