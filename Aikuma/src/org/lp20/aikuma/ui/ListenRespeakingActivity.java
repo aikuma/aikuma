@@ -37,6 +37,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**	An activiy executed after ListenActivity
+ * 	Show two recordings(original and respeaking)
+ * 
+ * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+ */
 public class ListenRespeakingActivity extends AikumaActivity{
 
 	@Override
@@ -46,7 +51,6 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		menuBehaviour = new MenuBehaviour(this);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-		
 		originalInterface = 
 				(LinearLayout) findViewById(R.id.recordingInterface);
 		respeakingInterface = 
@@ -54,11 +58,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		originalListenFragment = new ListenFragment();
 		respeakingListenFragment = new ListenFragment();
 		
-		
-		
-		
-
-		
+	
 		//setUpRecording();
 		//setUpPlayer();
 //		setUpRespeakingImages();
@@ -139,11 +139,12 @@ public class ListenRespeakingActivity extends AikumaActivity{
 
 	// Prepares the displayed name for the recording (including other things
 	// such as duration and date.
-	private void setUpRecordingInfo(LinearLayout recordingInfoView, Recording recording) {			
-		TextView nameView = 
-				(TextView) recordingInfoView.findViewById(R.id.recordingName);
-		TextView dateDurationView = 
-				(TextView) recordingInfoView.findViewById(R.id.recordingDateDuration);
+	private void setUpRecordingInfo(LinearLayout recordingInfoView, 
+			Recording recording) {			
+		TextView nameView = (TextView) recordingInfoView.
+				findViewById(R.id.recordingName);
+		TextView dateDurationView = (TextView) recordingInfoView.
+				findViewById(R.id.recordingDateDuration);
 //		TextView langView = (TextView) findViewById(R.id.recordingLangCode);
 		
 
@@ -160,12 +161,14 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		}
 
 		// Add the number of views information
-		TextView viewCountsView = (TextView) recordingInfoView.findViewById(R.id.viewCounts);
+		TextView viewCountsView = 
+				(TextView) recordingInfoView.findViewById(R.id.viewCounts);
 		viewCountsView.setText(String.valueOf(recording.numViews()));
 
 		// Add the number of comments information
 		// (all recording objects in this class are original)
-		TextView numCommentsView = (TextView) recordingInfoView.findViewById(R.id.numComments);
+		TextView numCommentsView = 
+				(TextView) recordingInfoView.findViewById(R.id.numComments);
 		List<Recording> respeakings = recording.getRespeakings();
 		int numComments = respeakings.size();
 		numCommentsView.setText(String.valueOf(numComments));
@@ -266,7 +269,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	}
 
 	// Set up the player
-	private void setUpPlayer(ListenFragment playerInterface, Recording recording) {
+	private void setUpPlayer(ListenFragment playerInterface, 
+			Recording recording) {
 
 		try {
 			if (recording.isOriginal()) {
@@ -287,11 +291,13 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	}
 
 
-	private void setPlayer(ListenFragment playerInterface, SimplePlayer player) {
+	private void setPlayer(ListenFragment playerInterface, 
+			SimplePlayer player) {
 		playerInterface.setPlayer(player);
 	}
 
-	private void setPlayer(ListenFragment playerInterface, InterleavedPlayer player) {
+	private void setPlayer(ListenFragment playerInterface, 
+			InterleavedPlayer player) {
 		ListenFragment lf = (ListenFragment)
 				getFragmentManager().findFragmentByTag("respeak");
 		playerInterface.setPlayer(player);
@@ -317,8 +323,10 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		super.onStart();
 		
 		FragmentManager fm = getFragmentManager();
-		addNewFragment(fm, R.id.recordingPlayerInterface, originalListenFragment, "original");
-		addNewFragment(fm, R.id.respeakingPlayerInterface, respeakingListenFragment, "respeak");
+		addNewFragment(fm, R.id.recordingPlayerInterface, 
+				originalListenFragment, "original");
+		addNewFragment(fm, R.id.respeakingPlayerInterface, 
+				respeakingListenFragment, "respeak");
 		fm.executePendingTransactions();
 		
 		setUp();
@@ -364,8 +372,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 
 	/**
 	 * When the star button is pressed
-	 *
-	 * @param	view	The star button
+	 * 
+	 * @param recording		Recording object where star is recorded
 	 */
 	public void onStarButtonPressed(Recording recording) {
 		try {
@@ -384,7 +392,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	/**
 	 * When the flag button is pressed
 	 *
-	 * @param	view	The flag button
+	 *  @param recording	Recording object where flag is recorded
 	 */
 	public void onFlagButtonPressed(Recording recording) {
 		try {
@@ -402,7 +410,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	/**
 	 * When the share button is pressed
 	 *
-	 * @param	view	The share button
+	 * @param recording	Recording object which will be shared
 	 */
 	public void onShareButtonPressed(Recording recording) {
 		String urlToShare = "http://example.com/" + recording.getGroupId();
@@ -423,7 +431,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		updateFlagButton(respeakingInterface, respeaking);
 	}
 	
-	private void updateStarButton(LinearLayout parentLayout, Recording recording) {
+	private void updateStarButton(LinearLayout parentLayout, 
+			Recording recording) {
 		ImageButton starButton = (ImageButton)
 				parentLayout.findViewById(R.id.starButton);
 		if (recording.isStarredByThisPhone()) {
@@ -435,7 +444,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		}
 	}
 
-	private void updateFlagButton(LinearLayout parentLayout, Recording recording) {
+	private void updateFlagButton(LinearLayout parentLayout, 
+			Recording recording) {
 		ImageButton flagButton = (ImageButton)
 				parentLayout.findViewById(R.id.flagButton);
 		if (recording.isFlaggedByThisPhone()) {

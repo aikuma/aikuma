@@ -17,6 +17,11 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 
+/**
+ * Contains utilities to deal with videos in the app.
+ *
+ * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+ */
 public final class VideoUtils {
 
 	/**
