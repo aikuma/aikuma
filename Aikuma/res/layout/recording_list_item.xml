@@ -68,7 +68,7 @@
 					android:layout_gravity="center_vertical"
 					android:id="@+id/numComments"
 					android:padding="1dp"/>
-			<ImageView android:src="@drawable/comment"
+			<ImageView android:src="@drawable/commentary_32"
 					android:layout_gravity="center"
 					android:padding="1dip"
 					android:layout_margin="1dip"

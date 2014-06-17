@@ -182,6 +182,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 			float fraction =
 					player.sampleToMsec(segment.getEndSample()) /
 					(float) player.getDurationMsec();
+
 			seekBar.addLine(fraction*100);
 		}
 		player.setOnCompletionListener(onCompletionListener);

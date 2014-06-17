@@ -1,69 +1,68 @@
-/*
-	Copyright (C) 2013, The Aikuma Project
-	AUTHORS: Oliver Adams and Florian Hanke
-*/
 package org.lp20.aikuma.ui;
 
-import android.util.Log;
-import android.app.Activity;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+
+import org.lp20.aikuma.R;
+import org.lp20.aikuma.audio.InterleavedPlayer;
+import org.lp20.aikuma.audio.Player;
+import org.lp20.aikuma.audio.SimplePlayer;
+import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.ui.sensors.ProximityDetector;
+
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import org.lp20.aikuma.model.Language;
-import org.lp20.aikuma.model.Recording;
-import org.lp20.aikuma.model.Speaker;
-import org.lp20.aikuma.audio.Player;
-import org.lp20.aikuma.audio.SimplePlayer;
-import org.lp20.aikuma.audio.InterleavedPlayer;
-import org.lp20.aikuma.R;
-import org.lp20.aikuma.ui.sensors.ProximityDetector;
-import org.lp20.aikuma.util.ImageUtils;
 
-/**
- * @author	Oliver Adams	<oliver.adams@gmail.com>
- * @author	Florian Hanke	<florian.hanke@gmail.com>
- */
-public class ListenActivity extends AikumaListActivity {
+public class ListenRespeakingActivity extends AikumaActivity{
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.listen);
+		setContentView(R.layout.listen_respeaking);
 		menuBehaviour = new MenuBehaviour(this);
-		fragment =
-				(ListenFragment)
-				getFragmentManager().findFragmentById(R.id.ListenFragment);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		setUpRecording();
-		setUpPlayer();
+
+		
+		originalInterface = 
+				(LinearLayout) findViewById(R.id.recordingInterface);
+		respeakingInterface = 
+				(LinearLayout) findViewById(R.id.respeakingInterface);
+		originalListenFragment = new ListenFragment();
+		respeakingListenFragment = new ListenFragment();
+		
+		
+		
+		
+
+		
+		//setUpRecording();
+		//setUpPlayer();
 //		setUpRespeakingImages();
-		setUpRecordingInfo();
+		//setUpRecordingInfo();
 //		updateViewCount();
 		
 		// respeakings load
@@ -73,49 +72,78 @@ public class ListenActivity extends AikumaListActivity {
 //		ExpandableListAdapter adapter = new RespeakingsArrayAdapter(this, respeakings);
 //		respeakingsList.setAdapter(adapter);
 		
-		if(recording.isOriginal()) {
-			List<Recording> respeakings = recording.getRespeakings();
-			ArrayAdapter adapter = new RecordingArrayAdapter(this, respeakings);
-			setListAdapter(adapter);
-		}
-		
 	}
-
+	
+	private void addNewFragment(FragmentManager fm, 
+			int containerId, Fragment fragment, String tag) {
+		
+	    FragmentTransaction ft = fm.beginTransaction();
+	    ft.add(containerId, fragment, tag);
+	    
+	    //ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+	    //ft.addToBackStack(null);
+	    ft.commit();
+	}
+	
+	private void setUp() {
+		setUpRecordings();
+		setUpPlayers();
+		setUpRecordingsInfo();
+	}
+	
+	
 	// Prepares the recording
-	private void setUpRecording() {
+	private void setUpRecordings() {
 		Intent intent = getIntent();
-		String id = (String)
-				intent.getExtras().get("id");
+		String originalId = (String)
+				intent.getExtras().get("originalId");
+		String respeakingId = (String)
+				intent.getExtras().get("respeakingId");
+
 		try {
-			recording = Recording.read(id);
-			setUpRecordingName();
+			original = Recording.read(originalId);
+			List<Recording> respeakings = original.getRespeakings();
+			for(Recording buf : respeakings) {
+				
+				if(buf.getId().equals(respeakingId)) {
+					respeaking = buf;
+					break;
+				}
+			}
+			//setUpRecordingName();
 		} catch (IOException e) {
 			//The recording metadata cannot be read, so let's wrap up this
 			//activity.
 			Toast.makeText(this, "Failed to read recording metadata.",
 					Toast.LENGTH_LONG).show();
-			ListenActivity.this.finish();
+			ListenRespeakingActivity.this.finish();
 		}
 	}
 
 	// Prepares the information pertaining to the recording
-	private void setUpRecordingInfo() {
-		setUpRecordingName();
+	private void setUpRecordingsInfo() {
+		
 //		LinearLayout recordingInfoView = (LinearLayout)
 //				findViewById(R.id.recordingInfo);
-		LinearLayout originalImages = (LinearLayout)
-				findViewById(R.id.speakerImages);
-		for (String id : recording.getSpeakersIds()) {
-			originalImages.addView(makeSpeakerImageView(id));
-		}
+		LinearLayout originalInfoView = 
+				(LinearLayout) findViewById(R.id.selectedOriginal);
+		LinearLayout respeakingInfoView = 
+				(LinearLayout) findViewById(R.id.selectedRespeaking);
+		
+		setUpRecordingInfo(originalInfoView, original);
+		setUpRecordingInfo(respeakingInfoView, respeaking);
+		
+		setUpRecordingInterface(originalInterface, original);
+		setUpRecordingInterface(respeakingInterface, respeaking);
 	}
 
 	// Prepares the displayed name for the recording (including other things
 	// such as duration and date.
-	private void setUpRecordingName() {			
-		TextView nameView = (TextView) findViewById(R.id.recordingName);
+	private void setUpRecordingInfo(LinearLayout recordingInfoView, Recording recording) {			
+		TextView nameView = 
+				(TextView) recordingInfoView.findViewById(R.id.recordingName);
 		TextView dateDurationView = 
-				(TextView) findViewById(R.id.recordingDateDuration);
+				(TextView) recordingInfoView.findViewById(R.id.recordingDateDuration);
 //		TextView langView = (TextView) findViewById(R.id.recordingLangCode);
 		
 
@@ -132,26 +160,38 @@ public class ListenActivity extends AikumaListActivity {
 		}
 
 		// Add the number of views information
-		TextView viewCountsView = (TextView) findViewById(R.id.viewCounts);
+		TextView viewCountsView = (TextView) recordingInfoView.findViewById(R.id.viewCounts);
 		viewCountsView.setText(String.valueOf(recording.numViews()));
 
 		// Add the number of comments information
 		// (all recording objects in this class are original)
-		TextView numCommentsView = (TextView) findViewById(R.id.numComments);
+		TextView numCommentsView = (TextView) recordingInfoView.findViewById(R.id.numComments);
 		List<Recording> respeakings = recording.getRespeakings();
 		int numComments = respeakings.size();
 		numCommentsView.setText(String.valueOf(numComments));
 		
 		// Add the number of stars information
 		TextView numStarsView = (TextView)
-				findViewById(R.id.numStars);
+				recordingInfoView.findViewById(R.id.numStars);
 		numStarsView.setText(String.valueOf(recording.numStars()));
 
 		// Add the number of flags information
 		TextView numFlagsView = (TextView)
-				findViewById(R.id.numFlags);
+				recordingInfoView.findViewById(R.id.numFlags);
 		numFlagsView.setText(String.valueOf(recording.numFlags()));
 		
+		// Add the speakers' images
+		LinearLayout speakerImages = (LinearLayout)
+				recordingInfoView.findViewById(R.id.speakerImages);
+		for (String speakerId : recording.getSpeakersIds()) {
+			speakerImages.addView(makeSpeakerImageView(speakerId));
+		}
+		
+	}
+	
+	private void setUpRecordingInterface(LinearLayout recordingInterface, 
+			final Recording recording){
+		// Show the speakers' names
 		List<String> speakers = recording.getSpeakersIds();
 		StringBuilder sb = new StringBuilder("Speakers:\n");
 		for(String speakerId : speakers) {
@@ -164,42 +204,47 @@ public class ListenActivity extends AikumaListActivity {
 				e.printStackTrace();
 			}
 		}
-		LinearLayout l1 = (LinearLayout) findViewById(R.id.recordingInterface);
+		
 		TextView speakersNameView = (TextView)
-				l1.findViewById(R.id.speakersName);
+				recordingInterface.findViewById(R.id.speakersName);
 		speakersNameView.setText(sb);
 		
+		
 		// set up the starButton
-		ImageButton starButton = (ImageButton) findViewById(R.id.starButton);
+		ImageButton starButton = (ImageButton)
+				recordingInterface.findViewById(R.id.starButton);
 		starButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				ListenActivity.this.onStarButtonPressed(v);
+				ListenRespeakingActivity.this.onStarButtonPressed(recording);
 			}	
 		});
 		
-				
+		
 		// set up the flagButton
-		ImageButton flagButton = (ImageButton) findViewById(R.id.flagButton);
+		ImageButton flagButton = (ImageButton)
+				recordingInterface.findViewById(R.id.flagButton);
 		flagButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				ListenActivity.this.onFlagButtonPressed(v);
+				ListenRespeakingActivity.this.onFlagButtonPressed(recording);
 			}	
 		});
-				
+		
 		// set up the shareButton
-		ImageButton shareButton = (ImageButton)findViewById(R.id.shareButton);
+		ImageButton shareButton = (ImageButton)
+				recordingInterface.findViewById(R.id.shareButton);
 		shareButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				ListenActivity.this.onShareButtonPressed(v);
+				ListenRespeakingActivity.this.onShareButtonPressed(recording);
 			}	
 		});
 	}
+	
 
 	// Makes the imageview for a given speaker
 	private ImageView makeSpeakerImageView(String speakerId) {
@@ -214,101 +259,42 @@ public class ListenActivity extends AikumaListActivity {
 		}
 		return speakerImage;
 	}
+	
+	private void setUpPlayers() {
+		setUpPlayer(originalListenFragment, original);
+		setUpPlayer(respeakingListenFragment, respeaking);
+	}
 
 	// Set up the player
-	private void setUpPlayer() {
+	private void setUpPlayer(ListenFragment playerInterface, Recording recording) {
+
 		try {
 			if (recording.isOriginal()) {
-				setPlayer(new SimplePlayer(recording, true));
+				setPlayer(playerInterface, new SimplePlayer(recording, true));
 			} else {
-				setPlayer(new InterleavedPlayer(recording));
-				ImageButton respeakingButton =
-						(ImageButton) findViewById(R.id.respeaking);
-				respeakingButton.setVisibility(View.GONE);
+				setPlayer(playerInterface, new InterleavedPlayer(recording));
+//				ImageButton respeakingButton =
+//						(ImageButton) findViewById(R.id.respeaking);
+//				respeakingButton.setVisibility(View.GONE);
 			}
 		} catch (IOException e) {
 			//The player couldn't be created from the recoridng, so lets wrap
 			//this activity up.
 			Toast.makeText(this, "Failed to create player from recording.",
 					Toast.LENGTH_LONG).show();
-			ListenActivity.this.finish();
+			ListenRespeakingActivity.this.finish();
 		}
 	}
 
-	// Prepares the images for the respeakings.
-	private void setUpRespeakingImages() {
-		List<Recording> respeakings;
-		if (recording.isOriginal()) {
-			respeakings = recording.getRespeakings();
-		} else {
-			try {
-				respeakings =
-						recording.getOriginal().getRespeakings();
-			} catch (IOException e) {
-				//If the original recording can't be loaded, then we can't
-				//display any other respeaking images, so we should just return
-				//now.
-				return;
-			}
-		}
-//		LinearLayout respeakingImages = (LinearLayout)
-//				findViewById(R.id.RespeakingImages);
-		for (final Recording respeaking : respeakings) {
-			LinearLayout respeakingImageContainer = new LinearLayout(this);
-			respeakingImageContainer.setOrientation(LinearLayout.VERTICAL);
-			ImageView respeakingImage = new ImageView(this);
-			respeakingImage.setAdjustViewBounds(true);
-			respeakingImage.setMaxHeight(60);
-			respeakingImage.setMaxWidth(60);
-			respeakingImage.setPadding(5,5,5,5);
-			if (respeaking.equals(recording)) {
-				respeakingImage.setBackgroundColor(0xFFCC0000);
-			}
-			respeakingImage.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View _) {
-					Intent intent = new Intent(ListenActivity.this,
-							ListenActivity.class);
-					intent.putExtra("id",
-							respeaking.getId().toString());
-					startActivity(intent);
-					ListenActivity.this.finish();
-				}
-			});
-			try {
-				if (respeaking.getSpeakersIds().size() > 0) {
-					respeakingImage.setImageBitmap(
-							Speaker.getSmallImage(
-							respeaking.getSpeakersIds().get(0)));
-				} else {
-					continue;
-				}
-			} catch (IOException e) {
-				// Not much can be done if the image can't be loaded.
-			}
-			respeakingImageContainer.addView(respeakingImage);
-			TextView respeakingLang = new TextView(this);
-			respeakingLang.setText(respeaking.getFirstLangCode());
-			respeakingLang.setGravity(Gravity.CENTER_HORIZONTAL);
-			/*
-			List<Language> langs = respeaking.getLanguages();
-			if (langs.size() > 0) {
-				respeakingLang.setText(respeaking.getLanguages().get(0).getCode());
-				respeakingLang.setGravity(Gravity.CENTER_HORIZONTAL);
-			}
-			*/
-			respeakingImageContainer.addView(respeakingLang);
-//			respeakingImages.addView(respeakingImageContainer);
-		}
+
+	private void setPlayer(ListenFragment playerInterface, SimplePlayer player) {
+		playerInterface.setPlayer(player);
 	}
 
-	private void setPlayer(SimplePlayer player) {
-		this.player = player;
-		fragment.setPlayer(player);
-	}
-
-	private void setPlayer(InterleavedPlayer player) {
-		this.player = player;
-		fragment.setPlayer(player);
+	private void setPlayer(ListenFragment playerInterface, InterleavedPlayer player) {
+		ListenFragment lf = (ListenFragment)
+				getFragmentManager().findFragmentByTag("respeak");
+		playerInterface.setPlayer(player);
 	}
 
 	@Override
@@ -327,10 +313,22 @@ public class ListenActivity extends AikumaListActivity {
 	}
 
 	@Override
+	public void onStart() {
+		super.onStart();
+		
+		FragmentManager fm = getFragmentManager();
+		addNewFragment(fm, R.id.recordingPlayerInterface, originalListenFragment, "original");
+		addNewFragment(fm, R.id.respeakingPlayerInterface, respeakingListenFragment, "respeak");
+		fm.executePendingTransactions();
+		
+		setUp();
+	}
+	
+	@Override
 	public void onResume() {
 		super.onResume();
-		updateStarButton();
-		updateFlagButton();
+		updateStarButtons();
+		updateFlagButtons();
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
 				WindowManager.LayoutParams params = getWindow().getAttributes();
@@ -355,30 +353,8 @@ public class ListenActivity extends AikumaListActivity {
 //		List<Recording> respeakings = recording.getRespeakings();
 //		ExpandableListAdapter adapter = new RespeakingsArrayAdapter(this, respeakings);
 //		respeakingsList.setAdapter(adapter);
-				
-		if(recording.isOriginal()) {
-			List<Recording> respeakings = recording.getRespeakings();
-			ArrayAdapter adapter = new RecordingArrayAdapter(this, respeakings);
-			setListAdapter(adapter);
-		}
-		
 	}
 
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id){
-		Recording respeaking = (Recording) getListAdapter().getItem(position);
-		Intent intent = new Intent(this, ListenRespeakingActivity.class);
-		intent.putExtra("originalId", recording.getId());
-		intent.putExtra("respeakingId", respeaking.getId());
-		startActivity(intent);
-		
-//		Intent intent = new Intent(ListenActivity.this,
-//				ListenActivity.class);
-//		intent.putExtra("id",
-//				respeaking.getId().toString());
-//		startActivity(intent);
-//		ListenActivity.this.finish();
-	}
 	
 	@Override
 	public void onPause() {
@@ -387,46 +363,11 @@ public class ListenActivity extends AikumaListActivity {
 	}
 
 	/**
-	 * Change to the thumb respeaking activity
-	 *
-	 * @param	respeakingButton	The thumb respeaking button
-	 */
-	public void onRespeakingButton(View respeakingButton) {
-		SharedPreferences preferences =
-				PreferenceManager.getDefaultSharedPreferences(this);
-		String respeakingMode = preferences.getString(
-				"respeaking_mode", "nothing");
-		Log.i("ListenActivity", "respeakingMode: " + respeakingMode);
-		Intent intent;
-		if (respeakingMode.equals("phone")) {
-			intent = new Intent(this, PhoneRespeakActivity.class);
-		} else {
-			// Lets just default to thumb respeaking
-			intent = new Intent(this, ThumbRespeakActivity.class);
-		}
-		intent.putExtra("sourceId", recording.getId());
-		intent.putExtra("sampleRate", recording.getSampleRate());
-		startActivity(intent);
-	}
-
-	/**
-	 * Change to the phone respeaking activity
-	 *
-	 * @param	view	The phone respeaking button
-	 */
-	public void onPhoneRespeakingButton(View view) {
-		Intent intent = new Intent(this, PhoneRespeakActivity.class);
-		intent.putExtra("sourceId", recording.getId());
-		intent.putExtra("sampleRate", recording.getSampleRate());
-		startActivity(intent);
-	}
-
-	/**
 	 * When the star button is pressed
 	 *
 	 * @param	view	The star button
 	 */
-	public void onStarButtonPressed(View view) {
+	public void onStarButtonPressed(Recording recording) {
 		try {
 			recording.star();
 		} catch (IOException e) {
@@ -436,8 +377,8 @@ public class ListenActivity extends AikumaListActivity {
 			// not to throw...
 			throw new RuntimeException(e);
 		}
-		updateStarButton();
-		updateFlagButton();
+		updateStarButtons();
+		updateFlagButtons();
 	}
 
 	/**
@@ -445,7 +386,7 @@ public class ListenActivity extends AikumaListActivity {
 	 *
 	 * @param	view	The flag button
 	 */
-	public void onFlagButtonPressed(View view) {
+	public void onFlagButtonPressed(Recording recording) {
 		try {
 			recording.flag();
 		} catch (IOException e) {
@@ -455,7 +396,7 @@ public class ListenActivity extends AikumaListActivity {
 			// not to throw...
 			throw new RuntimeException(e);
 		}
-		updateFlagButton();
+		updateFlagButtons();
 	}
 	
 	/**
@@ -463,7 +404,7 @@ public class ListenActivity extends AikumaListActivity {
 	 *
 	 * @param	view	The share button
 	 */
-	public void onShareButtonPressed(View view) {
+	public void onShareButtonPressed(Recording recording) {
 		String urlToShare = "http://example.com/" + recording.getGroupId();
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_SEND);
@@ -472,9 +413,19 @@ public class ListenActivity extends AikumaListActivity {
 		startActivity(Intent.createChooser(intent, "Share the link via"));
 	}
 
-	private void updateStarButton() {
+	private void updateStarButtons() {
+		updateStarButton(originalInterface, original);
+		updateStarButton(respeakingInterface, respeaking);
+	}
+	
+	private void updateFlagButtons() {
+		updateFlagButton(originalInterface, original);
+		updateFlagButton(respeakingInterface, respeaking);
+	}
+	
+	private void updateStarButton(LinearLayout parentLayout, Recording recording) {
 		ImageButton starButton = (ImageButton)
-				findViewById(R.id.starButton);
+				parentLayout.findViewById(R.id.starButton);
 		if (recording.isStarredByThisPhone()) {
 			starButton.setEnabled(false);
 			starButton.setImageResource(R.drawable.star_grey);
@@ -484,9 +435,9 @@ public class ListenActivity extends AikumaListActivity {
 		}
 	}
 
-	private void updateFlagButton() {
+	private void updateFlagButton(LinearLayout parentLayout, Recording recording) {
 		ImageButton flagButton = (ImageButton)
-				findViewById(R.id.flagButton);
+				parentLayout.findViewById(R.id.flagButton);
 		if (recording.isFlaggedByThisPhone()) {
 			flagButton.setEnabled(false);
 			flagButton.setImageResource(R.drawable.flag_grey);
@@ -518,9 +469,14 @@ public class ListenActivity extends AikumaListActivity {
 
 	private boolean phoneRespeaking = false;
 	private Player player;
-	private ListenFragment fragment;
-	private Recording recording;
+	private Recording original;
+	private Recording respeaking;
+	private LinearLayout originalInterface;
+	private ListenFragment originalListenFragment;
+	private LinearLayout respeakingInterface;
+	private ListenFragment respeakingListenFragment;
 	private MenuBehaviour menuBehaviour;
 	private SimpleDateFormat simpleDateFormat;
 	private ProximityDetector proximityDetector;
+	
 }

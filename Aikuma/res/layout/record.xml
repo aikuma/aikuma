@@ -37,15 +37,19 @@
 			android:onClick="onRecordButton"
 		/>
 	</LinearLayout>
+	<!-- 
 	<ImageButton
 			android:id="@+id/videoRecordButton"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_weight="2"
 			android:scaleType="centerInside"
-			android:src="@drawable/record_48"
+			android:src="@drawable/movie_48"
 			android:onClick="onVideoRecord"
 		/>
+	
+	 -->
+	
 	<ImageButton
 		android:id="@+id/stopButton"
 		android:layout_width="match_parent"
