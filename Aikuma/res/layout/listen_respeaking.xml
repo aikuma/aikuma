@@ -18,26 +18,35 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/selectedOriginal"
 		layout="@layout/recording_list_item_interface"/>
-		
-	 <fragment
-		android:name="org.lp20.aikuma.ui.ListenFragment"
-		android:id="@+id/ListenFragment"
+	
+	<FrameLayout
+	    android:id="@+id/recordingPlayerInterface"
+	    android:layout_below="@id/recordingInterface"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" />
+	
+
+	<include 
+	    android:id="@+id/selectedRespeaking"
+	    android:layout_height="wrap_content"
+	    android:layout_width="fill_parent"
+	    android:layout_below="@id/recordingPlayerInterface"
+	    layout="@layout/recording_list_item"/>
+	
+	<include
+		android:id="@+id/respeakingInterface"
+		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/recordingInterface"
-	/>
+		android:layout_below="@id/selectedRespeaking"
+		layout="@layout/recording_list_item_interface"/>
 
+	<FrameLayout
+	    android:id="@+id/respeakingPlayerInterface"
+	    android:layout_below="@id/respeakingInterface"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" />
 	<!-- 
-	<LinearLayout
-		android:id="@+id/RespeakingImages"
-		android:orientation="horizontal"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/recordingInterface"
-	/>
-	
-	 -->
-	
 	<ImageButton
 			android:id="@+id/respeaking"
 			android:layout_width="fill_parent"
@@ -47,24 +56,15 @@
 			android:scaleType="centerInside"
 			android:layout_alignParentBottom="true"
 	/>
-
+	
 	<ListView
 	    android:id="@android:id/list"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_below="@id/ListenFragment"
-	    android:layout_above="@id/respeaking" 
-	    />
-
-	<!-- 
-	<ExpandableListView
-	    android:id="@+id/respeakingsList"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_below="@id/recordingInterface"
 	    android:layout_above="@id/respeaking" 
 	    />
-	
 	 -->
 	
+
 </RelativeLayout>

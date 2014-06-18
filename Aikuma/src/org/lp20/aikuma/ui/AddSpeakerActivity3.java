@@ -93,6 +93,7 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
 		File imageFile = ImageUtils.getNoSyncImageFile(this.imageUUID);
+		Log.i("uri", ""+Uri.fromFile(imageFile));
 		takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
 				Uri.fromFile(imageFile));
 

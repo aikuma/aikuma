@@ -506,17 +506,21 @@ public class Recording {
 	 * Returns a list of all the respeakings of this Recording. Ff it is a
 	 * respeaking it will return an list of the other respeakings in the
 	 * group.
+	 * (If this is called by a respeaking, empty arraylist is returned)
 	 *
 	 * @return	A list of all the respeakings of the recording.
 	 */
 	public List<Recording> getRespeakings() {
+		List<Recording> respeakings = new ArrayList();
+		if(!this.isOriginal()) return respeakings;
+		
 		File groupDir = new File(getRecordingsPath(), getGroupId());
 		File[] groupDirMetaFiles = groupDir.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
 						return filename.endsWith("-metadata.json");
 					}
 				});
-		List<Recording> respeakings = new ArrayList();
+		
 		Recording recording;
 		for (File recordingMetaFile : groupDirMetaFiles) {
 			try {

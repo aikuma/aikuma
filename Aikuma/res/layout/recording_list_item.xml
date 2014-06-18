@@ -10,9 +10,9 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 	/>
-	-->
+	--><!-- 15sp, 12sp, 1:0.5 -->
 	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
-			android:textSize="15sp"
+			android:textSize="16sp"
 			android:layout_height="wrap_content"
 			android:text=""
 			android:layout_width="0dp"
@@ -21,10 +21,10 @@
 			android:id="@+id/recordingName"
 			android:padding="1dp"/>
 	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
-			android:textSize="12sp"
+			android:textSize="16sp"
 			android:layout_height="wrap_content"
 			android:layout_width="0dp"
-			android:layout_weight="0.5"
+			android:layout_weight="1"
 			android:text=""
 			android:layout_gravity="center_vertical"
 			android:id="@+id/recordingDateDuration"
@@ -35,36 +35,81 @@
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
 	/>
-	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+	<LinearLayout 
+	    android:id="@+id/extraInformation"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_gravity="center_vertical"
+	    android:orientation="vertical"
+	    >
+	    <TextView 
+	        android:textAppearance="?android:attr/textAppearanceMedium"
 			android:textSize="12sp"
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
+			android:gravity="center_horizontal"
 			android:text=""
-			android:layout_gravity="center_vertical"
-			android:id="@+id/numStars"
+			android:id="@+id/viewCounts"
 			android:padding="1dp"/>
-	<ImageView android:src="@drawable/star"
-			android:layout_gravity="center"
-			android:padding="1dip"
-			android:layout_margin="1dip"
-			android:scaleType="centerInside"
-			android:layout_width="25dip"
-			android:layout_height="25dip"
-			android:id="@+id/starImage"/>
-	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
-			android:textSize="12sp"
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text=""
-			android:layout_gravity="center_vertical"
-			android:id="@+id/numFlags"
-			android:padding="1dp"/>
-	<ImageView android:src="@drawable/flag"
-			android:layout_gravity="center"
-			android:padding="1dip"
-			android:layout_margin="1dip"
-			android:scaleType="centerInside"
-			android:layout_width="25dip"
-			android:layout_height="25dip"
-			android:id="@+id/flagImage"/>
+	    <View
+	        android:layout_width="fill_parent"
+    		android:layout_height="2dp"
+    		android:background="#4C516D" />
+	    <LinearLayout 
+	    	android:layout_width="wrap_content"
+	  	 	android:layout_height="wrap_content"
+	    	android:orientation="horizontal"
+	    	>
+	    	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+					android:textSize="12sp"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text=""
+					android:layout_gravity="center_vertical"
+					android:id="@+id/numComments"
+					android:padding="1dp"/>
+			<ImageView android:src="@drawable/commentary_32"
+					android:layout_gravity="center"
+					android:padding="1dip"
+					android:layout_margin="1dip"
+					android:scaleType="centerInside"
+					android:layout_width="25dip"
+					android:layout_height="25dip"
+					android:id="@+id/commentImage"/>
+	        <TextView android:textAppearance="?android:attr/textAppearanceMedium"
+					android:textSize="12sp"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text=""
+					android:layout_gravity="center_vertical"
+					android:id="@+id/numStars"
+					android:padding="1dp"/>
+			<ImageView android:src="@drawable/star"
+					android:layout_gravity="center"
+					android:padding="1dip"
+					android:layout_margin="1dip"
+					android:scaleType="centerInside"
+					android:layout_width="25dip"
+					android:layout_height="25dip"
+					android:id="@+id/starImage"/>
+			<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+					android:textSize="12sp"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text=""
+					android:layout_gravity="center_vertical"
+					android:id="@+id/numFlags"
+					android:padding="1dp"/>
+			<ImageView android:src="@drawable/flag"
+					android:layout_gravity="center"
+					android:padding="1dip"
+					android:layout_margin="1dip"
+					android:scaleType="centerInside"
+					android:layout_width="25dip"
+					android:layout_height="25dip"
+					android:id="@+id/flagImage"/>
+		</LinearLayout>
+	</LinearLayout>
+	
+	
 </LinearLayout>
