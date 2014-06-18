@@ -169,6 +169,11 @@ public class FusionIndex implements Index {
         log.warning("Error inserting metadata for " + identifier);
     }
 
+    @Override
+    public void update(String identifier, Map<String, String> metadata) {
+        throw new RuntimeException("Not implemented");
+    }
+
     private static final String DELETE_SQL_TEMPLATE = "DELETE FROM %s WHERE ROWID ='%s';";
     private boolean deleteMetadata(String identifier) {
         String table = catalog.get("aikuma_metadata");

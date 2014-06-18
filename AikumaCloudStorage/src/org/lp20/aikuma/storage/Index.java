@@ -37,4 +37,12 @@ public interface Index {
 	 */
 	public abstract void index(String identifier, Map<String,String> metadata);
 
+
+    /**
+     * Update metadata for an identifier
+     * @param identifier entry identifier
+     * @param metadata  entry metadata
+     */
+    public abstract void update(String identifier, Map<String,String> metadata);
+
 }
