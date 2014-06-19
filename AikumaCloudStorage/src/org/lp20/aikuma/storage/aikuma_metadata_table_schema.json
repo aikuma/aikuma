@@ -7,7 +7,9 @@
      {"name": "language", "type" : "STRING"},
      {"name": "speakers", "type" : "STRING"},
      {"name": "tags", "type" : "STRING"},
-     {"name": "discourse_types", "type" : "STRING"}
+     {"name": "discourse_types", "type" : "STRING"},
+     {"name": "date_backedup", "type" : "DATETIME"},
+     {"name": "date_approved", "type" : "DATETIME"}
  ],
  "name" : "aikuma_metadata",
  "isExportable" : false,

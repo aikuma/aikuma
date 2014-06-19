@@ -53,7 +53,7 @@ public class IndexTool {
 
         } catch (FileNotFoundException e) {
             System.err.println("No .aikuma prefs file found in your home directory.\n" +
-                    "           Put one there with your access_token and refresh_token.");
+                               "Put one there with your access_token and refresh_token.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -125,7 +125,7 @@ public class IndexTool {
 
         }
     }
-    private void create(String schema) {
+    private void create(String schema, String... args) {
 
         try {
             HttpURLConnection cn = Utils.gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/tables"),
@@ -148,4 +148,5 @@ public class IndexTool {
     private void doSearch(String params) {
 
     }
+
 }
