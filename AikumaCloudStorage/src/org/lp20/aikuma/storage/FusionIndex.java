@@ -67,9 +67,10 @@ public class FusionIndex implements Index {
     }
 
 
-    private static final String INDEX_SQL_TEMPLATE = "INSERT INTO %s (identifier, %s) VALUES ('%s', %s)";
-
+    private static final String INSERT_SQL_TEMPLATE = "INSERT INTO %s (identifier, %s) VALUES ('%s', %s)";
+    private static final String UPDATE_SQL_TEMPLATE = "UPDATE %s SET %s WHERE ROWID = '%s';";
     private static final String SELECT_SQL_TEMPLATE;
+    //TODO decide, should I just make this select *?
     static {
         boolean header = false;
         String fieldList = "";
@@ -131,15 +132,21 @@ public class FusionIndex implements Index {
             */
     private String getRowId(String forIdentifier) {
         if (!catalogInitalized) initializeCatalog();
+        String sql = urlencode(String.format("SELECT ROWID FROM %s WHERE identifier = '%s';", catalog.get("aikuma_metadata"), forIdentifier));
+        Object tmp = doGet(forIdentifier, sql);
+        //TODO fix the ugly mess below
+        if (tmp != null)
+        return (String) ((List) ((List) ((Map) tmp).get("rows")).get(0)).get(0);
+        else return null;
+    }
+
+    private Object doGet(String forIdentifier, String sql) {
         try {
-            String sql = urlencode(String.format("SELECT ROWID FROM %s WHERE identifier = '%s';", catalog.get("aikuma_metadata"), forIdentifier));
             URL url = new URL("https://www.googleapis.com/fusiontables/v1/query?sql=" + sql);
             HttpURLConnection cn = gapi_connect(url, "GET", accessToken);
 
             if (cn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                Object tmp = JSONValue.parse(readStream(cn.getInputStream()));
-                //TODO fix the ugly mess below
-                return (String) ((List) ((List) ((Map) tmp).get("rows")).get(0)).get(0);
+                return JSONValue.parse(readStream(cn.getInputStream()));
             }
             else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
                 throw new InvalidAccessTokenException();
@@ -154,6 +161,7 @@ public class FusionIndex implements Index {
         }
         return null;
     }
+
     /**
      * Retrieve metadata from the FusionIndex API
      * @param forIdentifier the identifier for which to get data
@@ -161,25 +169,13 @@ public class FusionIndex implements Index {
      */
     private Map getMetadata(String forIdentifier) {
         if (!catalogInitalized) initializeCatalog();
-        try {
-            String sql = urlencode(String.format(SELECT_SQL_TEMPLATE, catalog.get("aikuma_metadata"), forIdentifier));
-            URL url = new URL("https://www.googleapis.com/fusiontables/v1/query?sql=" + sql);
-            HttpURLConnection cn = gapi_connect(url, "GET", accessToken);
+        String sql = urlencode(String.format(SELECT_SQL_TEMPLATE, catalog.get("aikuma_metadata"), forIdentifier));
+        Object tmp = doGet(forIdentifier, sql);
+        if (tmp != null)
+            return (Map) tmp;
+        else
+            return null;
 
-            if (cn.getResponseCode() == HttpURLConnection.HTTP_OK)
-                return (Map) JSONValue.parse(readStream(cn.getInputStream()));
-            else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
-                throw new InvalidAccessTokenException();
-             else {
-                log.warning("Identifier: " + forIdentifier);
-                log.warning(String.valueOf(cn.getResponseCode()));
-                log.warning(cn.getResponseMessage());
-            }
-        } catch (IOException e) {
-            log.log(Level.SEVERE, e.getMessage(), e);
-            e.printStackTrace();
-        }
-        return null;
     }
 
     /* (non-Javadoc)
@@ -195,14 +191,26 @@ public class FusionIndex implements Index {
 	 */
 	@Override
 	public void index(String identifier, Map<String,String> metadata) {
-        validateMetadata(metadata);
-        if (!catalogInitalized) initializeCatalog();
+        validateMetadata(metadata, true);
         if (getRowId(identifier) != null) {
             log.severe("index called on item with existing index entry");
             return;
         }
-        String body = makeIndexSQL(identifier, metadata);
+        doPost(identifier, makeIndexSQL(identifier, metadata));
+    }
 
+    @Override
+    public void update(String identifier, Map<String, String> metadata) {
+        validateMetadata(metadata, false);
+        String rowid = getRowId(identifier);
+        if (rowid == null) {
+            log.severe("update called on item without an existing index entry");
+            return;
+        }
+        doPost(identifier, makeUpdateSQL(rowid, metadata));
+    }
+
+    private void doPost(String identifier, String body) {
         try {
             URL url = new URL("https://www.googleapis.com/fusiontables/v1/query");
             HttpURLConnection cn = gapi_connect(url, "POST", accessToken);
@@ -216,6 +224,7 @@ public class FusionIndex implements Index {
                 throw new InvalidAccessTokenException();
             else {
                 log.warning("Identifier: " + identifier);
+                log.warning(url.toString());
                 log.warning(String.valueOf(cn.getResponseCode()));
                 log.warning(cn.getResponseMessage());
             }
@@ -223,11 +232,6 @@ public class FusionIndex implements Index {
             log.log(Level.SEVERE, e.getMessage(), e);
         }
         log.warning("Error inserting metadata for " + identifier);
-    }
-
-    @Override
-    public void update(String identifier, Map<String, String> metadata) {
-        throw new RuntimeException("Not implemented");
     }
 
 
@@ -248,22 +252,41 @@ public class FusionIndex implements Index {
             if (fields.get(key).multiValue) value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
             valueList.append("'"+ value + "'");
         }
-        return urlencode(String.format(INDEX_SQL_TEMPLATE, table, fieldList.toString(), identifier,
+        return urlencode(String.format(INSERT_SQL_TEMPLATE, table, fieldList.toString(), identifier,
                 valueList.toString()));
     }
+    private String makeUpdateSQL(String rowid, Map<String, String> metadata) {
+        String table = catalog.get("aikuma_metadata");
+        StringBuilder sql = new StringBuilder();
 
-    private void validateMetadata(Map<String, String> metadata) {
+        boolean header = false;
+        for (Map.Entry<String, String> e : metadata.entrySet()) {
+            if (header)  sql.append(", ");
+            else header = true;
+            String field = e.getKey();
+            String value = e.getValue().replaceAll("'", "\'");
+            if (fields.get(field).multiValue) value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
+            sql.append(field).append(" = '").append(value).append("'");
+        }
+        return urlencode(String.format(UPDATE_SQL_TEMPLATE, table, sql.toString(), rowid));
+    }
+    private void validateMetadata(Map<String, String> metadata, boolean isInsert) {
         if (!fields.keySet().containsAll(metadata.keySet()))
             throw new IllegalArgumentException("Unknown metadata keys");
         for (Map.Entry<String, FieldInfo> info: fields.entrySet()) {
             String key = info.getKey();
-            FieldInfo value =  info.getValue();
-            if (value.required && !metadata.containsKey(key))
+            FieldInfo value = info.getValue();
+            if (isInsert && value.required && !metadata.containsKey(key))
                 throw new IllegalArgumentException("Missing required field " + key);
-            if ("discourse_type".equals(key) && !discourseTypes.contains(metadata.get(key)))
-                throw new IllegalArgumentException(metadata.get(key)  + " is not a valid discourse_type");
+            if ("discourse_type".equals(key)) {
+                for (String tmp : metadata.get(key).split(",")) {
+                    if (!discourseTypes.contains(tmp))
+                        throw new IllegalArgumentException(metadata.get(key) + " is not a valid discourse_type");
+                }
+            }
         }
     }
+
 
 
     private void initializeCatalog() {
