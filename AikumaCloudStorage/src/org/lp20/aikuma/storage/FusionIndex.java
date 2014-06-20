@@ -1,17 +1,16 @@
 package org.lp20.aikuma.storage;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.lp20.aikuma.storage.Utils.gapi_connect;
 import static org.lp20.aikuma.storage.Utils.readStream;
@@ -22,29 +21,39 @@ import static org.lp20.aikuma.storage.Utils.readStream;
  *   - to search items in the Aikuma index, and
  *   - to make collected data public by registering it with the Aikuma index.
  * 
- * @author haejoong
+ * @author bob
  *
  */
 public class FusionIndex implements Index {
-    private static final int INSERT_STMT_LEN = 150; // a likely overestimated average size of an insert statement
+    private static final Logger log = Logger.getLogger(FusionIndex.class.getName());
 
-    private String accessToken; // Google OAUTH access token
-    private boolean catalogInitalized; // true if we've gotten the table name -> table ID mapping
-    private final Map<String,String> catalog; // maps table names to FusionTables API table IDs
+    private static final class FieldInfo {
+        final boolean required;
+        final boolean multiValue;
+        FieldInfo(boolean required, boolean multiValue) {
+            this.required = required;
+            this.multiValue = multiValue;
+        }
+    }
 
-    public static final Set<String> requiredMetadata;
+
+    private static final Map<String, FieldInfo> fields; // if true, required
     static {
-            requiredMetadata = new HashSet<String>(5);
-            requiredMetadata.add("data_store_uri");
-            requiredMetadata.add("item_id");
-            requiredMetadata.add("file_type");
-            requiredMetadata.add("language");
-            requiredMetadata.add("speakers");
-    };
+        fields = new TreeMap<String, FieldInfo>();
+        fields.put("data_store_uri", new FieldInfo(true, false));
+        fields.put("item_id", new FieldInfo(true, false));
+        fields.put("file_type", new FieldInfo(true, false));
+        fields.put("language", new FieldInfo(true, false));
+        fields.put("speakers", new FieldInfo(true, true));
+        fields.put("tags", new FieldInfo(false, true));
+        fields.put("discourse_types", new FieldInfo(false, true));
+        fields.put("date_backedup", new FieldInfo(false, false));
+        fields.put("date_approved", new FieldInfo(false, false));
+    }
 
-    public static final Set<String> discourseTypes;
+    private static final Set<String> discourseTypes;
     static {
-        discourseTypes = new HashSet<String>(10);
+        discourseTypes = new TreeSet<String>();
         discourseTypes.add("dialogue");
         discourseTypes.add("drama");
         discourseTypes.add("formulaic");
@@ -57,93 +66,141 @@ public class FusionIndex implements Index {
         discourseTypes.add("unintelligible_speech");
     }
 
-    private static final Set<String> multivalueKeys;
-    static {
-        multivalueKeys = new HashSet<String>(2);
-        multivalueKeys.add("speakers");
-        multivalueKeys.add("tags");
 
+    private static final String INDEX_SQL_TEMPLATE = "INSERT INTO %s (identifier, %s) VALUES ('%s', %s)";
+
+    private static final String SELECT_SQL_TEMPLATE;
+    static {
+        boolean header = false;
+        String fieldList = "";
+        for (String field : fields.keySet()) {
+            if (header) fieldList += ", ";
+            else header = true;
+            fieldList += field;
+        }
+        SELECT_SQL_TEMPLATE = "SELECT " + fieldList + " FROM %s WHERE identifier = '%s';";
     }
 
+    private static String urlencode(String data) {
+        try {
+            return URLEncoder.encode(data, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            log.log(Level.SEVERE, "Probable programming error: " + e.getMessage(), e);
+            return "";
+        }
+    }
+
+    private String accessToken; // Google OAUTH access token
+    private boolean catalogInitalized; // true if we've gotten the table name -> table ID mapping
+    private final Map<String,String> catalog; // maps table names to FusionTables API table IDs
 
 
     public FusionIndex(String accessToken) {
         this.accessToken = accessToken;
         this.catalog = new HashMap<String, String>(1);
         this.catalogInitalized = false;
+
     }
 	
 	/* (non-Javadoc)
-	 * @see org.lp20.aikma.storage.Index#get_item_metadata(java.lang.String)
+	 * @see org.lp20.aikuma.storage.Index#get_item_metadata(java.lang.String)
 	 */
 	@Override
 	public Map<String,String> get_item_metadata(String identifier) {
-        String data = getMetadata(identifier);
-        if (data == null) return null;
+        Map json = getMetadata(identifier);
+        if (json == null || !json.containsKey("rows")) return null;
+        Map<String, String> ret = new HashMap<String, String>(10);
 
-        HashMap<String, String> ret = new HashMap<String, String>(10);
-        JSONObject json = (JSONObject) JSONValue.parse(data);
+        List<String> columns = (List<String>) json.get("columns");
+        List<String> row = (List<String>) ((List) json.get("rows")).get(0);
 
-        for (Object tmp: (JSONArray) json.get("rows")) {
-            JSONArray row = (JSONArray) tmp;
-            String key = (String) row.get(2);
-            String value = (String) row.get(3);
-            if (multivalueKeys.contains(key) && ret.containsKey(key)) {
-                ret.put(key, ((String) ret.get(key)) + "," + value);
-            } else {
-                ret.put(key, value);
+        for (int i = 0; i < columns.size(); i++) {
+            String key = columns.get(i);
+            String value = row.get(i);
+            if (fields.get(key).multiValue) {
+                value = value.replace('|', ',').substring(1, value.length() - 1);
             }
+            ret.put(key, value);
         }
         return ret;
 	}
-
-    private String getMetadata(String forIdentifier) {
+    /**
+    * Get rowid for an identifier
+    * @param forIdentifier the identifier for which to get data
+    * @return a rowid
+            */
+    private String getRowId(String forIdentifier) {
         if (!catalogInitalized) initializeCatalog();
         try {
-            URL url = new URL("https://www.googleapis.com/fusiontables/v1/query?" +
-                              "sql=SELECT+ROWID,+identifier,+key,+value+" +
-                              "FROM+" + (String) catalog.get("aikuma_metadata") + "+" +
-                               "WHERE+identifier+=+'" + forIdentifier +"';");
-
+            String sql = urlencode(String.format("SELECT ROWID FROM %s WHERE identifier = '%s';", catalog.get("aikuma_metadata"), forIdentifier));
+            URL url = new URL("https://www.googleapis.com/fusiontables/v1/query?sql=" + sql);
             HttpURLConnection cn = gapi_connect(url, "GET", accessToken);
 
-            if (cn.getResponseCode() == cn.HTTP_OK)
-                return readStream(cn.getInputStream());
-            else if (cn.getResponseCode() == cn.HTTP_UNAUTHORIZED) {
-                // TODO review fusiontables API docs and make sure this is the only reason we'd get a 401
-                throw new InvalidAccessTokenException();
-            } else {
-                // TODO replace this with appropriate logging
-                System.out.println(cn.getResponseCode());
-                System.out.println(cn.getResponseMessage());
+            if (cn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                Object tmp = JSONValue.parse(readStream(cn.getInputStream()));
+                //TODO fix the ugly mess below
+                return (String) ((List) ((List) ((Map) tmp).get("rows")).get(0)).get(0);
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
+                throw new InvalidAccessTokenException();
+            else {
+                log.warning("Identifier: " + forIdentifier);
+                log.warning(String.valueOf(cn.getResponseCode()));
+                log.warning(cn.getResponseMessage());
+            }
         } catch (IOException e) {
+            log.log(Level.SEVERE, e.getMessage(), e);
             e.printStackTrace();
         }
-        throw new RuntimeException("Unable to get metadata");
+        return null;
+    }
+    /**
+     * Retrieve metadata from the FusionIndex API
+     * @param forIdentifier the identifier for which to get data
+     * @return an unparsed JSON string with the data; NB - if there's a problem getting data, returns null
+     */
+    private Map getMetadata(String forIdentifier) {
+        if (!catalogInitalized) initializeCatalog();
+        try {
+            String sql = urlencode(String.format(SELECT_SQL_TEMPLATE, catalog.get("aikuma_metadata"), forIdentifier));
+            URL url = new URL("https://www.googleapis.com/fusiontables/v1/query?sql=" + sql);
+            HttpURLConnection cn = gapi_connect(url, "GET", accessToken);
+
+            if (cn.getResponseCode() == HttpURLConnection.HTTP_OK)
+                return (Map) JSONValue.parse(readStream(cn.getInputStream()));
+            else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
+                throw new InvalidAccessTokenException();
+             else {
+                log.warning("Identifier: " + forIdentifier);
+                log.warning(String.valueOf(cn.getResponseCode()));
+                log.warning(cn.getResponseMessage());
+            }
+        } catch (IOException e) {
+            log.log(Level.SEVERE, e.getMessage(), e);
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /* (non-Javadoc)
-     * @see org.lp20.aikma.storage.Index#search(java.util.Map)
+     * @see org.lp20.aikuma.storage.Index#search(java.util.Map)
      */
 	@Override
 	public List<String> search(Map<String,String> constraints) {
-		List<String> res = new ArrayList<String>();
-		return res;
+		return null;
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.lp20.aikma.storage.Index#index(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List)
+	 * @see org.lp20.aikuma.storage.Index#index(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List)
 	 */
 	@Override
 	public void index(String identifier, Map<String,String> metadata) {
-		// Send the metadata to the server using the Aikuma Web API.
-
         validateMetadata(metadata);
         if (!catalogInitalized) initializeCatalog();
-        deleteMetadata(identifier); // easier to delete than try to update
+        if (getRowId(identifier) != null) {
+            log.severe("index called on item with existing index entry");
+            return;
+        }
         String body = makeIndexSQL(identifier, metadata);
 
         try {
@@ -153,120 +210,66 @@ public class FusionIndex implements Index {
             out.write("sql=" + body);
             out.flush();
             out.close();
-            if (cn.getResponseCode() == cn.HTTP_OK)
+            if (cn.getResponseCode() == HttpURLConnection.HTTP_OK)
                 return;
-            else if (cn.getResponseCode() == cn.HTTP_UNAUTHORIZED)
+            else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
                 throw new InvalidAccessTokenException();
             else {
-                System.out.println(cn.getResponseCode());
-                System.out.println(cn.getResponseMessage());
+                log.warning("Identifier: " + identifier);
+                log.warning(String.valueOf(cn.getResponseCode()));
+                log.warning(cn.getResponseMessage());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, e.getMessage(), e);
         }
-        System.err.println("Error inserting metadata");
+        log.warning("Error inserting metadata for " + identifier);
     }
 
-    private static final String DELETE_SQL_TEMPLATE = "DELETE FROM %s WHERE ROWID ='%s';";
-    private boolean deleteMetadata(String identifier) {
-        String table =  (String) catalog.get("aikuma_metadata");
-        JSONObject json = (JSONObject) JSONValue.parse(getMetadata(identifier));
-        if (!((Map)json).containsKey("rows")) return true;
-        for (Object row: (List) ((Map) json).get("rows")) {
-            String rowid = (String)((List) row).get(0);
-            try {
-                HttpURLConnection cn = gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/query"),
-                        "POST", accessToken);
-
-                OutputStreamWriter out = new OutputStreamWriter(cn.getOutputStream());
-                out.write("sql=" + String.format(DELETE_SQL_TEMPLATE, table, rowid));
-                out.flush();
-                out.close();
-                if (cn.getResponseCode() == cn.HTTP_OK)
-                    continue;
-                else if (cn.getResponseCode() == cn.HTTP_UNAUTHORIZED)
-                    throw new InvalidAccessTokenException();
-                else if (cn.getResponseCode() == cn.HTTP_BAD_REQUEST)
-                    return false;
-                else {
-                    System.err.println("Unable to delete metadata for: " + identifier);
-                    System.err.println("Got: " + cn.getResponseCode() + "(" +  cn.getResponseMessage()+ ")");
-                    return false;
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-        return true;
-
+    @Override
+    public void update(String identifier, Map<String, String> metadata) {
+        throw new RuntimeException("Not implemented");
     }
 
-    private static final String INDEX_SQL_TEMPLATE = "INSERT INTO %s (identifier, key, value) VALUES ('%s', '%s', '%s');";
+
     private String makeIndexSQL(String identifier, Map<String, String> metadata) {
-        String table =  (String) catalog.get("aikuma_metadata");
-        Set<String> keys = metadata.keySet();
-        StringBuilder sql = new StringBuilder(keys.size()  * INSERT_STMT_LEN);
+        String table = catalog.get("aikuma_metadata");
+        StringBuilder fieldList = new StringBuilder();
+        StringBuilder valueList = new StringBuilder();
 
-        // TODO I should be checking for existing data before I insert, so we don't wind up duplicate keys
-        for (String key : keys) {
-            // Building sql like this feels wrong; there's zero docs on how to handle escapes, etc.
-            // RESOLVE should I be using imports here, since we're always doing multiple rows?
-            if (multivalueKeys.contains(key)) {
-                String[] values = ((String) metadata.get(key)).split(",");
-                // seriously, would it kill them to make arrays support foreach?
-                for (int i = 0; i < values.length; i++) {
-                    String value = values[i];
-                    sql.append(String.format(
-                            INDEX_SQL_TEMPLATE,
-                            table, identifier, key, value.replaceAll("'", "\'")
-                    ));
-                }
-            } else {
-                String value = (String) metadata.get(key);
-                sql.append(String.format(
-                        INDEX_SQL_TEMPLATE,
-                        table, identifier, key, value.replaceAll("'", "\'")
-                ));
-            }
+        boolean header = false;
+        for (Map.Entry<String, String> e : metadata.entrySet()) {
+            if (header) {
+                fieldList.append(", ");
+                valueList.append(", ");
+            }  else header = true;
+            String key = e.getKey();
+            fieldList.append((key));
+            String value = e.getValue().replaceAll("'", "\'");
+            if (fields.get(key).multiValue) value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
+            valueList.append("'"+ value + "'");
         }
-        try {
-            return(URLEncoder.encode(sql.toString(), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            // Why the hell do I have to do this? Checked exceptions sound like a
-            // great idea till you actually use them.
-            return "";
-        }
-
+        return urlencode(String.format(INDEX_SQL_TEMPLATE, table, fieldList.toString(), identifier,
+                valueList.toString()));
     }
 
     private void validateMetadata(Map<String, String> metadata) {
-        for (String s: requiredMetadata) {
-            if (!metadata.containsKey(s))
-                throw new IllegalArgumentException("Missing required field " + s);
-            if ("discourse_type".equals(s) && !discourseTypes.contains(metadata.get(s)))
-                throw new IllegalArgumentException(s  + " is not a valid discourse_type");
+        if (!fields.keySet().containsAll(metadata.keySet()))
+            throw new IllegalArgumentException("Unknown metadata keys");
+        for (Map.Entry<String, FieldInfo> info: fields.entrySet()) {
+            String key = info.getKey();
+            FieldInfo value =  info.getValue();
+            if (value.required && !metadata.containsKey(key))
+                throw new IllegalArgumentException("Missing required field " + key);
+            if ("discourse_type".equals(key) && !discourseTypes.contains(metadata.get(key)))
+                throw new IllegalArgumentException(metadata.get(key)  + " is not a valid discourse_type");
         }
     }
 
-    /**
-     * Creates the FusionTables data structures for the FusionIndex
-     *
-     * @return true if successfully created, false otherwise.
-     */
-    public boolean createFusionIndex() {
-        // TODO implement this
-        // RESOLVE should this be in the normal index class, or a separate util class?
-
-
-        return false;
-    }
 
     private void initializeCatalog() {
         // TODO implement this properly
         // GET and parse https://www.googleapis.com/fusiontables/v1/tables
-        this.catalog.put("aikuma_metadata", "1MnBxX3Dv47iitW300X2n1kuQkFef3H4f0xsaQQm6");
+        this.catalog.put("aikuma_metadata", "1Kw1vNV3BpSlInhZeSh5l36__Qsnz1JvwSXuJgfhD");
         this.catalogInitalized = true;
 
     }
@@ -277,9 +280,8 @@ public class FusionIndex implements Index {
      * Get the list of OAUTH authentication scopes for the class
      * @return A list of authentication scope URLs for this class
      */
-    public static List<String> getScopes() {
-        //TODO we should really extract the auth methods to a separate interface
-        ArrayList<String> l = new ArrayList<String>(1);
+    public static Iterable<String> getScopes() {
+        Collection<String> l = new ArrayList<String>(1);
         l.add("https://www.googleapis.com/auth/fusiontables");
         return l;
     }

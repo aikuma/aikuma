@@ -3,8 +3,12 @@ import org.json.simple.JSONValue;
 import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.GoogleAuth;
 import org.lp20.aikuma.storage.InvalidAccessTokenException;
+import org.lp20.aikuma.storage.Utils;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -49,7 +53,7 @@ public class IndexTool {
 
         } catch (FileNotFoundException e) {
             System.err.println("No .aikuma prefs file found in your home directory.\n" +
-                    "           Put one there with your access_token and refresh_token.");
+                               "Put one there with your access_token and refresh_token.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,9 +90,21 @@ public class IndexTool {
                 index.getItem(identifier);
             else if ("search".equals(action))
                 System.out.println("Not implemented (yet)");
+            else if ("create".equals(action)) {
+                StringBuffer schema =  new StringBuffer();
+                BufferedReader r = new BufferedReader(new FileReader(new File(args[2])));
+                while (r.ready()) {
+                    schema.append(r.readLine());
+                }
+                index.create(schema.toString());
+            }
 
         } catch (InvalidAccessTokenException e) {
             System.err.println("Invalid token; not caught by refresh code.");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -109,7 +125,28 @@ public class IndexTool {
 
         }
     }
+    private void create(String schema, String... args) {
+
+        try {
+            HttpURLConnection cn = Utils.gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/tables"),
+                    "POST", accessToken);
+            cn.setRequestProperty("Content-Type", "application/json");
+            OutputStreamWriter out = new OutputStreamWriter(cn.getOutputStream());
+            out.write(schema);
+            out.flush();
+            out.close();
+
+            if (cn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                System.err.println(cn.getResponseCode() + "\n" + cn.getResponseMessage());
+            } else {
+                System.out.println(Utils.readStream(cn.getInputStream()));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private void doSearch(String params) {
 
     }
+
 }
