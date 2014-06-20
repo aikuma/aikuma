@@ -28,8 +28,8 @@ public class FusionIndex implements Index {
     private static final Logger log = Logger.getLogger(FusionIndex.class.getName());
 
     private static final class FieldInfo {
-        boolean required;
-        boolean multiValue;
+        final boolean required;
+        final boolean multiValue;
         FieldInfo(boolean required, boolean multiValue) {
             this.required = required;
             this.multiValue = multiValue;
@@ -68,8 +68,8 @@ public class FusionIndex implements Index {
 
 
     private static final String INDEX_SQL_TEMPLATE = "INSERT INTO %s (identifier, %s) VALUES ('%s', %s)";
-    private static final String SELECT_SQL_TEMPLATE;
 
+    private static final String SELECT_SQL_TEMPLATE;
     static {
         boolean header = false;
         String fieldList = "";
@@ -253,6 +253,8 @@ public class FusionIndex implements Index {
     }
 
     private void validateMetadata(Map<String, String> metadata) {
+        if (!fields.keySet().containsAll(metadata.keySet()))
+            throw new IllegalArgumentException("Unknown metadata keys");
         for (Map.Entry<String, FieldInfo> info: fields.entrySet()) {
             String key = info.getKey();
             FieldInfo value =  info.getValue();
