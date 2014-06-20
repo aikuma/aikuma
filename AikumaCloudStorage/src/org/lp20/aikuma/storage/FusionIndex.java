@@ -26,7 +26,7 @@ import static org.lp20.aikuma.storage.Utils.readStream;
  */
 public class FusionIndex implements Index {
     private static final Logger log = Logger.getLogger(FusionIndex.class.getName());
-    private String tableName;
+    private String tableId;
 
     private static final class FieldInfo {
         final boolean required;
@@ -97,7 +97,7 @@ public class FusionIndex implements Index {
 
     public FusionIndex(String accessToken) {
         this.accessToken = accessToken;
-        this.tableName = "1Kw1vNV3BpSlInhZeSh5l36__Qsnz1JvwSXuJgfhD";
+        this.tableId = "1Kw1vNV3BpSlInhZeSh5l36__Qsnz1JvwSXuJgfhD";
 
     }
 	
@@ -129,7 +129,7 @@ public class FusionIndex implements Index {
     * @return a rowid
             */
     private String getRowId(String forIdentifier) {
-        String sql = urlencode(String.format("SELECT ROWID FROM %s WHERE identifier = '%s';", tableName, forIdentifier));
+        String sql = urlencode(String.format("SELECT ROWID FROM %s WHERE identifier = '%s';", tableId, forIdentifier));
         Object tmp = doGet(forIdentifier, sql);
         //TODO fix the ugly mess below
         if (tmp != null)
@@ -165,7 +165,7 @@ public class FusionIndex implements Index {
      * @return an unparsed JSON string with the data; NB - if there's a problem getting data, returns null
      */
     private Map getMetadata(String forIdentifier) {
-        String sql = urlencode(String.format(SELECT_SQL_TEMPLATE, tableName, forIdentifier));
+        String sql = urlencode(String.format(SELECT_SQL_TEMPLATE, tableId, forIdentifier));
         Object tmp = doGet(forIdentifier, sql);
         if (tmp != null)
             return (Map) tmp;
@@ -247,7 +247,7 @@ public class FusionIndex implements Index {
             if (fields.get(key).multiValue) value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
             valueList.append("'"+ value + "'");
         }
-        return urlencode(String.format(INSERT_SQL_TEMPLATE, tableName, fieldList.toString(), identifier,
+        return urlencode(String.format(INSERT_SQL_TEMPLATE, tableId, fieldList.toString(), identifier,
                 valueList.toString()));
     }
     private String makeUpdateSQL(String rowid, Map<String, String> metadata) {
@@ -281,14 +281,20 @@ public class FusionIndex implements Index {
         }
     }
 
-
-
-    public void setTableName(String name) {
-        this.tableName = name ;
+    /**
+     * Set the FusionTable ID for the Aikuma metadata table
+     * @param tableId the ID
+     */
+    public void setTableId(String tableId) {
+        this.tableId = tableId;
     }
 
-    public String getTableName() {
-        return this.tableName;
+    /**
+     * Get the FusionTable ID for the Aikuma metadata table
+     * @return the ID
+     */
+    public String getTableId() {
+        return this.tableId;
     }
 
 
