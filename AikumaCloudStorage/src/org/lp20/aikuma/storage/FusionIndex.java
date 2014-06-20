@@ -26,6 +26,7 @@ import static org.lp20.aikuma.storage.Utils.readStream;
  */
 public class FusionIndex implements Index {
     private static final Logger log = Logger.getLogger(FusionIndex.class.getName());
+    private String tableName;
 
     private static final class FieldInfo {
         final boolean required;
@@ -92,14 +93,11 @@ public class FusionIndex implements Index {
     }
 
     private String accessToken; // Google OAUTH access token
-    private boolean catalogInitalized; // true if we've gotten the table name -> table ID mapping
-    private final Map<String,String> catalog; // maps table names to FusionTables API table IDs
 
 
     public FusionIndex(String accessToken) {
         this.accessToken = accessToken;
-        this.catalog = new HashMap<String, String>(1);
-        this.catalogInitalized = false;
+        this.tableName = "1Kw1vNV3BpSlInhZeSh5l36__Qsnz1JvwSXuJgfhD";
 
     }
 	
@@ -131,8 +129,7 @@ public class FusionIndex implements Index {
     * @return a rowid
             */
     private String getRowId(String forIdentifier) {
-        if (!catalogInitalized) initializeCatalog();
-        String sql = urlencode(String.format("SELECT ROWID FROM %s WHERE identifier = '%s';", catalog.get("aikuma_metadata"), forIdentifier));
+        String sql = urlencode(String.format("SELECT ROWID FROM %s WHERE identifier = '%s';", tableName, forIdentifier));
         Object tmp = doGet(forIdentifier, sql);
         //TODO fix the ugly mess below
         if (tmp != null)
@@ -168,8 +165,7 @@ public class FusionIndex implements Index {
      * @return an unparsed JSON string with the data; NB - if there's a problem getting data, returns null
      */
     private Map getMetadata(String forIdentifier) {
-        if (!catalogInitalized) initializeCatalog();
-        String sql = urlencode(String.format(SELECT_SQL_TEMPLATE, catalog.get("aikuma_metadata"), forIdentifier));
+        String sql = urlencode(String.format(SELECT_SQL_TEMPLATE, tableName, forIdentifier));
         Object tmp = doGet(forIdentifier, sql);
         if (tmp != null)
             return (Map) tmp;
@@ -236,7 +232,6 @@ public class FusionIndex implements Index {
 
 
     private String makeIndexSQL(String identifier, Map<String, String> metadata) {
-        String table = catalog.get("aikuma_metadata");
         StringBuilder fieldList = new StringBuilder();
         StringBuilder valueList = new StringBuilder();
 
@@ -252,11 +247,10 @@ public class FusionIndex implements Index {
             if (fields.get(key).multiValue) value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
             valueList.append("'"+ value + "'");
         }
-        return urlencode(String.format(INSERT_SQL_TEMPLATE, table, fieldList.toString(), identifier,
+        return urlencode(String.format(INSERT_SQL_TEMPLATE, tableName, fieldList.toString(), identifier,
                 valueList.toString()));
     }
     private String makeUpdateSQL(String rowid, Map<String, String> metadata) {
-        String table = catalog.get("aikuma_metadata");
         StringBuilder sql = new StringBuilder();
 
         boolean header = false;
@@ -268,7 +262,7 @@ public class FusionIndex implements Index {
             if (fields.get(field).multiValue) value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
             sql.append(field).append(" = '").append(value).append("'");
         }
-        return urlencode(String.format(UPDATE_SQL_TEMPLATE, table, sql.toString(), rowid));
+        return urlencode(String.format(UPDATE_SQL_TEMPLATE, tableName, sql.toString(), rowid));
     }
     private void validateMetadata(Map<String, String> metadata, boolean isInsert) {
         if (!fields.keySet().containsAll(metadata.keySet()))
@@ -289,14 +283,17 @@ public class FusionIndex implements Index {
 
 
 
-    private void initializeCatalog() {
+    public void setTableName(String name) {
         // TODO implement this properly
         // GET and parse https://www.googleapis.com/fusiontables/v1/tables
-        this.catalog.put("aikuma_metadata", "1Kw1vNV3BpSlInhZeSh5l36__Qsnz1JvwSXuJgfhD");
-        this.catalogInitalized = true;
-
+        this.tableName = name ;
     }
 
+    public String getTableName() {
+        // TODO implement this properly
+        // GET and parse https://www.googleapis.com/fusiontables/v1/tables
+        return this.tableName;
+    }
 
 
     /**
