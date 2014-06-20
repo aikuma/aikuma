@@ -262,7 +262,7 @@ public class FusionIndex implements Index {
             if (fields.get(field).multiValue) value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
             sql.append(field).append(" = '").append(value).append("'");
         }
-        return urlencode(String.format(UPDATE_SQL_TEMPLATE, tableName, sql.toString(), rowid));
+        return urlencode(String.format(UPDATE_SQL_TEMPLATE, tableNamet , sql.toString(), rowid));
     }
     private void validateMetadata(Map<String, String> metadata, boolean isInsert) {
         if (!fields.keySet().containsAll(metadata.keySet()))
@@ -284,14 +284,10 @@ public class FusionIndex implements Index {
 
 
     public void setTableName(String name) {
-        // TODO implement this properly
-        // GET and parse https://www.googleapis.com/fusiontables/v1/tables
         this.tableName = name ;
     }
 
     public String getTableName() {
-        // TODO implement this properly
-        // GET and parse https://www.googleapis.com/fusiontables/v1/tables
         return this.tableName;
     }
 
