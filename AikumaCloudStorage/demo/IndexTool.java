@@ -62,7 +62,6 @@ public class IndexTool {
 
         try {
             action = args[0];
-            identifier = args[1];
 
         } catch (IndexOutOfBoundsException e) {
             usage();
@@ -74,6 +73,8 @@ public class IndexTool {
         IndexTool index = new IndexTool(accessToken);
         try {
             if ("add".equals(action)) {
+
+                identifier = args[1];
                 Map<String, String> metadata = new HashMap<String, String>(7);
                 try {
                     metadata = (Map) JSONValue.parse(new FileReader(new File(args[2])));
@@ -86,11 +87,15 @@ public class IndexTool {
                     e.printStackTrace();
                 }
                 index.addItem(identifier, metadata);
-            } else if ("get".equals(action))
+            } else if ("get".equals(action)) {
+                identifier = args[1];
                 index.getItem(identifier);
-            else if ("search".equals(action))
-                System.out.println("Not implemented (yet)");
-            else if ("create".equals(action)) {
+            } else if ("search".equals(action)) {
+                Map<String,String> criteria = new HashMap<String, String>();
+                criteria.put("speakers", "bob");
+                index.doSearch(criteria);
+
+            } else if ("create".equals(action)) {
                 StringBuffer schema =  new StringBuffer();
                 BufferedReader r = new BufferedReader(new FileReader(new File(args[2])));
                 while (r.ready()) {
@@ -145,7 +150,11 @@ public class IndexTool {
             e.printStackTrace();
         }
     }
-    private void doSearch(String params) {
+    private void doSearch(Map<String, String> params) {
+        FusionIndex fi = new FusionIndex(accessToken);
+        for (String id : fi.search(params)) {
+            System.out.println(id);
+        }
 
     }
 

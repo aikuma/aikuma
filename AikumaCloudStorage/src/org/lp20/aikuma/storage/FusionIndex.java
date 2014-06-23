@@ -1,5 +1,6 @@
 package org.lp20.aikuma.storage;
 
+import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class FusionIndex implements Index {
     }
 
 
-    private static final Map<String, FieldInfo> fields; // if true, required
+    private static final Map<String, FieldInfo> fields;
     static {
         fields = new TreeMap<String, FieldInfo>();
         fields.put("data_store_uri", new FieldInfo(true, false));
@@ -129,7 +130,7 @@ public class FusionIndex implements Index {
     * @return a rowid
             */
     private String getRowId(String forIdentifier) {
-        String sql = urlencode(String.format("SELECT ROWID FROM %s WHERE identifier = '%s';", tableId, forIdentifier));
+        String sql = String.format("SELECT ROWID FROM %s WHERE identifier = '%s';", tableId, forIdentifier);
         Object tmp = doGet(forIdentifier, sql);
         //TODO fix the ugly mess below
         if (tmp != null)
@@ -139,12 +140,11 @@ public class FusionIndex implements Index {
 
     private Object doGet(String forIdentifier, String sql) {
         try {
-            URL url = new URL("https://www.googleapis.com/fusiontables/v1/query?sql=" + sql);
+            URL url = new URL("https://www.googleapis.com/fusiontables/v1/query?sql=" + urlencode(sql));
             HttpURLConnection cn = gapi_connect(url, "GET", accessToken);
 
-            if (cn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            if (cn.getResponseCode() == HttpURLConnection.HTTP_OK)
                 return JSONValue.parse(readStream(cn.getInputStream()));
-            }
             else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
                 throw new InvalidAccessTokenException();
             else {
@@ -154,7 +154,6 @@ public class FusionIndex implements Index {
             }
         } catch (IOException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
-            e.printStackTrace();
         }
         return null;
     }
@@ -165,7 +164,7 @@ public class FusionIndex implements Index {
      * @return an unparsed JSON string with the data; NB - if there's a problem getting data, returns null
      */
     private Map getMetadata(String forIdentifier) {
-        String sql = urlencode(String.format(SELECT_SQL_TEMPLATE, tableId, forIdentifier));
+        String sql = String.format(SELECT_SQL_TEMPLATE, tableId, forIdentifier);
         Object tmp = doGet(forIdentifier, sql);
         if (tmp != null)
             return (Map) tmp;
@@ -179,12 +178,41 @@ public class FusionIndex implements Index {
      */
 	@Override
 	public List<String> search(Map<String,String> constraints) {
-		return null;
+        List<String> retval = new ArrayList<String>();
+        StringBuilder sql = new StringBuilder();
+        sql.append(String.format("SELECT identifier FROM %s WHERE ", tableId));
+        boolean header = false;
+        for (String key: constraints.keySet()) {
+            if (!fields.containsKey(key))
+                throw new IllegalArgumentException("Unknown field: " + key);
+            if (header) sql.append(" AND ");
+            else header = false;
+            if (fields.get(key).multiValue)
+                sql.append(String.format("%s CONTAINS '|%s|'", key, constraints.get(key)));
+            else
+                sql.append(String.format("%s = '%s'", key, constraints.get(key)));
+        }
+        sql.append(";");
+        JSONObject tmp = (JSONObject) doGet("[None]", sql.toString());
+        if (tmp.containsKey("rows"))  {
+            for (Object row : (List) tmp.get("rows")) {
+                retval.add((String) ((List) row).get(0));
+            }
+
+        }
+        return retval;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.lp20.aikuma.storage.Index#index(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List)
-	 */
+
+    private void validateConstraints(Map<String, String> constraints) {
+        for (String key : constraints.keySet()) {
+            if (!fields.containsKey(key))
+                throw new IllegalArgumentException("Unknown key " + key);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.lp20.aikuma.storage.Index#index(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List)
+     */
 	@Override
 	public void index(String identifier, Map<String,String> metadata) {
         validateMetadata(metadata, true);
@@ -192,7 +220,7 @@ public class FusionIndex implements Index {
             log.severe("index called on item with existing index entry");
             return;
         }
-        doPost(identifier, makeIndexSQL(identifier, metadata));
+        doPost(identifier, makeInsert(identifier, metadata));
     }
 
     @Override
@@ -203,7 +231,7 @@ public class FusionIndex implements Index {
             log.severe("update called on item without an existing index entry");
             return;
         }
-        doPost(identifier, makeUpdateSQL(rowid, metadata));
+        doPost(identifier, makeUpdate(rowid, metadata));
     }
 
     private void doPost(String identifier, String body) {
@@ -231,7 +259,7 @@ public class FusionIndex implements Index {
     }
 
 
-    private String makeIndexSQL(String identifier, Map<String, String> metadata) {
+    private String makeInsert(String identifier, Map<String, String> metadata) {
         StringBuilder fieldList = new StringBuilder();
         StringBuilder valueList = new StringBuilder();
 
@@ -250,7 +278,7 @@ public class FusionIndex implements Index {
         return urlencode(String.format(INSERT_SQL_TEMPLATE, tableId, fieldList.toString(), identifier,
                 valueList.toString()));
     }
-    private String makeUpdateSQL(String rowid, Map<String, String> metadata) {
+    private String makeUpdate(String rowid, Map<String, String> metadata) {
         StringBuilder sql = new StringBuilder();
 
         boolean header = false;
@@ -262,7 +290,7 @@ public class FusionIndex implements Index {
             if (fields.get(field).multiValue) value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
             sql.append(field).append(" = '").append(value).append("'");
         }
-        return urlencode(String.format(UPDATE_SQL_TEMPLATE, tableNamet , sql.toString(), rowid));
+        return urlencode(String.format(UPDATE_SQL_TEMPLATE, tableId, sql.toString(), rowid));
     }
     private void validateMetadata(Map<String, String> metadata, boolean isInsert) {
         if (!fields.keySet().containsAll(metadata.keySet()))
