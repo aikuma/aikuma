@@ -180,13 +180,11 @@ public class FusionIndex implements Index {
 	public List<String> search(Map<String,String> constraints) {
         List<String> retval = new ArrayList<String>();
         StringBuilder sql = new StringBuilder();
-        sql.append(String.format("SELECT identifier FROM %s WHERE ", tableId));
-        boolean header = false;
+        sql.append(String.format("SELECT identifier FROM %s WHERE date_approved NOT EQUAL TO ''", tableId));
         for (String key: constraints.keySet()) {
             if (!fields.containsKey(key))
                 throw new IllegalArgumentException("Unknown field: " + key);
-            if (header) sql.append(" AND ");
-            else header = false;
+            sql.append(" AND ");
             if (fields.get(key).multiValue)
                 sql.append(String.format("%s CONTAINS '|%s|'", key, constraints.get(key)));
             else
