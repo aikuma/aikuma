@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ArrayAdapter;
@@ -51,10 +52,6 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		menuBehaviour = new MenuBehaviour(this);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-		originalInterface = 
-				(LinearLayout) findViewById(R.id.recordingInterface);
-		respeakingInterface = 
-				(LinearLayout) findViewById(R.id.respeakingInterface);
 		originalListenFragment = new ListenFragment();
 		respeakingListenFragment = new ListenFragment();
 		
@@ -133,8 +130,12 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		setUpRecordingInfo(originalInfoView, original);
 		setUpRecordingInfo(respeakingInfoView, respeaking);
 		
-		setUpRecordingInterface(originalInterface, original);
-		setUpRecordingInterface(respeakingInterface, respeaking);
+		originalQuickMenu = new QuickActionMenu(this);
+		respeakingQuickMenu = new QuickActionMenu(this);
+		setUpRecordingInterface(originalInfoView, 
+				originalQuickMenu, original);
+		setUpRecordingInterface(respeakingInfoView, 
+				respeakingQuickMenu, respeaking);
 	}
 
 	// Prepares the displayed name for the recording (including other things
@@ -161,17 +162,9 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		}
 
 		// Add the number of views information
-		TextView viewCountsView = 
-				(TextView) recordingInfoView.findViewById(R.id.viewCounts);
+		TextView viewCountsView = (TextView) 
+				recordingInfoView.findViewById(R.id.viewCounts);
 		viewCountsView.setText(String.valueOf(recording.numViews()));
-
-		// Add the number of comments information
-		// (all recording objects in this class are original)
-		TextView numCommentsView = 
-				(TextView) recordingInfoView.findViewById(R.id.numComments);
-		List<Recording> respeakings = recording.getRespeakings();
-		int numComments = respeakings.size();
-		numCommentsView.setText(String.valueOf(numComments));
 		
 		// Add the number of stars information
 		TextView numStarsView = (TextView)
@@ -190,16 +183,12 @@ public class ListenRespeakingActivity extends AikumaActivity{
 			speakerImages.addView(makeSpeakerImageView(speakerId));
 		}
 		
-	}
-	
-	private void setUpRecordingInterface(LinearLayout recordingInterface, 
-			final Recording recording){
-		// Show the speakers' names
+		// Add the speakers' names
 		List<String> speakers = recording.getSpeakersIds();
-		StringBuilder sb = new StringBuilder("Speakers:\n");
+		StringBuilder sb = new StringBuilder();
 		for(String speakerId : speakers) {
 			try {
-				sb.append(Speaker.read(speakerId).getName()+" ");
+				sb.append(Speaker.read(speakerId).getName()+", ");
 			} catch (IOException e) {
 				// If the reader can't be read for whatever reason 
 				// (perhaps JSON file wasn't formatted correctly),
@@ -207,12 +196,63 @@ public class ListenRespeakingActivity extends AikumaActivity{
 				e.printStackTrace();
 			}
 		}
+		TextView speakerNameView = (TextView)
+				recordingInfoView.findViewById(R.id.speakerNames);
+		speakerNameView.setText(sb.substring(0, sb.length()-2));
 		
-		TextView speakersNameView = (TextView)
-				recordingInterface.findViewById(R.id.speakersName);
-		speakersNameView.setText(sb);
+		// Add the comment or movie icon 
+		LinearLayout icons = (LinearLayout)
+				recordingInfoView.findViewById(R.id.recordingIcons);
+		
+		List<Recording> respeakings = recording.getRespeakings();
+		int numComments = respeakings.size();
+		if(numComments > 0) {
+			icons.addView(makeRecordingInfoIcon(R.drawable.commentary_32));
+		}
+		if(recording.isMovie()) {
+			icons.addView(makeRecordingInfoIcon(R.drawable.commentary_32));
+		}
+		
+	}
+	
+	private void setUpRecordingInterface(LinearLayout recordingInfoView, 
+			final QuickActionMenu quickMenu, final Recording recording){
+		
+		QuickActionItem starAct = new QuickActionItem("star", R.drawable.star);
+		QuickActionItem flagAct = new QuickActionItem("flag", R.drawable.flag);
+		QuickActionItem shareAct = new QuickActionItem("share", R.drawable.share);
+		
+		quickMenu.addActionItem(starAct);
+		quickMenu.addActionItem(flagAct);
+		quickMenu.addActionItem(shareAct);
+		
+		//setup the action item click listener
+		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener() {			
+			@Override
+			public void onItemClick(int pos) {
+				
+				if (pos == 0) { //Add item selected
+					onStarButtonPressed(recording);
+				} else if (pos == 1) { //Accept item selected
+					onFlagButtonPressed(recording);
+				} else if (pos == 2) { //Upload item selected
+					onShareButtonPressed(recording);
+				}	
+			}
+		});
+		
+		recordingInfoView.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				// TODO Auto-generated method stub
+				quickMenu.show(v);
+				return false;
+			}
+			
+		});
 		
 		
+		/*
 		// set up the starButton
 		ImageButton starButton = (ImageButton)
 				recordingInterface.findViewById(R.id.starButton);
@@ -245,9 +285,24 @@ public class ListenRespeakingActivity extends AikumaActivity{
 				// TODO Auto-generated method stub
 				ListenRespeakingActivity.this.onShareButtonPressed(recording);
 			}	
-		});
+		});*/
 	}
 	
+	/**
+	 * Create the view for a icon with resourceId
+	 * 
+	 * @param resourceId	The id of a drawalbe image
+	 * @return
+	 */
+	private ImageView makeRecordingInfoIcon(int resourceId) {
+		ImageView iconImage = new ImageView(this);
+		iconImage.setImageResource(resourceId);
+		iconImage.setAdjustViewBounds(true);
+		iconImage.setLayoutParams(new LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+		
+		return iconImage;
+	}
 
 	// Makes the imageview for a given speaker
 	private ImageView makeSpeakerImageView(String speakerId) {
@@ -422,38 +477,34 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	}
 
 	private void updateStarButtons() {
-		updateStarButton(originalInterface, original);
-		updateStarButton(respeakingInterface, respeaking);
+		updateStarButton(originalQuickMenu, original);
+		updateStarButton(respeakingQuickMenu, respeaking);
 	}
 	
 	private void updateFlagButtons() {
-		updateFlagButton(originalInterface, original);
-		updateFlagButton(respeakingInterface, respeaking);
+		updateFlagButton(originalQuickMenu, original);
+		updateFlagButton(respeakingQuickMenu, respeaking);
 	}
 	
-	private void updateStarButton(LinearLayout parentLayout, 
+	private void updateStarButton(QuickActionMenu quickMenu, 
 			Recording recording) {
-		ImageButton starButton = (ImageButton)
-				parentLayout.findViewById(R.id.starButton);
-		if (recording.isStarredByThisPhone()) {
-			starButton.setEnabled(false);
-			starButton.setImageResource(R.drawable.star_grey);
+		if(recording.isStarredByThisPhone()) {
+			quickMenu.setItemEnabledAt(0, false);
+			quickMenu.setItemImageResourceAt(0, R.drawable.star_grey);
 		} else {
-			starButton.setEnabled(true);
-			starButton.setImageResource(R.drawable.star);
+			quickMenu.setItemEnabledAt(0, true);
+			quickMenu.setItemImageResourceAt(0, R.drawable.star);
 		}
 	}
-
-	private void updateFlagButton(LinearLayout parentLayout, 
+	
+	private void updateFlagButton(QuickActionMenu quickMenu, 
 			Recording recording) {
-		ImageButton flagButton = (ImageButton)
-				parentLayout.findViewById(R.id.flagButton);
-		if (recording.isFlaggedByThisPhone()) {
-			flagButton.setEnabled(false);
-			flagButton.setImageResource(R.drawable.flag_grey);
+		if(recording.isFlaggedByThisPhone()) {
+			quickMenu.setItemEnabledAt(1, false);
+			quickMenu.setItemImageResourceAt(1, R.drawable.flag_grey);
 		} else {
-			flagButton.setEnabled(true);
-			flagButton.setImageResource(R.drawable.flag);
+			quickMenu.setItemEnabledAt(1, true);
+			quickMenu.setItemImageResourceAt(1, R.drawable.flag);
 		}
 	}
 
@@ -481,12 +532,13 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	private Player player;
 	private Recording original;
 	private Recording respeaking;
-	private LinearLayout originalInterface;
 	private ListenFragment originalListenFragment;
-	private LinearLayout respeakingInterface;
 	private ListenFragment respeakingListenFragment;
 	private MenuBehaviour menuBehaviour;
 	private SimpleDateFormat simpleDateFormat;
 	private ProximityDetector proximityDetector;
 	
+	
+	private QuickActionMenu originalQuickMenu;
+	private QuickActionMenu respeakingQuickMenu;
 }

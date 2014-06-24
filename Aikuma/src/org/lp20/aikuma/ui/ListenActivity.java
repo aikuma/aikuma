@@ -8,15 +8,19 @@ import android.util.Log;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
@@ -28,9 +32,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.widget.VideoView;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -44,6 +51,7 @@ import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.util.ImageUtils;
+
 
 /**
  * @author	Oliver Adams	<oliver.adams@gmail.com>
@@ -59,12 +67,9 @@ public class ListenActivity extends AikumaListActivity {
 		fragment =
 				(ListenFragment)
 				getFragmentManager().findFragmentById(R.id.ListenFragment);
+		videoView = (VideoView) findViewById(R.id.videoView);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		setUpRecording();
-		setUpPlayer();
-//		setUpRespeakingImages();
-		setUpRecordingInfo();
-//		updateViewCount();
+		
 		
 		// respeakings load
 //		ExpandableListView respeakingsList = (ExpandableListView)
@@ -73,12 +78,12 @@ public class ListenActivity extends AikumaListActivity {
 //		ExpandableListAdapter adapter = new RespeakingsArrayAdapter(this, respeakings);
 //		respeakingsList.setAdapter(adapter);
 		
+		setUpRecording();
 		if(recording.isOriginal()) {
 			List<Recording> respeakings = recording.getRespeakings();
 			ArrayAdapter adapter = new RecordingArrayAdapter(this, respeakings);
 			setListAdapter(adapter);
 		}
-		
 	}
 
 	// Prepares the recording
@@ -108,11 +113,27 @@ public class ListenActivity extends AikumaListActivity {
 		for (String id : recording.getSpeakersIds()) {
 			originalImages.addView(makeSpeakerImageView(id));
 		}
+		
+		// Add the comment or movie icon
+		LinearLayout icons = (LinearLayout)
+				findViewById(R.id.recordingIcons);
+		
+		List<Recording> respeakings = recording.getRespeakings();
+		int numComments = respeakings.size();
+		if(numComments > 0) {
+			icons.addView(makeRecordingInfoIcon(R.drawable.commentary_32));
+		}
+		if(recording.isMovie()) {
+			icons.addView(makeRecordingInfoIcon(R.drawable.movie_32));
+		}
 	}
 
 	// Prepares the displayed name for the recording (including other things
 	// such as duration and date.
-	private void setUpRecordingName() {			
+	private void setUpRecordingName() {
+		LinearLayout recordingInfoView = (LinearLayout) 
+				findViewById(R.id.selectedOriginal);
+		
 		TextView nameView = (TextView) findViewById(R.id.recordingName);
 		TextView dateDurationView = 
 				(TextView) findViewById(R.id.recordingDateDuration);
@@ -135,13 +156,6 @@ public class ListenActivity extends AikumaListActivity {
 		TextView viewCountsView = (TextView) findViewById(R.id.viewCounts);
 		viewCountsView.setText(String.valueOf(recording.numViews()));
 
-		// Add the number of comments information
-		// (all recording objects in this class are original)
-		TextView numCommentsView = (TextView) findViewById(R.id.numComments);
-		List<Recording> respeakings = recording.getRespeakings();
-		int numComments = respeakings.size();
-		numCommentsView.setText(String.valueOf(numComments));
-		
 		// Add the number of stars information
 		TextView numStarsView = (TextView)
 				findViewById(R.id.numStars);
@@ -153,10 +167,11 @@ public class ListenActivity extends AikumaListActivity {
 		numFlagsView.setText(String.valueOf(recording.numFlags()));
 		
 		List<String> speakers = recording.getSpeakersIds();
-		StringBuilder sb = new StringBuilder("Speakers:\n");
+		StringBuilder sb = new StringBuilder();
 		for(String speakerId : speakers) {
 			try {
-				sb.append(Speaker.read(speakerId).getName()+" ");
+				sb.append(Speaker.read(speakerId).getName()+", ");
+				Log.i("hi", sb.toString());
 			} catch (IOException e) {
 				// If the reader can't be read for whatever reason 
 				// (perhaps JSON file wasn't formatted correctly),
@@ -164,11 +179,54 @@ public class ListenActivity extends AikumaListActivity {
 				e.printStackTrace();
 			}
 		}
-		LinearLayout l1 = (LinearLayout) findViewById(R.id.recordingInterface);
-		TextView speakersNameView = (TextView)
-				l1.findViewById(R.id.speakersName);
-		speakersNameView.setText(sb);
+
+//		LinearLayout lbuf = (LinearLayout)
+//				recordingInfoView.findViewById(R.id.recordingMetaInformation);
+		TextView speakerNameView = (TextView)
+				recordingInfoView.findViewById(R.id.speakerNames);
+		speakerNameView.setText(sb.substring(0, sb.length()-2));
+		Log.i("hi", speakerNameView+" " + sb.substring(0, sb.length()-2));
 		
+		
+		//
+		QuickActionItem starAct = new QuickActionItem("star", R.drawable.star);
+		QuickActionItem flagAct = new QuickActionItem("flag", R.drawable.flag);
+		QuickActionItem shareAct = new QuickActionItem("share", R.drawable.share);
+		quickMenu = new QuickActionMenu(this);
+		
+		quickMenu.addActionItem(starAct);
+		quickMenu.addActionItem(flagAct);
+		quickMenu.addActionItem(shareAct);
+		
+		
+		//setup the action item click listener
+		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener() {			
+			@Override
+			public void onItemClick(int pos) {
+				
+				if (pos == 0) { //Add item selected
+					onStarButtonPressed(null);
+				} else if (pos == 1) { //Accept item selected
+					onFlagButtonPressed(null);
+				} else if (pos == 2) { //Upload item selected
+					onShareButtonPressed(null);
+				}	
+			}
+		});
+		
+		recordingInfoView.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				// TODO Auto-generated method stub
+				quickMenu.show(v);
+				return false;
+			}
+			
+		});
+		
+		
+		
+		/*
 		// set up the starButton
 		ImageButton starButton = (ImageButton) findViewById(R.id.starButton);
 		starButton.setOnClickListener(new OnClickListener() {
@@ -199,8 +257,25 @@ public class ListenActivity extends AikumaListActivity {
 				ListenActivity.this.onShareButtonPressed(v);
 			}	
 		});
+		*/
 	}
 
+	/**
+	 * Create the view for a icon with resourceId
+	 * 
+	 * @param resourceId	The id of a drawalbe image
+	 * @return
+	 */
+	private ImageView makeRecordingInfoIcon(int resourceId) {
+		ImageView iconImage = new ImageView(this);
+		iconImage.setImageResource(resourceId);
+		iconImage.setAdjustViewBounds(true);
+		iconImage.setLayoutParams(new LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+		
+		return iconImage;
+	}
+	
 	// Makes the imageview for a given speaker
 	private ImageView makeSpeakerImageView(String speakerId) {
 		ImageView speakerImage = new ImageView(this);
@@ -215,6 +290,12 @@ public class ListenActivity extends AikumaListActivity {
 		return speakerImage;
 	}
 
+	// Set up the video-player
+	private void setUpVideoView() {
+		videoView.setVideoPath(recording.getFile().getAbsolutePath());
+		videoView.setMediaController(new MediaController(this));
+	}
+	
 	// Set up the player
 	private void setUpPlayer() {
 		try {
@@ -315,6 +396,7 @@ public class ListenActivity extends AikumaListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return menuBehaviour.onCreateOptionsMenu(menu);
 	}
+	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -326,6 +408,28 @@ public class ListenActivity extends AikumaListActivity {
 		this.finish();
 	}
 
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		if(recording.isMovie()) {
+			setUpVideoView();
+		} else {
+			videoView.setVisibility(View.GONE);
+			
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			fragment = new ListenFragment();
+			ft.add(R.id.listenFragment, fragment);
+			ft.commit();
+			
+			setUpPlayer();
+		}
+		
+//		setUpRespeakingImages();
+		setUpRecordingInfo();
+//		updateViewCount();
+	}
+	
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -471,7 +575,7 @@ public class ListenActivity extends AikumaListActivity {
 		intent.putExtra(Intent.EXTRA_TEXT, urlToShare);
 		startActivity(Intent.createChooser(intent, "Share the link via"));
 	}
-
+/*
 	private void updateStarButton() {
 		ImageButton starButton = (ImageButton)
 				findViewById(R.id.starButton);
@@ -483,7 +587,7 @@ public class ListenActivity extends AikumaListActivity {
 			starButton.setImageResource(R.drawable.star);
 		}
 	}
-
+	
 	private void updateFlagButton() {
 		ImageButton flagButton = (ImageButton)
 				findViewById(R.id.flagButton);
@@ -493,6 +597,26 @@ public class ListenActivity extends AikumaListActivity {
 		} else {
 			flagButton.setEnabled(true);
 			flagButton.setImageResource(R.drawable.flag);
+		}
+	} */
+	
+	private void updateStarButton() {
+		if(recording.isStarredByThisPhone()) {
+			quickMenu.setItemEnabledAt(0, false);
+			quickMenu.setItemImageResourceAt(0, R.drawable.star_grey);
+		} else {
+			quickMenu.setItemEnabledAt(0, true);
+			quickMenu.setItemImageResourceAt(0, R.drawable.star);
+		}
+	}
+	
+	private void updateFlagButton() {
+		if(recording.isFlaggedByThisPhone()) {
+			quickMenu.setItemEnabledAt(1, false);
+			quickMenu.setItemImageResourceAt(1, R.drawable.flag_grey);
+		} else {
+			quickMenu.setItemEnabledAt(1, true);
+			quickMenu.setItemImageResourceAt(1, R.drawable.flag);
 		}
 	}
 
@@ -519,8 +643,11 @@ public class ListenActivity extends AikumaListActivity {
 	private boolean phoneRespeaking = false;
 	private Player player;
 	private ListenFragment fragment;
+	private VideoView videoView;
 	private Recording recording;
 	private MenuBehaviour menuBehaviour;
 	private SimpleDateFormat simpleDateFormat;
 	private ProximityDetector proximityDetector;
+	
+	private QuickActionMenu quickMenu;
 }

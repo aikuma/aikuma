@@ -11,17 +11,9 @@
 	    android:layout_width="fill_parent"
 	    layout="@layout/recording_list_item"/>
 	
-	<include
-		android:id="@+id/recordingInterface"
-		android:orientation="vertical"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/selectedOriginal"
-		layout="@layout/recording_list_item_interface"/>
-	
 	<FrameLayout
 	    android:id="@+id/recordingPlayerInterface"
-	    android:layout_below="@id/recordingInterface"
+	    android:layout_below="@id/selectedOriginal"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content" />
 	
@@ -33,17 +25,9 @@
 	    android:layout_below="@id/recordingPlayerInterface"
 	    layout="@layout/recording_list_item"/>
 	
-	<include
-		android:id="@+id/respeakingInterface"
-		android:orientation="vertical"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/selectedRespeaking"
-		layout="@layout/recording_list_item_interface"/>
-
 	<FrameLayout
 	    android:id="@+id/respeakingPlayerInterface"
-	    android:layout_below="@id/respeakingInterface"
+	    android:layout_below="@id/selectedRespeaking"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content" />
 	<!-- 
