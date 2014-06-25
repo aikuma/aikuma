@@ -124,7 +124,7 @@ public class IndexTool {
     }
     private void getItem(String identifier) {
         FusionIndex fi = new FusionIndex(accessToken);
-        Map<String,String> md = fi.get_item_metadata(identifier);
+        Map<String,String> md = fi.getItemMetadata(identifier);
         for (String k : md.keySet()) {
             System.out.println(String.format("%s: %s", k, md.get(k)));
 

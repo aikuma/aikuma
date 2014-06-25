@@ -12,7 +12,7 @@ public interface Index {
 	 * @return The metadata for the item as a key-value pairs. Null if item is
 	 *   not found in the index.
 	 */
-	public abstract Map<String, String> get_item_metadata(String identifier);
+	public abstract Map<String, String> getItemMetadata(String identifier);
 
 	/**
 	 * Search the index according to the specified constraints.
