@@ -106,7 +106,7 @@ public class FusionIndex implements Index {
 	 * @see org.lp20.aikuma.storage.Index#get_item_metadata(java.lang.String)
 	 */
 	@Override
-	public Map<String,String> get_item_metadata(String identifier) {
+	public Map<String,String> getItemMetadata(String identifier) {
         Map json = getMetadata(identifier);
         if (json == null || !json.containsKey("rows")) return null;
         Map<String, String> ret = new HashMap<String, String>(10);
