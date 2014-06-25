@@ -37,7 +37,8 @@ public class Recording {
 	/**
 	 * The constructor used when first creating a Recording.
 	 *
-	 * @param	wavUUID	the temporary UUID of the WAV in question.
+	 * @param	recordingUUID	the temporary UUID of the recording in question.
+	 * 							(recording can be wav or movie(mp4))
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
 	 * @param	languages	The languages associated with the recording
@@ -56,12 +57,12 @@ public class Recording {
 	 * @param	latitude The location data
 	 * @param	longitude The location data
 	 */
-	public Recording(UUID wavUUID, String name, Date date,
+	public Recording(UUID recordingUUID, String name, Date date,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String sourceId, long sampleRate,
 			int durationMsec, String format, int numChannels, 
 			int bitsPerSample, Double latitude, Double longitude) {
-		this.wavUUID = wavUUID;
+		this.recordingUUID = recordingUUID;
 		setName(name);
 		setDate(date);
 		setLanguages(languages);
@@ -92,6 +93,7 @@ public class Recording {
 	 *
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
+	 * @param	format	The file format
 	 * @param	languages	The languages associated with the recording
 	 * @param	speakersIds	The IDs of the speakers associated with the
 	 * recording
@@ -104,12 +106,13 @@ public class Recording {
 	 * @param	sampleRate	The sample rate of the recording.
 	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 */
-	public Recording(String name, Date date,
+	public Recording(String name, Date date, String format,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String respeakingId,
 			long sampleRate, int durationMsec) {
 		setName(name);
 		setDate(date);
+		setFormat(format);
 		setLanguages(languages);
 		setSpeakersIds(speakersIds);
 		setAndroidID(androidID);
@@ -153,6 +156,14 @@ public class Recording {
 		File wavFile = new File(getNoSyncRecordingsPath(), wavUUID + ".wav");
 		FileUtils.moveFile(wavFile, this.getFile());
 	}
+	
+	// Moves a video File from a no-sync directory to its rightful place
+	private void importMov(UUID videoUUID, String id) 
+			throws IOException {
+		File noSyncMoviePath = new File(FileIO.getNoSyncPath(), "videos");
+		File movFile = new File(noSyncMoviePath, videoUUID + ".mp4");
+		FileUtils.moveFile(movFile, this.getFile());
+	}
 
 	// Similar to importWav, except for the mapping file.
 	private void importMapping(UUID wavUUID, String id)
@@ -174,9 +185,16 @@ public class Recording {
 	 * @return	The file the recording is stored in.
 	 */
 	public File getFile() {
+		String extension = (this.isMovie())? ".mp4" : ".wav";
 		return new File(getRecordingsPath(), getGroupId() + "/"
-				+ id + ".wav");
+				+ id + extension);
 	}
+	
+	public File getMetadataFile() {
+		return new File(getRecordingsPath(), getGroupId() + "/" 
+				+ id + "-metadata.json");
+	}
+	
 
 	/**
 	 * Name accessor; returns an empty string if the name is null
@@ -246,6 +264,16 @@ public class Recording {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * Returns true if the recording is a movie file
+	 * (Currently movie file is only stored with .mp4 extension
+	 * 
+	 * @return	true if this is a movie
+	 */
+	public boolean isMovie() {
+		return this.format.equals("mp4");
 	}
 
 	/**
@@ -356,11 +384,15 @@ public class Recording {
 		dir.mkdir();
 
 		// Import the wave file into the new recording directory.
-		importWav(wavUUID, getId());
+		if(this.isMovie()) {
+			importMov(recordingUUID, getId());
+		} else {
+			importWav(recordingUUID, getId());
+		}
 
 		// Try and import the mapping file, if the recording is a respeaking.
 		if (!isOriginal()) {
-			importMapping(wavUUID, getId());
+			importMapping(recordingUUID, getId());
 		}
 
 		JSONObject encodedRecording = this.encode();
@@ -462,6 +494,8 @@ public class Recording {
 		} catch (ParseException e) {
 			throw new IOException(e);
 		}
+		String format = (String) jsonObj.get("Format");
+		
 		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
 		if (languageArray == null) {
 			throw new IOException("Null languages in the JSON file.");
@@ -496,9 +530,9 @@ public class Recording {
 			durationMsec = ((Long) jsonObj.get("durationMsec")).intValue();
 			Log.i("duration", "reading: " + durationMsec);
 		}
-		Recording recording = new Recording(name, date, languages, speakersIds,
-				androidID, groupId, respeakingId, sampleRate, (Integer)
-				durationMsec);
+		Recording recording = new Recording(name, date, format, languages, 
+				speakersIds, androidID, groupId, respeakingId, sampleRate, 
+				(Integer) durationMsec);
 		return recording;
 	}
 
@@ -618,6 +652,11 @@ public class Recording {
 					"Recording date cannot be null.");
 		}
 		this.date = date;
+	}
+	
+	// Sets the format
+	private void setFormat(String format) {
+		this.format = format;
 	}
 
 	// Sets the languages 
@@ -904,7 +943,7 @@ public class Recording {
 	private int durationMsec;
 
 	// The UUID of the source WAV.
-	private UUID wavUUID;
+	private UUID recordingUUID;
 
 	// The respeaking ID that is at the end of the filename prefix.
 	private String respeakingId;

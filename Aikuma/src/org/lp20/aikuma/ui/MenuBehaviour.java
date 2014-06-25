@@ -88,6 +88,9 @@ public class MenuBehaviour {
 				intent = new Intent(activity, HttpServerActivity.class);
 				activity.startActivity(intent);
 				return true;
+			case R.id.gplus_signin_menu:
+				((MainActivity)activity).getAccountToken();
+				return true;
 			default:
 				return true;
 		}

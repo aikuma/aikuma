@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -95,18 +96,43 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				simpleDateFormat.format(recording.getDate()) + " (" +
 				duration.toString() + "s)");
 		}
+		
+		//
+		List<String> speakers = recording.getSpeakersIds();
+		StringBuilder sb = new StringBuilder();
+		for(String speakerId : speakers) {
+			try {
+				sb.append(Speaker.read(speakerId).getName()+", ");
+			} catch (IOException e) {
+				// If the reader can't be read for whatever reason 
+				// (perhaps JSON file wasn't formatted correctly),
+				// Empty the speakersName
+				e.printStackTrace();
+			}
+		}
+		
+		TextView speakerNameView = (TextView)
+				recordingView.findViewById(R.id.speakerNames);
+		speakerNameView.setText(sb.substring(0, sb.length()-2));
 
+		// Add the comment or movie icon
+		LinearLayout icons = (LinearLayout)
+				recordingView.findViewById(R.id.recordingIcons);
+		
+		List<Recording> respeakings = recording.getRespeakings();
+		int numComments = respeakings.size();
+		if(numComments > 0) {
+			icons.addView(makeRecordingInfoIcon(R.drawable.commentary_32));
+		}
+		if(recording.isMovie()) {
+			icons.addView(makeRecordingInfoIcon(R.drawable.movie_32));
+		}
+		
+		
 		// Add the number of views information
 		TextView viewCountsView = (TextView)
 				recordingView.findViewById(R.id.viewCounts);
 		viewCountsView.setText(""+recording.numViews());
-
-		// Add the number of comments information
-		TextView numCommentsView = (TextView)
-				recordingView.findViewById(R.id.numComments);
-		List<Recording> respeakings = recording.getRespeakings();
-		int numComments = respeakings.size();
-		numCommentsView.setText(""+numComments);
 		
 		// Add the number of stars information
 		TextView numStarsView = (TextView)
@@ -121,6 +147,22 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		return recordingView;
 	}
 
+	/**
+	 * Create the view for a icon with resourceId
+	 * 
+	 * @param resourceId	The id of a drawalbe image
+	 * @return
+	 */
+	private ImageView makeRecordingInfoIcon(int resourceId) {
+		ImageView iconImage = new ImageView(context);
+		iconImage.setImageResource(resourceId);
+		iconImage.setAdjustViewBounds(true);
+		iconImage.setLayoutParams(new LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+		
+		return iconImage;
+	}
+	
 	/**
 	 * Creates the view for a given speaker.
 	 *

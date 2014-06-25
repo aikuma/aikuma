@@ -231,7 +231,7 @@ public class RecordActivity extends AikumaActivity {
 				Uri videoOriginalUri = result.getData();
 				
 				try {
-					VideoUtils.makeVideoFileFromUri(this, 
+					VideoUtils.moveVideoFileFromUri(this, 
 							videoOriginalUri, this.videoUUID);
 				} catch (IOException e) {
 					Toast.makeText(this, 
@@ -242,6 +242,27 @@ public class RecordActivity extends AikumaActivity {
 				//asdfasdf
 				Log.i("uriresult", ""+result.getData());
 				getContentResolver().delete(result.getData(), null, null);
+				
+				
+				//Start next activity
+				Double latitude = MainActivity.locationDetector.getLatitude();
+				Double longitude = MainActivity.locationDetector.getLongitude();
+				
+				Intent intent = new Intent(this, RecordingMetadataActivity.class);
+				intent.putExtra("uuidString", videoUUID.toString());
+				intent.putExtra("sampleRate", 0L);
+				intent.putExtra("durationMsec", 0);
+				intent.putExtra("numChannels", 0);
+				intent.putExtra("format", "mp4");
+				intent.putExtra("bitsPerSample", 0);
+				if(latitude != null && longitude != null) {
+					// if location data is available, put else don't put
+					intent.putExtra("latitude", latitude);
+					intent.putExtra("longitude", longitude);
+				}
+				
+				startActivity(intent);
+				RecordActivity.this.finish();
 			}
 		}
 		

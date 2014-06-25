@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -69,7 +70,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		longitude = (Double) intent.getExtras().get("longitude");
 		format = (String)
 				intent.getExtras().get("format");
-		setUpPlayer(uuid, sampleRate);
+		
 		userImages =
 				(LinearLayout) findViewById(R.id.userImagesAndAddUserButton);
 		speakersIds = new ArrayList<String>();
@@ -102,8 +103,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 
 	// Prepares the player with the recording.
 	private void setUpPlayer(UUID uuid, long sampleRate) {
-		listenFragment = (ListenFragment)
-				getFragmentManager().findFragmentById(R.id.ListenFragment);
+//		listenFragment = (ListenFragment)
+//				getFragmentManager().findFragmentById(R.id.ListenFragment);
 		try {
 			//listenFragment.setPlayer(new SimplePlayer(
 			//		new File(FileIO.getNoSyncPath(), uuid.toString() + ".wav"),
@@ -119,6 +120,20 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		}
 	}
 
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+		if(!format.equals("mp4")) {
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			listenFragment = new ListenFragment();
+			ft.add(R.id.ListenFragment, listenFragment);
+			ft.commit();
+			
+			setUpPlayer(uuid, sampleRate);
+		}
+	}
+	
 	@Override
 	public void onResume() {
 		super.onResume();

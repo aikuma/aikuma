@@ -97,7 +97,7 @@ public final class VideoUtils {
 	 * @param outputUUID	OutputFile's UUID(Filename)
 	 * @throws IOException	IOException occurs while copying the file
 	 */
-	public static void makeVideoFileFromUri(Context context, 
+	public static void moveVideoFileFromUri(Context context, 
 			Uri srcUri, UUID outputUUID) throws IOException {
 		File videoOutputFile = getNoSyncVideoFile(outputUUID);
 		

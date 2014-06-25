@@ -8,15 +8,22 @@ import android.util.Log;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.net.http.AndroidHttpClient;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
@@ -28,13 +35,24 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.widget.VideoView;
+
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.json.simple.JSONValue;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
@@ -42,8 +60,20 @@ import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.storage.Data;
+import org.lp20.aikuma.storage.FusionIndex;
+import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.InvalidAccessTokenException;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.util.ImageUtils;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 /**
  * @author	Oliver Adams	<oliver.adams@gmail.com>
@@ -59,13 +89,10 @@ public class ListenActivity extends AikumaListActivity {
 		fragment =
 				(ListenFragment)
 				getFragmentManager().findFragmentById(R.id.ListenFragment);
+		videoView = (VideoView) findViewById(R.id.videoView);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		setUpRecording();
-		setUpPlayer();
-//		setUpRespeakingImages();
-		setUpRecordingInfo();
-//		updateViewCount();
 		
+		googleAuthToken = getIntent().getExtras().getString("token");
 		// respeakings load
 //		ExpandableListView respeakingsList = (ExpandableListView)
 //				findViewById(R.id.respeakingsList);
@@ -73,12 +100,12 @@ public class ListenActivity extends AikumaListActivity {
 //		ExpandableListAdapter adapter = new RespeakingsArrayAdapter(this, respeakings);
 //		respeakingsList.setAdapter(adapter);
 		
+		setUpRecording();
 		if(recording.isOriginal()) {
 			List<Recording> respeakings = recording.getRespeakings();
 			ArrayAdapter adapter = new RecordingArrayAdapter(this, respeakings);
 			setListAdapter(adapter);
 		}
-		
 	}
 
 	// Prepares the recording
@@ -108,11 +135,27 @@ public class ListenActivity extends AikumaListActivity {
 		for (String id : recording.getSpeakersIds()) {
 			originalImages.addView(makeSpeakerImageView(id));
 		}
+		
+		// Add the comment or movie icon
+		LinearLayout icons = (LinearLayout)
+				findViewById(R.id.recordingIcons);
+		
+		List<Recording> respeakings = recording.getRespeakings();
+		int numComments = respeakings.size();
+		if(numComments > 0) {
+			icons.addView(makeRecordingInfoIcon(R.drawable.commentary_32));
+		}
+		if(recording.isMovie()) {
+			icons.addView(makeRecordingInfoIcon(R.drawable.movie_32));
+		}
 	}
 
 	// Prepares the displayed name for the recording (including other things
 	// such as duration and date.
-	private void setUpRecordingName() {			
+	private void setUpRecordingName() {
+		LinearLayout recordingInfoView = (LinearLayout) 
+				findViewById(R.id.selectedOriginal);
+		
 		TextView nameView = (TextView) findViewById(R.id.recordingName);
 		TextView dateDurationView = 
 				(TextView) findViewById(R.id.recordingDateDuration);
@@ -135,13 +178,6 @@ public class ListenActivity extends AikumaListActivity {
 		TextView viewCountsView = (TextView) findViewById(R.id.viewCounts);
 		viewCountsView.setText(String.valueOf(recording.numViews()));
 
-		// Add the number of comments information
-		// (all recording objects in this class are original)
-		TextView numCommentsView = (TextView) findViewById(R.id.numComments);
-		List<Recording> respeakings = recording.getRespeakings();
-		int numComments = respeakings.size();
-		numCommentsView.setText(String.valueOf(numComments));
-		
 		// Add the number of stars information
 		TextView numStarsView = (TextView)
 				findViewById(R.id.numStars);
@@ -153,10 +189,11 @@ public class ListenActivity extends AikumaListActivity {
 		numFlagsView.setText(String.valueOf(recording.numFlags()));
 		
 		List<String> speakers = recording.getSpeakersIds();
-		StringBuilder sb = new StringBuilder("Speakers:\n");
+		StringBuilder sb = new StringBuilder();
 		for(String speakerId : speakers) {
 			try {
-				sb.append(Speaker.read(speakerId).getName()+" ");
+				sb.append(Speaker.read(speakerId).getName()+", ");
+				Log.i("hi", sb.toString());
 			} catch (IOException e) {
 				// If the reader can't be read for whatever reason 
 				// (perhaps JSON file wasn't formatted correctly),
@@ -164,11 +201,64 @@ public class ListenActivity extends AikumaListActivity {
 				e.printStackTrace();
 			}
 		}
-		LinearLayout l1 = (LinearLayout) findViewById(R.id.recordingInterface);
-		TextView speakersNameView = (TextView)
-				l1.findViewById(R.id.speakersName);
-		speakersNameView.setText(sb);
+
+//		LinearLayout lbuf = (LinearLayout)
+//				recordingInfoView.findViewById(R.id.recordingMetaInformation);
+		TextView speakerNameView = (TextView)
+				recordingInfoView.findViewById(R.id.speakerNames);
+		speakerNameView.setText(sb.substring(0, sb.length()-2));
+		Log.i("hi", speakerNameView+" " + sb.substring(0, sb.length()-2));
 		
+		
+		//
+		QuickActionItem starAct = new QuickActionItem("star", R.drawable.star);
+		QuickActionItem flagAct = new QuickActionItem("flag", R.drawable.flag);
+		QuickActionItem shareAct = 
+				new QuickActionItem("share", R.drawable.share);
+		
+		quickMenu = new QuickActionMenu(this);
+		
+		quickMenu.addActionItem(starAct);
+		quickMenu.addActionItem(flagAct);
+		quickMenu.addActionItem(shareAct);
+		
+		if(googleAuthToken != null) {
+			QuickActionItem archiveAct = 
+					new QuickActionItem("archive", R.drawable.archive_32);
+			quickMenu.addActionItem(archiveAct);
+		}
+		
+		
+		//setup the action item click listener
+		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener() {			
+			@Override
+			public void onItemClick(int pos) {
+				
+				if (pos == 0) { //Add item selected
+					onStarButtonPressed(null);
+				} else if (pos == 1) { //Accept item selected
+					onFlagButtonPressed(null);
+				} else if (pos == 2) { //Upload item selected
+					onShareButtonPressed(null);
+				} else if (pos == 3) {
+					onArchiveButtonPressed(null);
+				}
+			}
+		});
+		
+		recordingInfoView.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				// TODO Auto-generated method stub
+				quickMenu.show(v);
+				return false;
+			}
+			
+		});
+		
+		
+		
+		/*
 		// set up the starButton
 		ImageButton starButton = (ImageButton) findViewById(R.id.starButton);
 		starButton.setOnClickListener(new OnClickListener() {
@@ -199,8 +289,25 @@ public class ListenActivity extends AikumaListActivity {
 				ListenActivity.this.onShareButtonPressed(v);
 			}	
 		});
+		*/
 	}
 
+	/**
+	 * Create the view for a icon with resourceId
+	 * 
+	 * @param resourceId	The id of a drawalbe image
+	 * @return
+	 */
+	private ImageView makeRecordingInfoIcon(int resourceId) {
+		ImageView iconImage = new ImageView(this);
+		iconImage.setImageResource(resourceId);
+		iconImage.setAdjustViewBounds(true);
+		iconImage.setLayoutParams(new LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+		
+		return iconImage;
+	}
+	
 	// Makes the imageview for a given speaker
 	private ImageView makeSpeakerImageView(String speakerId) {
 		ImageView speakerImage = new ImageView(this);
@@ -215,6 +322,12 @@ public class ListenActivity extends AikumaListActivity {
 		return speakerImage;
 	}
 
+	// Set up the video-player
+	private void setUpVideoView() {
+		videoView.setVideoPath(recording.getFile().getAbsolutePath());
+		videoView.setMediaController(new MediaController(this));
+	}
+	
 	// Set up the player
 	private void setUpPlayer() {
 		try {
@@ -315,6 +428,7 @@ public class ListenActivity extends AikumaListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return menuBehaviour.onCreateOptionsMenu(menu);
 	}
+	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -326,6 +440,28 @@ public class ListenActivity extends AikumaListActivity {
 		this.finish();
 	}
 
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		if(recording.isMovie()) {
+			setUpVideoView();
+		} else {
+			videoView.setVisibility(View.GONE);
+			
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			fragment = new ListenFragment();
+			ft.add(R.id.listenFragment, fragment);
+			ft.commit();
+			
+			setUpPlayer();
+		}
+		
+//		setUpRespeakingImages();
+		setUpRecordingInfo();
+//		updateViewCount();
+	}
+	
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -471,7 +607,80 @@ public class ListenActivity extends AikumaListActivity {
 		intent.putExtra(Intent.EXTRA_TEXT, urlToShare);
 		startActivity(Intent.createChooser(intent, "Share the link via"));
 	}
+	
+	/**
+	 * When the archive button is pressed
+	 *
+	 * @param	view	The share button
+	 */
+	public void onArchiveButtonPressed(View view) {
+		new archiveTask().execute();
+	}
+	
+	/**
+	 * Asynchronous task to upload file and metadata to google-server
+	 * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+	 *
+	 */
+	private class archiveTask extends AsyncTask<Void, Void, Integer> {
 
+		@Override
+		protected Integer doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			File file = recording.getFile();
+			File metadataFile = recording.getMetadataFile();
+			Data data = Data.fromFile(file);
+			if (data == null) {	
+				return 0;		
+			}
+			
+			GoogleDriveStorage gd = new GoogleDriveStorage(googleAuthToken);
+			FusionIndex fi = new FusionIndex(googleAuthToken);
+			Map<String, Object> metadata = new HashMap<String, Object>();
+			try {
+				
+				metadata = (Map) JSONValue.parse(new FileReader(metadataFile));
+			} catch (FileNotFoundException e) {
+				return 1;	
+			}
+			Log.i("hi", "meta: " + metadata.toString());
+			
+			
+			if (gd.store(file.getName(), data) && 
+					fi.index(file.getName(), metadata)) {
+				Log.i("hi", "success");
+				return 3;
+			}
+			else {
+				Log.i("hi", "fail");
+				return 2;
+			}
+		}
+		
+		protected void onPostExecute(Integer resultCode) {
+			switch(resultCode) {
+			case 0:
+				Toast.makeText(ListenActivity.this, "Failed to open file", 
+						Toast.LENGTH_SHORT).show();
+				break;
+			case 1:
+				Toast.makeText(ListenActivity.this, "Failed to open metaFile",
+						Toast.LENGTH_SHORT).show();
+				break;
+			case 2:
+				Toast.makeText(ListenActivity.this, "Upload failed", 
+						Toast.LENGTH_SHORT).show();
+				break;
+			case 3:
+				Toast.makeText(ListenActivity.this, "Upload succeeded", 
+						Toast.LENGTH_SHORT).show();
+				break;
+			}
+		}
+		
+	}
+
+/*
 	private void updateStarButton() {
 		ImageButton starButton = (ImageButton)
 				findViewById(R.id.starButton);
@@ -483,7 +692,7 @@ public class ListenActivity extends AikumaListActivity {
 			starButton.setImageResource(R.drawable.star);
 		}
 	}
-
+	
 	private void updateFlagButton() {
 		ImageButton flagButton = (ImageButton)
 				findViewById(R.id.flagButton);
@@ -493,6 +702,26 @@ public class ListenActivity extends AikumaListActivity {
 		} else {
 			flagButton.setEnabled(true);
 			flagButton.setImageResource(R.drawable.flag);
+		}
+	} */
+	
+	private void updateStarButton() {
+		if(recording.isStarredByThisPhone()) {
+			quickMenu.setItemEnabledAt(0, false);
+			quickMenu.setItemImageResourceAt(0, R.drawable.star_grey);
+		} else {
+			quickMenu.setItemEnabledAt(0, true);
+			quickMenu.setItemImageResourceAt(0, R.drawable.star);
+		}
+	}
+	
+	private void updateFlagButton() {
+		if(recording.isFlaggedByThisPhone()) {
+			quickMenu.setItemEnabledAt(1, false);
+			quickMenu.setItemImageResourceAt(1, R.drawable.flag_grey);
+		} else {
+			quickMenu.setItemEnabledAt(1, true);
+			quickMenu.setItemImageResourceAt(1, R.drawable.flag);
 		}
 	}
 
@@ -519,8 +748,13 @@ public class ListenActivity extends AikumaListActivity {
 	private boolean phoneRespeaking = false;
 	private Player player;
 	private ListenFragment fragment;
+	private VideoView videoView;
 	private Recording recording;
 	private MenuBehaviour menuBehaviour;
 	private SimpleDateFormat simpleDateFormat;
 	private ProximityDetector proximityDetector;
+	
+	private QuickActionMenu quickMenu;
+	
+	private String googleAuthToken;
 }
