@@ -11,6 +11,9 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.net.http.AndroidHttpClient;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.ContextMenu;
@@ -39,9 +42,17 @@ import android.widget.ToggleButton;
 import android.widget.VideoView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.json.simple.JSONValue;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
@@ -49,9 +60,20 @@ import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.storage.Data;
+import org.lp20.aikuma.storage.FusionIndex;
+import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.InvalidAccessTokenException;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.util.ImageUtils;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 /**
  * @author	Oliver Adams	<oliver.adams@gmail.com>
@@ -70,7 +92,7 @@ public class ListenActivity extends AikumaListActivity {
 		videoView = (VideoView) findViewById(R.id.videoView);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
-		
+		googleAuthToken = getIntent().getExtras().getString("token");
 		// respeakings load
 //		ExpandableListView respeakingsList = (ExpandableListView)
 //				findViewById(R.id.respeakingsList);
@@ -191,12 +213,20 @@ public class ListenActivity extends AikumaListActivity {
 		//
 		QuickActionItem starAct = new QuickActionItem("star", R.drawable.star);
 		QuickActionItem flagAct = new QuickActionItem("flag", R.drawable.flag);
-		QuickActionItem shareAct = new QuickActionItem("share", R.drawable.share);
+		QuickActionItem shareAct = 
+				new QuickActionItem("share", R.drawable.share);
+		
 		quickMenu = new QuickActionMenu(this);
 		
 		quickMenu.addActionItem(starAct);
 		quickMenu.addActionItem(flagAct);
 		quickMenu.addActionItem(shareAct);
+		
+		if(googleAuthToken != null) {
+			QuickActionItem archiveAct = 
+					new QuickActionItem("archive", R.drawable.archive_32);
+			quickMenu.addActionItem(archiveAct);
+		}
 		
 		
 		//setup the action item click listener
@@ -210,7 +240,9 @@ public class ListenActivity extends AikumaListActivity {
 					onFlagButtonPressed(null);
 				} else if (pos == 2) { //Upload item selected
 					onShareButtonPressed(null);
-				}	
+				} else if (pos == 3) {
+					onArchiveButtonPressed(null);
+				}
 			}
 		});
 		
@@ -575,6 +607,74 @@ public class ListenActivity extends AikumaListActivity {
 		intent.putExtra(Intent.EXTRA_TEXT, urlToShare);
 		startActivity(Intent.createChooser(intent, "Share the link via"));
 	}
+	
+	/**
+	 * When the archive button is pressed
+	 *
+	 * @param	view	The share button
+	 */
+	public void onArchiveButtonPressed(View view) {
+		new archiveTask().execute();
+	}
+	
+	private class archiveTask extends AsyncTask<Void, Void, Integer> {
+
+		@Override
+		protected Integer doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			File file = recording.getFile();
+			File metadataFile = recording.getMetadataFile();
+			Data data = Data.fromFile(file);
+			if (data == null) {	
+				return 0;		
+			}
+			
+			GoogleDriveStorage gd = new GoogleDriveStorage(googleAuthToken);
+			FusionIndex fi = new FusionIndex(googleAuthToken);
+			Map<String, Object> metadata = new HashMap<String, Object>();
+			try {
+				
+				metadata = (Map) JSONValue.parse(new FileReader(metadataFile));
+			} catch (FileNotFoundException e) {
+				return 1;	
+			}
+			Log.i("hi", "meta: " + metadata.toString());
+			
+			
+			if (gd.store(file.getName(), data) && 
+					fi.index(file.getName(), metadata)) {
+				Log.i("hi", "success");
+				return 3;
+			}
+			else {
+				Log.i("hi", "fail");
+				return 2;
+			}
+		}
+		
+		protected void onPostExecute(Integer resultCode) {
+			switch(resultCode) {
+			case 0:
+				Toast.makeText(ListenActivity.this, "Failed to open file", 
+						Toast.LENGTH_SHORT).show();
+				break;
+			case 1:
+				Toast.makeText(ListenActivity.this, "Failed to open metaFile",
+						Toast.LENGTH_SHORT).show();
+				break;
+			case 2:
+				Toast.makeText(ListenActivity.this, "Upload failed", 
+						Toast.LENGTH_SHORT).show();
+				break;
+			case 3:
+				Toast.makeText(ListenActivity.this, "Upload succeeded", 
+						Toast.LENGTH_SHORT).show();
+				break;
+			}
+		}
+		
+	}
+
 /*
 	private void updateStarButton() {
 		ImageButton starButton = (ImageButton)
@@ -650,4 +750,6 @@ public class ListenActivity extends AikumaListActivity {
 	private ProximityDetector proximityDetector;
 	
 	private QuickActionMenu quickMenu;
+	
+	private String googleAuthToken;
 }

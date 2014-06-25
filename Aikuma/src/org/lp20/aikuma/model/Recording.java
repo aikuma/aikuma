@@ -189,6 +189,11 @@ public class Recording {
 				+ id + extension);
 	}
 	
+	public File getMetadataFile() {
+		return new File(getRecordingsPath(), getGroupId() + "/" 
+				+ id + "-metadata.json");
+	}
+	
 
 	/**
 	 * Name accessor; returns an empty string if the name is null
