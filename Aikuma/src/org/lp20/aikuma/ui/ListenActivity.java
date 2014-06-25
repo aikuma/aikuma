@@ -617,6 +617,11 @@ public class ListenActivity extends AikumaListActivity {
 		new archiveTask().execute();
 	}
 	
+	/**
+	 * Asynchronous task to upload file and metadata to google-server
+	 * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+	 *
+	 */
 	private class archiveTask extends AsyncTask<Void, Void, Integer> {
 
 		@Override

@@ -173,8 +173,12 @@ public class MainActivity extends ListActivity {
 	////                                   			/////
 	/////////////////////////////////////////////////////
 		
+	/**
+	 * Get the google-service API token and set it to googleAuthToken variable
+	 */
     public void getAccountToken() {
-        int statusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        int statusCode = GooglePlayServicesUtil
+        		.isGooglePlayServicesAvailable(this);
         if (statusCode == ConnectionResult.SUCCESS) {
         	if(emailAccount == null) {
         		pickUserAccount();
@@ -308,7 +312,11 @@ public class MainActivity extends ListActivity {
 		return scope;
     }
     
-    
+    /**
+     * Inner class to get an access token from google server
+     * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+     *
+     */
     private class GetTokenTask extends AsyncTask<Void, Void, Void>{
     	
     	private static final String TAG = "GetTokenTask";
@@ -355,10 +363,9 @@ public class MainActivity extends ListActivity {
     }
     
     
-    
-    public static final int PICK_ACCOUNT_REQUEST_CODE = 1000;
-    public static final int RECOVER_FROM_AUTH_ERROR_REQUEST_CODE = 1001;
-    public static final int RECOVER_FROM_GOOGLEPLAY_ERROR_REQUEST_CODE = 1002;
+    private static final int PICK_ACCOUNT_REQUEST_CODE = 1000;
+    private static final int RECOVER_FROM_AUTH_ERROR_REQUEST_CODE = 1001;
+    private static final int RECOVER_FROM_GOOGLEPLAY_ERROR_REQUEST_CODE = 1002;
     
     private String emailAccount;
     private String googleAuthToken;
@@ -493,10 +500,11 @@ public class MainActivity extends ListActivity {
 	private File mPath;
 	private String mChosenFile;
 	private static final String FILE_TYPE = ".wav";
+	
+	private static final String TAG = "MainActivity";
 	/**
 	 *  Location-service variable which can be accessed  by all other activities
 	 */
-	private static final String TAG = "MainActivity";
 	public static LocationDetector locationDetector;
 
 }

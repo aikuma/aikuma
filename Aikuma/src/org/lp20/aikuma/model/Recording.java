@@ -93,6 +93,7 @@ public class Recording {
 	 *
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
+	 * @param	format	The file format
 	 * @param	languages	The languages associated with the recording
 	 * @param	speakersIds	The IDs of the speakers associated with the
 	 * recording
