@@ -35,7 +35,7 @@ public interface Index {
 	 * @param identifier
 	 * @param metadata
 	 */
-	public abstract void index(String identifier, Map<String,String> metadata);
+	public abstract boolean index(String identifier, Map<String,String> metadata);
 
 
     /**

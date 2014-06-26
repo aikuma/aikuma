@@ -212,13 +212,13 @@ public class FusionIndex implements Index {
      * @see org.lp20.aikuma.storage.Index#index(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List)
      */
 	@Override
-	public void index(String identifier, Map<String,String> metadata) {
+	public boolean index(String identifier, Map<String,String> metadata) {
         validateMetadata(metadata, true);
         if (getRowId(identifier) != null) {
             log.severe("index called on item with existing index entry");
-            return;
+            return false;
         }
-        doPost(identifier, makeInsert(identifier, metadata));
+        return doPost(identifier, makeInsert(identifier, metadata));
     }
 
     @Override
@@ -232,7 +232,7 @@ public class FusionIndex implements Index {
         doPost(identifier, makeUpdate(rowid, metadata));
     }
 
-    private void doPost(String identifier, String body) {
+    private boolean doPost(String identifier, String body) {
         try {
             URL url = new URL("https://www.googleapis.com/fusiontables/v1/query");
             HttpURLConnection cn = gapi_connect(url, "POST", accessToken);
@@ -241,7 +241,7 @@ public class FusionIndex implements Index {
             out.flush();
             out.close();
             if (cn.getResponseCode() == HttpURLConnection.HTTP_OK)
-                return;
+                return true;
             else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
                 throw new InvalidAccessTokenException();
             else {
@@ -254,6 +254,7 @@ public class FusionIndex implements Index {
             log.log(Level.SEVERE, e.getMessage(), e);
         }
         log.warning("Error inserting metadata for " + identifier);
+        return false;
     }
 
 
