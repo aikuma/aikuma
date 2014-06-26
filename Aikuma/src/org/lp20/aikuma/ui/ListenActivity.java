@@ -52,6 +52,8 @@ import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
@@ -636,15 +638,35 @@ public class ListenActivity extends AikumaListActivity {
 			
 			GoogleDriveStorage gd = new GoogleDriveStorage(googleAuthToken);
 			FusionIndex fi = new FusionIndex(googleAuthToken);
-			Map<String, Object> metadata = new HashMap<String, Object>();
+			JSONObject jsonfile;
 			try {
-				
-				metadata = (Map) JSONValue.parse(new FileReader(metadataFile));
+				jsonfile = (JSONObject) JSONValue.parse(new FileReader(metadataFile));
 			} catch (FileNotFoundException e) {
 				return 1;	
 			}
-			Log.i("hi", "meta: " + metadata.toString());
+			Map<String, String> metadata = new HashMap<String,String>();
+			JSONArray speakers_arr = (JSONArray) jsonfile.get("people");
+			String speakers = "";
+			String joiner = "";
+			for (Object obj: (JSONArray) jsonfile.get("people")) {
+				speakers += joiner + (String) obj;
+				joiner = "|";
+			}
+			String languages = "";
+			joiner = "";
+			for (Object obj: (JSONArray) jsonfile.get("languages")) {
+				String lang = (String) ((JSONObject) obj).get("code");
+				languages += joiner + lang;
+				joiner = "|";
+				break;  // TODO: use only the first language for now
+			}
+			metadata.put("data_store_uri", "NA");  // TODO: obtain real url
+			metadata.put("item_id", (String) jsonfile.get("recording"));
+			metadata.put("file_type", (String) jsonfile.get("type"));
+			metadata.put("speakers", speakers);
+			metadata.put("languages", languages);
 			
+			Log.i("hi", "meta: " + metadata.toString());
 			
 			if (gd.store(file.getName(), data) && 
 					fi.index(file.getName(), metadata)) {
