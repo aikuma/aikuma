@@ -508,6 +508,7 @@ public class ListenActivity extends AikumaListActivity {
 		Intent intent = new Intent(this, ListenRespeakingActivity.class);
 		intent.putExtra("originalId", recording.getId());
 		intent.putExtra("respeakingId", respeaking.getId());
+		intent.putExtra("token", googleAuthToken);
 		startActivity(intent);
 		
 //		Intent intent = new Intent(ListenActivity.this,
