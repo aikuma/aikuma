@@ -4,6 +4,7 @@
 */
 package org.lp20.aikuma;
 
+import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -14,14 +15,21 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.View.OnKeyListener;
+import android.view.inputmethod.InputMethodManager;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -60,6 +68,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -98,9 +107,10 @@ public class MainActivity extends ListActivity {
 		setContentView(R.layout.main);
 		menuBehaviour = new MenuBehaviour(this);
 		SyncUtil.startSyncLoop();
-		List<Recording> recordings = Recording.readAll();
-		ArrayAdapter adapter = new RecordingArrayAdapter(this, recordings);
-		setListAdapter(adapter);
+		
+//		List<Recording> recordings = Recording.readAll();
+//		adapter = new RecordingArrayAdapter(this, recordings);
+//		setListAdapter(adapter);
 		Aikuma.loadLanguages();
 
 		ActionBar actionBar = getActionBar();
@@ -141,7 +151,10 @@ public class MainActivity extends ListActivity {
 			}
 		}
 
-		ArrayAdapter adapter = new RecordingArrayAdapter(this, originals);
+		adapter = new RecordingArrayAdapter(this, originals);
+		if(searchView != null) {
+			adapter.getFilter().filter(searchView.getQuery());
+		}
 		setListAdapter(adapter);
 		if (listViewState != null) {
 			getListView().onRestoreInstanceState(listViewState);
@@ -164,9 +177,59 @@ public class MainActivity extends ListActivity {
 		intent.putExtra("token", googleAuthToken);
 		startActivity(intent);
 	}
+	
+	/**
+	 * Setup the search-menu-item interface (called by MenuBehavior)
+	 * @param menu	menu object
+	 */
+	public void setUpSearchInterface(Menu menu) {
+//		SearchManager searchManager = 
+//				(SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		final MenuItem searchMenuItem = menu.findItem(R.id.search);
+		searchView = (SearchView) searchMenuItem.getActionView();
+//		if (null != searchView )
+//        {
+//            searchView.setSearchableInfo(searchManager.
+//            		getSearchableInfo(getComponentName()));
+//            searchView.setIconifiedByDefault(false);   
+//        }
+		searchView.setOnQueryTextFocusChangeListener(
+				new View.OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				// TODO Auto-generated method stub
+				if(!hasFocus) {
+	                searchMenuItem.collapseActionView();
+	                //searchView.setQuery("", false);
+	            }
+			}
+		});
+		searchView.setOnQueryTextListener(
+				new SearchView.OnQueryTextListener() {
 
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				// TODO Auto-generated method stub
+				adapter.getFilter().filter(query);
+				searchView.clearFocus();
+				return true;
+			}
+
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				// TODO Auto-generated method stub
+				adapter.getFilter().filter(newText);
+				return true;
+			}
+		});	
+	}
+
+	SearchView searchView;
+	
 	MenuBehaviour menuBehaviour;
-
+	private RecordingArrayAdapter adapter;
+	
 	/////////////////////////////////////////////////////
 	////                                   			/////
 	//// Things pertaining to getting Google token. /////
@@ -197,6 +260,16 @@ public class MainActivity extends ListActivity {
      * Start an activity which allows a user to pick up an account
      */
     private void pickUserAccount() {
+    	AccountManager manager = AccountManager.get(this); 
+        Account[] accounts = manager.getAccountsByType("com.google"); 
+
+        for (Account account : accounts) {
+          // TODO: Check possibleEmail against an email regex or treat
+          // account.name as an email address only for certain account.type values.
+        	Log.i("login", account.name);
+        }
+        
+        
         String[] accountTypes = new String[]{"com.google"};
         Intent intent = AccountPicker.newChooseAccountIntent(null, null,
                 accountTypes, false, null, null, null, null);

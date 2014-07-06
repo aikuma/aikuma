@@ -9,15 +9,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.R;
@@ -40,6 +45,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	public RecordingArrayAdapter(Context context, List<Recording> recordings) {
 		super(context, LIST_ITEM_LAYOUT, recordings);
 		this.context = context;
+		this.recordings = new ArrayList<Recording>(recordings);
 		inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -61,6 +67,12 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		});
 	}
 
+	public RecordingArrayAdapter(Context context, List<Recording> recordings, 
+			QuickActionMenu quickMenu) {
+		this(context, recordings);
+		this.quickMenu = quickMenu;
+	}
+	
 	@Override
 	public View getView(int position, View _, ViewGroup parent) {
 		LinearLayout recordingView =
@@ -143,6 +155,21 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		TextView numFlagsView = (TextView)
 				recordingView.findViewById(R.id.numFlags);
 		numFlagsView.setText(String.valueOf(recording.numFlags()));
+		
+		// When list is used to show only one item, quickMenu is not null
+		// and only long-click is enabled for the item
+		if(quickMenu != null) {
+			recordingView.setOnLongClickListener(new OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View v) {
+					// TODO Auto-generated method stub
+					quickMenu.show(v);
+					return false;
+				}
+				
+			});
+		}
+		
 
 		return recordingView;
 	}
@@ -182,10 +209,56 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		}
 		return speakerImage;
 	}
+	
+	@Override
+	public Filter getFilter() {
+		return new Filter() {
+
+			@Override
+			protected FilterResults performFiltering(CharSequence constraint) {
+				// TODO Auto-generated method stub
+				constraint = constraint.toString().toLowerCase();
+				Filter.FilterResults results = new Filter.FilterResults();
+				
+				if(constraint == null || constraint.length() == 0) {
+					results.values = recordings;
+				} else {
+					List<Recording> filteredRecordings = 
+							new ArrayList<Recording>();
+					for(int i=0; i<recordings.size(); i++) {
+						Recording item = recordings.get(i);
+						List<Language> languages = item.getLanguages();
+						for(Language lang : languages) {
+							if(lang.getCode().contains(constraint)) {
+								filteredRecordings.add(item);
+								break;
+							}
+						}
+					}
+					results.values = filteredRecordings;
+				}
+				return results;
+			}
+
+			@Override
+			protected void publishResults(CharSequence constraint,
+					FilterResults results) {
+				// TODO Auto-generated method stub
+				List<Recording> filteredRecordings = 
+						(List<Recording>) results.values;
+				RecordingArrayAdapter.this.clear();
+				RecordingArrayAdapter.this.addAll(filteredRecordings);
+				RecordingArrayAdapter.this.notifyDataSetChanged();
+			}
+			
+		};
+	}
 
 	private static final int LIST_ITEM_LAYOUT = R.layout.recording_list_item;
 	private LayoutInflater inflater;
 	private Context context;
+	private List<Recording> recordings;
 	private SimpleDateFormat simpleDateFormat;
+	private QuickActionMenu quickMenu = null;
 
 }

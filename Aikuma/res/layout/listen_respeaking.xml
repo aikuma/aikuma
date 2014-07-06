@@ -5,11 +5,20 @@
 		android:layout_height="fill_parent"
 	>
 
-	<include 
+    <!-- 
+    <include 
 	    android:id="@+id/selectedOriginal"
 	    android:layout_height="wrap_content"
 	    android:layout_width="fill_parent"
 	    layout="@layout/recording_list_item"/>
+     -->
+	
+	
+	<ListView
+	    android:id="@+id/selectedOriginal"
+	    android:layout_height="wrap_content"
+	    android:layout_width="fill_parent"
+	    />
 	
 	<FrameLayout
 	    android:id="@+id/recordingPlayerInterface"
@@ -18,12 +27,22 @@
 	    android:layout_height="wrap_content" />
 	
 
+	<!-- 
 	<include 
 	    android:id="@+id/selectedRespeaking"
 	    android:layout_height="wrap_content"
 	    android:layout_width="fill_parent"
 	    android:layout_below="@id/recordingPlayerInterface"
 	    layout="@layout/recording_list_item"/>
+	 -->
+	
+	
+	<ListView
+	    android:id="@+id/selectedRespeaking"
+	    android:layout_height="wrap_content"
+	    android:layout_width="fill_parent"
+	    android:layout_below="@id/recordingPlayerInterface"
+	    />
 	
 	<FrameLayout
 	    android:id="@+id/respeakingPlayerInterface"
