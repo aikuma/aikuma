@@ -64,6 +64,8 @@ import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
+import org.lp20.aikuma.audio.MarkedPlayer;
+import org.lp20.aikuma.audio.TranscriptPlayer;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.storage.Data;
 import org.lp20.aikuma.storage.FusionIndex;
@@ -156,6 +158,12 @@ public class ListenActivity extends AikumaActivity {
 	public void onPause() {
 		super.onPause();
 		this.proximityDetector.stop();
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		this.player.release();
 	}
 
 	// Prepares the original recording 
@@ -263,7 +271,9 @@ public class ListenActivity extends AikumaActivity {
 	private void setUpPlayer() {
 		try {
 			if (recording.isOriginal()) {
-				setPlayer(new SimplePlayer(recording, true));
+				TranscriptPlayer player =
+						new TranscriptPlayer(recording, this);
+				setPlayer(player);
 			} else {
 				setPlayer(new InterleavedPlayer(recording));
 				ImageButton respeakingButton =
@@ -346,6 +356,16 @@ public class ListenActivity extends AikumaActivity {
 //	}
 
 	private void setPlayer(SimplePlayer player) {
+		this.player = player;
+		fragment.setPlayer(player);
+	}
+
+	private void setPlayer(MarkedPlayer player) {
+		this.player = player;
+		fragment.setPlayer(player);
+	}
+
+	private void setPlayer(TranscriptPlayer player) {
 		this.player = player;
 		fragment.setPlayer(player);
 	}

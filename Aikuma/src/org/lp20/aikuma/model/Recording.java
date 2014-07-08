@@ -892,6 +892,7 @@ public class Recording {
 	 * Indicates that this recording is allowed to be synced by moving it to a
 	 * directory that the SyncUtil synchronizes.
 	 *
+	 * @return	A transcript of this recording
 	 * @param	id	The ID of the recording to sync.
 	 * @throws	IOException	If it cannot be moved to the synced directory.
 	 */
@@ -901,6 +902,44 @@ public class Recording {
 		FileUtils.moveFileToDirectory(wavFile, getRecordingsPath(), false);
 	}
 	*/
+	
+	/**
+	 * Returns the transcript for this recording, or an empty transcript.
+	 *
+	 * @return	A transcript of this recording
+	 */
+	public TempTranscript getTranscript() {
+		// Find all the transcript files
+		File recordingDir = new File(FileIO.getAppRootPath(), "/recordings/" +
+				getGroupId());
+		File[] transcriptFiles = recordingDir.listFiles(
+				new FilenameFilter() {
+			public boolean accept(File dir, String filename) {
+				if (filename.split("-")[2].equals("transcript")) {
+					Log.i("transcript2", "filename: " + filename);
+					Log.i("transcript2", "split[2]: " +
+							filename.split("-")[2]);
+					return true;
+				}
+				return false;
+			}
+		});
+
+		// Take the first one
+		for (File transcriptFile : transcriptFiles) {
+			Log.i("transcript2", "transcriptFile: " + transcriptFile);
+			try {
+				return new TempTranscript(this, transcriptFile);
+			} catch (IOException e) {
+				continue;
+			}
+		}
+
+		// Just return an empty transcript
+		// return new TempTranscript();
+		return null;
+	}
+
 
 	/**
 	 * The recording's name.
