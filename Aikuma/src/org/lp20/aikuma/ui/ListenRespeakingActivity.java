@@ -334,8 +334,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	
 	/**
 	 * When the archive button is pressed
-	 *
-	 * @param	view	The share button
+	 * 
+	 * @param recording	The recording where archive-button is pressed
 	 */
 	public void onArchiveButtonPressed(Recording recording) {
 		new archiveTask().execute(recording);

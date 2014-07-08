@@ -67,6 +67,13 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		});
 	}
 
+	/**
+	 * Constructor when Quick-menu is attached to each list_item
+	 * 
+	 * @param	context	the current context
+	 * @param	recordings	The list of recordings.
+	 * @param	quickMenu	QuickActionMenu for each liste item
+	 */
 	public RecordingArrayAdapter(Context context, List<Recording> recordings, 
 			QuickActionMenu quickMenu) {
 		this(context, recordings);
