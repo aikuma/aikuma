@@ -515,6 +515,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 
 		@Override
 		protected Integer doInBackground(Recording... params) {
+			if (true)
+				return 0;
 			// TODO Auto-generated method stub
 			File file = params[0].getFile();
 			File metadataFile = params[0].getMetadataFile();
@@ -551,7 +553,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 			metadata.put("item_id", (String) jsonfile.get("recording"));
 			metadata.put("file_type", (String) jsonfile.get("type"));
 			metadata.put("speakers", speakers);
-			metadata.put("languages", languages);
+			metadata.put("language", languages);
 			
 			Log.i("hi", "meta: " + metadata.toString());
 			

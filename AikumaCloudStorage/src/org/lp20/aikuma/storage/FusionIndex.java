@@ -1,5 +1,6 @@
 package org.lp20.aikuma.storage;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -133,9 +134,13 @@ public class FusionIndex implements Index {
         String sql = String.format("SELECT ROWID FROM %s WHERE identifier = '%s';", tableId, forIdentifier);
         Object tmp = doGet(forIdentifier, sql);
         //TODO fix the ugly mess below
-        if (tmp != null)
-        return (String) ((List) ((List) ((Map) tmp).get("rows")).get(0)).get(0);
-        else return null;
+        if (tmp != null) {
+        	JSONArray arr = (JSONArray) ((JSONObject) tmp).get("rows");
+        	if (arr != null && arr.size() > 0) {
+        		return (String) ((JSONArray) arr.get(0)).get(0);
+        	}
+        }
+        return null;
     }
 
     private Object doGet(String forIdentifier, String sql) {

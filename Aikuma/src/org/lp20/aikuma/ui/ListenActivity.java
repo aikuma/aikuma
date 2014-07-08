@@ -665,7 +665,7 @@ public class ListenActivity extends AikumaListActivity {
 			metadata.put("item_id", (String) jsonfile.get("recording"));
 			metadata.put("file_type", (String) jsonfile.get("type"));
 			metadata.put("speakers", speakers);
-			metadata.put("languages", languages);
+			metadata.put("language", languages);
 			
 			Log.i("hi", "meta: " + metadata.toString());
 			
