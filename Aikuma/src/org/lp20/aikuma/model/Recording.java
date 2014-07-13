@@ -834,7 +834,12 @@ public class Recording {
 		return path;
 	}
 
-	private File getRecordingsPath() {
+	/**
+	 * Get the recording owner's directory
+	 * 
+	 * @return	A file representing the path of the recording owner's dir
+	 */
+	public File getRecordingsPath() {
 		File path = new File(
 				FileIO.getOwnerPath(versionName, ownerId), "recordings");
 		path.mkdirs();
@@ -1038,6 +1043,16 @@ public class Recording {
 	 */
 	private String name;
 
+	/**
+	 * The recording's format version
+	 */
+	private String versionName;
+	
+	/**
+	 * The recording's owner ID
+	 */
+	private String ownerId;
+	
 	/**
 	 * The recording's date.
 	 */

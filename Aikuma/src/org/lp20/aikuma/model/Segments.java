@@ -33,7 +33,7 @@ public class Segments {
 		this();
 		this.respeaking = respeaking;
 		try {
-			readSegments(new File(Recording.getRecordingsPath(),
+			readSegments(new File(respeaking.getRecordingsPath(), 
 					respeaking.getGroupId() + "/" +
 					respeaking.getId() + ".map"));
 		} catch (IOException e) {

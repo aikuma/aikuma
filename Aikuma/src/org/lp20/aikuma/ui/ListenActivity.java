@@ -169,10 +169,11 @@ public class ListenActivity extends AikumaActivity {
 	// Prepares the original recording 
 	private void setUpRecording() {
 		Intent intent = getIntent();
-		String id = (String)
-				intent.getExtras().get("id");
+		String id = (String) intent.getExtras().get("id");
+		versionName = (String) intent.getExtras().get("versionName");
+		ownerId = (String) intent.getExtras().get("ownerId");
 		try {
-			recording = Recording.read(id);
+			recording = Recording.read(versionName, ownerId, id);
 			setUpQuickMenu();
 			List<Recording> original = new ArrayList<Recording>();
 			original.add(recording);
@@ -213,6 +214,9 @@ public class ListenActivity extends AikumaActivity {
 							ListenRespeakingActivity.class);
 					intent.putExtra("originalId", recording.getId());
 					intent.putExtra("respeakingId", respeaking.getId());
+					intent.putExtra("ownerId", ownerId);
+					intent.putExtra("versionName", versionName);
+					
 					intent.putExtra("token", googleAuthToken);
 					startActivity(intent);
 				}
@@ -427,6 +431,8 @@ public class ListenActivity extends AikumaActivity {
 			intent = new Intent(this, ThumbRespeakActivity.class);
 		}
 		intent.putExtra("sourceId", recording.getId());
+		intent.putExtra("ownerId", ownerId);
+		intent.putExtra("versionName", versionName);
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
 	}
@@ -439,6 +445,8 @@ public class ListenActivity extends AikumaActivity {
 	public void onPhoneRespeakingButton(View view) {
 		Intent intent = new Intent(this, PhoneRespeakActivity.class);
 		intent.putExtra("sourceId", recording.getId());
+		intent.putExtra("ownerId", ownerId);
+		intent.putExtra("versionName", versionName);
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
 	}
@@ -632,6 +640,8 @@ public class ListenActivity extends AikumaActivity {
 	private ListenFragment fragment;
 	private VideoView videoView;
 	private Recording recording;
+	private String ownerId;
+	private String versionName;
 	private MenuBehaviour menuBehaviour;
 	private SimpleDateFormat simpleDateFormat;
 	private ProximityDetector proximityDetector;

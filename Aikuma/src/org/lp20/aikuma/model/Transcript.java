@@ -13,7 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
+import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.IdUtils;
+
+import android.util.Log;
 
 import com.google.common.io.Files;
 
@@ -23,9 +26,13 @@ import com.google.common.io.Files;
  * @author	...
  */
 public class Transcript {
+	private static final String TAG = "Transcript";
+	
 	private String id;  // transcript file name
 	private String group_id;
 	private String person_id;
+	private String version_name;
+	private String owner_id;
 	private String path;
 	
 	/**
@@ -37,7 +44,8 @@ public class Transcript {
 	 * @param transcriberId The person ID of the transcriber.
 	 * @throws RuntimeException if the file can't be made.
 	 */
-	public Transcript(String groupId, String transcriberId) throws RuntimeException {
+	public Transcript(String versionName, String ownerId,
+			String groupId, String transcriberId) throws RuntimeException {
 		try {
 			Speaker.read(transcriberId);
 		}
@@ -45,7 +53,8 @@ public class Transcript {
 			throw new RuntimeException("No such person: " + transcriberId);
 		}
 
-		String path = Recording.getRecordingsPath() + "/" + groupId;
+		String path = Recording.getRecordingsPath(
+				FileIO.getOwnerPath(versionName, ownerId)) + "/" + groupId;
 		File f = new File(path);
 		if (!f.isDirectory()) {
 			throw new RuntimeException("No such recording group: " + groupId);
@@ -61,7 +70,11 @@ public class Transcript {
 		id = build.toString();
 		group_id = groupId;
 		person_id = transcriberId;
-		path = Recording.getRecordingsPath() + "/" + group_id + "/" + id + ".txt";
+		version_name = versionName;
+		owner_id = ownerId;
+		path = Recording.getRecordingsPath(
+				FileIO.getOwnerPath(versionName, ownerId)) + 
+				"/" + group_id + "/" + id + ".txt";
 		
 		try {
 			(new File(path)).createNewFile();
@@ -76,12 +89,17 @@ public class Transcript {
 	 * @param id Transcript file ID.
 	 * @throws RuntimeException if the file can't be made.
 	 */
-	public Transcript(String id) throws RuntimeException {
+	public Transcript(String versionName, String ownerId, 
+			String id) throws RuntimeException {
 		String[] a = id.split("-");
 		this.id = id;
 		group_id = a[0];
 		person_id = a[1];
-		path = Recording.getRecordingsPath() + "/" + group_id + "/" + id + ".txt";
+		version_name = versionName;
+		owner_id = ownerId;
+		path = Recording.getRecordingsPath(
+				FileIO.getOwnerPath(versionName, ownerId)) + 
+				"/" + group_id + "/" + id + ".txt";
 
 		if (!a[2].equals("transcript"))
 			throw new RuntimeException("Invalid transcript ID: " + id);
@@ -106,20 +124,58 @@ public class Transcript {
 	public static List<Transcript> readAll() {
 		List<Transcript> list = new ArrayList<Transcript>();
 		
-		for (File dir: Recording.getRecordingsPath().listFiles()) {
+		// Get a list of version directories
+		File[] versionDirs = 
+				FileIO.getAppRootPath().listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String filename) {
+				return filename.startsWith("v");
+			}	
+		});
+		
+		for(File f1 : versionDirs) {
+			String versionName = f1.getName();
+			File[] firstHashDirs = f1.listFiles();
+			for(File f2 : firstHashDirs) {
+				File[] secondHashDirs = f2.listFiles();
+				for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f3.listFiles();
+					for(File f : ownerIdDirs) {
+						Log.i(TAG, "readAll: " + f.getPath());
+						
+						String ownerId = f.getName();
+						addTranscriptsInDir(list, f, versionName, ownerId);
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	private static void addTranscriptsInDir(List<Transcript> transcripts, 
+			File ownerDir, String versionName, String ownerId) {
+		// Constructs a list of directories in the recordings directory.
+		File[] recordingPathFiles = Recording.getRecordingsPath(ownerDir).listFiles();
+		
+		if (recordingPathFiles == null) {
+			return;
+		}
+			
+		for (File dir : recordingPathFiles) {
 			if (dir.isDirectory() && dir.getName().length() == 8) {
+				// For each of those subdirectories, creates a list of files
+				// within that end in -transcript.txt
 				for (File f: dir.listFiles()) {
 					String filename = f.getName();
 					String[] a = filename.split("-");
 					if (filename.endsWith(".txt") && a[2].equals("transcript")) {
 						String trs_id = filename.split("\\.")[0];
-						list.add(new Transcript(trs_id));
+						transcripts.add(
+								new Transcript(versionName, ownerId, trs_id));
 					}
 				}
 			}
 		}
-		
-		return list;
 	}
 	
 	/**
@@ -127,9 +183,9 @@ public class Transcript {
 	 * @param id Transcript ID
 	 * @return A File containing the transcript.
 	 */
-	public static File getFile(String id) {
+	public static File getFile(String versionName, String ownerId, String id) {
 		try {
-			Transcript trs = new Transcript(id);
+			Transcript trs = new Transcript(versionName, ownerId, id);
 			return trs.getFile();
 		}
 		catch (RuntimeException e) {

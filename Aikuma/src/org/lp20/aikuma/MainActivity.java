@@ -174,6 +174,8 @@ public class MainActivity extends ListActivity {
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		Intent intent = new Intent(this, ListenActivity.class);
 		intent.putExtra("id", recording.getId());
+		intent.putExtra("ownerId", recording.getOwnerId());
+		intent.putExtra("versionName", recording.getVersionName());
 		intent.putExtra("token", googleAuthToken);
 		startActivity(intent);
 	}

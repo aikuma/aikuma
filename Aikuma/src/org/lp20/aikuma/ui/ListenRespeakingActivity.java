@@ -149,7 +149,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	// Prepares the selected original
 	private void setUpOriginal(String originalId) {
 		try {
-			original = Recording.read(originalId);
+			original = Recording.read(versionName, ownerId, originalId);
 			originalQuickMenu = new QuickActionMenu(this);
 			setUpQuickMenu(originalQuickMenu, original);
 			List<Recording> originalBox = new ArrayList<Recording>();
@@ -480,6 +480,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	private Player player;
 	private Recording original;
 	private Recording respeaking;
+	private String versionName;
+	private String ownerId;
 	private ListenFragment originalListenFragment;
 	private ListenFragment respeakingListenFragment;
 	private MenuBehaviour menuBehaviour;
