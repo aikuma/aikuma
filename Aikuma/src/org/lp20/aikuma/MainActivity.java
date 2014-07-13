@@ -114,7 +114,7 @@ public class MainActivity extends ListActivity {
 		
 		// Update the file structure
 		if(defaultAccount.equals("")) {
-//			new UpdateUtils(this).update();
+			new UpdateUtils(this).update();
 			ProgressDialog.show(this, "hi", "hiasdf");
 		} else {
 			AikumaSettings.setOwnerId(defaultAccount);

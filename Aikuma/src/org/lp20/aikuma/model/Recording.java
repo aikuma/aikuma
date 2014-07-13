@@ -46,6 +46,8 @@ public class Recording {
 	 * 							(recording can be wav or movie(mp4))
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
+	 * 	 * @param	versionName	The recording's version(v0x)
+	 * @param	ownerId	The recording owner's ID(Google account)
 	 * @param	languages	The languages associated with the recording
 	 * @param	speakersIds	The IDs of the speakers associated with the
 	 * recording
@@ -63,6 +65,7 @@ public class Recording {
 	 * @param	longitude The location data
 	 */
 	public Recording(UUID recordingUUID, String name, Date date,
+			String versionName, String ownerId,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String sourceId, long sampleRate,
 			int durationMsec, String format, int numChannels, 
@@ -70,6 +73,8 @@ public class Recording {
 		this.recordingUUID = recordingUUID;
 		setName(name);
 		setDate(date);
+		setVersionName(versionName);
+		setOwnerId(ownerId);
 		setFormat(format);
 		setLanguages(languages);
 		setSpeakersIds(speakersIds);
@@ -98,6 +103,8 @@ public class Recording {
 	 *
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
+	 * @param	versionName	The recording's version(v0x)
+	 * @param	ownerId	The recording owner's ID(Google account)
 	 * @param	format	The file format
 	 * @param	languages	The languages associated with the recording
 	 * @param	speakersIds	The IDs of the speakers associated with the
@@ -112,11 +119,14 @@ public class Recording {
 	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 */
 	public Recording(String name, Date date,
+			String versionName, String ownerId,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String respeakingId,
 			long sampleRate, int durationMsec, String format) {
 		setName(name);
 		setDate(date);
+		setVersionName(versionName);
+		setOwnerId(ownerId);
 		setFormat(format);
 		setLanguages(languages);
 		setSpeakersIds(speakersIds);
@@ -306,6 +316,14 @@ public class Recording {
 
 	public String getId() {
 		return id;
+	}
+	
+	public String getOwnerId() {
+		return ownerId;
+	}
+	
+	public String getVersionName() {
+		return versionName;
 	}
 
 	/**
@@ -504,6 +522,8 @@ public class Recording {
 		} catch (ParseException e) {
 			throw new IOException(e);
 		}
+		String versionName = (String) jsonObj.get("version");
+		String ownerId = (String) jsonObj.get("ownerID");
 		String format = (String) jsonObj.get("Format");
 		
 		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
@@ -540,9 +560,9 @@ public class Recording {
 			durationMsec = ((Long) jsonObj.get("durationMsec")).intValue();
 			Log.i(TAG, "reading: " + durationMsec);
 		}
-		Recording recording = new Recording(name, date, languages, 
-				speakersIds, androidID, groupId, respeakingId, sampleRate, 
-				(Integer) durationMsec, format);
+		Recording recording = new Recording(name, date, versionName, ownerId, 
+				languages, speakersIds, androidID, groupId, respeakingId,
+				sampleRate, (Integer) durationMsec, format);
 		return recording;
 	}
 
@@ -738,6 +758,16 @@ public class Recording {
 					"Recording date cannot be null.");
 		}
 		this.date = date;
+	}
+	
+	// Sets the versionName(v0x)
+	private void setVersionName(String versionName) {
+		this.versionName = versionName;
+	}
+	
+	// Sets the ownerId(Google account)
+	private void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
 	}
 	
 	// Sets the format

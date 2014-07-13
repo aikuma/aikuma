@@ -79,6 +79,9 @@ public class UpdateUtils {
 					((MainActivity)context).showProgressDialog("Updating...");
 					updateFileStructure();
 		        	updateRecordingsMetadata(versionNum);
+		        	
+		        	saveInSettings("ownerID", defaultAccount);
+		        	saveInSettings("version", "v01");
 		        	((MainActivity)context).runOnUiThread(new Runnable() {
 		        		public void run() {
 		        			((MainActivity)context).dismissProgressDialog();
@@ -88,9 +91,7 @@ public class UpdateUtils {
 				}
 			}.start();
         	
-//        	saveInSettings("ownerID", defaultAccount);
-//        	saveInSettings("version", "v01");
-//        	Settings.setOwnerId(defaultAccount);
+        	AikumaSettings.setOwnerId(defaultAccount);
 			return;
 		}
 	}
@@ -103,7 +104,7 @@ public class UpdateUtils {
 		Map<String, Object> newJSONFields = 
 				new HashMap<String, Object>();
 		newJSONFields.put("ownerID", defaultAccount);
-		newJSONFields.put("version", versionNum);
+		newJSONFields.put("version", versionName);
 		Recording.updateAll(versionNum, newJSONFields);
 	}
 	

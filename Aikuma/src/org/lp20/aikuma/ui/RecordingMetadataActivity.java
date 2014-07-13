@@ -40,6 +40,7 @@ import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -177,7 +178,10 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 						Log.i("duration", "when recording created: " + durationMsec);
 
 						Recording recording = new Recording(
-								uuid, description, date, selectedLanguages,
+								uuid, description, date, 
+								AikumaSettings.getLatestVersion(), 
+								AikumaSettings.getCurrentOwnerId(),
+								selectedLanguages, 
 								speakersIds, androidID, groupId, sourceId,
 								sampleRate, durationMsec, format, numChannels,
 								bitsPerSample, latitude, longitude);
