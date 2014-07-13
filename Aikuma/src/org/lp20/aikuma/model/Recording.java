@@ -169,6 +169,7 @@ public class Recording {
 	private void importWav(UUID wavUUID, String id)
 			throws IOException {
 		File wavFile = new File(getNoSyncRecordingsPath(), wavUUID + ".wav");
+		Log.i(TAG, "importwav: " + this.getFile().getAbsolutePath());
 		FileUtils.moveFile(wavFile, this.getFile());
 	}
 	
@@ -353,6 +354,8 @@ public class Recording {
 		JSONObject encodedRecording = new JSONObject();
 		encodedRecording.put("name", this.name);
 		encodedRecording.put("date", new StandardDateFormat().format(this.date));
+		encodedRecording.put("version", this.versionName);
+		encodedRecording.put("ownerID", this.ownerId);
 		encodedRecording.put("languages", Language.encodeList(languages));
 		JSONArray speakersIdsArray = new JSONArray();
 		for (String id : speakersIds) {
@@ -405,7 +408,7 @@ public class Recording {
 		// Ensure the directory exists
 		File dir = new File(getRecordingsPath(), getGroupId());
 		dir.mkdir();
-
+		Log.i(TAG, "write: " + dir.getAbsolutePath());
 		// Import the wave file into the new recording directory.
 		if(this.isMovie()) {
 			importMov(recordingUUID, getId());
@@ -491,10 +494,11 @@ public class Recording {
 	public static Recording read(String verName, String ownerAccount, 
 			String id) throws IOException {
 		String groupId = getGroupIdFromId(id);
-		
+		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
 		File metadataFile = 
-				new File(FileIO.getOwnerPath(verName, ownerAccount),
+				new File(getRecordingsPath(ownerDir),
 						groupId + "/" + id + "-metadata.json");
+		Log.i(TAG, metadataFile.getAbsolutePath());
 		return read(metadataFile);
 	}
 
@@ -679,7 +683,19 @@ public class Recording {
 		
 		switch(versionNum) {
 		case 0:
-			updateMetadataInDir(FileIO.getAppRootPath(), newJSONFields);
+			File[] firstHashDirs = new File(FileIO.getAppRootPath(), "v01").listFiles();
+			
+			for(File f2 : firstHashDirs) {
+				File[] secondHashDirs = f2.listFiles();
+				for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f3.listFiles();
+					for(File f : ownerIdDirs) {
+						Log.i(TAG, "updateAll: " + f.getPath());
+						
+						updateMetadataInDir(f, newJSONFields);
+					}
+				}
+			}
 			return;
 		}
 	}
@@ -909,7 +925,8 @@ public class Recording {
 	 */
 	public void star() throws IOException {
 		String androidID = Aikuma.getAndroidID();
-		File starFile = new File(FileIO.getAppRootPath(), "/social/" +
+		File starFile = new File(FileIO.getOwnerPath(versionName, ownerId), 
+				"/social/" +
 				getGroupId() + "/" + getId() + "/" + androidID + ".star");
 		starFile.getParentFile().mkdirs();
 		starFile.createNewFile();
@@ -923,7 +940,8 @@ public class Recording {
 	 */
 	public void flag() throws IOException {
 		String androidID = Aikuma.getAndroidID();
-		File flagFile = new File(FileIO.getAppRootPath(), "/social/" +
+		File flagFile = new File(FileIO.getOwnerPath(versionName, ownerId), 
+				"/social/" +
 				getGroupId() + "/" + getId() + "/" + androidID + ".flag");
 		flagFile.getParentFile().mkdirs();
 		flagFile.createNewFile();
@@ -937,8 +955,9 @@ public class Recording {
 	 */
 	public boolean isStarredByThisPhone() {
 		String androidID = Aikuma.getAndroidID();
-		File starFile = new File(FileIO.getAppRootPath(), "/social/" +
-				getGroupId() + "/" + getId() + "/" + androidID + ".star");
+		File starFile = 
+				new File(FileIO.getOwnerPath(versionName, ownerId), "/social/" +
+						getGroupId() + "/" + getId() + "/" + androidID + ".star");
 		return starFile.exists();
 	}
 
@@ -950,7 +969,8 @@ public class Recording {
 	 */
 	public boolean isFlaggedByThisPhone() {
 		String androidID = Aikuma.getAndroidID();
-		File flagFile = new File(FileIO.getAppRootPath(), "/social/" +
+		File flagFile = 
+				new File(FileIO.getOwnerPath(versionName, ownerId), "/social/" +
 				getGroupId() + "/" + getId() + "/" + androidID + ".flag");
 		return flagFile.exists();
 	}
@@ -961,7 +981,8 @@ public class Recording {
 	 * @return	The number of stars this recording has recieved
 	 */
 	public int numStars() {
-		File starDir = new File(FileIO.getAppRootPath(), "/social/" +
+		File starDir = new File(FileIO.getOwnerPath(versionName, ownerId), 
+				"/social/" +
 				getGroupId() + "/" + getId());
 		File[] starFiles = starDir.listFiles(
 				new FilenameFilter() {
@@ -984,7 +1005,8 @@ public class Recording {
 	 * @return	The number of flags this recording has recieved
 	 */
 	public int numFlags() {
-		File socialDir = new File(FileIO.getAppRootPath(), "/social/" +
+		File socialDir = new File(FileIO.getOwnerPath(versionName, ownerId), 
+				"/social/" +
 				getGroupId() + "/" + getId());
 		File[] flagFiles = socialDir.listFiles(
 				new FilenameFilter() {
@@ -1007,7 +1029,8 @@ public class Recording {
 	 * @return	The number of times this recording has been viewed.
 	 */
 	public int numViews() {
-		File socialDir = new File(FileIO.getAppRootPath(), "/views/" +
+		File socialDir = new File(FileIO.getOwnerPath(versionName, ownerId),
+				"/views/" +
 				getGroupId() + "/" + getId());
 		File[] flagFiles = socialDir.listFiles();
 		if (flagFiles == null) {
@@ -1038,8 +1061,7 @@ public class Recording {
 	 */
 	public TempTranscript getTranscript() {
 		// Find all the transcript files
-		File recordingDir = new File(FileIO.getAppRootPath(), "/recordings/" +
-				getGroupId());
+		File recordingDir = new File(getRecordingsPath(), getGroupId());
 		File[] transcriptFiles = recordingDir.listFiles(
 				new FilenameFilter() {
 			public boolean accept(File dir, String filename) {

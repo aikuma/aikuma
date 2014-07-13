@@ -5,6 +5,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.Iterator;
+
+import org.lp20.aikuma.audio.Player.OnCompletionListener;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.model.TempTranscript;
@@ -59,7 +61,9 @@ public class TranscriptPlayer extends MarkedPlayer {
 	@Override
 	public void play() {
 		super.play();
-		updateTranscriptStatus(getCurrentSample());
+		if(transcript != null) {
+			updateTranscriptStatus(getCurrentSample());
+		}
 	}
 
 	// Updates the transcript Ui and prepares the notification marker position.
@@ -102,6 +106,7 @@ public class TranscriptPlayer extends MarkedPlayer {
 		updateTranscriptStatus(sample);
 	}
 
+	
 	/*
 	/**
 	 * Listener to adjust the transcript view when a transcript marker gets reached.

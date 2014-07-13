@@ -163,7 +163,9 @@ public class ListenActivity extends AikumaActivity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		this.player.release();
+		if(this.player != null) {
+			this.player.release();
+		}
 	}
 
 	// Prepares the original recording 
@@ -174,6 +176,7 @@ public class ListenActivity extends AikumaActivity {
 		ownerId = (String) intent.getExtras().get("ownerId");
 		try {
 			recording = Recording.read(versionName, ownerId, id);
+			
 			setUpQuickMenu();
 			List<Recording> original = new ArrayList<Recording>();
 			original.add(recording);
@@ -275,9 +278,14 @@ public class ListenActivity extends AikumaActivity {
 	private void setUpPlayer() {
 		try {
 			if (recording.isOriginal()) {
-				TranscriptPlayer player =
-						new TranscriptPlayer(recording, this);
-				setPlayer(player);
+				if(recording.getTranscript() != null) {
+					TranscriptPlayer player =
+							new TranscriptPlayer(recording, this);
+					setPlayer(player);
+				} else {
+					setPlayer(new SimplePlayer(recording, true));
+				}
+				
 			} else {
 				setPlayer(new InterleavedPlayer(recording));
 				ImageButton respeakingButton =

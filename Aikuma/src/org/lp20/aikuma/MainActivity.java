@@ -103,18 +103,6 @@ public class MainActivity extends ListActivity {
 		
 		// Start gathering location data
 		MainActivity.locationDetector = new LocationDetector(this);
-		
-		
-		SharedPreferences settings = 
-				getSharedPreferences(AikumaSettings.SETTING_NAME, 0);
-		String defaultAccount = settings.getString("ownerID", "");
-		
-		// Update the file structure
-		if(defaultAccount.equals("")) {
-			new UpdateUtils(this).update();
-		} else {
-			AikumaSettings.setOwnerId(defaultAccount);
-		}
 	}
 
 	@Override
@@ -139,8 +127,16 @@ public class MainActivity extends ListActivity {
 		super.onResume();
 		SharedPreferences settings = 
 				getSharedPreferences(AikumaSettings.SETTING_NAME, 0);
+//		settings.edit().clear().commit();
 		String defaultAccount = settings.getString("ownerID", "");
-		if(!defaultAccount.equals("")) {
+		Log.i(TAG, defaultAccount);
+
+		if(defaultAccount.equals("")) {
+			// Update the file structure
+			new UpdateUtils(this).update();
+		} else {
+			AikumaSettings.setOwnerId(defaultAccount);
+			
 			List<Recording> recordings = Recording.readAll();
 
 			// Filter the recordings for originals

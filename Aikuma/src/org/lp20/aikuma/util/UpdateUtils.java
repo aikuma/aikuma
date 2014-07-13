@@ -39,7 +39,8 @@ public class UpdateUtils {
 	// Default Google account input by owner
 	private String defaultAccount;
 	// Current version-name of the application(v0x)
-	private String versionName;
+	private String currentVersionName;
+	private String nextVersionName;
 	
 	public UpdateUtils(Context context) {
 		this.context = context;
@@ -51,10 +52,12 @@ public class UpdateUtils {
 	public void update() {
 		SharedPreferences settings = 
 				context.getSharedPreferences(AikumaSettings.SETTING_NAME, 0);
-		versionName = settings.getString("version", "v00");
-		Integer versionNum = Integer.parseInt(versionName.substring(1));
+		currentVersionName = settings.getString("version", "v00");
+		Integer currentVersionNum = 
+				Integer.parseInt(currentVersionName.substring(1));
+		nextVersionName = String.format("v%02d", currentVersionNum+1);
 		
-		switch(versionNum) {
+		switch(currentVersionNum) {
 		case 0:
 			AccountManager manager = AccountManager.get(context); 
 	        Account[] accounts = manager.getAccountsByType("com.google"); 
@@ -71,25 +74,17 @@ public class UpdateUtils {
 		}
 	}
 	
-	private void updateVersion(final Integer versionNum) {
-		switch(versionNum) {
+	private void updateVersion(final Integer currentVersionNum) {
+		Log.i(TAG, currentVersionNum + ": " + defaultAccount);
+		switch(currentVersionNum) {
 		case 0:
-			new Thread() {
-				public void run() {
-					((MainActivity)context).showProgressDialog("Updating to Aikuma v01...");
-					updateFileStructure();
-		        	updateRecordingsMetadata(versionNum);
-		        	
-		        	saveInSettings("ownerID", defaultAccount);
-		        	saveInSettings("version", "v01");
-		        	((MainActivity)context).runOnUiThread(new Runnable() {
-		        		public void run() {
-		        			((MainActivity)context).dismissProgressDialog();
-		        		}
-		        	});
-		        	
-				}
-			}.start();
+			((MainActivity)context).showProgressDialog("Updating to Aikuma v01...");
+			updateFileStructure();
+        	updateRecordingsMetadata(currentVersionNum);
+        	
+        	saveInSettings("ownerID", defaultAccount);
+        	saveInSettings("version", nextVersionName);
+        	((MainActivity)context).dismissProgressDialog();
         	
         	AikumaSettings.setOwnerId(defaultAccount);
 			return;
@@ -98,14 +93,13 @@ public class UpdateUtils {
 	
 	/**
 	 * Update the metadata of all recordings
-	 * @param versionNum	Current version number of the installed aplication
+	 * @param currentVersionNum	Current version number of the installed application
 	 */
-	private void updateRecordingsMetadata(Integer versionNum) {
-		Map<String, Object> newJSONFields = 
-				new HashMap<String, Object>();
+	private void updateRecordingsMetadata(Integer currentVersionNum) {
+		Map<String, Object> newJSONFields = new HashMap<String, Object>();
 		newJSONFields.put("ownerID", defaultAccount);
-		newJSONFields.put("version", versionName);
-		Recording.updateAll(versionNum, newJSONFields);
+		newJSONFields.put("version", nextVersionName);
+		Recording.updateAll(currentVersionNum, newJSONFields);
 	}
 	
 	/**
@@ -113,7 +107,7 @@ public class UpdateUtils {
 	 */
 	private void updateFileStructure() {
 		File srcDir = FileIO.getAppRootPath();
-		File destDir = FileIO.getOwnerPath(versionName, defaultAccount);
+		File destDir = FileIO.getOwnerPath(nextVersionName, defaultAccount);
 		Log.i(TAG, destDir.getAbsolutePath());
 		
 		File recordingsDir = new File(srcDir, "recordings");

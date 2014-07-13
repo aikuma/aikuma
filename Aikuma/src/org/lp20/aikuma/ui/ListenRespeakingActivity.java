@@ -142,6 +142,9 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		String respeakingId = (String)
 				intent.getExtras().get("respeakingId");
 
+		versionName = (String) intent.getExtras().get("versionName");
+		ownerId = (String) intent.getExtras().get("ownerId");
+		
 		setUpOriginal(originalId);
 		setUpRespeaking(respeakingId);
 	}

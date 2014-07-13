@@ -176,7 +176,6 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 						Date date = new Date();
 						String androidID = Aikuma.getAndroidID();
 						Log.i("duration", "when recording created: " + durationMsec);
-
 						Recording recording = new Recording(
 								uuid, description, date, 
 								AikumaSettings.getLatestVersion(), 

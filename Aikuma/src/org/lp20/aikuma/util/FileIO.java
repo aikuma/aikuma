@@ -96,11 +96,11 @@ public final class FileIO {
 	 */
 	public static File getOwnerPath(String versionName, String ownerId) {
 		String ownerIdHash = IdUtils.getMD5Hash(ownerId);
-		String ownerDirStr = (FileIO.getAppRootPath().getAbsolutePath() + "/" + 
-				versionName + "/" + 
+		String ownerDirStr = (APP_ROOT_PATH + versionName + "/" + 
 				ownerIdHash.substring(0, 2) + "/" + 
 				ownerIdHash.substring(2, 4) + "/" + ownerId);	
-		File path = new File(ownerDirStr);
+		File path = new File(Environment.getExternalStorageDirectory(), 
+				ownerDirStr);
 		path.mkdirs();
 		return path;
 	}

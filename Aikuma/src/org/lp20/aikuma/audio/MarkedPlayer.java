@@ -136,8 +136,10 @@ public class MarkedPlayer extends SimplePlayer {
 		super.setOnCompletionListener(
 				new Player.OnCompletionListener() {
 					public void onCompletion(Player _p) {
-						MarkedPlayer.this.onMarkerReachedListener.
-								onMarkerReached(MarkedPlayer.this);
+						if(MarkedPlayer.this.onMarkerReachedListener != null) {
+							MarkedPlayer.this.onMarkerReachedListener.
+							onMarkerReached(MarkedPlayer.this);
+						}
 						listener.onCompletion(MarkedPlayer.this);
 					}
 				});
