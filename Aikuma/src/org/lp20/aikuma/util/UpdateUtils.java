@@ -115,10 +115,15 @@ public class UpdateUtils {
 		File viewDir = new File(srcDir, "views");
 		
 		try {
-			FileUtils.moveDirectoryToDirectory(recordingsDir, destDir, true);
-			FileUtils.moveDirectoryToDirectory(socialDir, destDir, true);
-			FileUtils.moveDirectoryToDirectory(viewDir, destDir, true);
-			
+			if(recordingsDir.exists()) {
+				FileUtils.moveDirectoryToDirectory(recordingsDir, destDir, true);
+			}
+			if(socialDir.exists()) {
+				FileUtils.moveDirectoryToDirectory(socialDir, destDir, true);
+			}
+			if(viewDir.exists()) {
+				FileUtils.moveDirectoryToDirectory(viewDir, destDir, true);
+			}
 			File newRecordingsDir = new File(destDir, "recordings");
 			newRecordingsDir.renameTo(new File(destDir, "items"));
 		} catch (IOException e) {
