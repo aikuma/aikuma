@@ -79,28 +79,28 @@ public class SyncUtil {
 						Client client = new Client();
 						client.setClientBaseDir(
 								FileIO.getAppRootPath().toString());
-						Log.i("sync", "beginning sync run");
+						Log.i(TAG, "beginning sync run");
 						if (!client.login(serverCredentials.getIPAddress(),
 								serverCredentials.getUsername(),
 								serverCredentials.getPassword())) {
 							unsetSyncFlag("Login failed");
-							Log.i("sync", "login failed: " +
+							Log.i(TAG, "login failed: " +
 									serverCredentials.getIPAddress());
 						} else if (!client.sync()) {
-							Log.i("sync", "sync failed.");
+							Log.i(TAG, "sync failed.");
 							unsetSyncFlag("Transfer failed");
 						} else if (!client.logout()) {
-							Log.i("sync", "Logout failed.");
+							Log.i(TAG, "Logout failed.");
 							unsetSyncFlag("Logout failed");
 						} else {
-							Log.i("sync", "sync complete.");
+							Log.i(TAG, "sync complete.");
 							unsetSyncFlag("Sync successful");
 						}
-						Log.i("sync", "end of conditional block");
+						Log.i(TAG, "end of conditional block");
 						waitMins = 1;
-						Log.i("sync", "sync complete");
+						Log.i(TAG, "sync complete");
 					} else {
-						Log.i("sync", "not syncing");
+						Log.i(TAG, "not syncing");
 					}
 				} catch (IOException e) {
 					Log.i("npe", "ioexception on serverCredentials.read()");
@@ -161,4 +161,6 @@ public class SyncUtil {
 	private static Thread syncThread;
 	private static Activity syncSettingsActivity;
 	private static boolean syncing;
+	
+	private static final String TAG = "SyncUtil";
 }

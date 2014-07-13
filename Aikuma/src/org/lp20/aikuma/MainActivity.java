@@ -4,7 +4,6 @@
 */
 package org.lp20.aikuma;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -15,19 +14,11 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MenuInflater;
 import android.view.View;
-import android.view.View.OnKeyListener;
-import android.view.inputmethod.InputMethodManager;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -48,37 +39,33 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
 import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.MenuBehaviour;
-import org.lp20.aikuma.ui.RecordActivity;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;
 import org.lp20.aikuma.ui.RecordingMetadataActivity;
-import org.lp20.aikuma.ui.SettingsActivity;
 import org.lp20.aikuma.ui.sensors.LocationDetector;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.SyncUtil;
+import org.lp20.aikuma.util.UpdateUtils;
 
 // For audio imports
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Toast;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.UUID;
@@ -119,6 +106,19 @@ public class MainActivity extends ListActivity {
 		
 		// Start gathering location data
 		MainActivity.locationDetector = new LocationDetector(this);
+		
+		
+		SharedPreferences settings = 
+				getSharedPreferences(AikumaSettings.SETTING_NAME, 0);
+		String defaultAccount = settings.getString("ownerID", "");
+		
+		// Update the file structure
+		if(defaultAccount.equals("")) {
+//			new UpdateUtils(this).update();
+			ProgressDialog.show(this, "hi", "hiasdf");
+		} else {
+			AikumaSettings.setOwnerId(defaultAccount);
+		}
 	}
 
 	@Override
@@ -179,6 +179,23 @@ public class MainActivity extends ListActivity {
 	}
 	
 	/**
+     * Display the progress dialog to the user
+     * 
+     * @param message	String to display
+     */
+    public void showProgressDialog(String message) {
+        progressDialog =
+            ProgressDialog.show(this, message, "");
+    }
+	
+    /**
+     * Dismiss the progress dialog
+     */
+    public void dismissProgressDialog() {
+    	progressDialog.dismiss();
+    }
+    
+	/**
 	 * Setup the search-menu-item interface (called by MenuBehavior)
 	 * @param menu	menu object
 	 */
@@ -228,7 +245,8 @@ public class MainActivity extends ListActivity {
 	SearchView searchView;
 	
 	MenuBehaviour menuBehaviour;
-	private RecordingArrayAdapter adapter;
+	private RecordingArrayAdapter adapter;	
+	private ProgressDialog progressDialog;
 	
 	/////////////////////////////////////////////////////
 	////                                   			/////
@@ -260,16 +278,6 @@ public class MainActivity extends ListActivity {
      * Start an activity which allows a user to pick up an account
      */
     private void pickUserAccount() {
-    	AccountManager manager = AccountManager.get(this); 
-        Account[] accounts = manager.getAccountsByType("com.google"); 
-
-        for (Account account : accounts) {
-          // TODO: Check possibleEmail against an email regex or treat
-          // account.name as an email address only for certain account.type values.
-        	Log.i("login", account.name);
-        }
-        
-        
         String[] accountTypes = new String[]{"com.google"};
         Intent intent = AccountPicker.newChooseAccountIntent(null, null,
                 accountTypes, false, null, null, null, null);

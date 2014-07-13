@@ -140,7 +140,7 @@ public final class FileIO {
 		String jsonStr = stringWriter.toString();
 		write(path, jsonStr);
 	}
-
+	
 	/**
 	 * Takes a file path (relative to the aikuma directory) and
 	 * returns a string containing the file's contents.

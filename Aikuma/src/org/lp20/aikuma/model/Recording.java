@@ -4,6 +4,7 @@
 */
 package org.lp20.aikuma.model;
 
+import android.os.Environment;
 import android.util.Log;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.util.FileIO;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.io.FilenameUtils;
@@ -34,6 +36,9 @@ import static junit.framework.Assert.assertTrue;
  */
 public class Recording {
 
+	// String tag for debugging
+	private static final String TAG = "Recording";
+	
 	/**
 	 * The constructor used when first creating a Recording.
 	 *
@@ -65,6 +70,7 @@ public class Recording {
 		this.recordingUUID = recordingUUID;
 		setName(name);
 		setDate(date);
+		setFormat(format);
 		setLanguages(languages);
 		setSpeakersIds(speakersIds);
 		setAndroidID(androidID);
@@ -72,7 +78,6 @@ public class Recording {
 		setDurationMsec(durationMsec);
 		setGroupId(groupId);
 		this.sourceId = sourceId;
-		this.format = format;
 		this.numChannels = numChannels;
 		this.bitsPerSample = bitsPerSample;
 		this.latitude = latitude;
@@ -106,10 +111,10 @@ public class Recording {
 	 * @param	sampleRate	The sample rate of the recording.
 	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 */
-	public Recording(String name, Date date, String format,
+	public Recording(String name, Date date,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String respeakingId,
-			long sampleRate, int durationMsec) {
+			long sampleRate, int durationMsec, String format) {
 		setName(name);
 		setDate(date);
 		setFormat(format);
@@ -525,14 +530,14 @@ public class Recording {
 		int durationMsec;
 		if (jsonObj.get("durationMsec") == null) {
 			durationMsec = -1;
-			Log.i("duration", "reading: null");
+			Log.i(TAG, "reading: null");
 		} else {
 			durationMsec = ((Long) jsonObj.get("durationMsec")).intValue();
-			Log.i("duration", "reading: " + durationMsec);
+			Log.i(TAG, "reading: " + durationMsec);
 		}
-		Recording recording = new Recording(name, date, format, languages, 
+		Recording recording = new Recording(name, date, languages, 
 				speakersIds, androidID, groupId, respeakingId, sampleRate, 
-				(Integer) durationMsec);
+				(Integer) durationMsec, format);
 		return recording;
 	}
 
@@ -613,6 +618,46 @@ public class Recording {
 		return recordings;
 	}
 
+	/**
+	 * Updates all recording metadata files
+	 * 
+	 * @param newJSONFields		Map structure of new field-pairs(key:value)
+	 */
+	public static void updateAll(Map<String, Object> newJSONFields) {
+		
+		// Constructs a list of directories in the recordings directory.
+		File[] recordingPathFiles = getRecordingsPath().listFiles();
+
+		if (recordingPathFiles == null) {
+			return;
+		}
+
+		for (File f : recordingPathFiles) {
+			if (f.isDirectory()) {
+				// For each of those subdirectories, creates a list of files
+				// within that end in .json
+				File[] groupDirFiles = f.listFiles(new FilenameFilter() {
+					public boolean accept(File dir, String filename) {
+						return filename.endsWith("-metadata.json");
+					}
+				});
+
+				// Iterate over those recording metadata files and add the
+				// recordings they refer to to the recordings list
+				for (File jsonFile : groupDirFiles) {
+					try {
+						JSONObject newJSONObject = 
+								FileIO.readJSONObject(jsonFile);
+						newJSONObject.putAll(newJSONFields);
+						FileIO.writeJSONObject(jsonFile, newJSONObject);
+					} catch (IOException e) {
+						Log.e(TAG, "Metadata update failed: " + e.toString());
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Compares the given object with the Recording, and returns true if the
 	 * Recording's name, date, languages, androidID, groupId and
@@ -916,8 +961,8 @@ public class Recording {
 				new FilenameFilter() {
 			public boolean accept(File dir, String filename) {
 				if (filename.split("-")[2].equals("transcript")) {
-					Log.i("transcript2", "filename: " + filename);
-					Log.i("transcript2", "split[2]: " +
+					Log.i(TAG, "filename: " + filename);
+					Log.i(TAG, "split[2]: " +
 							filename.split("-")[2]);
 					return true;
 				}
@@ -927,7 +972,7 @@ public class Recording {
 
 		// Take the first one
 		for (File transcriptFile : transcriptFiles) {
-			Log.i("transcript2", "transcriptFile: " + transcriptFile);
+			Log.i(TAG, "transcriptFile: " + transcriptFile);
 			try {
 				return new TempTranscript(this, transcriptFile);
 			} catch (IOException e) {
@@ -939,8 +984,7 @@ public class Recording {
 		// return new TempTranscript();
 		return null;
 	}
-
-
+	
 	/**
 	 * The recording's name.
 	 */
@@ -1005,4 +1049,5 @@ public class Recording {
 	//Location data
 	private Double latitude;
 	private Double longitude;
+
 }
