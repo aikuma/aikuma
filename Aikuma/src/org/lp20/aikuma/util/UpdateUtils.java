@@ -42,6 +42,10 @@ public class UpdateUtils {
 	private String currentVersionName;
 	private String nextVersionName;
 	
+	/**
+	 * Constructor for updateUtil
+	 * @param context	Activity class where update will be performed
+	 */
 	public UpdateUtils(Context context) {
 		this.context = context;
 	}

@@ -676,6 +676,7 @@ public class Recording {
 	/**
 	 * Updates all recording metadata files of versionNum
 	 * 
+	 * @param versionNum		obsolete file-format's version
 	 * @param newJSONFields		Map structure of new field-pairs(key:value)
 	 */
 	public static void updateAll(Integer versionNum, 
@@ -872,6 +873,7 @@ public class Recording {
 	/**
 	 * Get the applications recordings directory
 	 *
+	 * @param	ownerDir	A File representing the path of owner's directory
 	 * @return	A File representing the path of the recordings directory
 	 */
 	public static File getRecordingsPath(File ownerDir) {

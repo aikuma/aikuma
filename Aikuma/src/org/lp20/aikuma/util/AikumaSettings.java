@@ -1,8 +1,19 @@
+/*
+	Copyright (C) 2013, The Aikuma Project
+	AUTHORS: Sangyeop Lee
+*/
 package org.lp20.aikuma.util;
 
+/**
+ * Class storing settings information
+ * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+ *
+ */
 public class AikumaSettings {
 
-	// Name for preference 'setting'
+	/**
+	 * Name of the persistent settings of the application
+	 */
 	public static final String SETTING_NAME = "settings";
 	
 	// Current default owner_id(== default google account)

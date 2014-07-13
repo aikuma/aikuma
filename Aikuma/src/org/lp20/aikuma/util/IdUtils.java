@@ -53,6 +53,12 @@ public class IdUtils {
 		return sample.toString();
 	}
 	
+	/**
+	 * Return the MD5 hash value for the given String
+	 * 
+	 * @param inputText	the given String
+	 * @return	String of MD5 hash value
+	 */
 	public static String getMD5Hash(String inputText) {
 		MessageDigest md = null;
 		try {

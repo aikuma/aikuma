@@ -39,6 +39,8 @@ public class Transcript {
 	 * The constructor used when first creating a Transcript. The transcript
 	 * is not created in the file system until the save() method is called.
 	 * 
+	 * @param versionName	The version of the transcription/recording format(v0x)
+	 * @param ownerId		The owner ID of the transcription
 	 * @param groupId The group ID of the original recording that is going
 	 * 	to be transcribed by this Transcript object.
 	 * @param transcriberId The person ID of the transcriber.
@@ -86,6 +88,9 @@ public class Transcript {
 	
 	/**
 	 * The constructor used when reading an existing transcript.
+	 * 
+	 * @param versionName	The version of the transcription/recording format(v0x)
+	 * @param ownerId		The owner ID of the transcription
 	 * @param id Transcript file ID.
 	 * @throws RuntimeException if the file can't be made.
 	 */
@@ -180,6 +185,9 @@ public class Transcript {
 	
 	/**
 	 * Get transcript as a File.
+	 * 
+	 * @param versionName	The version of the transcription/recording format(v0x)
+	 * @param ownerId		The owner ID of the transcription
 	 * @param id Transcript ID
 	 * @return A File containing the transcript.
 	 */
