@@ -271,9 +271,14 @@ public class ListenActivity extends AikumaActivity {
 	private void setUpPlayer() {
 		try {
 			if (recording.isOriginal()) {
-				TranscriptPlayer player =
-						new TranscriptPlayer(recording, this);
-				setPlayer(player);
+				if(recording.getTranscript() != null) {
+					TranscriptPlayer player =
+							new TranscriptPlayer(recording, this);
+					setPlayer(player);
+				} else {
+					setPlayer(new SimplePlayer(recording, true));
+				}
+				
 			} else {
 				setPlayer(new InterleavedPlayer(recording));
 				ImageButton respeakingButton =
