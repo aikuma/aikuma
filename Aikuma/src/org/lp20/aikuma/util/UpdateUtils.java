@@ -76,7 +76,7 @@ public class UpdateUtils {
 		case 0:
 			new Thread() {
 				public void run() {
-					((MainActivity)context).showProgressDialog("Updating...");
+					((MainActivity)context).showProgressDialog("Updating to Aikuma v01...");
 					updateFileStructure();
 		        	updateRecordingsMetadata(versionNum);
 		        	
@@ -124,6 +124,9 @@ public class UpdateUtils {
 			FileUtils.moveDirectoryToDirectory(recordingsDir, destDir, true);
 			FileUtils.moveDirectoryToDirectory(socialDir, destDir, true);
 			FileUtils.moveDirectoryToDirectory(viewDir, destDir, true);
+			
+			File newRecordingsDir = new File(destDir, "recordings");
+			newRecordingsDir.renameTo(new File(destDir, "items"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			Log.e(TAG, "File-moving failed:" + e.toString());

@@ -859,7 +859,7 @@ public class Recording {
 	 * @return	A File representing the path of the recordings directory
 	 */
 	public static File getRecordingsPath(File ownerDir) {
-		File path = new File(ownerDir, "recordings");
+		File path = new File(ownerDir, "items");
 		path.mkdirs();
 		return path;
 	}
@@ -871,7 +871,7 @@ public class Recording {
 	 */
 	public File getRecordingsPath() {
 		File path = new File(
-				FileIO.getOwnerPath(versionName, ownerId), "recordings");
+				FileIO.getOwnerPath(versionName, ownerId), "items");
 		path.mkdirs();
 		return path;
 	}

@@ -95,9 +95,6 @@ public class MainActivity extends ListActivity {
 		menuBehaviour = new MenuBehaviour(this);
 		SyncUtil.startSyncLoop();
 		
-//		List<Recording> recordings = Recording.readAll();
-//		adapter = new RecordingArrayAdapter(this, recordings);
-//		setListAdapter(adapter);
 		Aikuma.loadLanguages();
 
 		ActionBar actionBar = getActionBar();
@@ -115,7 +112,6 @@ public class MainActivity extends ListActivity {
 		// Update the file structure
 		if(defaultAccount.equals("")) {
 			new UpdateUtils(this).update();
-			ProgressDialog.show(this, "hi", "hiasdf");
 		} else {
 			AikumaSettings.setOwnerId(defaultAccount);
 		}
@@ -141,26 +137,31 @@ public class MainActivity extends ListActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		List<Recording> recordings = Recording.readAll();
+		SharedPreferences settings = 
+				getSharedPreferences(AikumaSettings.SETTING_NAME, 0);
+		String defaultAccount = settings.getString("ownerID", "");
+		if(!defaultAccount.equals("")) {
+			List<Recording> recordings = Recording.readAll();
 
-		// Filter the recordings for originals
-		List<Recording> originals = new ArrayList<Recording>();
-		for (Recording recording : recordings) {
-			if (recording.isOriginal()) {
-				originals.add(recording);
+			// Filter the recordings for originals
+			List<Recording> originals = new ArrayList<Recording>();
+			for (Recording recording : recordings) {
+				if (recording.isOriginal()) {
+					originals.add(recording);
+				}
 			}
-		}
 
-		adapter = new RecordingArrayAdapter(this, originals);
-		if(searchView != null) {
-			adapter.getFilter().filter(searchView.getQuery());
+			adapter = new RecordingArrayAdapter(this, originals);
+			if(searchView != null) {
+				adapter.getFilter().filter(searchView.getQuery());
+			}
+			setListAdapter(adapter);
+			if (listViewState != null) {
+				getListView().onRestoreInstanceState(listViewState);
+			}
+			
+			MainActivity.locationDetector.start();
 		}
-		setListAdapter(adapter);
-		if (listViewState != null) {
-			getListView().onRestoreInstanceState(listViewState);
-		}
-		
-		MainActivity.locationDetector.start();
 	}
 	
 	@Override
@@ -187,7 +188,7 @@ public class MainActivity extends ListActivity {
      */
     public void showProgressDialog(String message) {
         progressDialog =
-            ProgressDialog.show(this, message, "");
+            ProgressDialog.show(this, "Update", message);
     }
 	
     /**
