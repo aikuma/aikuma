@@ -104,7 +104,7 @@ public class UpdateUtils {
 				new HashMap<String, Object>();
 		newJSONFields.put("ownerID", defaultAccount);
 		newJSONFields.put("version", versionNum);
-		Recording.updateAll(newJSONFields);
+		Recording.updateAll(versionNum, newJSONFields);
 	}
 	
 	/**
@@ -112,16 +112,9 @@ public class UpdateUtils {
 	 */
 	private void updateFileStructure() {
 		File srcDir = FileIO.getAppRootPath();
-		String accountHash = IdUtils.getMD5Hash(defaultAccount);
-		Log.i("MainActivity", accountHash);
-		String destDirStr = 
-				(srcDir.getAbsolutePath() + "/" + 
-				AikumaSettings.getLatestVersion() + "/" + 
-				accountHash.substring(0, 2) + "/" + 
-				accountHash.substring(2, 4) + "/" + defaultAccount);
-		Log.i(TAG, destDirStr);
-		File destDir = new File(destDirStr);	
-				
+		File destDir = FileIO.getOwnerPath(versionName, defaultAccount);
+		Log.i(TAG, destDir.getAbsolutePath());
+		
 		File recordingsDir = new File(srcDir, "recordings");
 		File socialDir = new File(srcDir, "social");
 		File viewDir = new File(srcDir, "views");
@@ -132,7 +125,7 @@ public class UpdateUtils {
 			FileUtils.moveDirectoryToDirectory(viewDir, destDir, true);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Log.e(TAG, "File-moving failed");
+			Log.e(TAG, "File-moving failed:" + e.toString());
 		}
 	}
 	

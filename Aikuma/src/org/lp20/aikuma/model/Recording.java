@@ -464,14 +464,19 @@ public class Recording {
 	/**
 	 * Read a recording corresponding to the given filename prefix.
 	 *
-	 * @param	id	The recording's ID
+	 * @param	verName			The recording's versionName
+	 * @param	ownerAccount	The recording's ownerID
+	 * @param	id				The recording's ID
 	 * @return	A Recording object corresponding to the json file.
 	 * @throws	IOException	If the recording metadata cannot be read.
 	 */
-	public static Recording read(String id) throws IOException {
+	public static Recording read(String verName, String ownerAccount, 
+			String id) throws IOException {
 		String groupId = getGroupIdFromId(id);
-		File metadataFile = new File(getRecordingsPath(), groupId + "/"
-				+ id + "-metadata.json");
+		
+		File metadataFile = 
+				new File(FileIO.getOwnerPath(verName, ownerAccount),
+						groupId + "/" + id + "-metadata.json");
 		return read(metadataFile);
 	}
 
@@ -584,13 +589,41 @@ public class Recording {
 
 		List<Recording> recordings = new ArrayList<Recording>();
 
-		// Constructs a list of directories in the recordings directory.
-		File[] recordingPathFiles = getRecordingsPath().listFiles();
+		// Get a list of version directories
+		File[] versionDirs = 
+				FileIO.getAppRootPath().listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String filename) {
+				return filename.startsWith("v");
+			}	
+		});
 
-		if (recordingPathFiles == null) {
-			return recordings;
+		for(File f1 : versionDirs) {
+			File[] firstHashDirs = f1.listFiles();
+			for(File f2 : firstHashDirs) {
+				File[] secondHashDirs = f2.listFiles();
+				for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f3.listFiles();
+					for(File f : ownerIdDirs) {
+						Log.i(TAG, "readAll: " + f.getPath());
+						
+						addRecordingsInDir(recordings, f);
+					}
+				}
+			}
 		}
 
+		return recordings;
+	}
+
+	private static void addRecordingsInDir(List<Recording> recordings, File dir) {
+		// Constructs a list of directories in the recordings directory.
+		File[] recordingPathFiles = getRecordingsPath(dir).listFiles();
+		
+		if (recordingPathFiles == null) {
+			return;
+		}
+			
 		for (File f : recordingPathFiles) {
 			if (f.isDirectory()) {
 				// For each of those subdirectories, creates a list of files
@@ -614,24 +647,32 @@ public class Recording {
 				}
 			}
 		}
-
-		return recordings;
 	}
-
+	
 	/**
-	 * Updates all recording metadata files
+	 * Updates all recording metadata files of versionNum
 	 * 
 	 * @param newJSONFields		Map structure of new field-pairs(key:value)
 	 */
-	public static void updateAll(Map<String, Object> newJSONFields) {
+	public static void updateAll(Integer versionNum, 
+			Map<String, Object> newJSONFields) {
 		
+		switch(versionNum) {
+		case 0:
+			updateMetadataInDir(FileIO.getAppRootPath(), newJSONFields);
+			return;
+		}
+	}
+	
+	private static void updateMetadataInDir(File dir,
+			Map<String, Object> newJSONFields) {
 		// Constructs a list of directories in the recordings directory.
-		File[] recordingPathFiles = getRecordingsPath().listFiles();
-
+		File[] recordingPathFiles = getRecordingsPath(dir).listFiles();
+		
 		if (recordingPathFiles == null) {
 			return;
 		}
-
+		
 		for (File f : recordingPathFiles) {
 			if (f.isDirectory()) {
 				// For each of those subdirectories, creates a list of files
@@ -787,12 +828,19 @@ public class Recording {
 	 *
 	 * @return	A File representing the path of the recordings directory
 	 */
-	public static File getRecordingsPath() {
-		File path = new File(FileIO.getAppRootPath(), "recordings");
+	public static File getRecordingsPath(File ownerDir) {
+		File path = new File(ownerDir, "recordings");
 		path.mkdirs();
 		return path;
 	}
 
+	private File getRecordingsPath() {
+		File path = new File(
+				FileIO.getOwnerPath(versionName, ownerId), "recordings");
+		path.mkdirs();
+		return path;
+	}
+	
 	/**
 	 * Get the applications recording directory that isn't synced.
 	 *
