@@ -108,9 +108,6 @@ public class MainActivity extends ListActivity {
 		menuBehaviour = new MenuBehaviour(this);
 		SyncUtil.startSyncLoop();
 		
-//		List<Recording> recordings = Recording.readAll();
-//		adapter = new RecordingArrayAdapter(this, recordings);
-//		setListAdapter(adapter);
 		Aikuma.loadLanguages();
 
 		ActionBar actionBar = getActionBar();
@@ -183,19 +180,12 @@ public class MainActivity extends ListActivity {
 	 * @param menu	menu object
 	 */
 	public void setUpSearchInterface(Menu menu) {
-//		SearchManager searchManager = 
-//				(SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		
 		final MenuItem searchMenuItem = menu.findItem(R.id.search);
 		searchView = (SearchView) searchMenuItem.getActionView();
-//		if (null != searchView )
-//        {
-//            searchView.setSearchableInfo(searchManager.
-//            		getSearchableInfo(getComponentName()));
-//            searchView.setIconifiedByDefault(false);   
-//        }
+		// Touch event outside the searchview closes the searchview
 		searchView.setOnQueryTextFocusChangeListener(
-				new View.OnFocusChangeListener() {
-			
+				new View.OnFocusChangeListener() {	
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
 				// TODO Auto-generated method stub
@@ -205,9 +195,10 @@ public class MainActivity extends ListActivity {
 	            }
 			}
 		});
+		
+		// Execute search
 		searchView.setOnQueryTextListener(
 				new SearchView.OnQueryTextListener() {
-
 			@Override
 			public boolean onQueryTextSubmit(String query) {
 				// TODO Auto-generated method stub

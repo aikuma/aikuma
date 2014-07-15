@@ -180,15 +180,17 @@ public class MarkedPlayer extends SimplePlayer {
 					// The player is being released so this thread should end.
 					break;
 				}
-				/*
-				Log.i("transcript", "notification marker position msec: " +
+				/* For later debugging 
+				 * (This is commented out because of too many logs)
+				Log.i(TAG, "notification marker position msec: " +
 						getNotificationMarkerPositionMsec() +
 						"\ngetCurentMsec(): " + getCurrentMsec());
-				*/
-//				Log.i(TAG, "notification marker position sample: " +
-//						msecToSample(getNotificationMarkerPositionMsec()) +
-//						"\ngetCurentMsec() as sample: " +
-//						msecToSample(getCurrentMsec()));
+				
+				Log.i(TAG, "notification marker position sample: " +
+						msecToSample(getNotificationMarkerPositionMsec()) +
+						"\ngetCurentMsec() as sample: " +
+						msecToSample(getCurrentMsec()));
+				 */
 				if (notificationMarkerPosition >= 0) {
 					if (getCurrentMsec() >=
 							getNotificationMarkerPositionMsec()) {

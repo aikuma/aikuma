@@ -146,12 +146,6 @@ public class ListenActivity extends AikumaActivity {
 		};
 		this.proximityDetector.start();
 		
-//		if(recording.isOriginal()) {
-//			List<Recording> respeakings = recording.getRespeakings();
-//			ArrayAdapter adapter = new RecordingArrayAdapter(this, respeakings);
-//			setListAdapter(adapter);
-//		}
-		
 	}
 	
 	@Override
@@ -224,7 +218,6 @@ public class ListenActivity extends AikumaActivity {
 	// Creates the quickMenu for the original recording 
 	//(quickMenu: star/flag/share/archive)
 	private void setUpQuickMenu() {
-		//
 		quickMenu = new QuickActionMenu(this);
 		
 		QuickActionItem starAct = new QuickActionItem("star", R.drawable.star);
@@ -271,6 +264,8 @@ public class ListenActivity extends AikumaActivity {
 	private void setUpPlayer() {
 		try {
 			if (recording.isOriginal()) {
+				// If there is a transcript for the recording
+				// TranscriptPlayer is loaded
 				if(recording.getTranscript() != null) {
 					TranscriptPlayer player =
 							new TranscriptPlayer(recording, this);
@@ -293,72 +288,6 @@ public class ListenActivity extends AikumaActivity {
 			ListenActivity.this.finish();
 		}
 	}
-
-//	// Prepares the images for the respeakings.
-//	private void setUpRespeakingImages() {
-//		List<Recording> respeakings;
-//		if (recording.isOriginal()) {
-//			respeakings = recording.getRespeakings();
-//		} else {
-//			try {
-//				respeakings =
-//						recording.getOriginal().getRespeakings();
-//			} catch (IOException e) {
-//				//If the original recording can't be loaded, then we can't
-//				//display any other respeaking images, so we should just return
-//				//now.
-//				return;
-//			}
-//		}
-////		LinearLayout respeakingImages = (LinearLayout)
-////				findViewById(R.id.RespeakingImages);
-//		for (final Recording respeaking : respeakings) {
-//			LinearLayout respeakingImageContainer = new LinearLayout(this);
-//			respeakingImageContainer.setOrientation(LinearLayout.VERTICAL);
-//			ImageView respeakingImage = new ImageView(this);
-//			respeakingImage.setAdjustViewBounds(true);
-//			respeakingImage.setMaxHeight(60);
-//			respeakingImage.setMaxWidth(60);
-//			respeakingImage.setPadding(5,5,5,5);
-//			if (respeaking.equals(recording)) {
-//				respeakingImage.setBackgroundColor(0xFFCC0000);
-//			}
-//			respeakingImage.setOnClickListener(new View.OnClickListener() {
-//				public void onClick(View _) {
-//					Intent intent = new Intent(ListenActivity.this,
-//							ListenActivity.class);
-//					intent.putExtra("id",
-//							respeaking.getId().toString());
-//					startActivity(intent);
-//					ListenActivity.this.finish();
-//				}
-//			});
-//			try {
-//				if (respeaking.getSpeakersIds().size() > 0) {
-//					respeakingImage.setImageBitmap(
-//							Speaker.getSmallImage(
-//							respeaking.getSpeakersIds().get(0)));
-//				} else {
-//					continue;
-//				}
-//			} catch (IOException e) {
-//				// Not much can be done if the image can't be loaded.
-//			}
-//			respeakingImageContainer.addView(respeakingImage);
-//			TextView respeakingLang = new TextView(this);
-//			respeakingLang.setText(respeaking.getFirstLangCode());
-//			respeakingLang.setGravity(Gravity.CENTER_HORIZONTAL);
-//			/*
-//			List<Language> langs = respeaking.getLanguages();
-//			if (langs.size() > 0) {
-//				respeakingLang.setText(respeaking.getLanguages().get(0).getCode());
-//				respeakingLang.setGravity(Gravity.CENTER_HORIZONTAL);
-//			}
-//			*/
-//			respeakingImageContainer.addView(respeakingLang);
-////			respeakingImages.addView(respeakingImageContainer);
-//		}
-//	}
 
 	private void setPlayer(SimplePlayer player) {
 		this.player = player;
@@ -396,23 +325,6 @@ public class ListenActivity extends AikumaActivity {
 		this.finish();
 	}
 
-	/*
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id){
-		Recording respeaking = (Recording) getListAdapter().getItem(position);
-		Intent intent = new Intent(this, ListenRespeakingActivity.class);
-		intent.putExtra("originalId", recording.getId());
-		intent.putExtra("respeakingId", respeaking.getId());
-		startActivity(intent);
-		
-//		Intent intent = new Intent(ListenActivity.this,
-//				ListenActivity.class);
-//		intent.putExtra("id",
-//				respeaking.getId().toString());
-//		startActivity(intent);
-//		ListenActivity.this.finish();
-	}*/
-	
 	/**
 	 * Change to the thumb respeaking activity
 	 *

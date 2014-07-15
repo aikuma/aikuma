@@ -86,15 +86,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				(LinearLayout) inflater.inflate(LIST_ITEM_LAYOUT, parent, false);
 		Recording recording = getItem(position);
 
-		/*
-		ImageView recordingTypeView = (ImageView) recordingView.findViewById(
-				R.id.recordingType);
-		if (!recording.isOriginal()) {
-			// Set it to be a two way arrow icon to indicate respeaking.
-			recordingTypeView.setImageResource(R.drawable.exchange);
-		}
-		*/
-
+		// Set the view to have recording name, date, duration, speakerImage
 		TextView recordingNameView = 
 				(TextView) recordingView.findViewById(R.id.recordingName);
 		TextView recordingDateDurationView = 
@@ -116,7 +108,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				duration.toString() + "s)");
 		}
 		
-		//
+		// Set the speakers' names
 		List<String> speakers = recording.getSpeakersIds();
 		StringBuilder sb = new StringBuilder();
 		for(String speakerId : speakers) {
@@ -134,7 +126,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				recordingView.findViewById(R.id.speakerNames);
 		speakerNameView.setText(sb.substring(0, sb.length()-2));
 
-		// Add the comment or movie icon
+		// Add the comment(two way arrow icon) or movie icon
 		LinearLayout icons = (LinearLayout)
 				recordingView.findViewById(R.id.recordingIcons);
 		
