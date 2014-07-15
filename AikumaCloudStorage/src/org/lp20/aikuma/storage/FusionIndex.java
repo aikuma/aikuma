@@ -1,5 +1,6 @@
 package org.lp20.aikuma.storage;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -133,9 +134,13 @@ public class FusionIndex implements Index {
         String sql = String.format("SELECT ROWID FROM %s WHERE identifier = '%s';", tableId, forIdentifier);
         Object tmp = doGet(forIdentifier, sql);
         //TODO fix the ugly mess below
-        if (tmp != null)
-        return (String) ((List) ((List) ((Map) tmp).get("rows")).get(0)).get(0);
-        else return null;
+        if (tmp != null) {
+        	JSONArray arr = (JSONArray) ((JSONObject) tmp).get("rows");
+        	if (arr != null && arr.size() > 0) {
+        		return (String) ((JSONArray) arr.get(0)).get(0);
+        	}
+        }
+        return null;
     }
 
     private Object doGet(String forIdentifier, String sql) {
@@ -212,13 +217,13 @@ public class FusionIndex implements Index {
      * @see org.lp20.aikuma.storage.Index#index(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List)
      */
 	@Override
-	public void index(String identifier, Map<String,String> metadata) {
+	public boolean index(String identifier, Map<String,String> metadata) {
         validateMetadata(metadata, true);
         if (getRowId(identifier) != null) {
             log.severe("index called on item with existing index entry");
-            return;
+            return false;
         }
-        doPost(identifier, makeInsert(identifier, metadata));
+        return doPost(identifier, makeInsert(identifier, metadata));
     }
 
     @Override
@@ -232,7 +237,7 @@ public class FusionIndex implements Index {
         doPost(identifier, makeUpdate(rowid, metadata));
     }
 
-    private void doPost(String identifier, String body) {
+    private boolean doPost(String identifier, String body) {
         try {
             URL url = new URL("https://www.googleapis.com/fusiontables/v1/query");
             HttpURLConnection cn = gapi_connect(url, "POST", accessToken);
@@ -241,7 +246,7 @@ public class FusionIndex implements Index {
             out.flush();
             out.close();
             if (cn.getResponseCode() == HttpURLConnection.HTTP_OK)
-                return;
+                return true;
             else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
                 throw new InvalidAccessTokenException();
             else {
@@ -254,6 +259,7 @@ public class FusionIndex implements Index {
             log.log(Level.SEVERE, e.getMessage(), e);
         }
         log.warning("Error inserting metadata for " + identifier);
+        return false;
     }
 
 
