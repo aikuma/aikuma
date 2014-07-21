@@ -800,6 +800,23 @@ public class Recording {
 		flagFile.getParentFile().mkdirs();
 		flagFile.createNewFile();
 	}
+	
+	/**
+	 * Make the archived recording's metadata
+	 *
+	 * @throws	IOException	In case of an issue writing the archiveMetadata file.
+	 * Note that this will not be thrown if the file already exists.
+	 */
+	public void archive(String backupDate) throws IOException {
+		JSONObject archiveMetadata = new JSONObject();
+		archiveMetadata.put("name", this.name);
+		archiveMetadata.put("recording", this.groupId);
+		archiveMetadata.put("backupDate", backupDate);
+		
+		FileIO.writeJSONObject(new File(getRecordingsPath(), 
+				getGroupId() + "/" + id + "-archive.json"),
+				archiveMetadata);
+	}
 
 	/**
 	 * Tells us whether this phone has already starred the Recording
@@ -825,6 +842,17 @@ public class Recording {
 		File flagFile = new File(FileIO.getAppRootPath(), "/social/" +
 				getGroupId() + "/" + getId() + "/" + androidID + ".flag");
 		return flagFile.exists();
+	}
+	
+	/**
+	 * Tells us whether this recording has been archived
+	 *
+	 * @return	true if a archiveMetadata file is present; false otherwise
+	 */
+	public boolean isArchived() {
+		File archiveMetaFile = new File(getRecordingsPath(), 
+				getGroupId() + "/" + getId() + "-archive.json");
+		return archiveMetaFile.exists();
 	}
 
 	/**

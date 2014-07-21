@@ -18,10 +18,12 @@ import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.storage.Data;
 import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
+import org.lp20.aikuma.util.AikumaSettings;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -68,7 +70,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		respeakingListenFragment = new ListenFragment();
 		
 	
-		googleAuthToken = getIntent().getExtras().getString("token");
+		googleAuthToken = AikumaSettings.googleAuthToken;
 		//setUpRecording();
 		//setUpPlayer();
 //		setUpRespeakingImages();
@@ -413,6 +415,10 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		super.onResume();
 		updateStarButtons();
 		updateFlagButtons();
+		if(googleAuthToken != null) {
+			updateArchiveButtons();
+		}
+		
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
 				WindowManager.LayoutParams params = getWindow().getAttributes();
@@ -503,92 +509,9 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	 * @param	view	The share button
 	 */
 	public void onArchiveButtonPressed(Recording recording) {
-		new archiveTask().execute(recording);
-	}
-	
-	/**
-	 * Asynchronous task to upload file and metadata to google-server
-	 * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
-	 *
-	 */
-	private class archiveTask extends AsyncTask<Recording, Void, Integer> {
-
-		@Override
-		protected Integer doInBackground(Recording... params) {
-			if (true)
-				return 0;
-			// TODO Auto-generated method stub
-			File file = params[0].getFile();
-			File metadataFile = params[0].getMetadataFile();
-			Data data = Data.fromFile(file);
-			if (data == null) {	
-				return 0;		
-			}
-			
-			GoogleDriveStorage gd = new GoogleDriveStorage(googleAuthToken);
-			FusionIndex fi = new FusionIndex(googleAuthToken);
-			JSONObject jsonfile;
-			try {
-				jsonfile = (JSONObject) JSONValue.parse(new FileReader(metadataFile));
-			} catch (FileNotFoundException e) {
-				return 1;	
-			}
-			Map<String, String> metadata = new HashMap<String,String>();
-			JSONArray speakers_arr = (JSONArray) jsonfile.get("people");
-			String speakers = "";
-			String joiner = "";
-			for (Object obj: (JSONArray) jsonfile.get("people")) {
-				speakers += joiner + (String) obj;
-				joiner = "|";
-			}
-			String languages = "";
-			joiner = "";
-			for (Object obj: (JSONArray) jsonfile.get("languages")) {
-				String lang = (String) ((JSONObject) obj).get("code");
-				languages += joiner + lang;
-				joiner = "|";
-				break;  // TODO: use only the first language for now
-			}
-			metadata.put("data_store_uri", "NA");  // TODO: obtain real url
-			metadata.put("item_id", (String) jsonfile.get("recording"));
-			metadata.put("file_type", (String) jsonfile.get("type"));
-			metadata.put("speakers", speakers);
-			metadata.put("language", languages);
-			
-			Log.i("hi", "meta: " + metadata.toString());
-			
-			if (gd.store(file.getName(), data) && 
-					fi.index(file.getName(), metadata)) {
-				Log.i("hi", "success");
-				return 3;
-			}
-			else {
-				Log.i("hi", "fail");
-				return 2;
-			}
-		}
-		
-		protected void onPostExecute(Integer resultCode) {
-			switch(resultCode) {
-			case 0:
-				Toast.makeText(ListenRespeakingActivity.this, "Failed to open file", 
-						Toast.LENGTH_SHORT).show();
-				break;
-			case 1:
-				Toast.makeText(ListenRespeakingActivity.this, "Failed to open metaFile",
-						Toast.LENGTH_SHORT).show();
-				break;
-			case 2:
-				Toast.makeText(ListenRespeakingActivity.this, "Upload failed", 
-						Toast.LENGTH_SHORT).show();
-				break;
-			case 3:
-				Toast.makeText(ListenRespeakingActivity.this, "Upload succeeded", 
-						Toast.LENGTH_SHORT).show();
-				break;
-			}
-		}
-		
+		Intent intent = new Intent(this, GoogleCloudService.class);
+		intent.putExtra("id", recording.getId());
+		startService(intent);
 	}
 
 	private void updateStarButtons() {
@@ -599,6 +522,11 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	private void updateFlagButtons() {
 		updateFlagButton(originalQuickMenu, original);
 		updateFlagButton(respeakingQuickMenu, respeaking);
+	}
+	
+	private void updateArchiveButtons() {
+		updateArchiveButton(originalQuickMenu, original);
+		updateArchiveButton(respeakingQuickMenu, respeaking);
 	}
 	
 	private void updateStarButton(QuickActionMenu quickMenu, 
@@ -623,6 +551,17 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		}
 	}
 
+	private void updateArchiveButton(QuickActionMenu quickMenu, 
+			Recording recording) {
+		if(recording.isArchived()) {
+			quickMenu.setItemEnabledAt(3, false);
+			quickMenu.setItemImageResourceAt(3, R.drawable.archive_grey);
+		} else {
+			quickMenu.setItemEnabledAt(3, true);
+			quickMenu.setItemImageResourceAt(3, R.drawable.archive_32);
+		}
+	}
+	
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {
