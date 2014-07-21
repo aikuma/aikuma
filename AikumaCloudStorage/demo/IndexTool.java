@@ -9,7 +9,10 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.text.Annotation;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -19,13 +22,16 @@ import java.util.Properties;
  * A demo of adding a new FusionIndex item
  */
 public class IndexTool {
+
+
     String accessToken;
 
     Map<String,String> metadata;
     String identifier;
 
+
     public static void usage() {
-        System.err.println("Usage: IndexTool <action> <identifier> [data.json]");
+        System.err.println("Usage: IndexTool <action> [<identifier>] [data.json]");
 
     }
     public static void main(String[] args) {
@@ -82,6 +88,7 @@ public class IndexTool {
                     usage();
                     System.exit(1);
                 } catch (FileNotFoundException e) {
+                    System.err.println("Couldn't find file " + args[2]);
                     usage();
                     System.exit(2);
                     e.printStackTrace();
@@ -97,11 +104,14 @@ public class IndexTool {
 
             } else if ("create".equals(action)) {
                 StringBuffer schema =  new StringBuffer();
-                BufferedReader r = new BufferedReader(new FileReader(new File(args[2])));
+                BufferedReader r = new BufferedReader(new FileReader(new File(args[1])));
                 while (r.ready()) {
                     schema.append(r.readLine());
                 }
                 index.create(schema.toString());
+            } else if ("list".equals(action)) {
+                index.listTables();
+
             }
 
         } catch (InvalidAccessTokenException e) {
@@ -130,7 +140,7 @@ public class IndexTool {
 
         }
     }
-    private void create(String schema, String... args) {
+    private void create(String schema) {
 
         try {
             HttpURLConnection cn = Utils.gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/tables"),
@@ -155,7 +165,32 @@ public class IndexTool {
         for (String id : fi.search(params)) {
             System.out.println(id);
         }
+    }
 
+    private void listTables() {
+        try {
+            HttpURLConnection cn = Utils.gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/tables"),
+                    "GET", accessToken);
+
+            JSONObject o = (JSONObject) JSONValue.parse(new InputStreamReader(cn.getInputStream()));
+            for (Map<String,Object> item : (List<Map<String, Object>>) o.get("items")) {
+                System.out.println(item.get("name") + "\t" + item.get("tableId"));
+                HttpURLConnection cn2 = Utils.gapi_connect(new URL("https://www.googleapis.com/drive/v2/files/" +
+                        item.get("tableId") + "/permissions"), "GET", accessToken);
+                cn2.setDoOutput(false);
+                JSONObject o2 = (JSONObject) JSONValue.parse(new InputStreamReader(cn2.getInputStream()));
+
+                for (Map<String,Object> item2 : (List<Map<String, Object>>) o2.get("items")) {
+                    String name = (String) (item2.containsKey("name") ? item2.get("name") : item2.get("id"));
+                    System.out.println(name + "\t" + item2.get("role"));
+                }
+
+                System.out.println("--------------------");
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

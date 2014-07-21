@@ -20,17 +20,23 @@ public class GetAccessToken {
 		for (String scope: FusionIndex.getScopes()) {
 			apis.add(scope);
 		}
+        if (true) {
+            URI uri = URI.create(auth.getAuthUrl(apis));
+            System.out.println("A google page will open where you can login and give permission to access your google drive.");
+            try {
+                desktop.browse(uri);
+            } catch (IOException e) {
+                System.err.println("Failed to open browser:");
+                System.err.println(e.getMessage());
+                System.exit(1);
+            }
+        } else {
+            // This is to support Bob's workflow, where he uses the non-default browser for Google stuff; ignore, please
+            System.out.println("Browse to this url, and grant permissions.");
+            System.out.println(auth.getAuthUrl(apis));
+            System.out.println();
+        }
 
-		URI uri = URI.create(auth.getAuthUrl(apis));
-		System.out.println("A google page will open where you can login and give permission to access your google drive.");
-		try {
-			desktop.browse(uri);
-		}
-		catch (IOException e) {
-			System.err.println("Failed to open browser:");
-			System.err.println(e.getMessage());
-			System.exit(1);
-		}
 
 		System.out.println("Once you give the permission, a new page opens with authorization code.");
 		System.out.print("Please copy and paste the token here: ");
@@ -48,6 +54,8 @@ public class GetAccessToken {
 		
 		if (auth.requestAccessToken(code)) {
 			System.out.println("Access token: " + auth.getAccessToken());
+            System.out.println("Refresh token: " + auth.getRefreshToken());
+
 		}
 		else {
 			System.err.println("Failed to get access token.");

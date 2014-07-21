@@ -337,6 +337,7 @@ public class FusionIndex implements Index {
     public static Iterable<String> getScopes() {
         Collection<String> l = new ArrayList<String>(1);
         l.add("https://www.googleapis.com/auth/fusiontables");
+        l.add("https://www.googleapis.com/auth/drive.metadata.readonly");
         return l;
     }
 
