@@ -4,6 +4,7 @@
 */
 package org.lp20.aikuma.model;
 
+import android.os.Environment;
 import android.util.Log;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.util.FileIO;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.io.FilenameUtils;
@@ -34,12 +36,18 @@ import static junit.framework.Assert.assertTrue;
  */
 public class Recording {
 
+	// String tag for debugging
+	private static final String TAG = "Recording";
+	
 	/**
 	 * The constructor used when first creating a Recording.
 	 *
-	 * @param	wavUUID	the temporary UUID of the WAV in question.
+	 * @param	recordingUUID	the temporary UUID of the recording in question.
+	 * 							(recording can be wav or movie(mp4))
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
+	 * 	 * @param	versionName	The recording's version(v0x)
+	 * @param	ownerId	The recording owner's ID(Google account)
 	 * @param	languages	The languages associated with the recording
 	 * @param	speakersIds	The IDs of the speakers associated with the
 	 * recording
@@ -47,22 +55,38 @@ public class Recording {
 	 * recording
 	 * @param	groupId	The ID of the group of recordings this recording
 	 * belongs in (Some source recording and respeakings/commentaries)
+	 * @param	sourceId	The ID of the source recording of this recording
 	 * @param	sampleRate	The sample rate of the recording.
 	 * @param	durationMsec	The duration of the recording in milliseconds.
+	 * @param	format	The mime type
+	 * @param	bitsPerSample	The bits per sample of the audio
+	 * @param	numChannels	The number of channels of the audio
+	 * @param	latitude The location data
+	 * @param	longitude The location data
 	 */
-	public Recording(UUID wavUUID, String name, Date date,
+	public Recording(UUID recordingUUID, String name, Date date,
+			String versionName, String ownerId,
 			List<Language> languages, List<String> speakersIds,
-			String androidID, String groupId, long sampleRate,
-			int durationMsec) {
-		this.wavUUID = wavUUID;
+			String androidID, String groupId, String sourceId, long sampleRate,
+			int durationMsec, String format, int numChannels, 
+			int bitsPerSample, Double latitude, Double longitude) {
+		this.recordingUUID = recordingUUID;
 		setName(name);
 		setDate(date);
+		setVersionName(versionName);
+		setOwnerId(ownerId);
+		setFormat(format);
 		setLanguages(languages);
 		setSpeakersIds(speakersIds);
 		setAndroidID(androidID);
 		setSampleRate(sampleRate);
 		setDurationMsec(durationMsec);
 		setGroupId(groupId);
+		this.sourceId = sourceId;
+		this.numChannels = numChannels;
+		this.bitsPerSample = bitsPerSample;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		// If there isn't an group Id, ie this is an original
 		if (groupId == null) {
 			setGroupId(createGroupId());
@@ -79,6 +103,9 @@ public class Recording {
 	 *
 	 * @param	name	The recording's name.
 	 * @param	date	The date of creation.
+	 * @param	versionName	The recording's version(v0x)
+	 * @param	ownerId	The recording owner's ID(Google account)
+	 * @param	format	The file format
 	 * @param	languages	The languages associated with the recording
 	 * @param	speakersIds	The IDs of the speakers associated with the
 	 * recording
@@ -92,11 +119,15 @@ public class Recording {
 	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 */
 	public Recording(String name, Date date,
+			String versionName, String ownerId,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String respeakingId,
-			long sampleRate, int durationMsec) {
+			long sampleRate, int durationMsec, String format) {
 		setName(name);
 		setDate(date);
+		setVersionName(versionName);
+		setOwnerId(ownerId);
+		setFormat(format);
 		setLanguages(languages);
 		setSpeakersIds(speakersIds);
 		setAndroidID(androidID);
@@ -138,7 +169,16 @@ public class Recording {
 	private void importWav(UUID wavUUID, String id)
 			throws IOException {
 		File wavFile = new File(getNoSyncRecordingsPath(), wavUUID + ".wav");
+		Log.i(TAG, "importwav: " + this.getFile().getAbsolutePath());
 		FileUtils.moveFile(wavFile, this.getFile());
+	}
+	
+	// Moves a video File from a no-sync directory to its rightful place
+	private void importMov(UUID videoUUID, String id) 
+			throws IOException {
+		File noSyncMoviePath = new File(FileIO.getNoSyncPath(), "videos");
+		File movFile = new File(noSyncMoviePath, videoUUID + ".mp4");
+		FileUtils.moveFile(movFile, this.getFile());
 	}
 
 	// Similar to importWav, except for the mapping file.
@@ -161,9 +201,16 @@ public class Recording {
 	 * @return	The file the recording is stored in.
 	 */
 	public File getFile() {
+		String extension = (this.isMovie())? ".mp4" : ".wav";
 		return new File(getRecordingsPath(), getGroupId() + "/"
-				+ id + ".wav");
+				+ id + extension);
 	}
+	
+	public File getMetadataFile() {
+		return new File(getRecordingsPath(), getGroupId() + "/" 
+				+ id + "-metadata.json");
+	}
+	
 
 	/**
 	 * Name accessor; returns an empty string if the name is null
@@ -234,6 +281,16 @@ public class Recording {
 		}
 		return true;
 	}
+	
+	/**
+	 * Returns true if the recording is a movie file
+	 * (Currently movie file is only stored with .mp4 extension
+	 * 
+	 * @return	true if this is a movie
+	 */
+	public boolean isMovie() {
+		return this.format.equals("mp4");
+	}
 
 	/**
 	 * androidID accessor
@@ -254,8 +311,20 @@ public class Recording {
 		return groupId;
 	}
 
+	public String getRespeakingId() {
+		return respeakingId;
+	}
+
 	public String getId() {
 		return id;
+	}
+	
+	public String getOwnerId() {
+		return ownerId;
+	}
+	
+	public String getVersionName() {
+		return versionName;
 	}
 
 	/**
@@ -285,17 +354,47 @@ public class Recording {
 		JSONObject encodedRecording = new JSONObject();
 		encodedRecording.put("name", this.name);
 		encodedRecording.put("date", new StandardDateFormat().format(this.date));
+		encodedRecording.put("version", this.versionName);
+		encodedRecording.put("ownerID", this.ownerId);
 		encodedRecording.put("languages", Language.encodeList(languages));
 		JSONArray speakersIdsArray = new JSONArray();
 		for (String id : speakersIds) {
 			speakersIdsArray.add(id.toString());
 		}
-		encodedRecording.put("speakersIds", speakersIdsArray);
+		encodedRecording.put("people", speakersIdsArray);
 		encodedRecording.put("androidID", this.androidID);
 		encodedRecording.put("sampleRate", getSampleRate());
 		encodedRecording.put("durationMsec", getDurationMsec());
-		encodedRecording.put("groupId", this.groupId);
-		encodedRecording.put("respeakingId", this.respeakingId);
+		encodedRecording.put("recording", this.groupId);
+		encodedRecording.put("suffix", this.respeakingId);
+		encodedRecording.put("source", this.sourceId);
+		if(latitude != null && longitude != null) {
+			JSONArray locationData = new JSONArray();
+			locationData.add(latitude+"");
+			locationData.add(longitude+"");
+			encodedRecording.put("location", locationData);
+		} else {
+			encodedRecording.put("location", null);
+		}
+		
+		if (this.sourceId == null) {
+			encodedRecording.put("type", "source");
+		} else {
+			// Then this is either a respeaking or a translation.
+			try {
+				if (this.languages.equals(getOriginal().getLanguages())) {
+					encodedRecording.put("type", "respeaking");
+				} else {
+					encodedRecording.put("type", "translation");
+				}
+			} catch (IOException e) {
+				// There is an issue reading the original. A type won't be
+				// written.
+			}
+		}
+		encodedRecording.put("Format", this.format);
+		encodedRecording.put("BitsPerSample", this.bitsPerSample);
+		encodedRecording.put("NumChannels", this.numChannels);
 		return encodedRecording;
 	}
 
@@ -309,13 +408,17 @@ public class Recording {
 		// Ensure the directory exists
 		File dir = new File(getRecordingsPath(), getGroupId());
 		dir.mkdir();
-
+		Log.i(TAG, "write: " + dir.getAbsolutePath());
 		// Import the wave file into the new recording directory.
-		importWav(wavUUID, getId());
+		if(this.isMovie()) {
+			importMov(recordingUUID, getId());
+		} else {
+			importWav(recordingUUID, getId());
+		}
 
 		// Try and import the mapping file, if the recording is a respeaking.
 		if (!isOriginal()) {
-			importMapping(wavUUID, getId());
+			importMapping(recordingUUID, getId());
 		}
 
 		JSONObject encodedRecording = this.encode();
@@ -382,14 +485,20 @@ public class Recording {
 	/**
 	 * Read a recording corresponding to the given filename prefix.
 	 *
-	 * @param	id	The recording's ID
+	 * @param	verName			The recording's versionName
+	 * @param	ownerAccount	The recording's ownerID
+	 * @param	id				The recording's ID
 	 * @return	A Recording object corresponding to the json file.
 	 * @throws	IOException	If the recording metadata cannot be read.
 	 */
-	public static Recording read(String id) throws IOException {
+	public static Recording read(String verName, String ownerAccount, 
+			String id) throws IOException {
 		String groupId = getGroupIdFromId(id);
-		File metadataFile = new File(getRecordingsPath(), groupId + "/"
-				+ id + "-metadata.json");
+		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
+		File metadataFile = 
+				new File(getRecordingsPath(ownerDir),
+						groupId + "/" + id + "-metadata.json");
+		Log.i(TAG, metadataFile.getAbsolutePath());
 		return read(metadataFile);
 	}
 
@@ -402,7 +511,7 @@ public class Recording {
 	 */
 	public static Recording read(File metadataFile) throws IOException {
 		JSONObject jsonObj = FileIO.readJSONObject(metadataFile);
-		String groupId = (String) jsonObj.get("groupId");
+		String groupId = (String) jsonObj.get("recording");
 		if (groupId == null) {
 			throw new IOException("Null groupId in the JSON file.");
 		}
@@ -417,12 +526,16 @@ public class Recording {
 		} catch (ParseException e) {
 			throw new IOException(e);
 		}
+		String versionName = (String) jsonObj.get("version");
+		String ownerId = (String) jsonObj.get("ownerID");
+		String format = (String) jsonObj.get("Format");
+		
 		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
 		if (languageArray == null) {
 			throw new IOException("Null languages in the JSON file.");
 		}
 		List<Language> languages = Language.decodeJSONArray(languageArray);
-		JSONArray speakerIdArray = (JSONArray) jsonObj.get("speakersIds");
+		JSONArray speakerIdArray = (JSONArray) jsonObj.get("people");
 		if (speakerIdArray == null) {
 			throw new IOException("Null speakersIds in the JSON file.");
 		}
@@ -431,7 +544,7 @@ public class Recording {
 		if (androidID == null) {
 			throw new IOException("Null androidID in the JSON file.");
 		}
-		String respeakingId = (String) jsonObj.get("respeakingId");
+		String respeakingId = (String) jsonObj.get("suffix");
 		if (respeakingId == null) {
 			throw new IOException("Null respeakingId in the JSON file.");
 		}
@@ -446,14 +559,14 @@ public class Recording {
 		int durationMsec;
 		if (jsonObj.get("durationMsec") == null) {
 			durationMsec = -1;
-			Log.i("duration", "reading: null");
+			Log.i(TAG, "reading: null");
 		} else {
 			durationMsec = ((Long) jsonObj.get("durationMsec")).intValue();
-			Log.i("duration", "reading: " + durationMsec);
+			Log.i(TAG, "reading: " + durationMsec);
 		}
-		Recording recording = new Recording(name, date, languages, speakersIds,
-				androidID, groupId, respeakingId, sampleRate, (Integer)
-				durationMsec);
+		Recording recording = new Recording(name, date, versionName, ownerId, 
+				languages, speakersIds, androidID, groupId, respeakingId,
+				sampleRate, (Integer) durationMsec, format);
 		return recording;
 	}
 
@@ -461,17 +574,21 @@ public class Recording {
 	 * Returns a list of all the respeakings of this Recording. Ff it is a
 	 * respeaking it will return an list of the other respeakings in the
 	 * group.
+	 * (If this is called by a respeaking, empty arraylist is returned)
 	 *
 	 * @return	A list of all the respeakings of the recording.
 	 */
 	public List<Recording> getRespeakings() {
+		List<Recording> respeakings = new ArrayList();
+		if(!this.isOriginal()) return respeakings;
+		
 		File groupDir = new File(getRecordingsPath(), getGroupId());
 		File[] groupDirMetaFiles = groupDir.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
 						return filename.endsWith("-metadata.json");
 					}
 				});
-		List<Recording> respeakings = new ArrayList();
+		
 		Recording recording;
 		for (File recordingMetaFile : groupDirMetaFiles) {
 			try {
@@ -496,8 +613,41 @@ public class Recording {
 
 		List<Recording> recordings = new ArrayList<Recording>();
 
+		// Get a list of version directories
+		File[] versionDirs = 
+				FileIO.getAppRootPath().listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String filename) {
+				return filename.startsWith("v");
+			}	
+		});
+
+		for(File f1 : versionDirs) {
+			File[] firstHashDirs = f1.listFiles();
+			for(File f2 : firstHashDirs) {
+				File[] secondHashDirs = f2.listFiles();
+				for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f3.listFiles();
+					for(File f : ownerIdDirs) {
+						Log.i(TAG, "readAll: " + f.getPath());
+						
+						addRecordingsInDir(recordings, f);
+					}
+				}
+			}
+		}
+
+		return recordings;
+	}
+
+	private static void addRecordingsInDir(List<Recording> recordings, File dir) {
 		// Constructs a list of directories in the recordings directory.
-		File[] recordingPathFiles = getRecordingsPath().listFiles();
+		File[] recordingPathFiles = getRecordingsPath(dir).listFiles();
+		
+		if (recordingPathFiles == null) {
+			return;
+		}
+			
 		for (File f : recordingPathFiles) {
 			if (f.isDirectory()) {
 				// For each of those subdirectories, creates a list of files
@@ -521,10 +671,71 @@ public class Recording {
 				}
 			}
 		}
-
-		return recordings;
 	}
+	
+	/**
+	 * Updates all recording metadata files of versionNum
+	 * 
+	 * @param versionNum		obsolete file-format's version
+	 * @param newJSONFields		Map structure of new field-pairs(key:value)
+	 */
+	public static void updateAll(Integer versionNum, 
+			Map<String, Object> newJSONFields) {
+		
+		switch(versionNum) {
+		case 0:
+			File[] firstHashDirs = new File(FileIO.getAppRootPath(), "v01").listFiles();
+			
+			for(File f2 : firstHashDirs) {
+				File[] secondHashDirs = f2.listFiles();
+				for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f3.listFiles();
+					for(File f : ownerIdDirs) {
+						Log.i(TAG, "updateAll: " + f.getPath());
+						
+						updateMetadataInDir(f, newJSONFields);
+					}
+				}
+			}
+			return;
+		}
+	}
+	
+	private static void updateMetadataInDir(File dir,
+			Map<String, Object> newJSONFields) {
+		// Constructs a list of directories in the recordings directory.
+		File[] recordingPathFiles = getRecordingsPath(dir).listFiles();
+		
+		if (recordingPathFiles == null) {
+			return;
+		}
+		
+		for (File f : recordingPathFiles) {
+			if (f.isDirectory()) {
+				// For each of those subdirectories, creates a list of files
+				// within that end in .json
+				File[] groupDirFiles = f.listFiles(new FilenameFilter() {
+					public boolean accept(File dir, String filename) {
+						return filename.endsWith("-metadata.json");
+					}
+				});
 
+				// Iterate over those recording metadata files and add the
+				// recordings they refer to to the recordings list
+				for (File jsonFile : groupDirFiles) {
+					try {
+						JSONObject newJSONObject = 
+								FileIO.readJSONObject(jsonFile);
+						newJSONObject.putAll(newJSONFields);
+						FileIO.writeJSONObject(jsonFile, newJSONObject);
+					} catch (IOException e) {
+						Log.e(TAG, "Metadata update failed: " + e.toString());
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Compares the given object with the Recording, and returns true if the
 	 * Recording's name, date, languages, androidID, groupId and
@@ -564,6 +775,21 @@ public class Recording {
 					"Recording date cannot be null.");
 		}
 		this.date = date;
+	}
+	
+	// Sets the versionName(v0x)
+	private void setVersionName(String versionName) {
+		this.versionName = versionName;
+	}
+	
+	// Sets the ownerId(Google account)
+	private void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
+	}
+	
+	// Sets the format
+	private void setFormat(String format) {
+		this.format = format;
 	}
 
 	// Sets the languages 
@@ -647,14 +873,27 @@ public class Recording {
 	/**
 	 * Get the applications recordings directory
 	 *
+	 * @param	ownerDir	A File representing the path of owner's directory
 	 * @return	A File representing the path of the recordings directory
 	 */
-	public static File getRecordingsPath() {
-		File path = new File(FileIO.getAppRootPath(), "recordings");
+	public static File getRecordingsPath(File ownerDir) {
+		File path = new File(ownerDir, "items");
 		path.mkdirs();
 		return path;
 	}
 
+	/**
+	 * Get the recording owner's directory
+	 * 
+	 * @return	A file representing the path of the recording owner's dir
+	 */
+	public File getRecordingsPath() {
+		File path = new File(
+				FileIO.getOwnerPath(versionName, ownerId), "items");
+		path.mkdirs();
+		return path;
+	}
+	
 	/**
 	 * Get the applications recording directory that isn't synced.
 	 *
@@ -681,9 +920,132 @@ public class Recording {
 	}
 
 	/**
+	 * Star the recording with this phone's androidID
+	 *
+	 * @throws	IOException	In case there is an issue writing the star file.
+	 * Note that this will not be thrown if the file already exists.
+	 */
+	public void star() throws IOException {
+		String androidID = Aikuma.getAndroidID();
+		File starFile = new File(FileIO.getOwnerPath(versionName, ownerId), 
+				"/social/" +
+				getGroupId() + "/" + getId() + "/" + androidID + ".star");
+		starFile.getParentFile().mkdirs();
+		starFile.createNewFile();
+	}
+
+	/**
+	 * Flag the recording with this phone's androidID
+	 *
+	 * @throws	IOException	In case there is an issue writing the flag file.
+	 * Note that this will not be thrown if the file already exists.
+	 */
+	public void flag() throws IOException {
+		String androidID = Aikuma.getAndroidID();
+		File flagFile = new File(FileIO.getOwnerPath(versionName, ownerId), 
+				"/social/" +
+				getGroupId() + "/" + getId() + "/" + androidID + ".flag");
+		flagFile.getParentFile().mkdirs();
+		flagFile.createNewFile();
+	}
+
+	/**
+	 * Tells us whether this phone has already starred the Recording
+	 *
+	 * @return	true if a star file with this androidID is present; false
+	 * otherwise
+	 */
+	public boolean isStarredByThisPhone() {
+		String androidID = Aikuma.getAndroidID();
+		File starFile = 
+				new File(FileIO.getOwnerPath(versionName, ownerId), "/social/" +
+						getGroupId() + "/" + getId() + "/" + androidID + ".star");
+		return starFile.exists();
+	}
+
+	/**
+	 * Tells us whether this phone has already flagged the Recording
+	 *
+	 * @return	true if a flag file with this androidID is present; false
+	 * otherwise
+	 */
+	public boolean isFlaggedByThisPhone() {
+		String androidID = Aikuma.getAndroidID();
+		File flagFile = 
+				new File(FileIO.getOwnerPath(versionName, ownerId), "/social/" +
+				getGroupId() + "/" + getId() + "/" + androidID + ".flag");
+		return flagFile.exists();
+	}
+
+	/**
+	 * Gives the number of stars this recording has received.
+	 *
+	 * @return	The number of stars this recording has recieved
+	 */
+	public int numStars() {
+		File starDir = new File(FileIO.getOwnerPath(versionName, ownerId), 
+				"/social/" +
+				getGroupId() + "/" + getId());
+		File[] starFiles = starDir.listFiles(
+				new FilenameFilter() {
+			public boolean accept(File dir, String filename) {
+				if (filename.endsWith(".star")) {
+					return true;
+				}
+				return false;
+			}
+		});
+		if (starFiles == null) {
+			return 0;
+		}
+		return starFiles.length;
+	}
+
+	/**
+	 * Gives the number of flags this recording has received.
+	 *
+	 * @return	The number of flags this recording has recieved
+	 */
+	public int numFlags() {
+		File socialDir = new File(FileIO.getOwnerPath(versionName, ownerId), 
+				"/social/" +
+				getGroupId() + "/" + getId());
+		File[] flagFiles = socialDir.listFiles(
+				new FilenameFilter() {
+			public boolean accept(File dir, String filename) {
+				if (filename.endsWith(".flag")) {
+					return true;
+				}
+				return false;
+			}
+		});
+		if (flagFiles == null) {
+			return 0;
+		}
+		return flagFiles.length;
+	}
+
+	/**
+	 * Gives the number of times this recording has been views.
+	 *
+	 * @return	The number of times this recording has been viewed.
+	 */
+	public int numViews() {
+		File socialDir = new File(FileIO.getOwnerPath(versionName, ownerId),
+				"/views/" +
+				getGroupId() + "/" + getId());
+		File[] flagFiles = socialDir.listFiles();
+		if (flagFiles == null) {
+			return 0;
+		}
+		return flagFiles.length;
+	}
+
+	/**
 	 * Indicates that this recording is allowed to be synced by moving it to a
 	 * directory that the SyncUtil synchronizes.
 	 *
+	 * @return	A transcript of this recording
 	 * @param	id	The ID of the recording to sync.
 	 * @throws	IOException	If it cannot be moved to the synced directory.
 	 */
@@ -693,12 +1055,58 @@ public class Recording {
 		FileUtils.moveFileToDirectory(wavFile, getRecordingsPath(), false);
 	}
 	*/
+	
+	/**
+	 * Returns the transcript for this recording, or an empty transcript.
+	 *
+	 * @return	A transcript of this recording
+	 */
+	public TempTranscript getTranscript() {
+		// Find all the transcript files
+		File recordingDir = new File(getRecordingsPath(), getGroupId());
+		File[] transcriptFiles = recordingDir.listFiles(
+				new FilenameFilter() {
+			public boolean accept(File dir, String filename) {
+				if (filename.split("-")[2].equals("transcript")) {
+					Log.i(TAG, "filename: " + filename);
+					Log.i(TAG, "split[2]: " +
+							filename.split("-")[2]);
+					return true;
+				}
+				return false;
+			}
+		});
 
+		// Take the first one
+		for (File transcriptFile : transcriptFiles) {
+			Log.i(TAG, "transcriptFile: " + transcriptFile);
+			try {
+				return new TempTranscript(this, transcriptFile);
+			} catch (IOException e) {
+				continue;
+			}
+		}
+
+		// Just return an empty transcript
+		// return new TempTranscript();
+		return null;
+	}
+	
 	/**
 	 * The recording's name.
 	 */
 	private String name;
 
+	/**
+	 * The recording's format version
+	 */
+	private String versionName;
+	
+	/**
+	 * The recording's owner ID
+	 */
+	private String ownerId;
+	
 	/**
 	 * The recording's date.
 	 */
@@ -735,7 +1143,7 @@ public class Recording {
 	private int durationMsec;
 
 	// The UUID of the source WAV.
-	private UUID wavUUID;
+	private UUID recordingUUID;
 
 	// The respeaking ID that is at the end of the filename prefix.
 	private String respeakingId;
@@ -746,4 +1154,17 @@ public class Recording {
 	//		<groupId>-<speakerId>-<respeaking type>-<respeakingId> (for
 	//		respeakings, transcriptions, commentaries, etc.)
 	private String id;
+
+	//The ID of the source recording.
+	private String sourceId;
+
+	// Some info regarding the recording format.
+	private String format;
+	private int bitsPerSample;
+	private int numChannels;
+	
+	//Location data
+	private Double latitude;
+	private Double longitude;
+
 }

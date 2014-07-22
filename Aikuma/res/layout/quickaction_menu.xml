@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+     <FrameLayout
+  		android:layout_marginTop="10dp"
+        android:id="@+id/line1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/quickaction_top_frame"/> 
+   
+     <ImageView
+        android:id="@+id/arrowUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"	
+        android:src="@drawable/quickaction_arrow_up" />
+
+       
+    <HorizontalScrollView
+        android:id="@+id/scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:fadingEdgeLength="0dp"
+        android:layout_below="@id/line1"
+        android:background="#FFAAAAAA"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/itemGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp" 
+            android:orientation="horizontal">
+        
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:src="@drawable/quickaction_slider_grip_left" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:src="@drawable/quickaction_slider_grip_right" />
+                
+        </LinearLayout>
+            
+    </HorizontalScrollView>
+
+    
+
+    <FrameLayout
+        android:id="@+id/line2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/scroll"
+        android:background="@drawable/quickaction_bottom_frame" />
+    
+    
+
+    <ImageView
+        android:id="@+id/arrowDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="-1dp"
+        android:layout_below="@id/line2"
+        android:src="@drawable/quickaction_arrow_down" />
+
+</RelativeLayout>

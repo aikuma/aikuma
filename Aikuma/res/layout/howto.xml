@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<ImageView android:src="@drawable/record_32"
+			android:padding="1dip"
+			android:layout_margin="1dip"
+			android:scaleType="centerInside"
+			android:layout_width="25dip"
+			android:layout_height="25dip"/>
+		<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textSize="15sp"
+			android:layout_height="wrap_content"
+			android:text="Make an audio recording"
+			android:layout_width="wrap_content"
+			android:id="@+id/recordingName"
+			android:padding="1dp"/>
+	</LinearLayout>
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<ImageView android:src="@drawable/speakers_32"
+			android:padding="1dip"
+			android:layout_margin="1dip"
+			android:scaleType="centerInside"
+			android:layout_width="25dip"
+			android:layout_height="25dip"/>
+		<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textSize="15sp"
+			android:layout_height="wrap_content"
+			android:text="View/add speakers"
+			android:layout_width="wrap_content"
+			android:id="@+id/recordingName"
+			android:padding="1dp"/>
+	</LinearLayout>
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<ImageView android:src="@drawable/exchange_48"
+			android:padding="1dip"
+			android:layout_margin="1dip"
+			android:scaleType="centerInside"
+			android:layout_width="25dip"
+			android:layout_height="25dip"/>
+		<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textSize="15sp"
+			android:layout_height="wrap_content"
+			android:text="Make a commentary"
+			android:layout_width="wrap_content"
+			android:id="@+id/recordingName"
+			android:padding="1dp"/>
+	</LinearLayout>
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<ImageView android:src="@drawable/arrow_circle_o_right"
+			android:padding="1dip"
+			android:layout_margin="1dip"
+			android:scaleType="centerInside"
+			android:layout_width="25dip"
+			android:layout_height="25dip"/>
+		<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textSize="15sp"
+			android:layout_height="wrap_content"
+			android:text="Import audio"
+			android:layout_width="wrap_content"
+			android:id="@+id/recordingName"
+			android:padding="1dp"/>
+	</LinearLayout>
+	<Button
+		android:id="@+id/goToOnlineHelp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="More help at lp20.org"
+		android:onClick="openHelpInBrowser"
+		android:textSize="15sp"
+	/>
+</LinearLayout>

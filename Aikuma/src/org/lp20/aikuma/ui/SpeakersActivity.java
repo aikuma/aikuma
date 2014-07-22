@@ -47,7 +47,7 @@ public class SpeakersActivity extends AikumaListActivity {
 	 * @param	_view	The add-speaker button that was pressed.
 	 */
 	public void addSpeakerButtonPressed(View _view) {
-		Intent intent = new Intent(this, AddSpeakerActivity.class);
+		Intent intent = new Intent(this, AddSpeakerActivity1.class);
 		startActivity(intent);
 	}
 

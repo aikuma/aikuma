@@ -36,6 +36,17 @@ public class Beeper {
 	}
 
 	/**
+	 * Constructor
+	 *
+	 * @param	context	The context that the Beeper should beep in.
+	 * @param	listener	The callback to play when the beep is complete.
+	 */
+	public Beeper(Context context, OnCompletionListener listener) {
+		this.context = context;
+		beepBeep = getBeepBeep(listener);
+	}
+
+	/**
 	 * Plays one beep.
 	 */
 	public void beep() { beep(null); }
@@ -52,7 +63,7 @@ public class Beeper {
 	/**
 	 * Plays two beeps in succession.
 	 */
-	public void beepBeep() { beepBeep(null); }
+	public void beepBeep() { beepBeep.start(); }
 
 	/**
 	 * Plays two beeps in succession.
@@ -115,7 +126,6 @@ public class Beeper {
 			beeper.setOnCompletionListener(new OnCompletionListener() {
 				public void onCompletion(MediaPlayer mediaPlayer) {
 					listener.onCompletion(mediaPlayer);
-					beeper.release();
 				}
 			});
 		}

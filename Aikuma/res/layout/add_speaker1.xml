@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:focusable="true"
+		android:focusableInTouchMode="true"
+	>
+	<EditText
+	    android:id="@+id/speakerName"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:hint="@string/speaker_name"
+		android:inputType="text"	
+		/>
+
+	<ImageButton
+		android:id="@+id/okButton1"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:scaleType="centerInside"
+		android:src="@drawable/ok_48"
+		android:onClick="onOkButtonPressed"
+		/>
+</RelativeLayout>

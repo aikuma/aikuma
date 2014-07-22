@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.UUID;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
+import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
 import org.lp20.aikuma.model.Recording;
 
@@ -47,11 +48,13 @@ public class ThumbRespeakActivity extends AikumaActivity {
 	// Creates an appropriate ThumbRespeaker for this activity.
 	private void setUpThumbRespeaker() {
 		Intent intent = getIntent();
-		id = (String)
-				intent.getExtras().get("id");
+		sourceId = (String)
+				intent.getExtras().get("sourceId");
+		ownerId = (String) intent.getExtras().get("ownerId");
+		versionName = (String) intent.getExtras().get("versionName");
 		respeakingUUID = UUID.randomUUID();
 		try {
-			recording = Recording.read(id);
+			recording = Recording.read(versionName, ownerId, sourceId);
 			respeaker = new ThumbRespeaker(recording, respeakingUUID);
 		} catch (IOException e) {
 			ThumbRespeakActivity.this.finish();
@@ -70,9 +73,14 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		Intent intent = new Intent(this, RecordingMetadataActivity.class);
 		intent.putExtra("uuidString", respeakingUUID.toString());
 		intent.putExtra("sampleRate", recording.getSampleRate());
+		intent.putExtra("sourceId", recording.getId());
 		intent.putExtra("groupId",
-				Recording.getGroupIdFromId(id));
+				Recording.getGroupIdFromId(sourceId));
 		intent.putExtra("durationMsec", respeaker.getCurrentMsec());
+		Recorder recorder = respeaker.getRecorder();
+		intent.putExtra("numChannels", recorder.getNumChannels());
+		intent.putExtra("format", recorder.getFormat());
+		intent.putExtra("bitsPerSample", recorder.getBitsPerSample());
 		startActivity(intent);
 		ThumbRespeakActivity.this.finish();
 		try {
@@ -88,7 +96,9 @@ public class ThumbRespeakActivity extends AikumaActivity {
 
 	private ThumbRespeakFragment fragment;
 	private ThumbRespeaker respeaker;
-	private String id;
+	private String sourceId;
+	private String ownerId;
+	private String versionName;
 	private UUID respeakingUUID;
 	private Recording recording;
 	private long sampleRate;

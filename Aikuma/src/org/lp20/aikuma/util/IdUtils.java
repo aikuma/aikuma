@@ -1,10 +1,15 @@
 package org.lp20.aikuma.util;
 
 import android.util.Log;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 /**
  * Offers methods to create random sequences of characters.
+ * Offers methods to create an ID for a specific string
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  */
@@ -47,4 +52,27 @@ public class IdUtils {
 				", yielding " + sample);
 		return sample.toString();
 	}
+	
+	/**
+	 * Return the MD5 hash value for the given String
+	 * 
+	 * @param inputText	the given String
+	 * @return	String of MD5 hash value
+	 */
+	public static String getMD5Hash(String inputText) {
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if (md != null) {
+			byte[] digest = md.digest(inputText.getBytes());
+			return new BigInteger(1, digest).toString(16);
+		}
+		return null;
+	}
+	
 }

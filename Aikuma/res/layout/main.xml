@@ -16,6 +16,6 @@
 		android:layout_height="wrap_content"
 		android:onClick="audioImport"
 		android:scaleType="centerInside"
-		android:src="@drawable/arrow_circle_o_down"
+		android:src="@drawable/arrow_circle_o_right"
 	/>
 </LinearLayout>

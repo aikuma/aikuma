@@ -23,6 +23,8 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.audio.InterleavedPlayer;
+import org.lp20.aikuma.audio.MarkedPlayer;
+import org.lp20.aikuma.audio.TranscriptPlayer;
 import org.lp20.aikuma.model.Segments;
 import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.R;
@@ -129,7 +131,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	private void pause() {
 		player.pause();
 		stopThread(seekBarThread);
-		playPauseButton.setImageResource(R.drawable.play);
+		playPauseButton.setImageResource(R.drawable.play_g);
 	}
 
 	/**
@@ -170,6 +172,26 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	/**
 	 * Sets the player that the ListenFragment is to use
 	 *
+	 * @param	markedPlayer	The marked player to be used.
+	 */
+	public void setPlayer(MarkedPlayer markedPlayer) {
+		this.player = markedPlayer;
+		player.setOnCompletionListener(onCompletionListener);
+	}
+
+	/**
+	 * Sets the player that the ListenFragment is to use
+	 *
+	 * @param	transcriptPlayer	The transcript player to be used.
+	 */
+	public void setPlayer(TranscriptPlayer transcriptPlayer) {
+		this.player = transcriptPlayer;
+		player.setOnCompletionListener(onCompletionListener);
+	}
+
+	/**
+	 * Sets the player that the ListenFragment is to use
+	 *
 	 * @param	interleavedPlayer	The interleaved player to be used.
 	 */
 	public void setPlayer(InterleavedPlayer interleavedPlayer) {
@@ -182,6 +204,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 			float fraction =
 					player.sampleToMsec(segment.getEndSample()) /
 					(float) player.getDurationMsec();
+
 			seekBar.addLine(fraction*100);
 		}
 		player.setOnCompletionListener(onCompletionListener);

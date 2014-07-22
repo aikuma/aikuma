@@ -119,15 +119,29 @@ public class Speaker implements Parcelable{
 	}
 
 	/**
+	 * Get the Speaker's image as a File.
+	 * @return A File containing the Speaker's image.
+	 */
+	public File getImageFile() {
+		return new File(getSpeakersPath(), getId() + "/" + getId() + "-image.jpg");
+	}
+	
+	/**
+	 * Get the small version of Speaker's image as a File.
+	 * @return A File containing the Speaker's small image.
+	 */
+	public File getSmallImageFile() {
+		return new File(getSpeakersPath(), getId() + "/" + getId() + "-image-small.jpg");
+	}
+	
+	/**
 	 * Gets the Speaker's image.
 	 *
 	 * @return	A Bitmap object.
 	 * @throws	IOException	If the image cannot be retrieved.
 	 */
 	public Bitmap getImage() throws IOException {
-		return ImageUtils.retrieveFromFile(
-				new File(getSpeakersPath(),
-						getId() + "/" + getId() + "-image.jpg"));
+		return ImageUtils.retrieveFromFile(getImageFile());
 	}
 
 	/**
@@ -137,9 +151,7 @@ public class Speaker implements Parcelable{
 	 * @throws	IOException	If the image cannot be retrieved.
 	 */
 	public Bitmap getSmallImage() throws IOException {
-		return ImageUtils.retrieveFromFile(
-				new File(getSpeakersPath(),
-						getId() + "/" + getId() + "-image-small.jpg"));
+		return ImageUtils.retrieveFromFile(getSmallImageFile());
 	}
 
 	/**

@@ -33,7 +33,7 @@ public class Segments {
 		this();
 		this.respeaking = respeaking;
 		try {
-			readSegments(new File(Recording.getRecordingsPath(),
+			readSegments(new File(respeaking.getRecordingsPath(), 
 					respeaking.getGroupId() + "/" +
 					respeaking.getId() + ".map"));
 		} catch (IOException e) {
@@ -98,7 +98,7 @@ public class Segments {
 			String[] segmentMatch = line.split(":");
 			if (segmentMatch.length != 2) {
 				throw new RuntimeException(
-						"There must be just one colon on in a segment mapping line");
+				"There must be just one colon on in a segment mapping line");
 			}
 			String[] originalSegment = segmentMatch[0].split(",");
 			String[] respeakingSegment = segmentMatch[1].split(",");
@@ -197,6 +197,21 @@ public class Segments {
 					respeakingSegment.getEndSample() + "\n";
 		}
 		return mapString;
+	}
+
+	/**
+	 * An exception thrown if the segment mapping file is incorrectly
+	 * formatted.
+	 */
+	public static class SegmentException extends Exception {
+		/**
+		 * Constructor
+		 *
+		 * @param	message	The message to be contained by the exception
+		 */
+		public SegmentException(String message) {
+			super(message);
+		}
 	}
 
 	private LinkedHashMap<Segment, Segment> segmentMap;

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+	>
+	<ImageButton
+		android:id="@+id/recordingAddSpeakerButton"
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:scaleType="centerInside"
+		android:src="@drawable/add_speaker48"
+		android:onClick="addSpeakerButtonPressed"
+	/>
+	<ListView
+		android:id="@android:id/list"
+		android:layout_width="fill_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+	/>
+	<ImageButton
+		android:id="@+id/recordingSpeakerOkButton"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:scaleType="centerInside"
+		android:src="@drawable/ok_48"
+		android:layout_alignParentBottom="true"
+		android:onClick="speakerOkButtonPressed"
+	/>
+</LinearLayout>

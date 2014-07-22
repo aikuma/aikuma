@@ -6,6 +6,7 @@ package org.lp20.aikuma.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -14,6 +15,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.SearchView;
+
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.R;
 
@@ -45,6 +48,7 @@ public class MenuBehaviour {
 		MenuInflater inflater = activity.getMenuInflater();
 		if (activity instanceof MainActivity) {
 			inflater.inflate(R.menu.main, menu);
+			((MainActivity)activity).setUpSearchInterface(menu);
 		} else {
 			inflater.inflate(R.menu.other, menu);
 		}
@@ -73,7 +77,8 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				return true;
 			case R.id.help:
-				openHelpInBrowser();
+				intent = new Intent(activity, HowtoActivity.class);
+				activity.startActivity(intent);
 				return true;
 			case R.id.settings:
 				intent = new Intent(activity, SettingsActivity.class);
@@ -84,8 +89,11 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				return true;
 			case R.id.start_http_server:
-				//intent = new Intent(activity, HttpServerActivity.class);
-				//activity.startActivity(intent);
+				intent = new Intent(activity, HttpServerActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.gplus_signin_menu:
+				((MainActivity)activity).getAccountToken();
 				return true;
 			default:
 				return true;
@@ -113,7 +121,8 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				return true;
 			case R.id.help:
-				openHelpInBrowser();
+				intent = new Intent(activity, HowtoActivity.class);
+				activity.startActivity(intent);
 				return true;
 			case R.id.settings:
 				intent = new Intent(activity, SettingsActivity.class);

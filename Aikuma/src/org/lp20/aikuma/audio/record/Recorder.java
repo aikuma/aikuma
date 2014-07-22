@@ -138,6 +138,43 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	}
 
 	/**
+	 * Returns the number of channels of the WAV.
+	 *
+	 * @return	The number of channels of the WAV.
+	 */
+	public int getNumChannels() {
+		if (microphone.getChannelConfiguration() ==
+				AudioFormat.CHANNEL_IN_MONO) {
+			return 1;
+		}else {
+			return 2;
+		}
+	}
+
+	/**
+	 * Returns the bits per sample of the WAV
+	 *
+	 * @return	The bits per sample of the WAV.
+	 */
+	public int getBitsPerSample() {
+		if (microphone.getAudioFormat() == AudioFormat.ENCODING_PCM_16BIT) {
+			return 16;
+		} else {
+			return 8;
+		}
+	}
+
+	/**
+	 * Returns the audio mime type (but only the section after the forward
+	 * slash)
+	 *
+	 * @return	The audio format
+	 */
+	public String getFormat() {
+		return "vnd.wave";
+	}
+
+	/**
 	 * Stop listening to the microphone and close the file.
 	 *
 	 * Note: Once stopped you cannot restart the recorder.

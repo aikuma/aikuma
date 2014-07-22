@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:focusable="true"
+		android:focusableInTouchMode="true"
+	>
+	<LinearLayout
+		android:id="@+id/bottomGroup"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		>
+		<Button
+			android:id="@+id/addISOLanguageButton"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/add_iso_language"
+			android:onClick="onAddISOLanguageButton"
+		/>
+		<Button
+			android:id="@+id/addCustomLanguageButton"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/add_custom_language"
+			android:onClick="onAddCustomLanguageButton"
+		/>
+		<ImageButton
+			android:id="@+id/okButton2"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:scaleType="centerInside"
+			android:src="@drawable/ok_48"
+			android:onClick="onOkButtonPressed"
+		/>
+	</LinearLayout>
+	
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_alignParentTop="true"
+		android:layout_above="@id/bottomGroup"
+		>
+		<TextView
+	    	android:id="@+id/nameView1"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+			android:layout_marginBottom="10dp"
+	    	android:text="" />
+	    
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Languages:" 
+		/>			<!-- "@string/defaultLangHeading" -->
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.1"
+			android:id="@+id/listcontainer"
+			>
+			<ListView android:id="@android:id/list"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+			/>
+		</LinearLayout>
+	</LinearLayout>
+
+	
+	
+</RelativeLayout>

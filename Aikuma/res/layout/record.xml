@@ -12,19 +12,11 @@
 		android:layout_centerVertical="true"
 		android:textSize="25sp"
 	/>
-	<ImageButton
-		android:id="@+id/stopButton"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:scaleType="centerInside"
-		android:src="@drawable/save48"
-		android:onClick="onStopButton"
-	/>
 	<LinearLayout
 		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_weight="4"
+		android:layout_weight="2"
 	>
 		<ImageButton
 			android:id="@+id/pauseButton"
@@ -45,4 +37,23 @@
 			android:onClick="onRecordButton"
 		/>
 	</LinearLayout>
+
+	<ImageButton
+			android:id="@+id/videoRecordButton"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="2"
+			android:scaleType="centerInside"
+			android:src="@drawable/movie_48"
+			android:onClick="onVideoRecord"
+		/>
+	
+	<ImageButton
+		android:id="@+id/stopButton"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:scaleType="centerInside"
+		android:src="@drawable/save48"
+		android:onClick="onStopButton"
+	/>
 </LinearLayout>

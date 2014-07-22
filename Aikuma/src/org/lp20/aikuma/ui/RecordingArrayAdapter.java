@@ -9,13 +9,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnLongClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.R;
@@ -38,32 +45,67 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	public RecordingArrayAdapter(Context context, List<Recording> recordings) {
 		super(context, LIST_ITEM_LAYOUT, recordings);
 		this.context = context;
+		this.recordings = new ArrayList<Recording>(recordings);
 		inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+		// Sort so that the recordings with the most stars are displayed first.
+		this.sort(new Comparator<Recording>() {
+			@Override
+			public int compare(Recording lhs, Recording rhs) {
+				if (lhs.numStars() - 2*lhs.numFlags() < rhs.numStars() -
+						2*rhs.numFlags()) {
+					return +1;
+				} else if (lhs.numStars() - 2*lhs.numFlags() > rhs.numStars() -
+						2*rhs.numFlags()) {
+					return -1;
+				} else {
+					return 0;
+				}
+			}
+		});
 	}
 
+	/**
+	 * Constructor when Quick-menu is attached to each list_item
+	 * 
+	 * @param	context	the current context
+	 * @param	recordings	The list of recordings.
+	 * @param	quickMenu	QuickActionMenu for each liste item
+	 */
+	public RecordingArrayAdapter(Context context, List<Recording> recordings, 
+			QuickActionMenu quickMenu) {
+		this(context, recordings);
+		this.quickMenu = quickMenu;
+	}
+	
 	@Override
 	public View getView(int position, View _, ViewGroup parent) {
 		LinearLayout recordingView =
 				(LinearLayout) inflater.inflate(LIST_ITEM_LAYOUT, parent, false);
 		Recording recording = getItem(position);
 
+		/*
 		ImageView recordingTypeView = (ImageView) recordingView.findViewById(
 				R.id.recordingType);
 		if (!recording.isOriginal()) {
 			// Set it to be a two way arrow icon to indicate respeaking.
 			recordingTypeView.setImageResource(R.drawable.exchange);
 		}
+		*/
 
 		TextView recordingNameView = 
 				(TextView) recordingView.findViewById(R.id.recordingName);
 		TextView recordingDateDurationView = 
 				(TextView) recordingView.findViewById(R.id.recordingDateDuration);
+		LinearLayout speakerImagesView = (LinearLayout)
+				recordingView.findViewById(R.id.speakerImages);
 		for (String id : recording.getSpeakersIds()) {
-			recordingView.addView(makeSpeakerImageView(id));
+			speakerImagesView.addView(makeSpeakerImageView(id));
 		}
 		recordingNameView.setText(recording.getNameAndLang());
+		
 		Integer duration = recording.getDurationMsec() / 1000;
 		if (recording.getDurationMsec() == -1) {
 			recordingDateDurationView.setText(
@@ -73,9 +115,88 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				simpleDateFormat.format(recording.getDate()) + " (" +
 				duration.toString() + "s)");
 		}
+		
+		//
+		List<String> speakers = recording.getSpeakersIds();
+		StringBuilder sb = new StringBuilder();
+		for(String speakerId : speakers) {
+			try {
+				sb.append(Speaker.read(speakerId).getName()+", ");
+			} catch (IOException e) {
+				// If the reader can't be read for whatever reason 
+				// (perhaps JSON file wasn't formatted correctly),
+				// Empty the speakersName
+				e.printStackTrace();
+			}
+		}
+		
+		TextView speakerNameView = (TextView)
+				recordingView.findViewById(R.id.speakerNames);
+		speakerNameView.setText(sb.substring(0, sb.length()-2));
+
+		// Add the comment or movie icon
+		LinearLayout icons = (LinearLayout)
+				recordingView.findViewById(R.id.recordingIcons);
+		
+		List<Recording> respeakings = recording.getRespeakings();
+		int numComments = respeakings.size();
+		if(numComments > 0) {
+			icons.addView(makeRecordingInfoIcon(R.drawable.commentary_32));
+		}
+		if(recording.isMovie()) {
+			icons.addView(makeRecordingInfoIcon(R.drawable.movie_32));
+		}
+		
+		
+		// Add the number of views information
+		TextView viewCountsView = (TextView)
+				recordingView.findViewById(R.id.viewCounts);
+		viewCountsView.setText(""+recording.numViews());
+		
+		// Add the number of stars information
+		TextView numStarsView = (TextView)
+				recordingView.findViewById(R.id.numStars);
+		numStarsView.setText(String.valueOf(recording.numStars()));
+
+		// Add the number of flags information
+		TextView numFlagsView = (TextView)
+				recordingView.findViewById(R.id.numFlags);
+		numFlagsView.setText(String.valueOf(recording.numFlags()));
+		
+		// When list is used to show only one item, quickMenu is not null
+		// and only long-click is enabled for the item
+		if(quickMenu != null) {
+			recordingView.setOnLongClickListener(new OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View v) {
+					// TODO Auto-generated method stub
+					quickMenu.show(v);
+					return false;
+				}
+				
+			});
+		}
+		
+
 		return recordingView;
 	}
 
+	/**
+	 * Create the view for a icon with resourceId
+	 * 
+	 * @param resourceId	The id of a drawalbe image
+	 * @return
+	 */
+	private ImageView makeRecordingInfoIcon(int resourceId) {
+		ImageView iconImage = new ImageView(context);
+		iconImage.setImageResource(resourceId);
+		iconImage.setAdjustViewBounds(true);
+		iconImage.setLayoutParams(new LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+		
+		return iconImage;
+	}
+	
 	/**
 	 * Creates the view for a given speaker.
 	 *
@@ -85,9 +206,9 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	private ImageView makeSpeakerImageView(String speakerId) {
 		ImageView speakerImage = new ImageView(context);
 		speakerImage.setAdjustViewBounds(true);
-		speakerImage.setMaxHeight(40);
-		speakerImage.setMaxWidth(40);
-		speakerImage.setPaddingRelative(1,1,1,1);
+//		speakerImage.setScaleType(ImageView.ScaleType.FIT_END);
+		speakerImage.setMaxHeight(60);//40
+		speakerImage.setMaxWidth(60);//40
 		try {
 			speakerImage.setImageBitmap(Speaker.getSmallImage(speakerId));
 		} catch (IOException e) {
@@ -95,10 +216,56 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		}
 		return speakerImage;
 	}
+	
+	@Override
+	public Filter getFilter() {
+		return new Filter() {
+
+			@Override
+			protected FilterResults performFiltering(CharSequence constraint) {
+				// TODO Auto-generated method stub
+				constraint = constraint.toString().toLowerCase();
+				Filter.FilterResults results = new Filter.FilterResults();
+				
+				if(constraint == null || constraint.length() == 0) {
+					results.values = recordings;
+				} else {
+					List<Recording> filteredRecordings = 
+							new ArrayList<Recording>();
+					for(int i=0; i<recordings.size(); i++) {
+						Recording item = recordings.get(i);
+						List<Language> languages = item.getLanguages();
+						for(Language lang : languages) {
+							if(lang.getCode().contains(constraint)) {
+								filteredRecordings.add(item);
+								break;
+							}
+						}
+					}
+					results.values = filteredRecordings;
+				}
+				return results;
+			}
+
+			@Override
+			protected void publishResults(CharSequence constraint,
+					FilterResults results) {
+				// TODO Auto-generated method stub
+				List<Recording> filteredRecordings = 
+						(List<Recording>) results.values;
+				RecordingArrayAdapter.this.clear();
+				RecordingArrayAdapter.this.addAll(filteredRecordings);
+				RecordingArrayAdapter.this.notifyDataSetChanged();
+			}
+			
+		};
+	}
 
 	private static final int LIST_ITEM_LAYOUT = R.layout.recording_list_item;
 	private LayoutInflater inflater;
 	private Context context;
+	private List<Recording> recordings;
 	private SimpleDateFormat simpleDateFormat;
+	private QuickActionMenu quickMenu = null;
 
 }
