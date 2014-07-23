@@ -2,10 +2,8 @@ package org.lp20.aikuma.storage;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
 import java.util.List;
 
 import org.json.simple.*;
@@ -60,10 +58,15 @@ public class GoogleAuth {
 
 		if (apis.size() > 0) {
 			url += "&scope=";
+            String tmp = "";
 			for (String api: apis) {
-				url += api + " ";
-			}
-			url = url.trim();
+                tmp += api + " ";
+            }
+            try {
+                url += URLEncoder.encode(tmp.trim(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
 		}
 		
 		return url;

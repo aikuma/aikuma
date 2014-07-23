@@ -1,3 +1,4 @@
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.lp20.aikuma.storage.FusionIndex;
@@ -7,11 +8,9 @@ import org.lp20.aikuma.storage.Utils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by bob on 6/4/14.
@@ -19,18 +18,23 @@ import java.util.Properties;
  * A demo of adding a new FusionIndex item
  */
 public class IndexTool {
+
+    String tableId;
     String accessToken;
 
     Map<String,String> metadata;
     String identifier;
 
+
+
     public static void usage() {
-        System.err.println("Usage: IndexTool <action> <identifier> [data.json]");
+        System.err.println("Usage: IndexTool <action> [<identifier>] [data.json]");
 
     }
     public static void main(String[] args) {
         String accessToken = null;
         String refreshToken = null;
+        String tableId = null;
         String action = null;
 
         String client_id = "119115083785-cqbtnha90hobui893c0lc33olghb4uuv.apps.googleusercontent.com";
@@ -42,6 +46,7 @@ public class IndexTool {
             config.load(new FileInputStream(new File(System.getProperty("user.home") + "/.aikuma")));
             accessToken = config.getProperty("access_token");
             refreshToken = config.getProperty("refresh_token");
+            tableId = config.getProperty("table_id");
 
             if (!auth.validateAccessToken(accessToken)) {
                 auth.refreshAccessToken(refreshToken);
@@ -71,6 +76,7 @@ public class IndexTool {
         // TODO this should take a json file from the command line
 
         IndexTool index = new IndexTool(accessToken);
+        index.tableId = tableId;
         try {
             if ("add".equals(action)) {
 
@@ -82,6 +88,7 @@ public class IndexTool {
                     usage();
                     System.exit(1);
                 } catch (FileNotFoundException e) {
+                    System.err.println("Couldn't find file " + args[2]);
                     usage();
                     System.exit(2);
                     e.printStackTrace();
@@ -90,18 +97,33 @@ public class IndexTool {
             } else if ("get".equals(action)) {
                 identifier = args[1];
                 index.getItem(identifier);
+            } else if ("approve".equals(action)) {
+                identifier = args[1];
+                index.approveItem(identifier);
             } else if ("search".equals(action)) {
                 Map<String,String> criteria = new HashMap<String, String>();
                 criteria.put("speakers", "bob");
                 index.doSearch(criteria);
 
             } else if ("create".equals(action)) {
-                StringBuffer schema =  new StringBuffer();
-                BufferedReader r = new BufferedReader(new FileReader(new File(args[2])));
+                StringBuffer schema = new StringBuffer();
+                BufferedReader r = new BufferedReader(new FileReader(new File(args[1])));
                 while (r.ready()) {
                     schema.append(r.readLine());
                 }
                 index.create(schema.toString());
+            } else if ("modify".equals(action)) {
+                StringBuffer schema = new StringBuffer();
+                BufferedReader r = new BufferedReader(new FileReader(new File(args[1])));
+                while (r.ready()) {
+                    schema.append(r.readLine());
+                }
+                index.modify(schema.toString());
+            } else if ("drop".equals(action)) {
+                String tableIdToDrop = args[1];
+                index.dropTable(tableIdToDrop);
+            } else if ("list".equals(action)) {
+                index.listTables();
             }
 
         } catch (InvalidAccessTokenException e) {
@@ -113,49 +135,164 @@ public class IndexTool {
         }
     }
 
+    private void approveItem(String identifier) {
+        FusionIndex fi = getFusionIndex();
+        Map<String,String> md = new HashMap<String, String>(1);
+        md.put("date_approved",
+                new SimpleDateFormat("yyyy-mm-dd'T'hh:mm:ssZ").format(new Date()));
+        fi.update(identifier, md);
+    }
 
 
     private IndexTool(String accessToken) {
         this.accessToken = accessToken;
     }
     private void addItem(String identifier, Map<String,String> metadata) {
-        FusionIndex fi = new FusionIndex(accessToken);
+        FusionIndex fi = getFusionIndex();
         fi.index(identifier, metadata);
     }
-    private void getItem(String identifier) {
+
+    private FusionIndex getFusionIndex() {
         FusionIndex fi = new FusionIndex(accessToken);
+        fi.setTableId(tableId);
+        return fi;
+    }
+
+    private void getItem(String identifier) {
+        FusionIndex fi = getFusionIndex();
         Map<String,String> md = fi.getItemMetadata(identifier);
         for (String k : md.keySet()) {
             System.out.println(String.format("%s: %s", k, md.get(k)));
 
         }
     }
-    private void create(String schema, String... args) {
+    private void modify(String schema) {
+       JSONObject current = getSchemaForTable(tableId);
+       JSONObject target = (JSONObject) JSONValue.parse(schema);
+       Map<String,JSONObject> currentCols = new HashMap<String, JSONObject>(10);
+        Map<String,JSONObject> targetCols = new HashMap<String, JSONObject>(10);
+       for (Object tmp : (JSONArray) current.get("columns")) {
+           JSONObject col = (JSONObject) tmp;
+           currentCols.put((String) col.get("name"), col);
+       }
+       for (Object tmp : (JSONArray) target.get("columns")) {
+            JSONObject col = (JSONObject) tmp;
+            targetCols.put((String) col.get("name"), col);
+       }
+       for (JSONObject col: targetCols.values()) {
+           if (!currentCols.containsKey(col.get("name"))) {
+               addColumn(col);
+           }
+       }
+        for (JSONObject col: currentCols.values()) {
+            if (!targetCols.containsKey(col.get("name"))) {
+                removeColumn(col);
+            }
+        }
+    }
 
+    private void addColumn(JSONObject col) {
+        changeTable("https://www.googleapis.com/fusiontables/v1/tables/" + tableId +
+                    "/columns", col.toJSONString(), "POST");
+    }
+    private void removeColumn(JSONObject col) {
+        changeTable("https://www.googleapis.com/fusiontables/v1/tables/" + tableId +
+                "/columns/" + col.get("columnId"), col.toJSONString(), "DELETE");
+    }
+
+    private void create(String schema) {
+        changeTable("https://www.googleapis.com/fusiontables/v1/tables", schema, "POST");
+    }
+
+    private JSONObject getSchemaForTable(String tableId) {
+
+        HttpURLConnection cn = null;
         try {
-            HttpURLConnection cn = Utils.gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/tables"),
-                    "POST", accessToken);
-            cn.setRequestProperty("Content-Type", "application/json");
-            OutputStreamWriter out = new OutputStreamWriter(cn.getOutputStream());
-            out.write(schema);
-            out.flush();
-            out.close();
-
-            if (cn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                System.err.println(cn.getResponseCode() + "\n" + cn.getResponseMessage());
+            cn = Utils.gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/tables/" + tableId),
+                    "GET", accessToken);
+            if (cn.getResponseCode() != cn.HTTP_OK) {
+                System.out.println(cn.getResponseCode());
+                System.out.println(cn.getResponseMessage());
             } else {
+                //return (JSONObject) JSONValue.parse(new InputStreamReader(cn.getInputStream()));
+                String tmp  = Utils.readStream(cn.getInputStream());
+                System.out.println(tmp);
+                return (JSONObject) JSONValue.parse(tmp);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void changeTable(String url, String schema, String method) {
+        try {
+            HttpURLConnection cn = Utils.gapi_connect(new URL(url),
+                    method, accessToken);
+            cn.setRequestProperty("Content-Type", "application/json");
+            if (method != "DELETE") {
+                OutputStreamWriter out = new OutputStreamWriter(cn.getOutputStream());
+                out.write(schema);
+                out.flush();
+                out.close();
+            }
+            if (cn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 System.out.println(Utils.readStream(cn.getInputStream()));
+            } else if  ("DELETE".equals(method) && cn.getResponseCode() == cn.HTTP_NO_CONTENT) {
+                return;
+            } else {
+                System.err.println(cn.getResponseCode() + "\n" + cn.getResponseMessage());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    private boolean dropTable(String tableId) {
+        try {
+            HttpURLConnection cn = Utils.gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/tables/" +
+                    tableId),
+                    "DELETE", accessToken);
+            cn.setRequestProperty("Content-Type", "application/json");
+            if (cn.getResponseCode() != HttpURLConnection.HTTP_NO_CONTENT) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     private void doSearch(Map<String, String> params) {
-        FusionIndex fi = new FusionIndex(accessToken);
+        FusionIndex fi = getFusionIndex();
         for (String id : fi.search(params)) {
             System.out.println(id);
         }
+    }
 
+    private void listTables() {
+        try {
+            HttpURLConnection cn = Utils.gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/tables"),
+                    "GET", accessToken);
+
+            JSONObject o = (JSONObject) JSONValue.parse(new InputStreamReader(cn.getInputStream()));
+            for (Map<String,Object> item : (List<Map<String, Object>>) o.get("items")) {
+                System.out.println(item.get("name") + "\t" + item.get("tableId"));
+                HttpURLConnection cn2 = Utils.gapi_connect(new URL("https://www.googleapis.com/drive/v2/files/" +
+                        item.get("tableId") + "/permissions"), "GET", accessToken);
+                cn2.setDoOutput(false);
+                JSONObject o2 = (JSONObject) JSONValue.parse(new InputStreamReader(cn2.getInputStream()));
+
+                for (Map<String,Object> item2 : (List<Map<String, Object>>) o2.get("items")) {
+                    String name = (String) (item2.containsKey("name") ? item2.get("name") : item2.get("id"));
+                    System.out.println(name + "\t" + item2.get("role"));
+                }
+
+                System.out.println("--------------------");
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
