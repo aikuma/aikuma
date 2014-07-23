@@ -10,7 +10,7 @@
      {"name": "discourse_types", "type" : "STRING"},
      {"name": "date_backedup", "type" : "DATETIME"},
      {"name": "date_approved", "type" : "DATETIME"},
-     {"name": "info", "type" : "STRING"}
+     {"name": "metadata", "type" : "STRING"}
  ],
  "name" : "aikuma_metadata",
  "isExportable" : false,
