@@ -170,23 +170,34 @@ public class IndexTool {
        JSONObject current = getSchemaForTable(tableId);
        JSONObject target = (JSONObject) JSONValue.parse(schema);
        Map<String,JSONObject> currentCols = new HashMap<String, JSONObject>(10);
+        Map<String,JSONObject> targetCols = new HashMap<String, JSONObject>(10);
        for (Object tmp : (JSONArray) current.get("columns")) {
            JSONObject col = (JSONObject) tmp;
            currentCols.put((String) col.get("name"), col);
        }
        for (Object tmp : (JSONArray) target.get("columns")) {
             JSONObject col = (JSONObject) tmp;
+            targetCols.put((String) col.get("name"), col);
+       }
+       for (JSONObject col: targetCols.values()) {
            if (!currentCols.containsKey(col.get("name"))) {
-                addColumn(col);
+               addColumn(col);
            }
+       }
+        for (JSONObject col: currentCols.values()) {
+            if (!targetCols.containsKey(col.get("name"))) {
+                removeColumn(col);
+            }
         }
     }
 
     private void addColumn(JSONObject col) {
         changeTable("https://www.googleapis.com/fusiontables/v1/tables/" + tableId +
                     "/columns", col.toJSONString(), "POST");
-
-
+    }
+    private void removeColumn(JSONObject col) {
+        changeTable("https://www.googleapis.com/fusiontables/v1/tables/" + tableId +
+                "/columns/" + col.get("columnId"), col.toJSONString(), "DELETE");
     }
 
     private void create(String schema) {
@@ -219,14 +230,18 @@ public class IndexTool {
             HttpURLConnection cn = Utils.gapi_connect(new URL(url),
                     method, accessToken);
             cn.setRequestProperty("Content-Type", "application/json");
-            OutputStreamWriter out = new OutputStreamWriter(cn.getOutputStream());
-            out.write(schema);
-            out.flush();
-            out.close();
-            if (cn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                System.err.println(cn.getResponseCode() + "\n" + cn.getResponseMessage());
-            } else {
+            if (method != "DELETE") {
+                OutputStreamWriter out = new OutputStreamWriter(cn.getOutputStream());
+                out.write(schema);
+                out.flush();
+                out.close();
+            }
+            if (cn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 System.out.println(Utils.readStream(cn.getInputStream()));
+            } else if  ("DELETE".equals(method) && cn.getResponseCode() == cn.HTTP_NO_CONTENT) {
+                return;
+            } else {
+                System.err.println(cn.getResponseCode() + "\n" + cn.getResponseMessage());
             }
         } catch (IOException e) {
             e.printStackTrace();
