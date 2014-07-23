@@ -178,7 +178,7 @@ public class FusionIndex implements Index {
 
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.lp20.aikuma.storage.Index#search(java.util.Map)
      */
 	@Override
@@ -206,6 +206,10 @@ public class FusionIndex implements Index {
         return retval;
 	}
 
+    /**
+     * Validates search parameters
+     * @param constraints
+     */
     private void validateConstraints(Map<String, String> constraints) {
         for (String key : constraints.keySet()) {
             if (!fields.containsKey(key))
