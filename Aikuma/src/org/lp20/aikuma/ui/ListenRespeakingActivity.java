@@ -506,7 +506,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	/**
 	 * When the archive button is pressed
 	 *
-	 * @param	view	The share button
+	 * @param recording	Recording object which will be shared
 	 */
 	public void onArchiveButtonPressed(Recording recording) {
 		Intent intent = new Intent(this, GoogleCloudService.class);
