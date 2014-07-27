@@ -87,6 +87,9 @@ public class GoogleCloudService extends IntentService{
 			archive(id);
 		}
 	}
+	/**
+	 *  Back-up function: add all recording-items to the Set and call retry()
+	 */
 	private void backUp() {
 		List<Recording> recordings = Recording.readAll();
 		String requestDate = new SimpleDateFormat().
@@ -106,6 +109,9 @@ public class GoogleCloudService extends IntentService{
 		retry();
 	}
 	
+	/**
+	 *  Retry function: Upload all recording-items in the Set
+	 */
 	private void retry() {
 		Log.i(TAG, "retry start");
 		Set<String> recordings = new HashSet<String>(recordingSet);
@@ -135,6 +141,11 @@ public class GoogleCloudService extends IntentService{
 		}
 	}
 	
+	/**
+	 * Upload the recording-item having id
+	 * 
+	 * @param id	ID of the recording item
+	 */
 	private void archive(String id) {
 		Recording recording;
 		try {
@@ -163,6 +174,7 @@ public class GoogleCloudService extends IntentService{
 		
 	}
 	
+	// If the recording-item archiving is finished, remove the item from the Set
 	private void removeRecordingFromSet(String recordingId) {
 		recordingSet.remove(recordingId);
 		prefsEditor.putStringSet(key, recordingSet);
@@ -170,7 +182,16 @@ public class GoogleCloudService extends IntentService{
 		prefsEditor.commit();
 	}
 	
-	//state(0:approved, 1:File-uploaded, 2:FusionTabe-index-finished)
+	/**
+	 * Start uploading the recording-item
+	 * Archiving-state(0:approved, 1:File-uploaded, 
+	 * 2:FusionTabe-index-finished and x-archive.json file is created)
+	 * 
+	 * @param recording		The recording-item to be archived
+	 * @param requestDate	Archive-approval date
+	 * @param state			Archiving-state
+	 * @throws IOException	Exception during file-processing
+	 */
 	private void startArchiving(Recording recording, String requestDate, int state) throws IOException  {
 		File file = recording.getFile();
 		String id = recording.getId();
@@ -194,7 +215,7 @@ public class GoogleCloudService extends IntentService{
 		}
 	}
 	
-	//uploading
+	//upload the file to Google Drive
 	private boolean uploadFile(File recordingFile) throws IOException {
 		Log.i(TAG, "File-upload start");
 		Data data = Data.fromFile(recordingFile);
@@ -214,7 +235,7 @@ public class GoogleCloudService extends IntentService{
 		}
 	}
 	
-	// Indexing 
+	// Upload the metadata of the recording to FusionTable
 	private Date uploadMetadata(Recording recording, String identifier, String requestDate) throws IOException {
 		File metadataFile = recording.getMetadataFile();
 		

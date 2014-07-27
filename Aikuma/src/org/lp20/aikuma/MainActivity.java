@@ -239,7 +239,7 @@ public class MainActivity extends ListActivity {
             	SharedPreferences preferences = 
         				PreferenceManager.getDefaultSharedPreferences(this);
             	emailAccount = 
-                		data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+            			data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                 if (isDeviceOnline()) {	
                     new GetTokenTask(emailAccount, googleAPIScope, 
                     		preferences).execute();
