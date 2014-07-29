@@ -231,14 +231,15 @@ public class FusionIndex implements Index {
     }
 
     @Override
-    public void update(String identifier, Map<String, String> metadata) {
+    public boolean update(String identifier, Map<String, String> metadata) {
         validateMetadata(metadata, false);
         String rowid = getRowId(identifier);
         if (rowid == null) {
             log.severe("update called on item without an existing index entry");
-            return;
+            return false;
         }
         doPost(identifier, makeUpdate(rowid, metadata));
+        return true;
     }
 
     private boolean doPost(String identifier, String body) {

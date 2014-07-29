@@ -43,6 +43,6 @@ public interface Index {
      * @param identifier entry identifier
      * @param metadata  entry metadata
      */
-    public abstract void update(String identifier, Map<String,String> metadata);
+    public abstract boolean update(String identifier, Map<String,String> metadata);
 
 }
