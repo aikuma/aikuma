@@ -20,8 +20,10 @@ public class UploadFile {
 		
 		GoogleDriveStorage gd = new GoogleDriveStorage(args[1]);
 		
-		if (gd.store(file.getName(), data)) {
+		String download_url = gd.store(file.getName(), data);
+		if (download_url != null) {
 			System.out.println("OK");
+			System.out.println("File can be downloaded from " + download_url);
 		}
 		else {
 			System.out.println("Upload failed");

@@ -118,7 +118,7 @@ public class FusionIndex implements Index {
         for (int i = 0; i < columns.size(); i++) {
             String key = columns.get(i);
             String value = row.get(i);
-            if (fields.get(key).multiValue) {
+            if (fields.get(key).multiValue && value.length() > 0) {
                 value = value.replace('|', ',').substring(1, value.length() - 1);
             }
             ret.put(key, value);

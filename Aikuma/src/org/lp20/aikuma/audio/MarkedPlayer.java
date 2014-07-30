@@ -38,6 +38,22 @@ public class MarkedPlayer extends SimplePlayer {
 	}
 
 	/**
+	 * Constructor
+	 *
+	 * @param	recording	The metadata of the recording to be played
+	 * @throws	IOException	If an I/O issue occurs in the superconstructor.
+	 * @param	playThroughSpeaker	True if the audio is to be played through the main
+	 * speaker; false if through the ear piece (ie the private phone call style)
+	 */
+	public MarkedPlayer(Recording recording, boolean playThroughSpeaker) throws IOException {
+		super(recording, true);
+		notificationMarkerLoop = new Thread(new NotificationMarkerLoop());
+		notificationMarkerLoop.start();
+		unsetNotificationMarkerPosition();
+		count++;
+	}
+
+	/**
 	 * Returns the marker position in milliseconds
 	 *
 	 * @return	marker position in milliseconds
@@ -62,8 +78,22 @@ public class MarkedPlayer extends SimplePlayer {
 	 * @param	segment	The segment whose end is to be marked.
 	 */
 	public void setNotificationMarkerPosition(Segment segment) {
-		setNotificationMarkerPositionMsec(
-				sampleToMsec(segment.getEndSample()));
+		if (segment != null) {
+			setNotificationMarkerPositionMsec(
+					sampleToMsec(segment.getEndSample()));
+		} else {
+			unsetNotificationMarkerPosition();
+		}
+	}
+
+	/**
+	 * Sets the notificaiton marker position to be at the specified sample.
+	 *
+	 * @param	sample	The sample at which the notification marker is to be
+	 * set.
+	 */
+	public void setNotificationMarkerPositionSample(Long sample) {
+		setNotificationMarkerPositionMsec(sampleToMsec(sample));
 	}
 
 	/**
@@ -120,7 +150,7 @@ public class MarkedPlayer extends SimplePlayer {
 	 *
 	 * @param	onMarkerReachedListener	the listener to be notified.
 	 */
-	private void setOnMarkerReachedListener(OnMarkerReachedListener
+	public void setOnMarkerReachedListener(OnMarkerReachedListener
 			onMarkerReachedListener) {
 		this.onMarkerReachedListener = onMarkerReachedListener;
 	}
@@ -150,6 +180,17 @@ public class MarkedPlayer extends SimplePlayer {
 					// The player is being released so this thread should end.
 					break;
 				}
+				/* For later debugging 
+				 * (This is commented out because of too many logs)
+				Log.i(TAG, "notification marker position msec: " +
+						getNotificationMarkerPositionMsec() +
+						"\ngetCurentMsec(): " + getCurrentMsec());
+				
+				Log.i(TAG, "notification marker position sample: " +
+						msecToSample(getNotificationMarkerPositionMsec()) +
+						"\ngetCurentMsec() as sample: " +
+						msecToSample(getCurrentMsec()));
+				 */
 				if (notificationMarkerPosition >= 0) {
 					if (getCurrentMsec() >=
 							getNotificationMarkerPositionMsec()) {
@@ -173,6 +214,7 @@ public class MarkedPlayer extends SimplePlayer {
 	 */
 	private Thread notificationMarkerLoop;
 
+	private static final String TAG = "MarkedPlayer";
 
 	//////////////////////////////////////////////////////////////////////////
 

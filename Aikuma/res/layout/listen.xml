@@ -4,43 +4,17 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 	>
-
-	<include 
+	<ListView
 	    android:id="@+id/selectedOriginal"
 	    android:layout_height="wrap_content"
 	    android:layout_width="fill_parent"
-	    layout="@layout/recording_list_item"/>
-
+	    />
+	
 	<FrameLayout
 	    android:id="@+id/listenFragment"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_below="@id/selectedOriginal" />
-	
-	
-	
-	
-	<!-- 
-	<fragment
-		android:name="org.lp20.aikuma.ui.ListenFragment"
-		android:id="@+id/ListenFragment"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/selectedOriginal"
-	/>
-	 -->
-	 
-
-	<!-- 
-	<LinearLayout
-		android:id="@+id/RespeakingImages"
-		android:orientation="horizontal"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/recordingInterface"
-	/>
-	
-	 -->
 	
 	<ImageButton
 			android:id="@+id/respeaking"
@@ -52,11 +26,51 @@
 			android:layout_alignParentBottom="true"
 	/>
 
+	<View
+		android:id="@+id/topLine"
+		android:layout_width="fill_parent"
+		android:layout_height="2dip"
+		android:background="#999999"
+		android:layout_margin="5dp"
+		android:layout_below="@id/listenFragment"
+	/>
+	<TextView
+		android:id="@+id/transcriptView"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/topLine"
+		android:text=""
+	/>
+	<View
+		android:id="@+id/middleLine"
+		android:layout_width="fill_parent"
+		android:layout_height="2dip"
+		android:background="#999999"
+		android:layout_below="@id/transcriptView"
+		android:layout_margin="5dp"
+	/>
+	<TextView
+		android:id="@+id/transcriptView2"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/middleLine"
+		android:text=""
+		android:textStyle="italic"
+	/>
+	<View
+	    android:id="@+id/bottomLine"
+		android:layout_width="fill_parent"
+		android:layout_height="2dip"
+		android:background="#999999"
+		android:layout_below="@id/transcriptView2"
+		android:layout_margin="5dp"
+	/>
+	
 	<LinearLayout 
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="vertical"
-	    android:layout_below="@id/listenFragment"
+	    android:layout_below="@id/bottomLine"
 	    android:layout_above="@id/respeaking"
 	    >
 	    <VideoView
@@ -67,22 +81,10 @@
 	   		android:layout_gravity="center"
 	     	/>
 	    <ListView
-	    	android:id="@android:id/list"
+	    	android:id="@+id/relatedCommentaries"
 	    	android:layout_width="fill_parent"
 	    	android:layout_height="0dp"
 	    	android:layout_weight="1"
 	    	/>
 	</LinearLayout>
-
-	<!-- 
-	<ExpandableListView
-	    android:id="@+id/respeakingsList"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_below="@id/recordingInterface"
-	    android:layout_above="@id/respeaking" 
-	    />
-	
-	 -->
-	
 </RelativeLayout>

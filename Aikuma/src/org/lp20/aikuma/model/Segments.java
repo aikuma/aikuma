@@ -97,7 +97,8 @@ public class Segments {
 		for (String line : lines) {
 			String[] segmentMatch = line.split(":");
 			if (segmentMatch.length != 2) {
-				continue;
+				throw new RuntimeException(
+				"There must be just one colon on in a segment mapping line");
 			}
 			String[] originalSegment = segmentMatch[0].split(",");
 			String[] respeakingSegment = segmentMatch[1].split(",");
@@ -196,6 +197,21 @@ public class Segments {
 					respeakingSegment.getEndSample() + "\n";
 		}
 		return mapString;
+	}
+
+	/**
+	 * An exception thrown if the segment mapping file is incorrectly
+	 * formatted.
+	 */
+	public static class SegmentException extends Exception {
+		/**
+		 * Constructor
+		 *
+		 * @param	message	The message to be contained by the exception
+		 */
+		public SegmentException(String message) {
+			super(message);
+		}
 	}
 
 	private LinkedHashMap<Segment, Segment> segmentMap;

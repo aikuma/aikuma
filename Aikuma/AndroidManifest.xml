@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.lp20.aikuma"
-      android:versionCode="010019"
+      android:versionCode="010020"
       android:versionName="1.0.0-rc.4">
 	<uses-sdk android:minSdkVersion="14"/>
 	<uses-permission android:name="android.permission.RECORD_AUDIO"/>
@@ -11,6 +11,7 @@
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <application android:label="@string/app_name"
 			android:name="org.lp20.aikuma.Aikuma"
 			android:theme="@style/MyTheme"
@@ -19,7 +20,8 @@
     		android:name="com.google.android.gms.version"
     		android:value="@integer/google_play_services_version" />
 		<activity android:name="MainActivity"
-				android:label="@string/app_name">
+				android:label="@string/app_name"
+				android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
