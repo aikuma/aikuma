@@ -55,17 +55,20 @@ public class GoogleDriveStorage implements DataStore {
 	}
 
 	@Override
-	public boolean store(String identifier, Data data) {
+	public String store(String identifier, Data data) {
 		// identifier - aikuma file path
 		JSONObject obj = gapi_insert(data);
 		if (obj == null)
-			return false;
+			return null;
 		
 		JSONObject meta = new JSONObject();
 		meta.put("title", identifier);
 		String fileid = (String) obj.get("id");
 		JSONObject obj2 = gapi_update_metadata(fileid, meta);
-		return obj2 != null;
+		if (obj2 != null)
+			return (String) obj2.get("webContentLink");
+		else
+			return null;
 	}
 
 	@Override
