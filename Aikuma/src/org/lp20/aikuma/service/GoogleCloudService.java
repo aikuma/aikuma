@@ -69,8 +69,7 @@ public class GoogleCloudService extends IntentService{
 		
 		googleAuthToken = AikumaSettings.googleAuthToken;
 		
-		Log.i(TAG, recordingSet.toString());
-		Log.i(TAG, "GoogleCloudService created");
+		Log.i(TAG, "Cloud-service created:" + recordingSet.toString());
 	}
 
 	@Override
@@ -78,7 +77,7 @@ public class GoogleCloudService extends IntentService{
 		// TODO Auto-generated method stub
 		String id = (String)
 				intent.getExtras().get("id");
-		Log.i(TAG, "start cloud service: " + id);
+		Log.i(TAG, "Receive intent: " + id);
 		if(id.equals("backup")) {
 			backUp();
 		} else if(id.equals("retry")) {
@@ -119,7 +118,6 @@ public class GoogleCloudService extends IntentService{
 			Recording recording;
 			try {
 				recording = Recording.read(recordingId);
-//				Log.i(TAG, recording.getId() + ": " + recording.isArchived());
 				if(!recording.isArchived()) {
 					// Get the current state of archiving
 					String[] requestArchiveState = 
@@ -128,7 +126,7 @@ public class GoogleCloudService extends IntentService{
 					int archiveProgress = 
 							Integer.parseInt(requestArchiveState[1]);
 					
-					Log.i(TAG, recordingId + ": " + requestArchiveState[0]+"|"+requestArchiveState[1]);
+					Log.i(TAG, recordingId + "-state: " + requestArchiveState[0]+"|"+requestArchiveState[1]);
 					
 					startArchiving(recording, requestDate, archiveProgress);
 				} else {
@@ -158,7 +156,6 @@ public class GoogleCloudService extends IntentService{
 				prefsEditor.putStringSet(key, recordingSet);
 				
 				String recordingArchiveState = (requestDate + "|" + "0");
-				Log.i(TAG, "archive with state(" + recordingArchiveState + ")");
 				prefsEditor.putString(id, recordingArchiveState);
 				prefsEditor.commit();
 				
@@ -185,7 +182,7 @@ public class GoogleCloudService extends IntentService{
 	/**
 	 * Start uploading the recording-item
 	 * Archiving-state(0:approved, 1:File-uploaded, 
-	 * 2:FusionTabe-index-finished and x-archive.json file is created)
+	 * 2:FusionTabe-index-finished and [recording]-archive.json file is created)
 	 * 
 	 * @param recording		The recording-item to be archived
 	 * @param requestDate	Archive-approval date
@@ -217,7 +214,6 @@ public class GoogleCloudService extends IntentService{
 	
 	//upload the file to Google Drive
 	private boolean uploadFile(File recordingFile) throws IOException {
-		Log.i(TAG, "File-upload start");
 		Data data = Data.fromFile(recordingFile);
 		if (data == null) {
 			Log.e(TAG, "Source file doesn't exist");

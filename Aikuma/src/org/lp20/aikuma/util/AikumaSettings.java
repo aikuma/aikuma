@@ -7,6 +7,7 @@ package org.lp20.aikuma.util;
 /**
  * The class storing setting parameters which can be accessed
  * by all Android components in the application
+ * (Global Parameters)
  *
  * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
  */

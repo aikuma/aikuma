@@ -370,8 +370,7 @@ public class MainActivity extends ListActivity {
         @Override
         protected Void doInBackground(Void... params) {
         	try {
-        		Log.i(TAG, "Try to get access token");
-				googleAuthToken = getToken();
+        		googleAuthToken = getToken();
 				
 				// Store the default account, access-token for next use
 				SharedPreferences.Editor prefsEditor = preferences.edit();

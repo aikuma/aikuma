@@ -95,7 +95,7 @@ public class SettingsActivity extends AikumaActivity {
 		super.onResume();
 		try {
 			FileIO.writeDefaultSensitivity(defaultSensitivity);
-			Log.i("132", "wrote " + defaultSensitivity);
+			Log.i(TAG, "wrote " + defaultSensitivity);
 		} catch (IOException e) {
 			//If it can't be written then just toast it.
 			Toast.makeText(this, 
