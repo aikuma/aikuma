@@ -64,6 +64,8 @@ public class Client {
 	 */
 	public Client() {
 		apacheClient = new org.apache.commons.net.ftp.FTPClient();
+		uploadByte = 0;
+		downloadByte = 0;
 	}
 
 	/**
@@ -229,17 +231,21 @@ public class Client {
 					apacheClient.listNames());
 			File file = null;
 			Boolean result = null;
+		
 			for (String filename : clientFilenames) {
 				file = new File(clientDir.getPath() + "/" + filename);
 				if (!file.getName().endsWith(".inprogress")) {
-					if (!file.isDirectory()) {
-						if (!serverFilenames.contains(filename)) {
+					// If file doesn't end with '.inprogress', 
+					// it is not the one Aikuma previously made. Then check the file.
+					if (!file.isDirectory()) { // If it is not a directory
+						if (!serverFilenames.contains(filename)) { 
+							// and if Server doesn't have the file, push it to the server.
 							result = pushFile(directoryPath, file);
 							if (!result) {
 								return false;
 							}
 						}
-					} else {
+					} else { // If it is a directory, search the folder(DFS by pushDirecctory)
 						apacheClient.makeDirectory(filename);
 						result = pushDirectory(directoryPath + "/" + filename);
 						apacheClient.changeWorkingDirectory(
@@ -278,6 +284,7 @@ public class Client {
 					serverBaseDir + "/" + directoryPath + "/" + file.getName() +
 							".inprogress",
 					serverBaseDir + "/" + directoryPath + "/" + file.getName());
+			uploadByte += file.length();
 		} catch (IOException e) {
 			return false;
 		}
@@ -308,6 +315,7 @@ public class Client {
 					stream);
 			stream.close();
 			inProgressFile.renameTo(file);
+			downloadByte += inProgressFile.length();
 		} catch (IOException e) {
 			return false;
 		}
@@ -472,6 +480,8 @@ public class Client {
 
 			// Try to create a directory. If we succeed, we know that this
 			// directory is writable.
+			// ('/' and '/(folder-name)' which FTP server shares are checked)
+			// ('/': If FTP server configuration doesn't share '/', '/' is not writable)
 			String unlikelyDir = UUID.randomUUID().toString();
 			if (apacheClient.makeDirectory(unlikelyDir)) {
 				apacheClient.removeDirectory(unlikelyDir);
@@ -520,5 +530,15 @@ public class Client {
 	 * The path to the working directory.
 	 */
 	private String serverBaseDir;
+	
+	/**
+	 * Upload in Byte
+	 */
+	private long uploadByte;
+	
+	/**
+	 * Download in Byte
+	 */
+	private long downloadByte;
 
 }

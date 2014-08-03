@@ -11,8 +11,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.lp20.aikuma.model.ServerCredentials;
+import org.lp20.aikuma.ui.SyncSettingsActivity;
 //import org.lp20.sync.FTPSyncUtil;
 import org.lp20.aikuma.R;
 
@@ -83,18 +85,21 @@ public class SyncUtil {
 						if (!client.login(serverCredentials.getIPAddress(),
 								serverCredentials.getUsername(),
 								serverCredentials.getPassword())) {
-							unsetSyncFlag("Login failed");
+							unsetSyncFlag("Login failed.\n(Check IP/UserID/Password)");
 							Log.i("sync", "login failed: " +
 									serverCredentials.getIPAddress());
 						} else if (!client.sync()) {
-							Log.i("sync", "sync failed.");
+							Log.i("sync", "sync failed.\n(Check the setting of FTP server)");
 							unsetSyncFlag("Transfer failed");
 						} else if (!client.logout()) {
 							Log.i("sync", "Logout failed.");
-							unsetSyncFlag("Logout failed");
+							unsetSyncFlag("Logout failed.");
 						} else {
 							Log.i("sync", "sync complete.");
-							unsetSyncFlag("Sync successful");
+							unsetSyncFlag("Sync was finished successfully");
+							// Log the success-date in credential file
+							((SyncSettingsActivity)
+									syncSettingsActivity).setSyncSuccessDate(new Date());
 						}
 						Log.i("sync", "end of conditional block");
 						waitMins = 1;

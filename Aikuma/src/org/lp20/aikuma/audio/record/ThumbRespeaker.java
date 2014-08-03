@@ -54,9 +54,22 @@ public class ThumbRespeaker {
 	/**
 	 * Plays the original recording.
 	 */
-	public void playOriginal() {
-		player.seekToSample(mapper.getOriginalStartSample());
-		mapper.markOriginal(player);
+	/**
+	 * Plays the original recording.
+	 * @param playMode	(0:Continue, 1:Rewind and Store, 2:Only rewind)
+	 */
+	public void playOriginal(int playMode) {
+		switch(playMode) {
+		case 0: // Continue playing
+			break;
+		case 1:	//Rewind and record the start-sample in mapper
+			player.seekToSample(mapper.getOriginalStartSample());
+			mapper.markOriginal(player);
+			break;
+		case 2:	//Only rewind to the previous point
+			player.seekToSample(previousEndSample);
+			break;
+		}
 		player.play();
 	}
 
@@ -65,6 +78,7 @@ public class ThumbRespeaker {
 	 */
 	public void pauseOriginal() {
 		player.pause();
+		previousEndSample = player.getCurrentSample();
 	}
 
 	/**
@@ -154,4 +168,7 @@ public class ThumbRespeaker {
 
 	/** Indicates whether the recording has finished playing. */
 	private boolean finishedPlaying;
+	
+	/** Previous sample-point */
+	private long previousEndSample;
 }
