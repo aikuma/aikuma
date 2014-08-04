@@ -53,6 +53,7 @@ public class FusionIndex implements Index {
         fields.put("date_backedup", new FieldInfo(false, false));
         fields.put("date_approved", new FieldInfo(false, false));
         fields.put("metadata", new FieldInfo(false, false));
+        fields.put("user_id", new FieldInfo(true, false));
     }
 
     private static final Set<String> discourseTypes;
