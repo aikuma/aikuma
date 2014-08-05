@@ -52,6 +52,8 @@ public class FusionIndex implements Index {
         fields.put("discourse_types", new FieldInfo(false, true));
         fields.put("date_backedup", new FieldInfo(false, false));
         fields.put("date_approved", new FieldInfo(false, false));
+        fields.put("metadata", new FieldInfo(false, false));
+        fields.put("user_id", new FieldInfo(true, false));
     }
 
     private static final Set<String> discourseTypes;
@@ -231,14 +233,15 @@ public class FusionIndex implements Index {
     }
 
     @Override
-    public void update(String identifier, Map<String, String> metadata) {
+    public boolean update(String identifier, Map<String, String> metadata) {
         validateMetadata(metadata, false);
         String rowid = getRowId(identifier);
         if (rowid == null) {
             log.severe("update called on item without an existing index entry");
-            return;
+            return false;
         }
         doPost(identifier, makeUpdate(rowid, metadata));
+        return true;
     }
 
     private boolean doPost(String identifier, String body) {
