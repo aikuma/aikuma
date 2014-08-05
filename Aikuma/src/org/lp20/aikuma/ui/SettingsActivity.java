@@ -75,7 +75,7 @@ public class SettingsActivity extends AikumaActivity {
 	private void readRespeakingRewind() {
 		int rewindAmount = preferences.getInt("respeaking_rewind", 500);
 		EditText rewindAmountView = (EditText) findViewById(R.id.rewindAmount);
-		rewindAmountView.setText(""+rewindAmount);
+		rewindAmountView.setText(Integer.toString(rewindAmount));
 	}
 
 	private void writeRespeakingRewind() {

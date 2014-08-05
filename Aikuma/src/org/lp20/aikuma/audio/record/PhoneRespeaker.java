@@ -251,6 +251,7 @@ public class PhoneRespeaker implements
 	/** The mapper used to store mapping data. */
 	private Mapper mapper;
 
-	/** Rewind-amount in msec after each respeaking-segment. */
+	/** The amount to rewind the original in msec 
+	 * after each respeaking-segment. */
 	private int rewindAmount;
 }

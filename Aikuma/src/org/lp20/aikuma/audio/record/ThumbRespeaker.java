@@ -176,6 +176,7 @@ public class ThumbRespeaker {
 	private long previousEndSample;
 
 	
-	/** Rewind-amount in msec after each respeaking-segment. */
+	/** The amount to rewind the original in msec 
+	 * after each respeaking-segment. */
 	private int rewindAmount;
 }

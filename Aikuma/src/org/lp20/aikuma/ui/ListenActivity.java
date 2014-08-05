@@ -335,7 +335,7 @@ public class ListenActivity extends AikumaActivity {
 				PreferenceManager.getDefaultSharedPreferences(this);
 		String respeakingMode = preferences.getString(
 				"respeaking_mode", "nothing");
-		int rewindAmount = preferences.getInt("respeaking_rewind", 1000);
+		int rewindAmount = preferences.getInt("respeaking_rewind", 500);
 		Log.i(TAG, 
 				"respeakingMode: " + respeakingMode +", rewindAmount: " + rewindAmount);
 		Intent intent;
