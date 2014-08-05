@@ -803,7 +803,7 @@ public class Recording {
 	
 	/**
 	 * Make the archived recording's metadata
-	 *
+	 * @param backupDate	when upload finished
 	 * @throws	IOException	In case of an issue writing the archiveMetadata file.
 	 * Note that this will not be thrown if the file already exists.
 	 */

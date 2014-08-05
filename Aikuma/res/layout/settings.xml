@@ -33,6 +33,19 @@
 		android:layout_height="32dp"
 		android:maxHeight="10dp"
 	/>
+
+	<TextView
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:text="Automatic Backup" />
+
+	<CheckBox
+	    android:id="@+id/backup_checkBox"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="Enable Backup" 
+	    android:onClick="onBackupCheckBoxClicked" />
+
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

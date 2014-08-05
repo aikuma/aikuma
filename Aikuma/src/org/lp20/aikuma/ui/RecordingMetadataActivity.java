@@ -9,17 +9,12 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -40,6 +35,8 @@ import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.service.GoogleCloudService;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -190,6 +187,14 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 								"Failed to write the Recording metadata:\t" +
 								e.getMessage(), Toast.LENGTH_LONG).show();
 						}
+						// If automatic-backup is enabled, archive this file
+						if(AikumaSettings.isBackupEnabled) {
+							Intent serviceIntent = new Intent(RecordingMetadataActivity.this, 
+									GoogleCloudService.class);
+							serviceIntent.putExtra("id", recording.getId());
+							startService(serviceIntent);
+						}
+
 						startActivity(intent);
 					}
 				})

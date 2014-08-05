@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -19,7 +20,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.UsageUtils;
 
@@ -37,10 +44,14 @@ public class SettingsActivity extends AikumaActivity {
 	 */
 	public static final int DEFAULT_DEFAULT_SENSITIVITY  = 4000;
 
+	private final String TAG = "SettingsActivity";
+	
 	private SeekBar sensitivitySlider;
 	private int defaultSensitivity;
 	private SharedPreferences preferences;
 
+	private boolean isBackupEnabled;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,6 +65,16 @@ public class SettingsActivity extends AikumaActivity {
 				PreferenceManager.getDefaultSharedPreferences(this);
 		readRespeakingMode();
 		setupSensitivitySlider();
+		setupBackupCheckBox();
+	}
+	
+	private void setupBackupCheckBox() {
+		CheckBox backupCheckBox = (CheckBox)
+				findViewById(R.id.backup_checkBox);
+		isBackupEnabled =
+				preferences.getBoolean("backup", false);
+		Log.i(TAG, "backup: " + isBackupEnabled);
+		backupCheckBox.setChecked(isBackupEnabled);
 	}
 
 	// Set the respeaking mode radio buttons as per the settings.
@@ -74,7 +95,7 @@ public class SettingsActivity extends AikumaActivity {
 		super.onResume();
 		try {
 			FileIO.writeDefaultSensitivity(defaultSensitivity);
-			Log.i("132", "wrote " + defaultSensitivity);
+			Log.i(TAG, "wrote " + defaultSensitivity);
 		} catch (IOException e) {
 			//If it can't be written then just toast it.
 			Toast.makeText(this, 
@@ -161,4 +182,31 @@ public class SettingsActivity extends AikumaActivity {
 				break;
 		}
 	}
+	
+	/**
+	 * Adjusts the settings when the backup checkbox is pressed.
+	 * 
+	 * @param checkBox	The checkbox 
+	 */
+	public void onBackupCheckBoxClicked(View checkBox) {
+		boolean checked = ((CheckBox) checkBox).isChecked();
+		Editor prefsEditor = preferences.edit();
+		Log.i(TAG, "checkbox: " + checked);
+		if(checked) {
+			if(!isBackupEnabled) {
+				Intent intent = new Intent(this, GoogleCloudService.class);
+				intent.putExtra("id", "backup");
+				startService(intent);
+				isBackupEnabled = true;
+			}
+			
+			prefsEditor.putBoolean("backup", true);
+			prefsEditor.commit();
+		} else {
+			prefsEditor.putBoolean("backup", false);
+			prefsEditor.commit();
+		}
+	}
+	
+
 }
