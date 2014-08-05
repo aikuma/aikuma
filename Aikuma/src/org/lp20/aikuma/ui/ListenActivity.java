@@ -335,7 +335,9 @@ public class ListenActivity extends AikumaActivity {
 				PreferenceManager.getDefaultSharedPreferences(this);
 		String respeakingMode = preferences.getString(
 				"respeaking_mode", "nothing");
-		Log.i("ListenActivity", "respeakingMode: " + respeakingMode);
+		int rewindAmount = preferences.getInt("respeaking_rewind", 1000);
+		Log.i(TAG, 
+				"respeakingMode: " + respeakingMode +", rewindAmount: " + rewindAmount);
 		Intent intent;
 		if (respeakingMode.equals("phone")) {
 			intent = new Intent(this, PhoneRespeakActivity.class);
@@ -345,6 +347,8 @@ public class ListenActivity extends AikumaActivity {
 		}
 		intent.putExtra("sourceId", recording.getId());
 		intent.putExtra("sampleRate", recording.getSampleRate());
+		intent.putExtra("rewindAmount", rewindAmount);
+		
 		startActivity(intent);
 	}
 
@@ -556,4 +560,6 @@ public class ListenActivity extends AikumaActivity {
 	private QuickActionMenu quickMenu;
 	
 	private String googleAuthToken;
+	
+	private static final String TAG = "ListenActivity";
 }

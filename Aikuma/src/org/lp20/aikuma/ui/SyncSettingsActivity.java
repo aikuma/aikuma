@@ -139,20 +139,6 @@ public class SyncSettingsActivity extends AikumaActivity {
 			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
-
-	/**
-	 * Set the latest syncSuccess date
-	 * (Used by SyncUtil)
-	 * @param date	The success date
-	 */
-	public void setSyncSuccessDate(Date date) {
-		lastSyncSuccessDate = new StandardDateFormat().format(date);
-		try {
-			commitServerCredentials();
-		} catch (IOException e) {
-			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-		}
-	}
 	
 	private EditText ipAddressField;
 	private EditText usernameField;

@@ -25,10 +25,6 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
-import org.lp20.aikuma.audio.SimplePlayer;
-import org.lp20.aikuma.audio.InterleavedPlayer;
-import org.lp20.aikuma.model.Segments;
-import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.R;
 
 /**
@@ -127,6 +123,7 @@ public class ThumbRespeakFragment extends Fragment {
 					respeaker.pauseOriginal();
 					stopThread(seekBarThread);
 					gestureTime = (respeaker.getSimplePlayer().getCurrentMsec() - gestureTime);
+					Log.i("Thumb", ""+ gestureTime);
 					if(gestureTime >= VALID_GESTURE_TIME) {
 						isCommented = false;
 					}

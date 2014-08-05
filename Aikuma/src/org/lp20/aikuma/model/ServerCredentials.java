@@ -29,6 +29,7 @@ public class ServerCredentials {
 	 * @param	password	The password corresponding to the user.
 	 * @param	syncActivated	A flag indicating whether automatic sync is
 	 * activated or not
+	 * @param	lastSyncDate	Latest sync success date
 	 */
 	public ServerCredentials(String ipAddress, String username, 
 			String password, boolean syncActivated, String lastSyncDate) {
@@ -131,7 +132,13 @@ public class ServerCredentials {
 		return this.syncActivated;
 	}
 
-	private void setLastSyncDate(String lastSyncDate) {
+	/**
+	 * Sets the latest sync-date.
+	 * (Called by SyncUtil)
+	 * 
+	 * @param lastSyncDate	Lastest success sync date
+	 */
+	public void setLastSyncDate(String lastSyncDate) {
 		this.lastSyncDate = lastSyncDate;
 	}
 	

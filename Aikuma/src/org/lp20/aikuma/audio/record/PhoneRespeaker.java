@@ -42,12 +42,14 @@ public class PhoneRespeaker implements
 	 * @param	respeakingUUID	The UUID of this respeaking.
 	 * @param	analyzer	The analyzer that determines what audio constitutes
 	 * speech.
+	 * @param	rewindAmount	Rewind-amount in msec after each respeaking-segment
 	 * @throws	MicException	If there is an issue setting up the microphone.
 	 * @throws	IOException	If there is an I/O issue.
 	 */
 	public PhoneRespeaker(Recording original, UUID respeakingUUID,
-			Analyzer analyzer) throws MicException, IOException {
+			Analyzer analyzer, int rewindAmount) throws MicException, IOException {
 		this.analyzer = analyzer;
+		this.rewindAmount = rewindAmount;
 		setUpMicrophone(original.getSampleRate());
 		setUpFile(respeakingUUID);
 		setUpPlayer(original);
@@ -164,7 +166,7 @@ public class PhoneRespeaker implements
 			if (this.player.isFinishedPlaying()) {
 				stop();
 			} else {
-				//player.rewind(getRewindAmount());
+				player.rewind(rewindAmount);
 				switchToPlay();
 			}
 		}
@@ -249,4 +251,6 @@ public class PhoneRespeaker implements
 	/** The mapper used to store mapping data. */
 	private Mapper mapper;
 
+	/** Rewind-amount in msec after each respeaking-segment. */
+	private int rewindAmount;
 }
