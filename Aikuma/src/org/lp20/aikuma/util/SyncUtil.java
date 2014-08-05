@@ -86,12 +86,12 @@ public class SyncUtil {
 								serverCredentials.getUsername(),
 								serverCredentials.getPassword())) {
 							unsetSyncFlag(previousStatus + 
-									"Authentication failed.\n(Check IP/UserID/Password)\n");
+									"\nAuthentication failed.\n(Check IP/UserID/Password/FTP-setup)\n");
 							Log.i("sync", "login failed: " +
 									serverCredentials.getIPAddress());
 						} else if (!client.sync()) {
 							Log.i("sync", "sync failed.");
-							unsetSyncFlag(previousStatus + "Transfer failed\n");
+							unsetSyncFlag(previousStatus + "\nTransfer failed\n");
 						} else if (!client.logout()) {
 							Log.i("sync", "Logout failed.");
 							unsetSyncFlag("Logout failed.");

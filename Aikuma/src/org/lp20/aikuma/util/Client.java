@@ -124,7 +124,7 @@ public class Client {
 					logout();
 					Log.i("sync", "serverbaseDir is null");
 					SyncUtil.updateSyncTextView(
-							"There is no writable directory on the server");
+							"There is no writable 'aikuma' directory on the server");
 					return false;
 				} else {
 					setServerBaseDir(findServerBaseDir());
@@ -537,16 +537,57 @@ public class Client {
 	}
 
 	/**
-	 * Finds the first writable directory on the server.
+	 * Find the writable 'aikuma' directory at the root directory on the server.
 	 *
 	 * @return	the first writable directory on the server.
 	 */
-
 	public String findServerBaseDir() {
-		String dir = findWritableDir("/");
+		String dir = findAikumaDir("/");
 		return dir;
 	}
 
+	/**
+	 * Find the writable 'aikuma' folder, if not exist try to create it
+	 * 
+	 * @param 	startPath		root directory
+	 * @return	A string representation of the aikuma directory.
+	 */
+	private String findAikumaDir(String startPath) {
+		try {
+			if (!apacheClient.changeWorkingDirectory(startPath)) {
+				return null;
+			}
+			
+			//Try creating the 'aikuma' directory
+			if(apacheClient.makeDirectory(startPath + "aikuma")) {
+				return (startPath + "aikuma");
+			}
+			
+			// If there is aikuma folder already made, 
+			// Find aikuma folder from the root directory
+			List<FTPFile> directories = 
+					Arrays.asList(apacheClient.listDirectories());
+			for(FTPFile dir : directories) {
+				Log.i("sync", "Dir: " + startPath + dir.getName());
+				if(dir.getName().equals("aikuma")) {
+					// Check if '/aikuma' directory is writable
+					apacheClient.changeWorkingDirectory(startPath + dir.getName());
+					String unlikelyDir = UUID.randomUUID().toString();
+					if (apacheClient.makeDirectory(unlikelyDir)) {
+						apacheClient.removeDirectory(unlikelyDir);
+						return (startPath + dir.getName());
+					}
+				}
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
 	/**
 	 * Find the first writable directory under the specified path. Note that it
 	 * uses a depth-first approach to determine what is "first writable".
