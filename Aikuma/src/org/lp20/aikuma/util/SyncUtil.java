@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.lp20.aikuma.model.ServerCredentials;
-import org.lp20.aikuma.ui.SyncSettingsActivity;
 //import org.lp20.sync.FTPSyncUtil;
 import org.lp20.aikuma.R;
 

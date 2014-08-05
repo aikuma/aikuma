@@ -20,15 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.CheckBox;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.ServerCredentials;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
-import org.lp20.aikuma.util.StandardDateFormat;
 import org.lp20.aikuma.util.SyncUtil;
 
 /**
