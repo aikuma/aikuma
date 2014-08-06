@@ -46,7 +46,7 @@ public class FusionIndex implements Index {
         fields.put("data_store_uri", new FieldInfo(true, false));
         fields.put("item_id", new FieldInfo(true, false));
         fields.put("file_type", new FieldInfo(true, false));
-        fields.put("language", new FieldInfo(true, false));
+        fields.put("languages", new FieldInfo(true, true));
         fields.put("speakers", new FieldInfo(true, true));
         fields.put("tags", new FieldInfo(false, true));
         fields.put("discourse_types", new FieldInfo(false, true));
