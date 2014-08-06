@@ -24,6 +24,7 @@ import org.lp20.aikuma.storage.Data;
 import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
 import org.lp20.aikuma.util.AikumaSettings;
+import org.lp20.aikuma.util.FileIO;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -128,7 +129,11 @@ public class GoogleCloudService extends IntentService{
 					
 					Log.i(TAG, recordingId + "-state: " + requestArchiveState[0]+"|"+requestArchiveState[1]);
 					
-					startArchiving(recording, requestDate, archiveProgress);
+					String uri = null;
+					if (requestArchiveState.length >= 3 && requestArchiveState[2].length() > 0)
+						uri = requestArchiveState[2];
+						
+					startArchiving(recording, requestDate, uri, archiveProgress);
 				} else {
 					removeRecordingFromSet(recordingId);
 				}
@@ -160,7 +165,7 @@ public class GoogleCloudService extends IntentService{
 				prefsEditor.commit();
 				
 				
-				startArchiving(recording, requestDate, 0);
+				startArchiving(recording, requestDate, null, 0);
 			} else {
 				removeRecordingFromSet(id);
 			}
@@ -189,23 +194,23 @@ public class GoogleCloudService extends IntentService{
 	 * @param state			Archiving-state
 	 * @throws IOException	Exception during file-processing
 	 */
-	private void startArchiving(Recording recording, String requestDate, int state) throws IOException  {
+	private void startArchiving(Recording recording, String requestDate, String uri, int state) throws IOException  {
 		File file = recording.getFile();
 		String id = recording.getId();
 		String identifier = file.getName();
 		
 		switch(state) {
 		case 0:
-			boolean success = uploadFile(file);
-			if(!success) return;
-			String recordingArchiveState = (requestDate + "|" + "1");
+			uri = uploadFile(file);
+			if(uri == null) return;
+			String recordingArchiveState = (requestDate + "|1|" + uri);
 			prefsEditor.putString(id, recordingArchiveState);
 			prefsEditor.commit();
 		case 1:
 			Date uploadDate = 
-				uploadMetadata(recording, identifier, requestDate);
+				uploadMetadata(recording, identifier, requestDate, uri);
 			if(uploadDate != null) {
-				recording.archive(uploadDate.toString());
+				recording.archive(uploadDate.toString(), uri);
 				
 				removeRecordingFromSet(id);
 			}
@@ -213,57 +218,59 @@ public class GoogleCloudService extends IntentService{
 	}
 	
 	//upload the file to Google Drive
-	private boolean uploadFile(File recordingFile) throws IOException {
+	private String uploadFile(File recordingFile) throws IOException {
 		Data data = Data.fromFile(recordingFile);
 		if (data == null) {
 			Log.e(TAG, "Source file doesn't exist");
-			return false;		
+			return null;		
 		}
 		
 		GoogleDriveStorage gd = new GoogleDriveStorage(googleAuthToken);
-		if(gd.store(recordingFile.getName(), data)) {
+		String uri = gd.store(recordingFile.getName(), data);
+		if(uri != null)
 			Log.i(TAG, "File-upload success");
-			return true;
-		}
-		else {
+		else
 			Log.i(TAG, "File-Upload failed");
-			return false;
-		}
+		return uri;
 	}
 	
 	// Upload the metadata of the recording to FusionTable
-	private Date uploadMetadata(Recording recording, String identifier, String requestDate) throws IOException {
+	private Date uploadMetadata(Recording recording, String identifier, String requestDate, String uri) throws IOException {
 		File metadataFile = recording.getMetadataFile();
+		String jsonstr;
+		try {
+			jsonstr = FileIO.read(metadataFile);
+		} catch (IOException e) {
+			Log.e(TAG, "Failed to read metadata file: " + metadataFile.getPath());
+			return null;
+		}
 		
 		FusionIndex fi = new FusionIndex(googleAuthToken);
-		JSONObject jsonfile;
-		try {
-			jsonfile = (JSONObject) JSONValue.parse(new FileReader(metadataFile));
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, "Metadata file doesn't exist");
-			return null;	
-		}
+		JSONObject jsonfile = (JSONObject) JSONValue.parse(jsonstr);
+
 		Map<String, String> metadata = new HashMap<String,String>();
 		JSONArray speakers_arr = (JSONArray) jsonfile.get("people");
 		String speakers = "";
 		String joiner = "";
 		for (Object obj: speakers_arr) {
 			speakers += joiner + (String) obj;
-			joiner = "|";
+			joiner = ",";
 		}
 		String languages = "";
 		joiner = "";
 		for (Object obj: (JSONArray) jsonfile.get("languages")) {
 			String lang = (String) ((JSONObject) obj).get("code");
 			languages += joiner + lang;
-			joiner = "|";
+			joiner = ",";
 			break;  // TODO: use only the first language for now
 		}
-		metadata.put("data_store_uri", "NA");  // TODO: obtain real url
+		metadata.put("user_id", "NA");
+		metadata.put("metadata", jsonstr);
+		metadata.put("data_store_uri", uri);
 		metadata.put("item_id", (String) jsonfile.get("recording"));
 		metadata.put("file_type", (String) jsonfile.get("type"));
 		metadata.put("speakers", speakers);
-		metadata.put("language", languages);
+		metadata.put("languages", languages);
 		metadata.put("date_approved", requestDate);
 		Date uploadDate = new Date();
 		metadata.put("date_backedup", 

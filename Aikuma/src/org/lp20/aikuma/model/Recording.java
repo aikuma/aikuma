@@ -804,14 +804,16 @@ public class Recording {
 	/**
 	 * Make the archived recording's metadata
 	 * @param backupDate	when upload finished
+	 * @param downloadUrl	url where the recording file can be downloaded
 	 * @throws	IOException	In case of an issue writing the archiveMetadata file.
 	 * Note that this will not be thrown if the file already exists.
 	 */
-	public void archive(String backupDate) throws IOException {
+	public void archive(String backupDate, String downloadUrl) throws IOException {
 		JSONObject archiveMetadata = new JSONObject();
 		archiveMetadata.put("name", this.name);
 		archiveMetadata.put("recording", this.groupId);
 		archiveMetadata.put("backupDate", backupDate);
+		archiveMetadata.put("download_url", downloadUrl);
 		
 		FileIO.writeJSONObject(new File(getRecordingsPath(), 
 				getGroupId() + "/" + id + "-archive.json"),
