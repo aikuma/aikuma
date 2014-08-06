@@ -93,6 +93,17 @@ public class SimplePlayer extends Player implements Sampler {
 			//so no issue.
 		}
 	}
+	
+	/**
+	 * Rewind back for rewindAmount
+	 * @param rewindAmount	in msec
+	 */
+	public void rewind(int rewindAmount) {
+		int currentPos = getCurrentMsec();
+		int rewindedPos = (currentPos-rewindAmount);
+		rewindedPos = rewindedPos < 0 ? 0 : rewindedPos;
+		seekToMsec(rewindedPos);
+	}
 
 	/**
 	 * Indicates whether the recording is currently being played.

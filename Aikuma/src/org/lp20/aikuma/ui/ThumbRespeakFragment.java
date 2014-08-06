@@ -25,10 +25,6 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
-import org.lp20.aikuma.audio.SimplePlayer;
-import org.lp20.aikuma.audio.InterleavedPlayer;
-import org.lp20.aikuma.model.Segments;
-import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.R;
 
 /**
@@ -88,8 +84,21 @@ public class ThumbRespeakFragment extends Fragment {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					// Color change
 					//playButton.setBackgroundColor(0xff00d500);
+					int previousGestureTime = gestureTime;
+					gestureTime = respeaker.getSimplePlayer().getCurrentMsec();
 					
-					respeaker.playOriginal();
+					if(isCommented){ // After commentary is recorded(or At the start)
+						//Rewind and Store the start-point
+						respeaker.playOriginal(1); 
+					} else { // After commentary is recorded(or At the start) and 
+							 // green-arrow button is pressed more than once
+						if(previousGestureTime < VALID_GESTURE_TIME) {
+							respeaker.playOriginal(2); //Rewind
+						} else {
+							respeaker.playOriginal(0); //Continue
+						}
+					}
+					
 					seekBarThread = new Thread(new Runnable() {
 							public void run() {
 								int currentPosition;
@@ -113,6 +122,11 @@ public class ThumbRespeakFragment extends Fragment {
 					//playButton.setBackgroundColor(greyColor);
 					respeaker.pauseOriginal();
 					stopThread(seekBarThread);
+					gestureTime = (respeaker.getSimplePlayer().getCurrentMsec() - gestureTime);
+					Log.i("Thumb", ""+ gestureTime);
+					if(gestureTime >= VALID_GESTURE_TIME) {
+						isCommented = false;
+					}
 				}
 				return false;
 			}
@@ -130,6 +144,7 @@ public class ThumbRespeakFragment extends Fragment {
 					//respeakButton.setBackgroundColor(greyColor);
 					try {
 						respeaker.pauseRespeaking();
+						isCommented = true;
 					} catch (MicException e) {
 						ThumbRespeakFragment.this.getActivity().finish();
 					}
@@ -198,4 +213,8 @@ public class ThumbRespeakFragment extends Fragment {
 	private Recording recording;
 	private UUID uuid;
 	private int sampleRate;
+	
+	private final int VALID_GESTURE_TIME = 100; //0.1sec
+	private int gestureTime = VALID_GESTURE_TIME;
+	private boolean isCommented = true;
 }

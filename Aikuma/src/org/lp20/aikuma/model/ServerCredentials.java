@@ -29,13 +29,15 @@ public class ServerCredentials {
 	 * @param	password	The password corresponding to the user.
 	 * @param	syncActivated	A flag indicating whether automatic sync is
 	 * activated or not
+	 * @param	lastSyncDate	Latest sync success date
 	 */
 	public ServerCredentials(String ipAddress, String username, 
-			String password, boolean syncActivated) {
+			String password, boolean syncActivated, String lastSyncDate) {
 		setIPAddress(ipAddress);
 		setUsername(username);
 		setPassword(password);
 		setSyncActivated(syncActivated);
+		setLastSyncDate(lastSyncDate);
 	}
 
 	/**
@@ -65,8 +67,9 @@ public class ServerCredentials {
 		String password = (String) encodedServerCredentials.get("password");
 		Boolean syncActivated = (Boolean)
 				encodedServerCredentials.get("syncActivated");
+		String lastSyncDate = (String) encodedServerCredentials.get("lastSyncDate");
 		return new ServerCredentials(
-				ipAddress, username, password, syncActivated);
+				ipAddress, username, password, syncActivated, lastSyncDate);
 	}
 
 	// Encodes the server credentials as a JSON object.
@@ -76,6 +79,7 @@ public class ServerCredentials {
 		encodedServerCredentials.put("username", getUsername());
 		encodedServerCredentials.put("password", getPassword());
 		encodedServerCredentials.put("syncActivated", getSyncActivated());
+		encodedServerCredentials.put("lastSyncDate", getLastSyncDate());
 		return encodedServerCredentials;
 	}
 
@@ -91,6 +95,10 @@ public class ServerCredentials {
 		return password;
 	}
 
+	public String getLastSyncDate() {
+		return lastSyncDate;
+	}
+	
 	//Sets the IP address but will only accept valid IPv4 addresses.
 	private void setIPAddress(String ipAddress) {
 		Pattern pattern = Pattern.compile(IP_ADDRESS_PATTERN);
@@ -124,10 +132,21 @@ public class ServerCredentials {
 		return this.syncActivated;
 	}
 
+	/**
+	 * Sets the latest sync-date.
+	 * (Called by SyncUtil)
+	 * 
+	 * @param lastSyncDate	Lastest success sync date
+	 */
+	public void setLastSyncDate(String lastSyncDate) {
+		this.lastSyncDate = lastSyncDate;
+	}
+	
 	private String ipAddress;
 	private String username;
 	private String password;
 	private boolean syncActivated;
+	private String lastSyncDate;
 	// Used to ensure the IP address is valid syntactically
 	private static final String IP_ADDRESS_PATTERN =
 			"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.lp20.aikuma.model.ServerCredentials;
 //import org.lp20.sync.FTPSyncUtil;
@@ -69,6 +70,7 @@ public class SyncUtil {
 			int waitMins = 1;
 			boolean syncResult;
 			while (true) {
+				previousStatus = "";
 				try {
 					SyncUtil.serverCredentials = ServerCredentials.read();
 					//For some reason we get an EPIPE unless we instantiate a new
@@ -83,18 +85,24 @@ public class SyncUtil {
 						if (!client.login(serverCredentials.getIPAddress(),
 								serverCredentials.getUsername(),
 								serverCredentials.getPassword())) {
-							unsetSyncFlag("Login failed");
+							unsetSyncFlag(previousStatus + 
+									"\nAuthentication failed.\n(Check IP/UserID/Password/FTP-setup)\n");
 							Log.i("sync", "login failed: " +
 									serverCredentials.getIPAddress());
 						} else if (!client.sync()) {
 							Log.i("sync", "sync failed.");
-							unsetSyncFlag("Transfer failed");
+							unsetSyncFlag(previousStatus + "\nTransfer failed\n");
 						} else if (!client.logout()) {
 							Log.i("sync", "Logout failed.");
-							unsetSyncFlag("Logout failed");
+							unsetSyncFlag("Logout failed.");
 						} else {
 							Log.i("sync", "sync complete.");
-							unsetSyncFlag("Sync successful");
+							// Log the success-date in credential file
+							serverCredentials.setLastSyncDate(
+									new StandardDateFormat().format(new Date()));
+							commitServerCredentials(new Date());
+							
+							unsetSyncFlag("Sync was finished successfully");
 						}
 						Log.i("sync", "end of conditional block");
 						waitMins = 1;
@@ -131,34 +139,48 @@ public class SyncUtil {
 		updateSyncTextView("Not syncing");
 	}
 
-	private static void updateSyncTextView(final String status) {
+	/**
+	 * Show the feedback in the SettingActivity
+	 * 
+	 * @param status	Feedback-text to the user for current sync-status
+	 */
+	public static void updateSyncTextView(final String status) {
 		if (syncSettingsActivity != null) {
 			syncSettingsActivity.runOnUiThread(new Runnable() {
 				public void run() {
 					TextView syncTextView = (TextView)
 							syncSettingsActivity.findViewById(R.id.syncTextNotification);
-					if (syncing) {
-						syncTextView.setText("Syncing");
-					} else {
-						syncTextView.setText(status);
-					}
+					syncTextView.setText(status);
 				}
 			});
+			previousStatus = status;
 		}
 	}
 
 	private static void setSyncFlag() {
 		syncing = true;
-		updateSyncTextView("Syncing");
+		updateSyncTextView("Authenticating with FTP server...");
 	}
 
 	private static void unsetSyncFlag(String status) {
 		syncing = false;
-		updateSyncTextView(status);
+		updateSyncTextView(status + "\n" + 
+		"Last success sync: " + serverCredentials.getLastSyncDate());
 	}
 
+	// Writes the server credentials with latest sync-success date
+	private static void commitServerCredentials(Date date) throws IOException {
+		try {
+			serverCredentials.write();
+		} catch (IllegalArgumentException e) {
+			Log.e("sync", e.getMessage());
+		}
+	}	
+	
 	private static ServerCredentials serverCredentials;
 	private static Thread syncThread;
 	private static Activity syncSettingsActivity;
 	private static boolean syncing;
+	
+	private static String previousStatus;
 }
