@@ -11,16 +11,12 @@ import android.media.MediaRecorder;
 import android.util.Log;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.UUID;
+
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
-import org.lp20.aikuma.audio.record.analyzers.Analyzer;
-import org.lp20.aikuma.audio.record.analyzers.ThresholdSpeechAnalyzer;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
-import org.lp20.aikuma.audio.record.recognizers.AverageRecognizer;
 import org.lp20.aikuma.audio.Player.OnCompletionListener;
 import org.lp20.aikuma.model.Recording;
 
@@ -39,24 +35,41 @@ public class ThumbRespeaker {
 	 *
 	 * @param	original	The original recording to make a respeaking of.
 	 * @param	respeakingUUID	The UUID of the respeaking we will create.
+	 * @param	rewindAmount	Rewind-amount in msec after each respeaking-segment
 	 * @throws	MicException	If the microphone couldn't be used.
 	 * @throws	IOException	If there is an I/O issue.
 	 */
-	public ThumbRespeaker(Recording original, UUID respeakingUUID)
-			throws MicException, IOException {
+	public ThumbRespeaker(Recording original, UUID respeakingUUID, 
+			int rewindAmount) throws MicException, IOException {
 		recorder = new Recorder(new File(Recording.getNoSyncRecordingsPath(),
 				respeakingUUID + ".wav"), original.getSampleRate());
 		player = new SimplePlayer(original, true);
 		mapper = new Mapper(respeakingUUID);
 		setFinishedPlaying(false);
+		this.rewindAmount = rewindAmount;
 	}
 
 	/**
 	 * Plays the original recording.
 	 */
-	public void playOriginal() {
-		player.seekToSample(mapper.getOriginalStartSample());
-		mapper.markOriginal(player);
+	/**
+	 * Plays the original recording.
+	 * @param playMode	(0:Continue, 1:Rewind and Store, 2:Only rewind)
+	 */
+	public void playOriginal(int playMode) {
+		switch(playMode) {
+		case 0: // Continue playing
+			break;
+		case 1:	//Rewind and record the start-sample in mapper
+			player.seekToSample(mapper.getOriginalStartSample());
+			mapper.markOriginal(player);
+			player.rewind(rewindAmount);
+			break;
+		case 2:	//Only rewind to the previous point
+			player.seekToSample(previousEndSample);
+			break;
+		}
+		previousEndSample = player.getCurrentSample();
 		player.play();
 	}
 
@@ -64,7 +77,7 @@ public class ThumbRespeaker {
 	 * Pauses playing of the original recording.
 	 */
 	public void pauseOriginal() {
-		player.pause();
+		player.pause();		
 	}
 
 	/**
@@ -82,7 +95,11 @@ public class ThumbRespeaker {
 	 */
 	public void pauseRespeaking() throws MicException {
 		recorder.pause();
-		mapper.store(player, recorder);
+		// Because of rewind after each respeaking-segment,
+		// Force user to record respeaking after listening next original-segment
+		if(player.getCurrentSample() > mapper.getOriginalStartSample()) {
+			mapper.store(player, recorder);
+		}
 	}
 
 	/**
@@ -154,4 +171,12 @@ public class ThumbRespeaker {
 
 	/** Indicates whether the recording has finished playing. */
 	private boolean finishedPlaying;
+	
+	/** Previous sample-point */
+	private long previousEndSample;
+
+	
+	/** The amount to rewind the original in msec 
+	 * after each respeaking-segment. */
+	private int rewindAmount;
 }

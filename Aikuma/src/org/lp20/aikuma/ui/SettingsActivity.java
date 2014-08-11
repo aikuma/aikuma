@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -53,6 +54,7 @@ public class SettingsActivity extends AikumaActivity {
 		preferences =
 				PreferenceManager.getDefaultSharedPreferences(this);
 		readRespeakingMode();
+		readRespeakingRewind();
 		setupSensitivitySlider();
 	}
 
@@ -68,12 +70,28 @@ public class SettingsActivity extends AikumaActivity {
 			radioGroup.check(R.id.radio_phone_respeaking);
 		}
 	}
+	
+	// Set up the respeaking rewind amount (rewind after each respeaking-segment)
+	private void readRespeakingRewind() {
+		int rewindAmount = preferences.getInt("respeaking_rewind", 500);
+		EditText rewindAmountView = (EditText) findViewById(R.id.rewindAmount);
+		rewindAmountView.setText(Integer.toString(rewindAmount));
+	}
 
+	private void writeRespeakingRewind() {
+		EditText rewindAmountView = (EditText) findViewById(R.id.rewindAmount);
+		int rewindAmount = Integer.parseInt(rewindAmountView.getText().toString());
+		Editor prefsEditor = preferences.edit();
+		prefsEditor.putInt("respeaking_rewind", rewindAmount);
+		prefsEditor.commit();
+	}
+	
 	@Override
 	public void onPause() {
-		super.onResume();
+		super.onPause();
 		try {
 			FileIO.writeDefaultSensitivity(defaultSensitivity);
+			writeRespeakingRewind();
 			Log.i("132", "wrote " + defaultSensitivity);
 		} catch (IOException e) {
 			//If it can't be written then just toast it.

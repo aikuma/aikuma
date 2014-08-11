@@ -58,6 +58,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		Intent intent = getIntent();
 		sourceId = (String) intent.getExtras().get("sourceId");
 		sampleRate = (Long) intent.getExtras().get("sampleRate");
+		int rewindAmount = intent.getExtras().getInt("rewindAmount");
 		respeakingUUID = UUID.randomUUID();
 		try {
 			originalRecording = Recording.read(sourceId);
@@ -65,7 +66,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 			//detected using Florian's method.
 			respeaker = new PhoneRespeaker(originalRecording, respeakingUUID,
 					new ThresholdSpeechAnalyzer(88,3,
-							new AverageRecognizer(7000,7000)));
+							new AverageRecognizer(7000,7000)), rewindAmount);
 		} catch (IOException e) {
 			PhoneRespeakActivity.this.finish();
 		} catch (MicException e) {

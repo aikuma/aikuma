@@ -50,10 +50,11 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		Intent intent = getIntent();
 		sourceId = (String)
 				intent.getExtras().get("sourceId");
+		int rewindAmount = intent.getExtras().getInt("rewindAmount");
 		respeakingUUID = UUID.randomUUID();
 		try {
 			recording = Recording.read(sourceId);
-			respeaker = new ThumbRespeaker(recording, respeakingUUID);
+			respeaker = new ThumbRespeaker(recording, respeakingUUID, rewindAmount);
 		} catch (IOException e) {
 			ThumbRespeakActivity.this.finish();
 		} catch (MicException e) {

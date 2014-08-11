@@ -73,7 +73,7 @@
 			android:layout_width="67dp"
 			android:layout_height="wrap_content"
 			android:layout_alignParentTop="true"
-			android:inputType="text"
+			android:inputType="number" 
 			/>
 		<TextView
 			android:layout_width="wrap_content"

@@ -64,6 +64,8 @@ public class Client {
 	 */
 	public Client() {
 		apacheClient = new org.apache.commons.net.ftp.FTPClient();
+		uploadFileCount = 0;
+		downloadFileCount = 0;
 	}
 
 	/**
@@ -121,6 +123,8 @@ public class Client {
 				if (serverBaseDir == null) {
 					logout();
 					Log.i("sync", "serverbaseDir is null");
+					SyncUtil.updateSyncTextView(
+							"There is no writable 'aikuma' directory on the server");
 					return false;
 				} else {
 					setServerBaseDir(findServerBaseDir());
@@ -166,38 +170,68 @@ public class Client {
 	 * @return	true if completely successful; false otherwise.
 	 */
 	public boolean sync() {
-		boolean pushResult = push();
-		boolean pullResult = pull();
+		uploadFileCntTotal = countUploadFiles();
+		downloadFileCntTotal = countDownloadFiles();
+		boolean pushResult = (push() != -1);
+		boolean pullResult = (pull() != -1);
 		return pushResult && pullResult;
 	}
 
 	/**
 	 * Push files to server that are on the client but not the server.
 	 *
-	 * @return	true if successful; false otherwise.
+	 * @return	0 if successful; -1 otherwise.
 	 */
-	public boolean push() {
-		return pushDirectory(".");
+	public int push() {
+		return pushDirectory(".", 0);
+	}
+	
+	/**
+	 * Count files to be uploaded that are on the client
+	 * 
+	 * @return	>=0 if successful; -1 otherwise
+	 */
+	public int countUploadFiles() {
+		return pushDirectory(".", 1);
 	}
 
 	/**
 	 * Pull file from the server that are on the server but not on the client.
 	 *
-	 * @return	true if successful; false otherwise.
+	 * @return	0 if successful; -1 otherwise.
 	 */
-	public boolean pull() {
-		return pullDirectory(".");
+	public int pull() {
+		return pullDirectory(".", 0);
+	}
+	
+	/**
+	 * Count files to be downloaded that are on the server
+	 * 
+	 * @return	>=0 if successful; -1 otherwise
+	 */
+	public int countDownloadFiles() {
+		return pullDirectory(".", 1);
 	}
 
 	/**
-	 * Recursively push the directory to server.
+	 * Recursively push the directory to server.(mode: 0)
+	 * Recursively count the files to be uploaded.(mode: 1)
+	 * (local-variable 'result' is always -1 for an exception and can only have
+	 *  two values(-1, 0) when mode is 0)
+	 * (Call SyncUtil.updateSyncTextView() )
 	 *
 	 * @param	directoryPath	the relative path from the base directory
-	 * @return	true if successful; false otherwise.
+	 * @param	mode			0: push files to directory / 1: count files to be uploaded
+	 * @return	>=0 if successful; -1 otherwise.
 	 */
-	public boolean pushDirectory(String directoryPath) {
-
-		Log.i("sync", "Pushing directory: " + directoryPath);
+	public int pushDirectory(String directoryPath, int mode) {
+		if(mode == 0) {
+			Log.i("sync", "Pushing directory: " + directoryPath);
+		} else {
+			Log.i("sync", "Counting files to be uploaded in " + 
+					clientBaseDir + "/" + directoryPath);
+		}
+		
 		// Get the specified client side directory.
 		Log.i("sync", "clientBaseDir: " + clientBaseDir);
 		File clientDir;
@@ -209,9 +243,9 @@ public class Client {
 			clientDir = new File(clientBaseDir + "/" + directoryPath);
 		}
 		if (!clientDir.isDirectory()) {
-			return false;
+			return -1;
 		}
-
+		
 		// Attempt to make the directory on the server side and then change
 		// into it.
 		try {
@@ -220,43 +254,59 @@ public class Client {
 			apacheClient.changeWorkingDirectory(
 					serverBaseDir + "/" + directoryPath);
 		} catch (IOException e) {
-			return false;
+			return -1;
 		}
 
+		int result = 0;
 		try {
 			List<String> clientFilenames = Arrays.asList(clientDir.list());
 			List<String> serverFilenames = Arrays.asList(
 					apacheClient.listNames());
 			File file = null;
-			Boolean result = null;
+			
+		
 			for (String filename : clientFilenames) {
 				file = new File(clientDir.getPath() + "/" + filename);
 				if (!file.getName().endsWith(".inprogress")) {
-					if (!file.isDirectory()) {
-						if (!serverFilenames.contains(filename)) {
-							result = pushFile(directoryPath, file);
-							if (!result) {
-								return false;
+					// If file doesn't end with '.inprogress', 
+					// it is not the one Aikuma previously made. Then check the file.
+					if (!file.isDirectory()) { // If it is not a directory
+						if (!serverFilenames.contains(filename)) { 
+							// and if Server doesn't have the file, upload/count.
+							if(mode == 0) {
+								if(pushFile(directoryPath, file)) {
+									showCurrentCount("Upload", file.getName());
+								} else {
+									return -1;
+								}
+							} else {	//Count-mode
+								result++;
 							}
 						}
-					} else {
+					} else { // If it is a directory, search the folder(DFS by pushDirecctory)
 						apacheClient.makeDirectory(filename);
-						result = pushDirectory(directoryPath + "/" + filename);
+						if(mode == 0) {
+							result = pushDirectory(directoryPath + "/" + filename, 0);
+							if(result == -1)
+								return -1;
+						} else {	//Count-mode
+							result += pushDirectory(directoryPath + "/" + filename, 1);
+						}
+						
 						apacheClient.changeWorkingDirectory(
 								serverBaseDir + "/" + directoryPath);
-						if (!result) {
-							return false;
-						}
 					}
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
+			return -1;
 		}
 
-		return true;
+		return result;
 	}
+	
+	
 
 	/**
 	 * Push an individual file to the server.
@@ -313,27 +363,36 @@ public class Client {
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Recursively pull the directory from the server.
+	 * Recursively count the files to be downloaded.(mode: 1)
+	 * (local-variable 'result' is always -1 for an exception and can only have
+	 *  two values(-1, 0) when mode is 0)
+	 * (Call SyncUtil.updateSyncTextView() )
 	 *
 	 * @param	directoryPath	the relative path from the base directory
-	 * @return	true if successful; false otherwise.
+	 * @param	mode			0: pull files to directory / 1: count files to be downloaded
+	 * @return	>=0 if successful; -1 otherwise.
 	 */
-	public boolean pullDirectory(String directoryPath) {
-
-	Log.i("sync", "Pulling directory: " + directoryPath);
-
+	public int pullDirectory(String directoryPath, int mode) {
+		if(mode == 0) {
+			Log.i("sync", "Pulling directory: " + directoryPath);
+		} else {
+			Log.i("sync", "Counting files to be downloaded in " + 
+					serverBaseDir + "/" + directoryPath);
+		}
+	
 		// Attempt to change to the directory on the server side.
 		try {
 			boolean result;
 			result = apacheClient.changeWorkingDirectory(
 					serverBaseDir + "/" + directoryPath);
 			if (!result) {
-				return false;
+				return -1;
 			}
 		} catch (IOException e) {
-			return false;
+			return -1;
 		}
 
 		File clientDir;
@@ -344,28 +403,38 @@ public class Client {
 		}
 		clientDir.mkdirs();
 
+		int result = 0;
 		try {
 			List<String> clientFilenames = Arrays.asList(clientDir.list());
 			List<FTPFile> serverFiles = Arrays.asList(
 					apacheClient.listFiles());
 			File file = null;
 			OutputStream stream = null;
-			Boolean result = null;
+			
 			for (FTPFile serverFile : serverFiles) {
 				file = new File(clientDir, serverFile.getName());
 				if (!file.getName().endsWith(".inprogress")) {
 					if (serverFile.isDirectory()) {
 						file.mkdirs();
-						result = pullDirectory(
-								directoryPath + "/" + serverFile.getName());
-						if (!result) {
-							return false;
+						if(mode == 0) {
+							result = pullDirectory(
+									directoryPath + "/" + serverFile.getName(), 0);
+							if(result == -1)
+								return -1;
+						} else {	//Count-mode
+							result += pullDirectory(
+									directoryPath + "/" + serverFile.getName(), 1);
 						}
 					} else {
 						if (!clientFilenames.contains(serverFile.getName())) {
-							result = pullFile(directoryPath, file);
-							if (!result) {
-								return false;
+							if(mode == 0) {
+								if(pullFile(directoryPath, file)) {
+									showCurrentCount("Download", file.getName());
+								} else {
+									return -1;
+								}
+							} else {	//Count-mode
+								result++;
 							}
 						}
 					}
@@ -373,13 +442,34 @@ public class Client {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
+			return -1;
 		}
 
-		return true;
+		return result;
 	}
 
+	/**
+	 * Show the sync-feedback to the user
+	 * 
+	 * @param streamDirection	"Download" or "Upload"
+	 */
+	private void showCurrentCount(String streamDirection, String fileName) {
+		String status;
+		if(streamDirection.equals("Upload")) {
+			uploadFileCount++;
+			status = (streamDirection + ": " + 
+					uploadFileCount + "/" + uploadFileCntTotal + 
+					"\n(" + fileName + ")");
+		} else {
+			downloadFileCount++;
+			status = (streamDirection + ": " + 
+					downloadFileCount + "/" + downloadFileCntTotal + 
+					"\n(" + fileName + ")");
+		}
+		SyncUtil.updateSyncTextView(status);
+	}
 
+	
 	/**
 	 * Change the working directory of the apache client.
 	 *
@@ -447,16 +537,57 @@ public class Client {
 	}
 
 	/**
-	 * Finds the first writable directory on the server.
+	 * Find the writable 'aikuma' directory at the root directory on the server.
 	 *
 	 * @return	the first writable directory on the server.
 	 */
-
 	public String findServerBaseDir() {
-		String dir = findWritableDir("/");
+		String dir = findAikumaDir("/");
 		return dir;
 	}
 
+	/**
+	 * Find the writable 'aikuma' folder, if not exist try to create it
+	 * 
+	 * @param 	startPath		root directory
+	 * @return	A string representation of the aikuma directory.
+	 */
+	private String findAikumaDir(String startPath) {
+		try {
+			if (!apacheClient.changeWorkingDirectory(startPath)) {
+				return null;
+			}
+			
+			//Try creating the 'aikuma' directory
+			if(apacheClient.makeDirectory(startPath + "aikuma")) {
+				return (startPath + "aikuma");
+			}
+			
+			// If there is aikuma folder already made, 
+			// Find aikuma folder from the root directory
+			List<FTPFile> directories = 
+					Arrays.asList(apacheClient.listDirectories());
+			for(FTPFile dir : directories) {
+				Log.i("sync", "Dir: " + startPath + dir.getName());
+				if(dir.getName().equals("aikuma")) {
+					// Check if '/aikuma' directory is writable
+					apacheClient.changeWorkingDirectory(startPath + dir.getName());
+					String unlikelyDir = UUID.randomUUID().toString();
+					if (apacheClient.makeDirectory(unlikelyDir)) {
+						apacheClient.removeDirectory(unlikelyDir);
+						return (startPath + dir.getName());
+					}
+				}
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
 	/**
 	 * Find the first writable directory under the specified path. Note that it
 	 * uses a depth-first approach to determine what is "first writable".
@@ -472,6 +603,8 @@ public class Client {
 
 			// Try to create a directory. If we succeed, we know that this
 			// directory is writable.
+			// ('/' and '/(folder-name)' which FTP server shares are checked)
+			// ('/': If FTP server configuration doesn't share '/', '/' is not writable)
 			String unlikelyDir = UUID.randomUUID().toString();
 			if (apacheClient.makeDirectory(unlikelyDir)) {
 				apacheClient.removeDirectory(unlikelyDir);
@@ -520,5 +653,16 @@ public class Client {
 	 * The path to the working directory.
 	 */
 	private String serverBaseDir;
-
+	
+	/**
+	 * Number of files uploaded
+	 */
+	private int uploadFileCount;
+	private int uploadFileCntTotal;
+	
+	/**
+	 * Number of files downloaded
+	 */
+	private int downloadFileCount;
+	private int downloadFileCntTotal;
 }

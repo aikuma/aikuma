@@ -20,10 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.CheckBox;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.ServerCredentials;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
@@ -66,7 +62,7 @@ public class SyncSettingsActivity extends AikumaActivity {
 							ipAddressField.getText().toString(),
 							usernameField.getText().toString(),
 							passwordField.getText().toString(),
-							syncActivated);
+							syncActivated, lastSyncSuccessDate);
 			serverCredentials.write();
 		} catch (IllegalArgumentException e) {
 			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -91,6 +87,7 @@ public class SyncSettingsActivity extends AikumaActivity {
 			automaticSyncCheckBox.setChecked(
 					serverCredentials.getSyncActivated());
 			syncActivated = serverCredentials.getSyncActivated();
+			lastSyncSuccessDate = serverCredentials.getLastSyncDate();
 		} catch (IOException e) {
 			//If reading fails, then no text is put into the fields, except for
 			//the default IP.
@@ -136,10 +133,11 @@ public class SyncSettingsActivity extends AikumaActivity {
 			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
-
+	
 	private EditText ipAddressField;
 	private EditText usernameField;
 	private EditText passwordField;
 	private boolean syncActivated;
+	private String lastSyncSuccessDate;
 	private CheckBox automaticSyncCheckBox;
 }
