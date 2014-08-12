@@ -5,8 +5,6 @@
 package org.lp20.aikuma.service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,6 +19,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.storage.Data;
+import org.lp20.aikuma.storage.DataStore;
 import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
 import org.lp20.aikuma.util.AikumaSettings;
@@ -225,7 +224,7 @@ public class GoogleCloudService extends IntentService{
 			return null;		
 		}
 		
-		GoogleDriveStorage gd = new GoogleDriveStorage(googleAuthToken);
+		DataStore gd = new GoogleDriveStorage(googleAuthToken);
 		String uri = gd.store(recordingFile.getName(), data);
 		if(uri != null)
 			Log.i(TAG, "File-upload success");
@@ -262,9 +261,15 @@ public class GoogleCloudService extends IntentService{
 			String lang = (String) ((JSONObject) obj).get("code");
 			languages += joiner + lang;
 			joiner = ",";
-			break;  // TODO: use only the first language for now
 		}
-		metadata.put("user_id", "NA");
+		SharedPreferences preferences = 
+				PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		String emailAddr = preferences.getString("defaultGoogleAccount", null);
+		if (emailAddr == null) {
+			Log.i(TAG, "defaultGoogleAccount is null");
+			return null;
+		}
+		metadata.put("user_id", emailAddr);
 		metadata.put("metadata", jsonstr);
 		metadata.put("data_store_uri", uri);
 		metadata.put("item_id", (String) jsonfile.get("recording"));
@@ -276,9 +281,8 @@ public class GoogleCloudService extends IntentService{
 		metadata.put("date_backedup", 
 				new SimpleDateFormat().format(uploadDate).toString());
 		
-		Log.i(TAG, "meta: " + metadata.toString());
-		
-		if (fi.index(identifier, metadata)) {
+		DataStore ds = new GoogleDriveStorage(googleAuthToken);
+		if (ds.share(identifier) && fi.index(identifier, metadata)) {
 			Log.i(TAG, "Metadata-upload success");
 			return uploadDate;
 		}
