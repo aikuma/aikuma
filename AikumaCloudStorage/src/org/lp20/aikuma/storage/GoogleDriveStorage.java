@@ -72,6 +72,22 @@ public class GoogleDriveStorage implements DataStore {
 	}
 
 	@Override
+	public boolean share(String identifier) {
+		String name = "\"" + identifier.replaceAll("\"",  "\\\"") + "\"";
+		JSONObject obj = gapi_list_files("trashed = false and title = " + name, null);
+		if (obj == null)
+			return false;
+		JSONArray arr = (JSONArray) obj.get("items");
+		if (arr != null && arr.size() > 0) {
+			JSONObject o = (JSONObject) arr.get(0);
+			String fileid = (String) o.get("id");
+			JSONObject r = gapi_make_public(fileid);
+			return (r != null);
+		}
+		return false;
+	}
+	
+	@Override
 	public void list(ListItemHandler listItemHandler) {
 		JSONObject obj = gapi_list_files("trashed = false", null);
 		while (obj != null) {
@@ -203,6 +219,40 @@ public class GoogleDriveStorage implements DataStore {
 			return con.getInputStream();
 		}
 		catch (IOException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Make a file public.
+	 * @param fileid String file id.
+	 * @return json response from the server.
+	 */
+	private JSONObject gapi_make_public(String fileid)
+	{
+		try {
+			JSONObject meta = new JSONObject();
+			meta.put("type", "anyone");
+			meta.put("role", "reader");
+			String metajson = meta.toJSONString();
+			
+			URL url = new URL("https://www.googleapis.com/drive/v2/files/" + fileid + "/permissions");
+			HttpURLConnection con = gapi_connect(url, "POST", accessToken_);
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Content-Length", String.valueOf(metajson.length()));
+
+			OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+			writer.write(metajson);
+			writer.flush();
+			writer.close();
+
+			if (con.getResponseCode() != HttpURLConnection.HTTP_OK)
+				return null;			
+			String json = Utils.readStream(con.getInputStream());
+			return (JSONObject) JSONValue.parse(json);
+		}
+		catch (IOException e) {
+			System.out.println("exception");
 			return null;
 		}
 	}

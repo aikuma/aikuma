@@ -15,9 +15,16 @@ public interface DataStore {
 	 * Store a data item to the storage.
 	 * @param identifier Unique identifier for the data item to store.
 	 * @param data An InputStream containing the data.
-	 * @param A URI or part of the URI that can be used to 
+	 * @return A URI or part of the URI that can be used to download the data item.
 	 */
 	public String store(String identifier, Data data);
+	
+	/**
+	 * Allow public access to the data item.
+	 * @param identifier Identifier for a data item.
+	 * @return true on success, false on failure. 
+	 */
+	public boolean share(String identifier);
 	
 	/**
 	 * Provide a callback method for handling list items.
