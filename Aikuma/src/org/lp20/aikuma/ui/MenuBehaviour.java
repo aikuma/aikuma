@@ -190,8 +190,10 @@ public class MenuBehaviour {
 	 * data.
 	 *
 	 * @param	safeActivityTransitionMessage	The string to display in a warning message.
+	 * @param	safeBehaviour	Interface having a function required for safe back-button.
 	 */
-	public void safeGoBack(String safeActivityTransitionMessage) {
+	public void safeGoBack(String safeActivityTransitionMessage, 
+			final BackButtonBehaviour safeBehaviour) {
 		String message = DEFAULT_MESSAGE;
 		if (safeActivityTransitionMessage != null) {
 			message = safeActivityTransitionMessage;
@@ -203,6 +205,8 @@ public class MenuBehaviour {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
+								if(safeBehaviour != null)
+									safeBehaviour.onSafeBackButton();
 								activity.finish();
 							}
 						})
@@ -210,6 +214,19 @@ public class MenuBehaviour {
 				.show();
 	}
 
+	/**
+	 * Interface having a function 
+	 * required for safe back-button and defined by other activities
+	 * @author Sangyeop Lee
+	 *
+	 */
+	public static interface BackButtonBehaviour {
+		/**
+		 * The function called for safe back-button action
+		 */
+		public void onSafeBackButton();
+	}
+	
 	private Activity activity;
 	private String DEFAULT_MESSAGE = "This will discard the new data. Are you sure?";
 }

@@ -155,14 +155,15 @@ public class Recording {
 			throws IOException {
 		File wavFile = new File(getNoSyncRecordingsPath(), wavUUID + ".wav");
 		FileUtils.moveFile(wavFile, this.getFile());
+		Log.i("Recording", wavFile.getAbsolutePath() + " move to " + this.getFile().getAbsolutePath());
 	}
 	
 	// Moves a video File from a no-sync directory to its rightful place
 	private void importMov(UUID videoUUID, String id) 
 			throws IOException {
-		File noSyncMoviePath = new File(FileIO.getNoSyncPath(), "videos");
-		File movFile = new File(noSyncMoviePath, videoUUID + ".mp4");
+		File movFile = new File(getNoSyncRecordingsPath(), videoUUID + ".mp4");
 		FileUtils.moveFile(movFile, this.getFile());
+		Log.i("Recording", movFile.getAbsolutePath() + " move to " + this.getFile().getAbsolutePath());
 	}
 
 	// Similar to importWav, except for the mapping file.

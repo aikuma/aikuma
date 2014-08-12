@@ -214,7 +214,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	private Player.OnCompletionListener onCompletionListener =
 			new Player.OnCompletionListener() {
 				public void onCompletion(Player _player) {
-					playPauseButton.setImageResource(R.drawable.play);
+					playPauseButton.setImageResource(R.drawable.play_g);
 					stopThread(seekBarThread);
 					seekBar.setProgress(seekBar.getMax());
 				}

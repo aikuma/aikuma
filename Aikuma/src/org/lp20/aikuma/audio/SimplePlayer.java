@@ -184,7 +184,8 @@ public class SimplePlayer extends Player implements Sampler {
 					public void onCompletion(MediaPlayer _mp) {
 						listener.onCompletion(SimplePlayer.this);
 						try {
-							incrementViewCount();
+							if(recording != null)
+								incrementViewCount();
 						} catch (IOException e) {
 							// There is likely an issue writing to the
 							// filesystem, but it's probably not worth

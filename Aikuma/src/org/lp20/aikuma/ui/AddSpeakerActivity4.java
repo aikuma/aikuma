@@ -103,8 +103,32 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 		startActivity(intent);
 	}
 
-
-
+	@Override
+	public void onBackPressed() {
+		if (safeActivityTransition) {
+			menuBehaviour.safeGoBack(safeActivityTransitionMessage, safeBehaviour);
+		} else {
+			this.finish();
+		}
+	}
+	/**
+	 * Interface class having a function called when back-button is pressed
+	 */
+	private MenuBehaviour.BackButtonBehaviour safeBehaviour = 
+			new MenuBehaviour.BackButtonBehaviour() {
+				@Override
+				public void onSafeBackButton() {
+					try {
+						FileIO.delete(ImageUtils.getNoSyncSmallImageFile(imageUUID));
+						FileIO.delete(ImageUtils.getNoSyncImageFile(imageUUID));
+					} catch (IOException e) {
+						Log.e(TAG, "deleting speaker images failed");
+					}
+				}
+			}; 
+	
+	
+	private static final String TAG = "AddSpeakerActivity4";
 	
 	private String name;
 	private ArrayList<Language> selectedLanguages;
