@@ -38,7 +38,7 @@ public class FusionIndex implements Index {
         DATA_STORE_URI("data_store_uri", true, false),
         ITEM_ID("item_id", true, false),
         FILE_TYPE("file_type", true, false),
-        LANGUAGE("language", true, false),
+        LANGUAGES("languages", true, true),
         SPEAKERS("speakers", true, true),
         TAGS("tags", false, true),
         DISCOURSE_TYPES("discourse_types", false, true),
@@ -103,7 +103,6 @@ public class FusionIndex implements Index {
             else
                 return false;
         }
-
 
     }
 
