@@ -69,7 +69,7 @@ public class ThumbRespeakActivity extends AikumaActivity {
 	 * @param	view	The save respeaking button.
 	 */
 	public void onSaveRespeakingButton(View view) {
-		Intent intent = new Intent(this, RecordingMetadataActivity.class);
+		Intent intent = new Intent(this, RecordingMetadataActivity1.class);
 		intent.putExtra("uuidString", respeakingUUID.toString());
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		intent.putExtra("sourceId", recording.getId());
