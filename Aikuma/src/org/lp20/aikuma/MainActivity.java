@@ -58,7 +58,7 @@ import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.MenuBehaviour;
 import org.lp20.aikuma.ui.RecordActivity;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;
-import org.lp20.aikuma.ui.RecordingMetadataActivity;
+import org.lp20.aikuma.ui.RecordingMetadataActivity1;
 import org.lp20.aikuma.ui.SettingsActivity;
 import org.lp20.aikuma.ui.sensors.LocationDetector;
 import org.lp20.aikuma.util.SyncUtil;
@@ -538,7 +538,7 @@ public class MainActivity extends ListActivity {
 
 							// Pass the info along to RecordingMetadataActivity.
 							Intent intent = new Intent(getActivity(),
-									RecordingMetadataActivity.class);
+									RecordingMetadataActivity1.class);
 							intent.putExtra("uuidString", uuid.toString());
 							intent.putExtra("sampleRate", (long) sampleRate);
 							intent.putExtra("durationMsec", durationMsec);
