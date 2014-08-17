@@ -111,7 +111,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 	 */
 	public void onSaveRespeakingButton(View view) {
 		respeaker.stop();
-		Intent intent = new Intent(this, RecordingMetadataActivity.class);
+		Intent intent = new Intent(this, RecordingMetadataActivity1.class);
 		intent.putExtra("uuidString", respeakingUUID.toString());
 		intent.putExtra("sampleRate", originalRecording.getSampleRate());
 		intent.putExtra("sourceId", originalRecording.getId());

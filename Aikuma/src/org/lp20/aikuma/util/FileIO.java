@@ -288,6 +288,16 @@ public final class FileIO {
 	}
 
 	/**
+	 * Deletes the file having path
+	 * 
+	 * @param path		The path to the file
+	 * @throws IOException	if delete fails
+	 */
+	public static void delete(File path) throws IOException {
+		FileUtils.forceDelete(path);
+	}
+	
+	/**
 	 * Reads the information about the server into a Server object, using the
 	 * default location of server.json in the app's root directory.
 	 */
