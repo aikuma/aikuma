@@ -274,7 +274,9 @@ public class RecordVideoActivity extends Activity implements SurfaceHolder.Callb
 
 			// portrait
 			if(width < height) {
+				// Put rotation matrix metadata to video file
 				mediaRecorder.setOrientationHint(90);
+				// Rotate camera display
 				camera.setDisplayOrientation(90);
 			} else {	//landscape
 				mediaRecorder.setOrientationHint(0);

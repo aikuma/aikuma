@@ -56,12 +56,6 @@
 				android:label="@string/app_name"
 				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
-		<activity android:name="org.lp20.aikuma.ui.RecordingMetadataActivity"
-				android:configChanges="orientation"
-				android:label="@string/app_name"
-				android:windowSoftInputMode="adjustPan"
-				android:parentActivityName="org.lp20.aikuma.MainActivity">
-		</activity>
 		<activity android:name="org.lp20.aikuma.ui.RecordingMetadataActivity1"
 				android:configChanges="orientation"
 				android:label="@string/app_name"
