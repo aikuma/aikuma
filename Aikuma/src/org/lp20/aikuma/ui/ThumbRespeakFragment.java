@@ -99,6 +99,7 @@ public class ThumbRespeakFragment extends Fragment {
 							respeaker.playOriginal(0); //Continue
 						} else {
 							respeaker.playOriginal(1); //Rewind and Store the start-point
+							isCommented = true;
 						}
 					}
 					
