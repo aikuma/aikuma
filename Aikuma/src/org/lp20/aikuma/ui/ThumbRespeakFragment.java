@@ -84,8 +84,8 @@ public class ThumbRespeakFragment extends Fragment {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					// Color change
 					//playButton.setBackgroundColor(0xff00d500);
-					int previousGestureTime = gestureTime;
-					gestureTime = respeaker.getSimplePlayer().getCurrentMsec();
+					long previousGestureTime = gestureTime;
+					gestureTime = System.currentTimeMillis();
 					gestureTimeUpToDown = System.currentTimeMillis() - gestureTimeUpToDown;
 					
 					if(isCommented){ // After commentary is recorded(or At the start)
@@ -126,7 +126,7 @@ public class ThumbRespeakFragment extends Fragment {
 					//playButton.setBackgroundColor(greyColor);
 					respeaker.pauseOriginal();
 					stopThread(seekBarThread);
-					gestureTime = (respeaker.getSimplePlayer().getCurrentMsec() - gestureTime);
+					gestureTime = System.currentTimeMillis() - gestureTime;
 					gestureTimeUpToDown = System.currentTimeMillis();
 					Log.i("Thumb", ""+ gestureTime);
 					if(gestureTime >= VALID_GESTURE_TIME) {
@@ -222,7 +222,7 @@ public class ThumbRespeakFragment extends Fragment {
 	private int sampleRate;
 	
 	private final int VALID_GESTURE_TIME = 100; //0.1sec
-	private int gestureTime = VALID_GESTURE_TIME;
+	private long gestureTime = VALID_GESTURE_TIME;
 	private long gestureTimeUpToDown = VALID_GESTURE_TIME;
 	private boolean isCommented = true;
 }
