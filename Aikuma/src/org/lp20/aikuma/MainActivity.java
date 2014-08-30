@@ -37,6 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.lp20.aikuma.Aikuma;
@@ -57,7 +58,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -66,13 +66,9 @@ import android.os.Environment;
 import android.widget.Toast;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.lp20.aikuma.R;
-import org.lp20.aikuma.model.Recording;
-import org.lp20.aikuma.model.WaveFile;
 
 /**
  * The primary activity that lists existing recordings and allows you to select
@@ -103,6 +99,8 @@ public class MainActivity extends ListActivity {
 		
 		// Start gathering location data
 		MainActivity.locationDetector = new LocationDetector(this);
+		
+		checkDate();
 	}
 
 	@Override
@@ -124,40 +122,44 @@ public class MainActivity extends ListActivity {
 
 	@Override
 	public void onResume() {
-		super.onResume();
+		super.onResume();	
 		SharedPreferences settings = 
 				getSharedPreferences(AikumaSettings.SETTING_NAME, 0);
 //		settings.edit().clear().commit();
-		String defaultAccount = settings.getString("ownerID", "");
+		String appVersionName = 
+				settings.getString(AikumaSettings.SETTING_VERSION_KEY, "");
+		String defaultAccount = 
+				settings.getString(AikumaSettings.SETTING_OWNER_ID_KEY, "");
+		AikumaSettings.setUserId(defaultAccount);
 		Log.i(TAG, defaultAccount);
 
-		if(defaultAccount.equals("")) {
-			// Update the file structure
+		if(!appVersionName.equals(AikumaSettings.getLatestVersion())) {
+			// Update the file structure and metadata
 			new UpdateUtils(this).update();
-		} else {
-			AikumaSettings.setOwnerId(defaultAccount);
-			
-			List<Recording> recordings = Recording.readAll();
+		} 
 
-			// Filter the recordings for originals
-			List<Recording> originals = new ArrayList<Recording>();
-			for (Recording recording : recordings) {
-				if (recording.isOriginal()) {
-					originals.add(recording);
-				}
+		List<Recording> recordings = Recording.readAll();
+		Log.i(TAG, "num: " +recordings.size());
+		// Filter the recordings for originals
+		List<Recording> originals = new ArrayList<Recording>();
+		for (Recording recording : recordings) {
+			if (recording.isOriginal()) {
+				originals.add(recording);
 			}
-
-			adapter = new RecordingArrayAdapter(this, originals);
-			if(searchView != null) {
-				adapter.getFilter().filter(searchView.getQuery());
-			}
-			setListAdapter(adapter);
-			if (listViewState != null) {
-				getListView().onRestoreInstanceState(listViewState);
-			}
-			
-			MainActivity.locationDetector.start();
 		}
+		Log.i(TAG, "original num: " + originals.size());
+
+		adapter = new RecordingArrayAdapter(this, originals);
+		if(searchView != null) {
+			adapter.getFilter().filter(searchView.getQuery());
+		}
+		setListAdapter(adapter);
+		if (listViewState != null) {
+			getListView().onRestoreInstanceState(listViewState);
+		}
+		
+		MainActivity.locationDetector.start();
+		
 	}
 	
 	@Override
@@ -175,6 +177,28 @@ public class MainActivity extends ListActivity {
 		intent.putExtra("versionName", recording.getVersionName());
 		intent.putExtra("token", googleAuthToken);
 		startActivity(intent);
+	}
+	
+	// If current year < 2000, make the user type in the correct date continuously
+	private void checkDate() {
+		Calendar calendar = Calendar.getInstance();
+		int year = calendar.get(Calendar.YEAR);
+		Log.i(TAG, "year: " + year);
+		if(year < 2000) {
+			new AlertDialog.Builder(this)
+			.setTitle("Set the current date correctly")
+			.setPositiveButton(android.R.string.yes, 
+					new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					Intent intent = new Intent(
+							android.provider.Settings.ACTION_DATE_SETTINGS);
+					startActivityForResult(intent, PICK_DATE_REQUEST_CODE);
+				}
+			}).show();
+		}
+		
 	}
 	
 	/**
@@ -247,6 +271,8 @@ public class MainActivity extends ListActivity {
 	private RecordingArrayAdapter adapter;	
 	private ProgressDialog progressDialog;
 	
+	private static final int PICK_DATE_REQUEST_CODE = 0;
+	
 	/////////////////////////////////////////////////////
 	////                                   			/////
 	//// Things pertaining to getting Google token. /////
@@ -307,6 +333,8 @@ public class MainActivity extends ListActivity {
                 && resultCode == RESULT_OK) {
             handleReRequestResult(resultCode, data);
             return;
+        } else if(requestCode == PICK_DATE_REQUEST_CODE) {
+        	checkDate();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

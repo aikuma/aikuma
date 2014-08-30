@@ -95,10 +95,10 @@ public final class FileIO {
 	 * @return	A File representing the owner's directory of versionName
 	 */
 	public static File getOwnerPath(String versionName, String ownerId) {
-		String ownerIdHash = IdUtils.getMD5Hash(ownerId);
+		String ownerIdDir = IdUtils.getOwnerDirName(ownerId);
 		String ownerDirStr = (APP_ROOT_PATH + versionName + "/" + 
-				ownerIdHash.substring(0, 2) + "/" + 
-				ownerIdHash.substring(2, 4) + "/" + ownerId);	
+				ownerIdDir.substring(0, 1) + "/" + 
+				ownerIdDir.substring(0, 2) + "/" + ownerIdDir);	
 		File path = new File(Environment.getExternalStorageDirectory(), 
 				ownerDirStr);
 		path.mkdirs();

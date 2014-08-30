@@ -75,4 +75,17 @@ public class IdUtils {
 		return null;
 	}
 	
+	/**
+	 * Get the directory name corresponding to owner's account ID
+	 * 
+	 * @param ownerId	account ID(xxx@domain.xxx)
+	 * @return	the corresponding directory name
+	 */
+	public static String getOwnerDirName(String ownerId) {
+		String ownerDirName =  ownerId.toLowerCase();
+		ownerDirName = ownerDirName.replaceAll("@(.*)$", "_at_$1");
+		ownerDirName = ownerDirName.replace('.', '_');
+		return ownerDirName;
+	}
+	
 }

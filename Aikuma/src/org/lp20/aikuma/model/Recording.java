@@ -511,7 +511,7 @@ public class Recording {
 	 */
 	public static Recording read(File metadataFile) throws IOException {
 		JSONObject jsonObj = FileIO.readJSONObject(metadataFile);
-		String groupId = (String) jsonObj.get("recording");
+		String groupId = (String) jsonObj.get("item_id");
 		if (groupId == null) {
 			throw new IOException("Null groupId in the JSON file.");
 		}
@@ -583,6 +583,7 @@ public class Recording {
 		if(!this.isOriginal()) return respeakings;
 		
 		File groupDir = new File(getRecordingsPath(), getGroupId());
+
 		File[] groupDirMetaFiles = groupDir.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
 						return filename.endsWith("-metadata.json");
@@ -618,7 +619,7 @@ public class Recording {
 				FileIO.getAppRootPath().listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String filename) {
-				return filename.startsWith("v");
+				return filename.startsWith("v") && filename.substring(1).matches("\\d+");
 			}	
 		});
 
@@ -667,6 +668,7 @@ public class Recording {
 						// Couldn't read that recording for whateve rreason
 						// (perhaps json file wasn't formatted correctly).
 						// Let's just ignore that user.
+						Log.e(TAG, "read exception: " + jsonFile.getName());
 					}
 				}
 			}
@@ -675,12 +677,17 @@ public class Recording {
 	
 	/**
 	 * Updates all recording metadata files of versionNum
+	 * 1. Update or create fields existing in newJSONFields
+	 * 2. After 1, Change field keys existing in newJSONKeys(oldkey -> newkey)
 	 * 
 	 * @param versionNum		obsolete file-format's version
 	 * @param newJSONFields		Map structure of new field-pairs(key:value)
+	 * @param newJSONKeys		Map structure of new key-pairs(oldkey:newkey)
 	 */
 	public static void updateAll(Integer versionNum, 
-			Map<String, Object> newJSONFields) {
+			Map<String, Object> newJSONFields, Map<String, String> newJSONKeys) {
+		if(newJSONFields == null && newJSONKeys == null)
+			return;
 		
 		switch(versionNum) {
 		case 0:
@@ -693,7 +700,7 @@ public class Recording {
 					for(File f : ownerIdDirs) {
 						Log.i(TAG, "updateAll: " + f.getPath());
 						
-						updateMetadataInDir(f, newJSONFields);
+						updateMetadataInDir(f, newJSONFields, newJSONKeys);	
 					}
 				}
 			}
@@ -702,7 +709,9 @@ public class Recording {
 	}
 	
 	private static void updateMetadataInDir(File dir,
-			Map<String, Object> newJSONFields) {
+			Map<String, Object> newJSONFields, Map<String, String> newJSONKeys) {
+		boolean isFields = (newJSONFields != null);
+		boolean isKeys = (newJSONKeys != null);
 		// Constructs a list of directories in the recordings directory.
 		File[] recordingPathFiles = getRecordingsPath(dir).listFiles();
 		
@@ -726,7 +735,20 @@ public class Recording {
 					try {
 						JSONObject newJSONObject = 
 								FileIO.readJSONObject(jsonFile);
-						newJSONObject.putAll(newJSONFields);
+						
+						if(isFields) {
+							newJSONObject.putAll(newJSONFields);
+						}
+						if(isKeys) {
+							for(String oldKey : newJSONKeys.keySet()) {
+								Object val = newJSONObject.remove(oldKey);
+								if(val != null) {
+									String newKey = newJSONKeys.get(oldKey);
+									newJSONObject.put(newKey, val);
+								}
+							}
+						}
+							
 						FileIO.writeJSONObject(jsonFile, newJSONObject);
 					} catch (IOException e) {
 						Log.e(TAG, "Metadata update failed: " + e.toString());

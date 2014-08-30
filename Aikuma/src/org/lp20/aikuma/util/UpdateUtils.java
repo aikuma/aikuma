@@ -56,7 +56,8 @@ public class UpdateUtils {
 	public void update() {
 		SharedPreferences settings = 
 				context.getSharedPreferences(AikumaSettings.SETTING_NAME, 0);
-		currentVersionName = settings.getString("version", "v00");
+		currentVersionName = 
+				settings.getString(AikumaSettings.SETTING_VERSION_KEY, "v00");
 		Integer currentVersionNum = 
 				Integer.parseInt(currentVersionName.substring(1));
 		nextVersionName = String.format("v%02d", currentVersionNum+1);
@@ -86,11 +87,11 @@ public class UpdateUtils {
 			updateFileStructure();
         	updateRecordingsMetadata(currentVersionNum);
         	
-        	saveInSettings("ownerID", defaultAccount);
-        	saveInSettings("version", nextVersionName);
+        	saveInSettings(AikumaSettings.SETTING_OWNER_ID_KEY, defaultAccount);
+        	saveInSettings(AikumaSettings.SETTING_VERSION_KEY, nextVersionName);
         	((MainActivity)context).dismissProgressDialog();
         	
-        	AikumaSettings.setOwnerId(defaultAccount);
+        	AikumaSettings.setUserId(defaultAccount);
 			return;
 		}
 	}
@@ -101,11 +102,14 @@ public class UpdateUtils {
 	 */
 	private void updateRecordingsMetadata(Integer currentVersionNum) {
 		Map<String, Object> newJSONFields = new HashMap<String, Object>();
-		newJSONFields.put("ownerID", defaultAccount);
-		newJSONFields.put("version", nextVersionName);
-		Recording.updateAll(currentVersionNum, newJSONFields);
+		Map<String, String> newJSONKeys = new HashMap<String, String>();
+		newJSONFields.put(AikumaSettings.SETTING_OWNER_ID_KEY, defaultAccount);
+		newJSONFields.put(AikumaSettings.SETTING_VERSION_KEY, nextVersionName);
+		newJSONKeys.put("recording", "item_id");
+		newJSONKeys.put("groupId", "item_id");
+		Recording.updateAll(currentVersionNum, newJSONFields, newJSONKeys);
 	}
-	
+
 	/**
 	 * Change the file structure
 	 */

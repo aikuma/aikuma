@@ -179,7 +179,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 						Recording recording = new Recording(
 								uuid, description, date, 
 								AikumaSettings.getLatestVersion(), 
-								AikumaSettings.getCurrentOwnerId(),
+								AikumaSettings.getCurrentUserId(),
 								selectedLanguages, 
 								speakersIds, androidID, groupId, sourceId,
 								sampleRate, durationMsec, format, numChannels,
