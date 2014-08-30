@@ -45,6 +45,7 @@ public class MenuBehaviour {
 	 * this implementation, the display is shown.
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
+		this.menu = menu;
 		MenuInflater inflater = activity.getMenuInflater();
 		if (activity instanceof MainActivity) {
 			inflater.inflate(R.menu.main, menu);
@@ -93,7 +94,12 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				return true;
 			case R.id.gplus_signin_menu:
-				((MainActivity)activity).getAccountToken();
+				if(signInState) {
+					((MainActivity)activity).clearAccountToken();
+				} else {
+					((MainActivity)activity).getAccountToken();
+				}
+				
 				return true;
 			default:
 				return true;
@@ -137,6 +143,31 @@ public class MenuBehaviour {
 		}
 	}
 
+	/**
+	 * Return the MenuItem corresponding to resourceId
+	 * @param resourceId	ID of the menu item
+	 * @return	the menu-item having resourceId
+	 */
+	public MenuItem findItem(int resourceId) {
+		return menu.findItem(resourceId);
+	}
+	
+	/**
+	 * Set if the user signed-in an account
+	 * @param state		true(signed-in), false(no sign-in)
+	 */
+	public void setSignInState(boolean state) {
+		this.signInState = state;
+		if(state) {
+			String signOutString = "Sign-out: " + activity.emailAccount;
+			findItem(R.id.gplus_signin_menu).setTitle(signOutString);
+		} else {
+			String signInString = 
+					activity.getResources().getString(R.string.gplus_signin_menu_label);
+			findItem(R.id.gplus_signin_menu).setTitle(signInString);
+		}
+	}
+	
 	/**
 	 * Opens the howto from lp20.org in a browser.
 	 */
@@ -228,5 +259,8 @@ public class MenuBehaviour {
 	}
 	
 	private Activity activity;
+	private Menu menu;
+	private boolean signInState = false;
+	
 	private String DEFAULT_MESSAGE = "This will discard the new data. Are you sure?";
 }

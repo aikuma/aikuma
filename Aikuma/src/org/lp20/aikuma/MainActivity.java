@@ -234,7 +234,8 @@ public class MainActivity extends ListActivity {
         int statusCode = GooglePlayServicesUtil
         		.isGooglePlayServicesAvailable(this);
         if (statusCode == ConnectionResult.SUCCESS) {
-        	if(emailAccount == null) {
+        	Log.i(TAG, "getAccountToken");
+        	if(googleAuthToken == null) {
         		pickUserAccount();
         	}
         } else if (GooglePlayServicesUtil.isUserRecoverableError(statusCode)) {
@@ -245,6 +246,15 @@ public class MainActivity extends ListActivity {
             Toast.makeText(this, "Unrecoverable Google-Play Services error", 
             		Toast.LENGTH_SHORT).show();
         }
+    }
+    
+    /**
+     * Clear the account and token
+     */
+    public void clearAccountToken() {
+    	emailAccount = null;
+    	googleAuthToken = null;
+    	menuBehaviour.setSignInState(false);
     }
 	
     /**
@@ -398,6 +408,7 @@ public class MainActivity extends ListActivity {
         	try{
         		googleAuthToken = getToken();
         		Log.i(TAG, "token: " + googleAuthToken);
+        		menuBehaviour.setSignInState(true);
         	} catch(IOException e) {
         		Log.e(TAG, "IOException: " + e.getMessage());
         	} 
