@@ -108,7 +108,7 @@ public class Utils {
 		public void addQuery(String key, String value) throws UnsupportedEncodingException {
 			String k = URLEncoder.encode(key, "UTF-8");
 			String v = URLEncoder.encode(value, "UTF-8");
-			query_ = joiner_ + k + "=" + v;
+			query_ += joiner_ + k + "=" + v;
 			joiner_ = "&";
 		}
 		
@@ -156,7 +156,10 @@ public class Utils {
     public static HttpURLConnection gapi_connect(URL url, String method, String accessToken) throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setInstanceFollowRedirects(true);
-        con.setDoOutput(true);
+        if (method.equals("POST") || method.equals("PUT"))
+        	con.setDoOutput(true);
+        else
+        	con.setDoOutput(false);
         con.setRequestMethod(method);
         con.setRequestProperty("Authorization", "Bearer " + accessToken);
         return con;

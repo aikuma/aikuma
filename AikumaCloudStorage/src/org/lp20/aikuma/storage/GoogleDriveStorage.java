@@ -75,16 +75,28 @@ public class GoogleDriveStorage implements DataStore {
 	public boolean share(String identifier) {
 		String name = "\"" + identifier.replaceAll("\"",  "\\\"") + "\"";
 		JSONObject obj = gapi_list_files("trashed = false and title = " + name, null);
+		
 		if (obj == null)
-			return false;
-		JSONArray arr = (JSONArray) obj.get("items");
-		if (arr != null && arr.size() > 0) {
-			JSONObject o = (JSONObject) arr.get(0);
-			String fileid = (String) o.get("id");
-			JSONObject r = gapi_make_public(fileid);
-			return (r != null);
+			return false;  // "list" call failed
+		
+		String kind = (String) obj.get("kind");
+		String fileid = null;
+		if (kind.equals("drive#fileList")) {
+			JSONArray arr = (JSONArray) obj.get("items");
+			if (arr != null && arr.size() > 0) {
+				JSONObject o = (JSONObject) arr.get(0);
+				fileid = (String) o.get("id");
+			}
 		}
-		return false;
+		
+		if (fileid == null)
+			return false;  // unexpected response type
+		
+		JSONObject r = gapi_make_public(fileid);
+		if (r != null)
+			return true;
+		else
+			return false;
 	}
 	
 	@Override
