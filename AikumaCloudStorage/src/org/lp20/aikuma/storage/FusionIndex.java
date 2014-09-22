@@ -42,8 +42,8 @@ public class FusionIndex implements Index {
         SPEAKERS("speakers", true, true),
         TAGS("tags", false, true),
         DISCOURSE_TYPES("discourse_types", false, true),
-        DATE_BACKED_UP("date_backedup", false, false, "yyyy-mm-dd'T'hh:mm:ssZ"),
-        DATE_APPROVED("date_approved", false, false, "yyyy-mm-dd'T'hh:mm:ssZ"),
+        DATE_BACKED_UP("date_backedup", false, false, "yyyy-mm-dd'T'hh:mm:ssZ", "DATETIME"),
+        DATE_APPROVED("date_approved", false, false, "yyyy-mm-dd'T'hh:mm:ssZ", "DATETIME"),
         METADATA("metadata", false, false),
         USER_ID("user_id", true, false);
 
@@ -62,20 +62,25 @@ public class FusionIndex implements Index {
         public String getFormat() {
             return format;
         }
+        public String getType(){
+            return type;
+        }
 
         private String name;
         private boolean required;
         private boolean multivalue;
         private String format;
+        private String type;
 
-        private MetadataField(String name, boolean required, boolean multivalue, String format) {
+        private MetadataField(String name, boolean required, boolean multivalue, String format, String type) {
             this.name = name;
             this.required = required;
             this.multivalue = multivalue;
             this.format = format;
+            this.type = type;
         }
         private MetadataField(String name, boolean required, boolean multivalue) {
-            this(name, required, multivalue, null);
+            this(name, required, multivalue, null, "STRING");
         }
         private static Map<String, MetadataField> nameToValue;
         static  {

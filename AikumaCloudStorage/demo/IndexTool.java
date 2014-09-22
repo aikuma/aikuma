@@ -124,6 +124,8 @@ public class IndexTool {
                 index.dropTable(tableIdToDrop);
             } else if ("list".equals(action)) {
                 index.listTables();
+            } else if ("generate_schema".equals(action)) {
+                index.generateSchema();
             }
 
         } catch (InvalidAccessTokenException e) {
@@ -294,5 +296,25 @@ public class IndexTool {
             e.printStackTrace();
         }
     }
+    @SuppressWarnings("unchecked")
+    private void generateSchema() {
+        JSONObject schema = new JSONObject();
+        schema.put("name", "aikuma_metadata");
+        schema.put("isExportable", false);
+        schema.put("description", "Main metadata table for Aikuma cloud storage");
+        JSONArray columns = new JSONArray();
+        JSONObject id = new JSONObject();
+        id.put("name", "identifier");
+        id.put("type", "STRING");
+        columns.add(id);
+        for (FusionIndex.MetadataField f : FusionIndex.MetadataField.values()) {
+            JSONObject tmp = new JSONObject();
+            tmp.put("name", f.getName());
+            tmp.put("type", f.getType());
+            columns.add(tmp);
+        }
+        schema.put("columns", columns);
+        System.out.println(schema.toJSONString());
 
+    }
 }
