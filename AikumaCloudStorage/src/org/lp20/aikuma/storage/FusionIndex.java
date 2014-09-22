@@ -225,9 +225,10 @@ public class FusionIndex implements Index {
 
             if (cn.getResponseCode() == HttpURLConnection.HTTP_OK)
                 return JSONValue.parse(readStream(cn.getInputStream()));
-            else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
+            else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                log.warning("Invalid access token: " + this.accessToken);
                 throw new InvalidAccessTokenException();
-            else {
+            } else {
                 log.warning("Identifier: " + forIdentifier);
                 log.warning(String.valueOf(cn.getResponseCode()));
                 log.warning(cn.getResponseMessage());
