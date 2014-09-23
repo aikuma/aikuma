@@ -10,6 +10,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,45 +33,120 @@ public class FusionIndex implements Index {
     private static final Logger log = Logger.getLogger(FusionIndex.class.getName());
     private String tableId;
 
-    private static final class FieldInfo {
-        final boolean required;
-        final boolean multiValue;
-        FieldInfo(boolean required, boolean multiValue) {
-            this.required = required;
-            this.multiValue = multiValue;
+
+    public static enum MetadataField {
+        DATA_STORE_URI("data_store_uri", true, false),
+        ITEM_ID("item_id", true, false),
+        FILE_TYPE("file_type", true, false),
+        LANGUAGES("languages", true, true),
+        SPEAKERS("speakers", true, true),
+        TAGS("tags", false, true),
+        DISCOURSE_TYPES("discourse_types", false, true),
+        DATE_BACKED_UP("date_backedup", false, false, "yyyy-mm-dd'T'hh:mm:ssZ", "DATETIME"),
+        DATE_APPROVED("date_approved", false, false, "yyyy-mm-dd'T'hh:mm:ssZ", "DATETIME"),
+        METADATA("metadata", false, false),
+        USER_ID("user_id", true, false);
+
+        public String getName() {
+            return name;
         }
+
+        public boolean isRequired() {
+            return required;
+        }
+
+        public boolean isMultivalue() {
+            return multivalue;
+        }
+
+        public String getFormat() {
+            return format;
+        }
+        public String getType(){
+            return type;
+        }
+
+        private String name;
+        private boolean required;
+        private boolean multivalue;
+        private String format;
+        private String type;
+
+        private MetadataField(String name, boolean required, boolean multivalue, String format, String type) {
+            this.name = name;
+            this.required = required;
+            this.multivalue = multivalue;
+            this.format = format;
+            this.type = type;
+        }
+        private MetadataField(String name, boolean required, boolean multivalue) {
+            this(name, required, multivalue, null, "STRING");
+        }
+        private static Map<String, MetadataField> nameToValue;
+        static  {
+            nameToValue = new HashMap<String, MetadataField>(values().length);
+            for (MetadataField f : values()) {
+                nameToValue.put(f.name, f);
+            }
+        }
+        public static MetadataField byName(String name) {
+            return nameToValue.get(name);
+        }
+        public static boolean isValidName(String fieldName) {
+            return nameToValue.containsKey(fieldName);
+        }
+
+        public static boolean areValidNames(Iterable<String> fieldNames) {
+            int count = 0;
+            Set<String> keys = nameToValue.keySet();
+            for (String name : fieldNames) {
+                if (!keys.contains(name)) return false;
+                count++;
+            }
+            if (count > 0)
+                return true;
+            else
+                return false;
+        }
+
     }
 
+    public static enum DiscourseType {
+        DIALOGUE("dialogue"),
+        DRAMA("drama"),
+        FORMULAIC("formulaic"),
+        LUDIC("ludic"),
+        ORATORY("oratory"),
+        NARRATIVE("narrative"),
+        PROCEDURAL("procedural"),
+        REPORT("report"),
+        SINGING("singing"),
+        UNINTELLIGIBLE_SPEECH("unintelligible_speech");
 
-    private static final Map<String, FieldInfo> fields;
-    static {
-        fields = new TreeMap<String, FieldInfo>();
-        fields.put("data_store_uri", new FieldInfo(true, false));
-        fields.put("item_id", new FieldInfo(true, false));
-        fields.put("file_type", new FieldInfo(true, false));
-        fields.put("languages", new FieldInfo(true, true));
-        fields.put("speakers", new FieldInfo(true, true));
-        fields.put("tags", new FieldInfo(false, true));
-        fields.put("discourse_types", new FieldInfo(false, true));
-        fields.put("date_backedup", new FieldInfo(false, false));
-        fields.put("date_approved", new FieldInfo(false, false));
-        fields.put("metadata", new FieldInfo(false, false));
-        fields.put("user_id", new FieldInfo(true, false));
-    }
+        private String name;
+        public String getName() {
+            return name;
+        }
 
-    private static final Set<String> discourseTypes;
-    static {
-        discourseTypes = new TreeSet<String>();
-        discourseTypes.add("dialogue");
-        discourseTypes.add("drama");
-        discourseTypes.add("formulaic");
-        discourseTypes.add("ludic");
-        discourseTypes.add("oratory");
-        discourseTypes.add("narrative");
-        discourseTypes.add("procedural");
-        discourseTypes.add("report");
-        discourseTypes.add("singing");
-        discourseTypes.add("unintelligible_speech");
+
+        private DiscourseType(String name) {
+            this.name = name;
+        }
+
+        private static Map<String, DiscourseType> nameToValue;
+        static {
+            for (DiscourseType d: values()) {
+                nameToValue.put(d.getName(), d);
+            }
+
+        }
+        public static DiscourseType byName(String name) {
+            return nameToValue.get(name);
+        }
+
+        public static boolean isValidName(String name) {
+            return nameToValue.containsKey(name);
+        }
     }
 
 
@@ -79,10 +157,10 @@ public class FusionIndex implements Index {
     static {
         boolean header = false;
         String fieldList = "";
-        for (String field : fields.keySet()) {
+        for (MetadataField field : MetadataField.values()) {
             if (header) fieldList += ", ";
             else header = true;
-            fieldList += field;
+            fieldList += field.getName();
         }
         SELECT_SQL_TEMPLATE = "SELECT " + fieldList + " FROM %s WHERE identifier = '%s';";
     }
@@ -109,18 +187,18 @@ public class FusionIndex implements Index {
 	 * @see org.lp20.aikuma.storage.Index#get_item_metadata(java.lang.String)
 	 */
 	@Override
+    @SuppressWarnings("unchecked")
 	public Map<String,String> getItemMetadata(String identifier) {
         Map json = getMetadata(identifier);
         if (json == null || !json.containsKey("rows")) return null;
         Map<String, String> ret = new HashMap<String, String>(10);
-
         List<String> columns = (List<String>) json.get("columns");
         List<String> row = (List<String>) ((List) json.get("rows")).get(0);
 
         for (int i = 0; i < columns.size(); i++) {
             String key = columns.get(i);
             String value = row.get(i);
-            if (fields.get(key).multiValue && value.length() > 0) {
+            if (MetadataField.byName(key).isMultivalue() && value.length() > 0) {
                 value = value.replace('|', ',').substring(1, value.length() - 1);
             }
             ret.put(key, value);
@@ -152,9 +230,10 @@ public class FusionIndex implements Index {
 
             if (cn.getResponseCode() == HttpURLConnection.HTTP_OK)
                 return JSONValue.parse(readStream(cn.getInputStream()));
-            else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
+            else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                log.warning("Invalid access token: " + this.accessToken);
                 throw new InvalidAccessTokenException();
-            else {
+            } else {
                 log.warning("Identifier: " + forIdentifier);
                 log.warning(String.valueOf(cn.getResponseCode()));
                 log.warning(cn.getResponseMessage());
@@ -187,17 +266,19 @@ public class FusionIndex implements Index {
 	public List<String> search(Map<String,String> constraints) {
         List<String> retval = new ArrayList<String>();
         StringBuilder sql = new StringBuilder();
+
         sql.append(String.format("SELECT identifier FROM %s WHERE date_approved NOT EQUAL TO ''", tableId));
         for (String key: constraints.keySet()) {
-            if (!fields.containsKey(key))
+            if (!MetadataField.isValidName(key))
                 throw new IllegalArgumentException("Unknown field: " + key);
             sql.append(" AND ");
-            if (fields.get(key).multiValue)
+            if (MetadataField.byName(key).isMultivalue())
                 sql.append(String.format("%s CONTAINS '|%s|'", key, constraints.get(key)));
             else
                 sql.append(String.format("%s = '%s'", key, constraints.get(key)));
         }
         sql.append(";");
+
         JSONObject tmp = (JSONObject) doGet("[None]", sql.toString());
         if (tmp.containsKey("rows"))  {
             for (Object row : (List) tmp.get("rows")) {
@@ -214,7 +295,7 @@ public class FusionIndex implements Index {
      */
     private void validateConstraints(Map<String, String> constraints) {
         for (String key : constraints.keySet()) {
-            if (!fields.containsKey(key))
+            if (!MetadataField.isValidName(key))
                 throw new IllegalArgumentException("Unknown key " + key);
         }
     }
@@ -283,7 +364,9 @@ public class FusionIndex implements Index {
             String key = e.getKey();
             fieldList.append((key));
             String value = e.getValue().replaceAll("'", "\'");
-            if (fields.get(key).multiValue) value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
+            if (MetadataField.byName(key).isMultivalue()) {
+                value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
+            }
             valueList.append("'"+ value + "'");
         }
         return urlencode(String.format(INSERT_SQL_TEMPLATE, tableId, fieldList.toString(), identifier,
@@ -298,23 +381,35 @@ public class FusionIndex implements Index {
             else header = true;
             String field = e.getKey();
             String value = e.getValue().replaceAll("'", "\'");
-            if (fields.get(field).multiValue) value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
+            if (MetadataField.byName(field).isMultivalue()) {
+                value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
+            }
             sql.append(field).append(" = '").append(value).append("'");
         }
         return urlencode(String.format(UPDATE_SQL_TEMPLATE, tableId, sql.toString(), rowid));
     }
     private void validateMetadata(Map<String, String> metadata, boolean isInsert) {
-        if (!fields.keySet().containsAll(metadata.keySet()))
+        if (!MetadataField.areValidNames(metadata.keySet())) {
             throw new IllegalArgumentException("Unknown metadata keys");
-        for (Map.Entry<String, FieldInfo> info: fields.entrySet()) {
-            String key = info.getKey();
-            FieldInfo value = info.getValue();
-            if (isInsert && value.required && !metadata.containsKey(key))
-                throw new IllegalArgumentException("Missing required field " + key);
-            if ("discourse_type".equals(key)) {
-                for (String tmp : metadata.get(key).split(",")) {
-                    if (!discourseTypes.contains(tmp))
-                        throw new IllegalArgumentException(metadata.get(key) + " is not a valid discourse_type");
+        }
+        for (MetadataField f: MetadataField.values()) {
+            String name = f.getName();
+            if (isInsert && f.isRequired( )&& !metadata.containsKey(name))
+                throw new IllegalArgumentException("Missing required field " + name);
+            if (f.getFormat() != null) {
+                // TODO: this assumes all formats are date formats; it should probably be different
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat(f.getFormat());
+                    Date tmp = sdf.parse(metadata.get(name));
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException("Invalid data format for " + name +
+                                                       "; does not match" + f.getFormat());
+                }
+            }
+            if ("discourse_type".equals(name)) {
+                for (String tmp : metadata.get(name).split(",")) {
+                    if (!DiscourseType.isValidName(tmp))
+                        throw new IllegalArgumentException(metadata.get(name) + " is not a valid discourse_type");
                 }
             }
         }
