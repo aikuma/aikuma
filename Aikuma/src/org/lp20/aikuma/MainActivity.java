@@ -149,9 +149,10 @@ public class MainActivity extends ListActivity {
 		}
 
 		adapter = new RecordingArrayAdapter(this, originals);
+		/*
 		if(searchView != null) {
 			adapter.getFilter().filter(searchView.getQuery());
-		}
+		}*/
 		setListAdapter(adapter);
 		if (listViewState != null) {
 			getListView().onRestoreInstanceState(listViewState);
@@ -391,7 +392,7 @@ public class MainActivity extends ListActivity {
      * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
      *
      */
-    private class GetTokenTask extends AsyncTask<Void, Void, Void>{
+    private class GetTokenTask extends AsyncTask<Void, Void, Boolean>{
     	
     	private static final String TAG = "GetTokenTask";
 
@@ -404,15 +405,22 @@ public class MainActivity extends ListActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
         	try{
         		googleAuthToken = getToken();
         		Log.i(TAG, "token: " + googleAuthToken);
-        		menuBehaviour.setSignInState(true);
         	} catch(IOException e) {
         		Log.e(TAG, "IOException: " + e.getMessage());
+        		return false;
         	} 
-        	return null;
+        	return true;
+        }
+        
+        @Override
+        protected void onPostExecute(Boolean result) {
+        	if(result) {
+        		menuBehaviour.setSignInState(true);
+        	}
         }
 
         /**

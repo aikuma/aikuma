@@ -49,7 +49,7 @@ public class MenuBehaviour {
 		MenuInflater inflater = activity.getMenuInflater();
 		if (activity instanceof MainActivity) {
 			inflater.inflate(R.menu.main, menu);
-			((MainActivity)activity).setUpSearchInterface(menu);
+			//((MainActivity)activity).setUpSearchInterface(menu);
 		} else {
 			inflater.inflate(R.menu.other, menu);
 		}
@@ -68,6 +68,10 @@ public class MenuBehaviour {
 		switch (item.getItemId()) {
 			case android.R.id.home:
 				goToMainActivity();
+				return true;
+			case R.id.search:
+				intent = new Intent(activity, CloudSearchActivity.class);
+				activity.startActivity(intent);
 				return true;
 			case R.id.record:
 				intent = new Intent(activity, RecordActivity.class);
@@ -159,7 +163,8 @@ public class MenuBehaviour {
 	public void setSignInState(boolean state) {
 		this.signInState = state;
 		if(state) {
-			String signOutString = "Sign-out: " + activity.emailAccount;
+			//TODO: get emailAccount from AikumaSettings
+			String signOutString = "Sign-out: "; // + activity.emailAccount;
 			findItem(R.id.gplus_signin_menu).setTitle(signOutString);
 		} else {
 			String signInString = 
