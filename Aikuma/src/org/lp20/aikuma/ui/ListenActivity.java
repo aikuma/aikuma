@@ -538,7 +538,7 @@ public class ListenActivity extends AikumaListActivity {
 		SharedPreferences preferences =
 				PreferenceManager.getDefaultSharedPreferences(this);
 		String respeakingMode = preferences.getString(
-				"respeaking_mode", "nothing");
+				AikumaSettings.RESPEAKING_MODE_KEY, "nothing");
 		Log.i("ListenActivity", "respeakingMode: " + respeakingMode);
 		Intent intent;
 		if (respeakingMode.equals("phone")) {

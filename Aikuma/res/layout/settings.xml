@@ -37,7 +37,7 @@
 	<TextView
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:text="Automatic Backup" />
+	    android:text="Automatic Sync" />
 
 	<CheckBox
 	    android:id="@+id/backup_checkBox"
@@ -45,6 +45,13 @@
 	    android:layout_height="wrap_content"
 	    android:text="Enable Backup" 
 	    android:onClick="onBackupCheckBoxClicked" />
+	
+	<CheckBox
+	    android:id="@+id/autoDownload_checkBox"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="Enable automatic-download" 
+	    android:onClick="onDownloadCheckBoxClicked" />
 
 	<TextView
 		android:layout_width="match_parent"

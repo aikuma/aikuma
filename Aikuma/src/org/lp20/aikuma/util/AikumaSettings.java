@@ -21,11 +21,32 @@ public class AikumaSettings {
 	 * Setting value for backup
 	 */
 	public static boolean isBackupEnabled;
+	/**
+	 * Setting value for auto-download
+	 */
+	public static boolean isAutoDownloadEnabled;
 	
 	/**
-	 *  Setting key for recordings which are approved to be archived
+	 *  List of keys in default SharedPreferences
+	 *  
+	 *  ARCHIVE_RECORDING_KEY	: A set of recording IDs approved to be archived
+	 *  [archivedRecording Id]	: <Approved-date>|<archive-state>|<data-store-uri>
+	 *  GOOGLE_AUTH_TOKEN_KEY
+	 *  GOOGLE_ACCOUNT_KEY
+	 *  BACKUP_MODE_KEY			: true/false
+	 *  AUTO_DOWNLOAD_MODE_KEY  : true/false
+	 *  RESPEAKING_MODE_KEY		: "phone"/"thumb"
 	 */
-	public static String archivingRecordingKey = "approvedRecordings";
-	
-	
+	public static final String ARCHIVE_RECORDING_KEY = "approvedRecordings";
+	/** */
+	public static final String GOOGLE_AUTH_TOKEN_KEY = "googleAuthToken";
+	/** */
+	public static final String GOOGLE_ACCOUNT_KEY = "defaultGoogleAccount";
+	/** */
+	public static final String BACKUP_MODE_KEY = "backup_mode";
+	/** */
+	public static final String AUTO_DOWNLOAD_MODE_KEY = "autoDownload_mode";
+	/** */
+	public static final String RESPEAKING_MODE_KEY = "respeaking_mode";
+
 }

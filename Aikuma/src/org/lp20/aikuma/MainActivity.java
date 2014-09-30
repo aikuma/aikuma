@@ -110,7 +110,7 @@ public class MainActivity extends ListActivity {
 				PreferenceManager.getDefaultSharedPreferences(this);
 		
 		recordingSet = (HashSet<String>)
-				preferences.getStringSet(AikumaSettings.archivingRecordingKey, 
+				preferences.getStringSet(AikumaSettings.ARCHIVE_RECORDING_KEY, 
 						new HashSet<String>());
 		emailAccount = preferences.getString("defaultGoogleAccount", null);
 		googleAuthToken = preferences.getString("googleAuthToken", null);
@@ -119,7 +119,9 @@ public class MainActivity extends ListActivity {
     	
     	AikumaSettings.googleAuthToken = googleAuthToken;
 		AikumaSettings.isBackupEnabled = 
-				preferences.getBoolean("backup", false);
+				preferences.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
+		AikumaSettings.isAutoDownloadEnabled =
+				preferences.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
 		
 		Log.i(TAG, recordingSet.toString());
 	
@@ -128,7 +130,8 @@ public class MainActivity extends ListActivity {
 			// (And if there are items to be archived, upload them)
 			new GetTokenTask(emailAccount, googleAPIScope, 
 	         		preferences).execute();
-		} else if(AikumaSettings.isBackupEnabled) {
+		} else if(AikumaSettings.isBackupEnabled 
+				|| AikumaSettings.isAutoDownloadEnabled) {
 			// When backup was enabled but the user never signed-in google account
 			getAccountToken();
 		}
@@ -396,6 +399,14 @@ public class MainActivity extends ListActivity {
         		intent.putExtra("id", "retry");
 				startService(intent);
     		}
+        	
+        	if(AikumaSettings.isAutoDownloadEnabled) {
+        		Intent intent = new Intent(MainActivity.this, 
+        				GoogleCloudService.class);
+        		intent.putExtra("id", "autoDownload");
+        		startService(intent);
+        	}
+    
         }
         
         /**

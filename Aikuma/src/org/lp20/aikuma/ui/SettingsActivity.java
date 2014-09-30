@@ -27,6 +27,7 @@ import java.util.Set;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.service.GoogleCloudService;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.UsageUtils;
 
@@ -51,6 +52,7 @@ public class SettingsActivity extends AikumaActivity {
 	private SharedPreferences preferences;
 
 	private boolean isBackupEnabled;
+	private boolean isAutoDownloadEnabled;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -71,16 +73,21 @@ public class SettingsActivity extends AikumaActivity {
 	private void setupBackupCheckBox() {
 		CheckBox backupCheckBox = (CheckBox)
 				findViewById(R.id.backup_checkBox);
+		CheckBox autoDownloadCheckBox = (CheckBox)
+				findViewById(R.id.autoDownload_checkBox);
 		isBackupEnabled =
-				preferences.getBoolean("backup", false);
+				preferences.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
+		isAutoDownloadEnabled = 
+				preferences.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
 		Log.i(TAG, "backup: " + isBackupEnabled);
 		backupCheckBox.setChecked(isBackupEnabled);
+		autoDownloadCheckBox.setChecked(isAutoDownloadEnabled);
 	}
 
 	// Set the respeaking mode radio buttons as per the settings.
 	private void readRespeakingMode() {
 		String respeakingMode = preferences.getString(
-				"respeaking_mode", "thumb");
+				AikumaSettings.RESPEAKING_MODE_KEY, "thumb");
 		RadioGroup radioGroup = (RadioGroup)
 				findViewById(R.id.respeaking_radio_group);
 		if (respeakingMode.equals("thumb")) {
@@ -170,13 +177,13 @@ public class SettingsActivity extends AikumaActivity {
 		switch (radioButton.getId()) {
 			case R.id.radio_phone_respeaking:
 				if (checked) {
-					prefsEditor.putString("respeaking_mode", "phone");
+					prefsEditor.putString(AikumaSettings.RESPEAKING_MODE_KEY, "phone");
 					prefsEditor.commit();
 				}
 				break;
 			case R.id.radio_thumb_respeaking:
 				if (checked) {
-					prefsEditor.putString("respeaking_mode", "thumb");
+					prefsEditor.putString(AikumaSettings.RESPEAKING_MODE_KEY, "thumb");
 					prefsEditor.commit();
 				}
 				break;
@@ -200,13 +207,37 @@ public class SettingsActivity extends AikumaActivity {
 				isBackupEnabled = true;
 			}
 			
-			prefsEditor.putBoolean("backup", true);
+			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, true);
 			prefsEditor.commit();
 		} else {
-			prefsEditor.putBoolean("backup", false);
+			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
 			prefsEditor.commit();
 		}
 	}
 	
+	/**
+	 * Adjusts the settings when the auto-download checkbox is pressed.
+	 * 
+	 * @param checkBox	The checkbox 
+	 */
+	public void onDownloadCheckBoxClicked(View checkBox) {
+		boolean checked = ((CheckBox) checkBox).isChecked();
+		Editor prefsEditor = preferences.edit();
+		Log.i(TAG, "checkbox: " + checked);
+		if(checked) {
+			if(!isAutoDownloadEnabled) {
+				Intent intent = new Intent(this, GoogleCloudService.class);
+				intent.putExtra("id", "autoDownload");
+				startService(intent);
+				isAutoDownloadEnabled = true;
+			}
+			
+			prefsEditor.putBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, true);
+			prefsEditor.commit();
+		} else {
+			prefsEditor.putBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
+			prefsEditor.commit();
+		}
+	}
 
 }

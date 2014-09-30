@@ -479,6 +479,19 @@ public class Recording {
 	 */
 	public static Recording read(File metadataFile) throws IOException {
 		JSONObject jsonObj = FileIO.readJSONObject(metadataFile);
+		
+		return read(jsonObj);
+	}
+	
+	/**
+	 * Read a recording from JSON object describing the Recording
+	 *
+	 * @param	jsonObj			JSON Object containing the metadata of the recording.
+	 * @return	A Recording object corresponding to the json object.
+	 * @throws	IOException	If the recording metadata doesn't exist.
+	 */
+	public static Recording read(JSONObject jsonObj) throws IOException {
+		
 		String groupId = (String) jsonObj.get("recording");
 		if (groupId == null) {
 			throw new IOException("Null groupId in the JSON file.");

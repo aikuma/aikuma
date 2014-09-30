@@ -5,8 +5,13 @@
 package org.lp20.aikuma.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +27,7 @@ import org.lp20.aikuma.storage.Data;
 import org.lp20.aikuma.storage.DataStore;
 import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.Utils;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
 
@@ -41,7 +47,7 @@ public class GoogleCloudService extends IntentService{
 	
 	private final static String TAG = "GoogleCloudService";
 	
-	private final String key = AikumaSettings.archivingRecordingKey;
+	private final String key = AikumaSettings.ARCHIVE_RECORDING_KEY;
 	
 	private SharedPreferences preferences;
 	private Editor prefsEditor;
@@ -78,16 +84,74 @@ public class GoogleCloudService extends IntentService{
 		String id = (String)
 				intent.getExtras().get("id");
 		Log.i(TAG, "Receive intent: " + id);
-		if(id.equals("backup")) {
+		
+		if(id.equals("backup")) {		// Called when backup-setting is enabled
 			backUp();
-		} else if(id.equals("retry")) {
+		} else if(id.equals("retry")) {	// Called with the start of application
 			retry();
-		} else {
+		} else if(id.equals("autoDownload")) {
+			autoDownloadFiles();
+		} else {						// Called when archive button is pressed
 			archive(id);
 		}
 	}
+	
+	private void autoDownloadFiles() {
+		if(googleAuthToken == null)
+			return;
+		
+		FusionIndex fi = new FusionIndex(googleAuthToken);
+		GoogleDriveStorage gd = new GoogleDriveStorage(googleAuthToken);
+		
+		String emailAddr = preferences.getString("defaultGoogleAccount", null);
+		Map<String,String> criteria = new HashMap<String, String>();
+		
+		if(emailAddr != null)
+			criteria.put("user_id", emailAddr);
+        
+		// Search the items not existing in this device
+        List<String> archivedRecordingIds = fi.search(criteria);
+        List<Recording> recordings = Recording.readAll();
+        List<String> recordingIds = new ArrayList<String>();
+        for(Recording item : recordings) {
+        	String extension = (item.isMovie())? ".mp4" : ".wav";
+        	String identifier = item.getId() + extension;
+        	recordingIds.add(identifier);
+        }
+        
+        archivedRecordingIds.removeAll(recordingIds);
+        
+        // Download the filtered items
+        for(String itemId: archivedRecordingIds) {
+        	Map<String, String> meta = fi.getItemMetadata(itemId);
+        	String id = itemId.substring(0, itemId.length()-4);
+        	String groupId = meta.get("item_id");
+        	String metadataJSONStr = meta.get("metadata");
+        	File dir = new File(Recording.getRecordingsPath(), groupId);
+        	dir.mkdir();
+        	
+        	try{
+        		// Write the recording file
+            	InputStream is = gd.load(itemId);
+            	FileOutputStream fos = new FileOutputStream(new File(dir, itemId));
+            	Utils.copyStream(is, fos, true);
+            	
+            	// Write the recording metadata
+            	FileIO.write(new File(dir, id + "-metadata.json"), metadataJSONStr);
+        	} catch (FileNotFoundException e) {
+        		Log.e(TAG, e.getMessage());
+        	} catch (IOException e) {
+				Log.e(TAG, e.getMessage());
+			}
+        	
+        }   
+	}
+	
+	
+	
 	/**
-	 *  Back-up function: add all recording-items to the Set and call retry()
+	 *  Back-up function: add all recording-items to the Set 
+	 *  and call retry() to upload the items
 	 */
 	private void backUp() {
 		List<Recording> recordings = Recording.readAll();
@@ -113,6 +177,9 @@ public class GoogleCloudService extends IntentService{
 	 */
 	private void retry() {
 		Log.i(TAG, "retry start");
+		if(googleAuthToken == null)
+			return;
+		
 		Set<String> recordings = new HashSet<String>(recordingSet);
 		for(String recordingId : recordings) {
 			Recording recording;
@@ -262,8 +329,8 @@ public class GoogleCloudService extends IntentService{
 			languages += joiner + lang;
 			joiner = ",";
 		}
-		SharedPreferences preferences = 
-				PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		//SharedPreferences preferences = 
+		//		PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		String emailAddr = preferences.getString("defaultGoogleAccount", null);
 		if (emailAddr == null) {
 			Log.i(TAG, "defaultGoogleAccount is null");
