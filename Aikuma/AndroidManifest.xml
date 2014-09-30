@@ -163,11 +163,8 @@
 				<meta-data android:name="android.support.PARENT_ACTIVITY"
 					android:value="org.lp20.aikuma.MainActivity" />
 		</activity>
-		
-		
-		
-		
-		
+
+		<service android:name="org.lp20.aikuma.service.GoogleCloudService" />
     </application>
 
 </manifest>

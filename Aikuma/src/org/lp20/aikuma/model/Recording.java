@@ -480,6 +480,19 @@ public class Recording {
 	 */
 	public static Recording read(File metadataFile) throws IOException {
 		JSONObject jsonObj = FileIO.readJSONObject(metadataFile);
+		
+		return read(jsonObj);
+	}
+	
+	/**
+	 * Read a recording from JSON object describing the Recording
+	 *
+	 * @param	jsonObj			JSON Object containing the metadata of the recording.
+	 * @return	A Recording object corresponding to the json object.
+	 * @throws	IOException	If the recording metadata doesn't exist.
+	 */
+	public static Recording read(JSONObject jsonObj) throws IOException {
+		
 		String groupId = (String) jsonObj.get("recording");
 		if (groupId == null) {
 			throw new IOException("Null groupId in the JSON file.");
@@ -801,6 +814,25 @@ public class Recording {
 		flagFile.getParentFile().mkdirs();
 		flagFile.createNewFile();
 	}
+	
+	/**
+	 * Make the archived recording's metadata
+	 * @param backupDate	when upload finished
+	 * @param downloadUrl	url where the recording file can be downloaded
+	 * @throws	IOException	In case of an issue writing the archiveMetadata file.
+	 * Note that this will not be thrown if the file already exists.
+	 */
+	public void archive(String backupDate, String downloadUrl) throws IOException {
+		JSONObject archiveMetadata = new JSONObject();
+		archiveMetadata.put("name", this.name);
+		archiveMetadata.put("recording", this.groupId);
+		archiveMetadata.put("backupDate", backupDate);
+		archiveMetadata.put("download_url", downloadUrl);
+		
+		FileIO.writeJSONObject(new File(getRecordingsPath(), 
+				getGroupId() + "/" + id + "-archive.json"),
+				archiveMetadata);
+	}
 
 	/**
 	 * Tells us whether this phone has already starred the Recording
@@ -826,6 +858,17 @@ public class Recording {
 		File flagFile = new File(FileIO.getAppRootPath(), "/social/" +
 				getGroupId() + "/" + getId() + "/" + androidID + ".flag");
 		return flagFile.exists();
+	}
+	
+	/**
+	 * Tells us whether this recording has been archived
+	 *
+	 * @return	true if a archiveMetadata file is present; false otherwise
+	 */
+	public boolean isArchived() {
+		File archiveMetaFile = new File(getRecordingsPath(), 
+				getGroupId() + "/" + getId() + "-archive.json");
+		return archiveMetaFile.exists();
 	}
 
 	/**

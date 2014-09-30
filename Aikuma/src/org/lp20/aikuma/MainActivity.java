@@ -15,19 +15,11 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MenuInflater;
 import android.view.View;
-import android.view.View.OnKeyListener;
-import android.view.inputmethod.InputMethodManager;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -40,41 +32,38 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.musicg.wave.Wave;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.storage.FusionIndex;
+import org.lp20.aikuma.storage.GoogleAuth;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
 import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.MenuBehaviour;
-import org.lp20.aikuma.ui.RecordActivity;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;
 import org.lp20.aikuma.ui.RecordingMetadataActivity1;
-import org.lp20.aikuma.ui.SettingsActivity;
 import org.lp20.aikuma.ui.sensors.LocationDetector;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.SyncUtil;
 
 // For audio imports
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
+import android.content.SharedPreferences;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -114,6 +103,37 @@ public class MainActivity extends ListActivity {
 		actionBar.setDisplayShowHomeEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
 		
+		// Load setting values
+		SharedPreferences preferences = 
+				PreferenceManager.getDefaultSharedPreferences(this);
+		
+		recordingSet = (HashSet<String>)
+				preferences.getStringSet(AikumaSettings.ARCHIVE_RECORDING_KEY, 
+						new HashSet<String>());
+		emailAccount = preferences.getString("defaultGoogleAccount", null);
+		googleAuthToken = preferences.getString("googleAuthToken", null);
+		googleAPIScope = getScope();
+    	Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
+    	
+    	AikumaSettings.googleAuthToken = googleAuthToken;
+		AikumaSettings.isBackupEnabled = 
+				preferences.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
+		AikumaSettings.isAutoDownloadEnabled =
+				preferences.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
+		
+		Log.i(TAG, recordingSet.toString());
+	
+		if(emailAccount != null) {
+			// Validate access token
+			// (And if there are items to be archived, upload them)
+			new GetTokenTask(emailAccount, googleAPIScope, 
+	         		preferences).execute();
+		} else if(AikumaSettings.isBackupEnabled 
+				|| AikumaSettings.isAutoDownloadEnabled) {
+			// When backup was enabled but the user never signed-in google account
+			getAccountToken();
+		}
+			
 		// Start gathering location data
 		MainActivity.locationDetector = new LocationDetector(this);
 	}
@@ -157,7 +177,7 @@ public class MainActivity extends ListActivity {
 		if (listViewState != null) {
 			getListView().onRestoreInstanceState(listViewState);
 		}
-		
+
 		MainActivity.locationDetector.start();
 	}
 	
@@ -172,7 +192,6 @@ public class MainActivity extends ListActivity {
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		Intent intent = new Intent(this, ListenActivity.class);
 		intent.putExtra("id", recording.getId());
-		intent.putExtra("token", googleAuthToken);
 		startActivity(intent);
 	}
 	
@@ -217,9 +236,12 @@ public class MainActivity extends ListActivity {
 		});	
 	}
 
+
 	SearchView searchView;
 	
 	MenuBehaviour menuBehaviour;
+	
+	private Set<String> recordingSet;
 	private RecordingArrayAdapter adapter;
 	
 	/////////////////////////////////////////////////////
@@ -274,7 +296,8 @@ public class MainActivity extends ListActivity {
         
         String[] accountTypes = new String[]{"com.google"};
         Intent intent = AccountPicker.newChooseAccountIntent(null, null,
-                accountTypes, false, null, null, null, null);
+                accountTypes, false, " (Default Google-account)", 
+                null, null, null);
         startActivityForResult(intent, PICK_ACCOUNT_REQUEST_CODE);
     }
     
@@ -283,11 +306,13 @@ public class MainActivity extends ListActivity {
     		int resultCode, Intent data) {
         if (requestCode == PICK_ACCOUNT_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                emailAccount = 
-                		data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                if (isDeviceOnline()) {
-                	googleAPIScope = getScope();
-                    new GetTokenTask(emailAccount, googleAPIScope).execute();
+            	SharedPreferences preferences = 
+        				PreferenceManager.getDefaultSharedPreferences(this);
+            	emailAccount = 
+            			data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                if (isDeviceOnline()) {	
+                    new GetTokenTask(emailAccount, googleAPIScope, 
+                    		preferences).execute();
                 } else {
                     Toast.makeText(this, "Network is disconnected", 
                     		Toast.LENGTH_SHORT).show();
@@ -314,7 +339,10 @@ public class MainActivity extends ListActivity {
         }
         if (resultCode == RESULT_OK) {
             // User recovered error, retry to get access_token
-            new GetTokenTask(emailAccount, googleAPIScope).execute();
+        	SharedPreferences preferences = 
+    				PreferenceManager.getDefaultSharedPreferences(this);
+            new GetTokenTask(emailAccount, googleAPIScope, 
+            		preferences).execute();
             return;
         }
 //        if (resultCode == RESULT_CANCELED) {
@@ -380,6 +408,7 @@ public class MainActivity extends ListActivity {
 			scope += joiner + s;
 			joiner = " ";
 		}
+
 		for (String s: FusionIndex.getScopes()) {
 			scope += joiner + s;
 			joiner = " ";
@@ -389,6 +418,7 @@ public class MainActivity extends ListActivity {
     
     /**
      * Inner class to get an access token from google server
+     * 
      * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
      *
      */
@@ -398,31 +428,60 @@ public class MainActivity extends ListActivity {
 
         private String mScope;
         private String mEmailAccount;
-
-        GetTokenTask(String email, String scope) {
+        private SharedPreferences preferences;
+        
+        GetTokenTask(String email, String scope, 
+        		SharedPreferences preferences) {
             this.mEmailAccount = email;
             this.mScope = scope;
+            this.preferences = preferences;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-        	try{
+        	try {
         		googleAuthToken = getToken();
-        		Log.i(TAG, "token: " + googleAuthToken);
-        	} catch(IOException e) {
-        		Log.e(TAG, "IOException: " + e.getMessage());
-        		return false;
-        	} 
+				
+				// Store the default account, access-token for next use
+				SharedPreferences.Editor prefsEditor = preferences.edit();
+				prefsEditor.putString("googleAuthToken", googleAuthToken);
+				prefsEditor.putString("defaultGoogleAccount", mEmailAccount);
+				prefsEditor.commit();
+				AikumaSettings.googleAuthToken = googleAuthToken;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				Log.e(TAG, e.getMessage());
+				return false;
+			}
+    		Log.i(TAG, "token: " + googleAuthToken);
         	return true;
         }
-        
+
         @Override
         protected void onPostExecute(Boolean result) {
-        	if(result) {
-        		menuBehaviour.setSignInState(true);
+        	if(!result)
+        		return;
+        	
+        	menuBehaviour.setSignInState(true);
+        	
+        	if(recordingSet.size() > 0) {
+        		// If there are items to be uploaded,
+    			// start the GoogleCloud upload service 
+        		Intent intent = new Intent(MainActivity.this, 
+        				GoogleCloudService.class);
+        		intent.putExtra("id", "retry");
+				startService(intent);
+    		}
+        	
+        	if(AikumaSettings.isAutoDownloadEnabled) {
+        		Intent intent = new Intent(MainActivity.this, 
+        				GoogleCloudService.class);
+        		intent.putExtra("id", "autoDownload");
+        		startService(intent);
         	}
+    
         }
-
+        
         /**
          * Request to get an authentication token for google-api services
          * Error(recoverable) -> UI-Thread / (fata) -> Log error
@@ -432,6 +491,12 @@ public class MainActivity extends ListActivity {
          */
         private String getToken() throws IOException {
             try {
+            	// If the previous token is invalid, refresh token
+            	// Otherwise, get new token.
+            	if(googleAuthToken != null && 
+        				!GoogleAuth.validateAccessToken(googleAuthToken)) {
+        			GoogleAuthUtil.clearToken(MainActivity.this, googleAuthToken);
+        		}
                 return GoogleAuthUtil
                 		.getToken(MainActivity.this, mEmailAccount, mScope);
             } catch (UserRecoverableAuthException userRecoverableException) {
@@ -440,7 +505,7 @@ public class MainActivity extends ListActivity {
                 handleException(userRecoverableException);
             } catch (GoogleAuthException fatalException) {
                 Log.e(TAG, "Unrecoverable error " + fatalException.getMessage());
-            }
+            } 
             return null;
         }
     }
