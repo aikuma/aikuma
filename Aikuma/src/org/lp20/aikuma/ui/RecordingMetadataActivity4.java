@@ -80,13 +80,9 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 		}
 		languageView.setText(sb);
 
-		//Lets method in superclass know to ask user if they are willing to
-		//discard new data on an activity transition via the menu.
-		//if duration of the file > 250msec
-		if(durationMsec > 250) {
-			safeActivityTransition = true;
-		}
-		safeActivityTransitionMessage = "Are you sure you want to discard this recording?";
+		//Lets method in superclass know to ask user if they are willing to go back
+		safeActivityTransition = true;
+		safeActivityTransitionMessage = "Are you sure you want to change one of the metadata?";
 		
 		videoView = (VideoView) findViewById(R.id.videoView);
 	}

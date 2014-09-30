@@ -72,7 +72,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 		// Video -> videoView / Sound -> ListenFragment
 		if(format.equals("mp4")) {
 			setUpVideoView(uuid);
-		} else {
+		} else if(listenFragment == null) {
 			videoView.setVisibility(View.GONE);
 			
 			FragmentTransaction ft = getFragmentManager().beginTransaction();

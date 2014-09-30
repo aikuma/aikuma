@@ -245,6 +245,7 @@ public class RecordActivity extends AikumaActivity {
 		}
 		
 		startActivity(intent);
+		RecordActivity.this.finish();
 	}
 
 	@Override
