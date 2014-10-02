@@ -46,7 +46,7 @@ public class FusionIndex implements Index {
         DATE_APPROVED("date_approved", false, false, "yyyy-mm-dd'T'hh:mm:ssZ", "DATETIME"),
         METADATA("metadata", false, false),
         USER_ID("user_id", true, false),
-        DATE_PROCESSED("date_processed", false, false, "yyyy-mm-dd'T'hh:mm:ssZ");
+        DATE_PROCESSED("date_processed", false, false, "yyyy-mm-dd'T'hh:mm:ssZ", "DATETIME");
 
         public String getName() {
             return name;
