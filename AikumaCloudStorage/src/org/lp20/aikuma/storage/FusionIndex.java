@@ -42,11 +42,11 @@ public class FusionIndex implements Index {
         SPEAKERS("speakers", true, true),
         TAGS("tags", false, true),
         DISCOURSE_TYPES("discourse_types", false, true),
-        DATE_BACKED_UP("date_backedup", false, false, "yyyy-mm-dd'T'hh:mm:ssZ", "DATETIME"),
-        DATE_APPROVED("date_approved", false, false, "yyyy-mm-dd'T'hh:mm:ssZ", "DATETIME"),
+        DATE_BACKED_UP("date_backedup", false, false, "yyyy-MM-dd'T'HH:mm:ss'Z'", "DATETIME"),
+        DATE_APPROVED("date_approved", false, false, "yyyy-MM-dd'T'HH:mm:ss'Z'", "DATETIME"),
         METADATA("metadata", false, false),
         USER_ID("user_id", true, false),
-        DATE_PROCESSED("date_processed", false, false, "yyyy-mm-dd'T'hh:mm:ssZ", "DATETIME");
+        DATE_PROCESSED("date_processed", false, false, "yyyy-MM-dd'T'HH:mm:ss'Z'", "DATETIME");
 
         public String getName() {
             return name;
@@ -397,7 +397,7 @@ public class FusionIndex implements Index {
             String name = f.getName();
             if (isInsert && f.isRequired( )&& !metadata.containsKey(name))
                 throw new IllegalArgumentException("Missing required field " + name);
-            if (f.getFormat() != null) {
+            if (f.getFormat() != null && metadata.containsKey(name)) {
                 // TODO: this assumes all formats are date formats; it should probably be different
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat(f.getFormat());
