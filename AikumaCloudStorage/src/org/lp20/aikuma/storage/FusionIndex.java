@@ -36,6 +36,7 @@ public class FusionIndex implements Index {
 
     public static enum MetadataField {
         DATA_STORE_URI("data_store_uri", true, false),
+        CENTRAL_DATA_STORE_URL("central_data_store_uri", false, false),
         ITEM_ID("item_id", true, false),
         FILE_TYPE("file_type", true, false),
         LANGUAGES("languages", true, true),
