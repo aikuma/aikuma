@@ -192,6 +192,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 							Intent serviceIntent = new Intent(RecordingMetadataActivity.this, 
 									GoogleCloudService.class);
 							serviceIntent.putExtra("id", recording.getId());
+							serviceIntent.putExtra("type", "recording");
 							startService(serviceIntent);
 						}
 

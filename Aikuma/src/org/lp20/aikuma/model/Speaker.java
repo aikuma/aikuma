@@ -44,10 +44,8 @@ public class Speaker implements Parcelable{
 	 * image files
 	 * @param	name	The name of the speaker
 	 * @param	languages	A list of languages of the speaker.
-	 * @throws	IOException	If there is an issue importing the speaker's images
 	 */
-	public Speaker(UUID imageUUID, String name, List<Language> languages)
-			throws IOException{
+	public Speaker(UUID imageUUID, String name, List<Language> languages) {
 		this.imageUUID = imageUUID;
 		setName(name);
 		setId(createId(name));
@@ -132,6 +130,34 @@ public class Speaker implements Parcelable{
 	 */
 	public File getSmallImageFile() {
 		return new File(getSpeakersPath(), getId() + "/" + getId() + "-image-small.jpg");
+	}
+	
+	/**
+	 * Get the Speaker's json metadata as a File
+	 * @return A File containing the Speaker's json metadata
+	 */
+	public File getMetadataFile() {
+		return new File(getSpeakersPath(), getId() + "/" + getId() + "-metadata.json");
+	}
+	
+	/**
+	 * Returns a identifier used in cloud-storage
+	 * @param option	0: image, 1: small-image, 2: metadata
+	 * @return			a relative-path of speaker to 'aikuma/'
+	 */
+	public String getCloudIdentifier(int option) {
+		if(option < 0 || option > 2)
+			return null;
+		
+		String suffix = "";
+		if(option == 0)
+			suffix = "-image.jpg";
+		else if(option == 1)
+			suffix = "-image-small.jpg";
+		else
+			suffix = "-metadata.json";
+		
+		return (PATH + getId() + "/" + getId() + suffix);
 	}
 	
 	/**
@@ -306,7 +332,7 @@ public class Speaker implements Parcelable{
 	 * @return	A file representing the path of the Speakers directory.
 	 */
 	 private static File getSpeakersPath() {
-	 	File path = new File(FileIO.getAppRootPath(), "speakers");
+	 	File path = new File(FileIO.getAppRootPath(), PATH);
 		path.mkdirs();
 		return path;
 	 }
@@ -426,5 +452,6 @@ public class Speaker implements Parcelable{
 
 	// The temporary UUID of the image before it gets renamed appropriately.
 	private UUID imageUUID;
-
+	
+	static final String PATH = "speakers/";
 }

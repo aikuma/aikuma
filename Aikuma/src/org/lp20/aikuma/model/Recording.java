@@ -169,9 +169,7 @@ public class Recording {
 	private void importMapping(UUID wavUUID, String id)
 			throws IOException {
 		File mapFile = new File(getNoSyncRecordingsPath(), wavUUID + ".map");
-		FileUtils.moveFile(mapFile,
-				new File(getRecordingsPath(), getGroupId() + "/" +
-						id + ".map"));
+		FileUtils.moveFile(mapFile, getMapFile());
 	}
 
 	// Create a group ID (the prefix for recordings)
@@ -195,6 +193,31 @@ public class Recording {
 				+ id + "-metadata.json");
 	}
 	
+	public File getMapFile() {
+		if(isOriginal())
+			return null;
+		return new File(getRecordingsPath(), getGroupId() + "/" 
+				+ id + ".map");
+	}
+	
+	/**
+	 * Returns an identifier used in cloud-storage
+	 * @return	a relative-path of recording to 'aikuma/'
+	 */
+	public String getCloudIdentifier() {
+		String extension = (this.isMovie())? ".mp4" : ".wav";
+		return (PATH + getGroupId() + "/" + id + extension);
+	}
+	
+	/**
+	 * Returns a map-file's identifier used in cloud-storage
+	 * @return	a relative-path of map-file to 'aikuma/'
+	 */
+	public String getMapFileCloudId() {
+		if(isOriginal())
+			return null;
+		return (PATH + getGroupId() + "/" + id + ".map");
+	}
 
 	/**
 	 * Name accessor; returns an empty string if the name is null
@@ -756,7 +779,7 @@ public class Recording {
 	 * @return	A File representing the path of the recordings directory
 	 */
 	public static File getRecordingsPath() {
-		File path = new File(FileIO.getAppRootPath(), "recordings");
+		File path = new File(FileIO.getAppRootPath(), PATH);
 		path.mkdirs();
 		return path;
 	}
@@ -768,7 +791,7 @@ public class Recording {
 	 * no-sync Aikuma directory.
 	 */
 	public static File getNoSyncRecordingsPath() {
-		File path = new File(FileIO.getNoSyncPath(), "recordings");
+		File path = new File(FileIO.getNoSyncPath(), PATH);
 		path.mkdirs();
 		return path;
 	}
@@ -1009,4 +1032,6 @@ public class Recording {
 	//Location data
 	private Double latitude;
 	private Double longitude;
+	
+	static final String PATH = "recordings/";
 }

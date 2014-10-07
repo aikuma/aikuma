@@ -623,6 +623,7 @@ public class ListenActivity extends AikumaListActivity {
 	public void onArchiveButtonPressed(View view) {
 		Intent intent = new Intent(this, GoogleCloudService.class);
 		intent.putExtra("id", recording.getId());
+		intent.putExtra("type", "recording");
 		startService(intent);
 	}
 	

@@ -23,6 +23,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.storage.Data;
 import org.lp20.aikuma.storage.DataStore;
 import org.lp20.aikuma.storage.FusionIndex;
@@ -47,11 +48,17 @@ public class GoogleCloudService extends IntentService{
 	
 	private final static String TAG = "GoogleCloudService";
 	
-	private final String key = AikumaSettings.ARCHIVE_RECORDING_KEY;
+	private final String approvalKey = AikumaSettings.APPROVED_RECORDING_KEY;
+	private final String archiveKey = AikumaSettings.ARCHIVED_RECORDING_KEY;
+	private final String approvalSpKey = AikumaSettings.APPROVED_SPEAKERS_KEY;
+	private final String archiveSpKey = AikumaSettings.ARCHIVED_SPEAKERS_KEY;
 	
 	private SharedPreferences preferences;
 	private Editor prefsEditor;
-	private Set<String> recordingSet;
+	private Set<String> approvedRecordingSet;
+	private Set<String> archivedRecordingSet;
+	private Set<String> approvedSpeakerSet;
+	private Set<String> archivedSpeakerSet;
 	
 	private String googleAuthToken;
 
@@ -68,14 +75,21 @@ public class GoogleCloudService extends IntentService{
 		
 		preferences = 
 				PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		recordingSet = (HashSet<String>)
-				preferences.getStringSet(key, new HashSet<String>());
+		approvedRecordingSet = (HashSet<String>)
+				preferences.getStringSet(approvalKey, new HashSet<String>());
+		archivedRecordingSet = (HashSet<String>)
+				preferences.getStringSet(archiveKey, new HashSet<String>());
+		approvedSpeakerSet = (HashSet<String>)
+				preferences.getStringSet(approvalSpKey, new HashSet<String>());
+		archivedSpeakerSet = (HashSet<String>)
+				preferences.getStringSet(archiveSpKey, new HashSet<String>());
 		
 		prefsEditor = preferences.edit();
 		
 		googleAuthToken = AikumaSettings.googleAuthToken;
 		
-		Log.i(TAG, "Cloud-service created:" + recordingSet.toString());
+		Log.i(TAG, "Cloud-service created(recording):" + approvedRecordingSet.toString());
+		Log.i(TAG, "Cloud-service created(speaker):" + approvedSpeakerSet.toString());
 	}
 
 	@Override
@@ -92,7 +106,12 @@ public class GoogleCloudService extends IntentService{
 		} else if(id.equals("autoDownload")) {
 			autoDownloadFiles();
 		} else {						// Called when archive button is pressed
-			archive(id);
+			String itemType = (String)
+					intent.getExtras().get("type");
+			if(itemType.equals("recording"))
+				archive(id, 0);
+			else
+				archive(id, 1);
 		}
 	}
 	
@@ -150,23 +169,35 @@ public class GoogleCloudService extends IntentService{
 	
 	
 	/**
-	 *  Back-up function: add all recording-items to the Set 
+	 *  Back-up function: add all recording/speaker-items to the Set 
 	 *  and call retry() to upload the items
 	 */
 	private void backUp() {
 		List<Recording> recordings = Recording.readAll();
+		List<Speaker> speakers = Speaker.readAll();
+		
 		String requestDate = new SimpleDateFormat().
 				format(new Date()).toString();
-		String recordingArchiveState = (requestDate + "|" + "0");
+		String archiveState = (requestDate + "|" + "0");
 		
 		for(Recording recording : recordings) {
 			if(!recording.isArchived()) {
-				recordingSet.add(recording.getId());
+				approvedRecordingSet.add(recording.getId());
 				prefsEditor.putString(recording.getId(), 
-						recordingArchiveState);
+						archiveState);
 			}
 		}
-		prefsEditor.putStringSet(key, recordingSet);
+		
+		for(Speaker speaker : speakers) {
+			if(!archivedSpeakerSet.contains(speaker.getId())) {
+				approvedSpeakerSet.add(speaker.getId());
+				prefsEditor.putString(speaker.getId(),
+						archiveState);
+			}
+		}
+		
+		prefsEditor.putStringSet(approvalKey, approvedRecordingSet);
+		prefsEditor.putStringSet(approvalSpKey, approvedSpeakerSet);
 		prefsEditor.commit();
 		
 		retry();
@@ -179,8 +210,8 @@ public class GoogleCloudService extends IntentService{
 		Log.i(TAG, "retry start");
 		if(googleAuthToken == null)
 			return;
-		
-		Set<String> recordings = new HashSet<String>(recordingSet);
+		// Recordings
+		Set<String> recordings = new HashSet<String>(approvedRecordingSet);
 		for(String recordingId : recordings) {
 			Recording recording;
 			try {
@@ -201,52 +232,96 @@ public class GoogleCloudService extends IntentService{
 						
 					startArchiving(recording, requestDate, uri, archiveProgress);
 				} else {
-					removeRecordingFromSet(recordingId);
+					updateApprovalArchiveSet(recordingId, approvalKey, approvedRecordingSet,
+							archiveKey, archivedRecordingSet);
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				Log.e(TAG, "archive failed: " + recordingId);
 			}
 		}
+		
+		// Speakers
+		Set<String> speakers = new HashSet<String>(approvedSpeakerSet);
+		for(String speakerId : speakers) {
+			try {
+				Speaker speaker = Speaker.read(speakerId);
+				if(!archivedSpeakerSet.contains(speakerId)) {
+					String[] requestArchiveState = 
+							preferences.getString(speakerId, "").split("\\|");
+					String requestDate = requestArchiveState[0];
+					int archiveProgress = 
+							Integer.parseInt(requestArchiveState[1]);
+					
+					startArchiving(speaker, requestDate, archiveProgress);
+				} else {
+					updateApprovalArchiveSet(speakerId, approvalSpKey, approvedSpeakerSet,
+							archiveSpKey, archivedSpeakerSet);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				Log.e(TAG, "archive failed: " + speakerId);
+			}
+			
+		}
 	}
 	
 	/**
-	 * Upload the recording-item having id
+	 * Upload the recording/speaker-item having id
 	 * 
 	 * @param id	ID of the recording item
+	 * @param type	Type of the item(0: recording, 1: speaker)
 	 */
-	private void archive(String id) {
-		Recording recording;
+	private void archive(String id, int type) {
+		String requestDate = new SimpleDateFormat().
+				format(new Date()).toString();
+		String archiveState = (requestDate + "|" + "0");
+		
 		try {
-			recording = Recording.read(id);
-			if(!recording.isArchived()) {
-				// Record archive-approved date
-				String requestDate = new SimpleDateFormat().
-						format(new Date()).toString();
-				recordingSet.add(id);
-				prefsEditor.putStringSet(key, recordingSet);
-				
-				String recordingArchiveState = (requestDate + "|" + "0");
-				prefsEditor.putString(id, recordingArchiveState);
-				prefsEditor.commit();
-				
-				
-				startArchiving(recording, requestDate, null, 0);
+			if(type == 0) {
+				Recording recording = Recording.read(id);
+				if(!recording.isArchived()) {
+					// Record archive-approved date
+					approvedRecordingSet.add(id);
+					prefsEditor.putStringSet(approvalKey, approvedRecordingSet);
+					prefsEditor.putString(id, archiveState);
+					
+					prefsEditor.commit();
+					startArchiving(recording, requestDate, null, 0);
+				} else {
+					updateApprovalArchiveSet(id, approvalKey, approvedRecordingSet,
+							archiveKey, archivedRecordingSet);
+				}
 			} else {
-				removeRecordingFromSet(id);
+				Speaker speaker = Speaker.read(id);
+				if(!archivedSpeakerSet.contains(id)) {
+					approvedSpeakerSet.add(id);
+					prefsEditor.putStringSet(approvalSpKey, approvedSpeakerSet);
+					prefsEditor.putString(id, archiveState);
+					
+					prefsEditor.commit();
+					startArchiving(speaker, requestDate, 0);
+				} else {
+					updateApprovalArchiveSet(id, approvalSpKey, approvedSpeakerSet, 
+							archiveSpKey, archivedSpeakerSet);
+				}
 			}
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			Log.e(TAG, "archive failed: " + id);
 		}
-		
 	}
-	
-	// If the recording-item archiving is finished, remove the item from the Set
-	private void removeRecordingFromSet(String recordingId) {
-		recordingSet.remove(recordingId);
-		prefsEditor.putStringSet(key, recordingSet);
-		prefsEditor.remove(recordingId);
+
+	// If the recording/speaker-item archiving is finished, update the Approval/Archive Set
+	private void updateApprovalArchiveSet(String id, String apKey, Set<String> approvedSet, 
+			String arKey, Set<String> archivedSet) {
+		approvedSet.remove(id);
+		prefsEditor.putStringSet(apKey, approvedSet);
+		prefsEditor.remove(id);
+		
+		archivedSet.add(id);
+		prefsEditor.putStringSet(arKey, archivedSet);
 		prefsEditor.commit();
 	}
 	
@@ -261,14 +336,21 @@ public class GoogleCloudService extends IntentService{
 	 * @throws IOException	Exception during file-processing
 	 */
 	private void startArchiving(Recording recording, String requestDate, String uri, int state) throws IOException  {
-		File file = recording.getFile();
 		String id = recording.getId();
-		String identifier = file.getName();
+		String identifier = recording.getCloudIdentifier();		// path + id + [.wav|.mp4]
 		
 		switch(state) {
 		case 0:
-			uri = uploadFile(file);
+			File recordingFile = recording.getFile();
+			uri = uploadFile(recordingFile, identifier);
 			if(uri == null) return;
+			if (!recording.isOriginal()) {
+				// upload *.map file
+				File mapFile = recording.getMapFile();
+				identifier = recording.getMapFileCloudId();
+				uri = uploadFile(mapFile, identifier);
+				if(uri == null) return;
+			}
 			String recordingArchiveState = (requestDate + "|1|" + uri);
 			prefsEditor.putString(id, recordingArchiveState);
 			prefsEditor.commit();
@@ -278,21 +360,56 @@ public class GoogleCloudService extends IntentService{
 			if(uploadDate != null) {
 				recording.archive(uploadDate.toString(), uri);
 				
-				removeRecordingFromSet(id);
+				updateApprovalArchiveSet(id, approvalKey, approvedRecordingSet, 
+						archiveKey, archivedRecordingSet);
 			}
 		}
 	}
 	
+	/**
+	 * Start uploading the speaker-item
+	 * Archiving-state(0:approved, 1:small-image-uploaded, 2:metadata-uploaded)
+	 * 
+	 * @param speaker		The speaker-item to be archived
+	 * @param requestDate	Archive-approval date
+	 * @param state			Archiving-state
+	 * @throws IOException	Exception during file-processing
+	 */
+	private void startArchiving(Speaker speaker, String requestDate, int state) throws IOException {
+		String id = speaker.getId();
+		String identifier, uri;
+		
+		switch(state) {
+		case 0:
+			File spSmallImgFile = speaker.getSmallImageFile();
+			identifier = speaker.getCloudIdentifier(1);
+			uri = uploadFile(spSmallImgFile, identifier);
+			if(uri == null) return;
+			
+			String speakerArchiveState = (requestDate + "|1");
+			prefsEditor.putString(id, speakerArchiveState);
+			prefsEditor.commit();
+		case 1:
+			File spMetadataFile = speaker.getMetadataFile();
+			identifier = speaker.getCloudIdentifier(2);
+			uri = uploadFile(spMetadataFile, identifier);
+			if(uri == null) return;
+			
+			updateApprovalArchiveSet(id, approvalSpKey, approvedSpeakerSet,
+					archiveSpKey, archivedSpeakerSet);
+		}
+	}
+	
 	//upload the file to Google Drive
-	private String uploadFile(File recordingFile) throws IOException {
-		Data data = Data.fromFile(recordingFile);
+	private String uploadFile(File file, String identifier) throws IOException {
+		Data data = Data.fromFile(file);
 		if (data == null) {
 			Log.e(TAG, "Source file doesn't exist");
 			return null;		
 		}
 		
 		DataStore gd = new GoogleDriveStorage(googleAuthToken);
-		String uri = gd.store(recordingFile.getName(), data);
+		String uri = gd.store(identifier, data);
 		if(uri != null)
 			Log.i(TAG, "File-upload success");
 		else
