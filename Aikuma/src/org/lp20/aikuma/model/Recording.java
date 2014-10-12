@@ -188,11 +188,35 @@ public class Recording {
 				+ id + extension);
 	}
 	
+	/**
+	 * Returns a File that refers to the recording's metadata file.
+	 *
+	 * @return	The metadata file of the recording.
+	 */
 	public File getMetadataFile() {
 		return new File(getRecordingsPath(), getGroupId() + "/" 
 				+ id + "-metadata.json");
 	}
 	
+	/**
+	 * Returns a File that refers to the recording's transcript file.
+	 *
+	 * @return	The transcript file of the recording.
+	 */
+	public File getTranscriptFile() {
+		File f = new File(getRecordingsPath(), getGroupId() + "/"
+				+ id + "-transcript.txt");
+		if(f.exists())
+			return f;
+		else
+			return null;
+	}
+	
+	/**
+	 * Returns a File that refers to the respeaking's mapping file.
+	 *
+	 * @return	The mapping file of the respeaking.
+	 */
 	public File getMapFile() {
 		if(isOriginal())
 			return null;
@@ -218,6 +242,8 @@ public class Recording {
 			return null;
 		return (PATH + getGroupId() + "/" + id + ".map");
 	}
+	
+	
 
 	/**
 	 * Name accessor; returns an empty string if the name is null
@@ -1033,5 +1059,8 @@ public class Recording {
 	private Double latitude;
 	private Double longitude;
 	
-	static final String PATH = "recordings/";
+	/**
+	 * Relative path where recording files are stored
+	 */
+	public static final String PATH = "recordings/";
 }

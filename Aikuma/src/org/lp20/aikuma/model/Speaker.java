@@ -279,11 +279,17 @@ public class Speaker implements Parcelable{
 	 * @return	A list of the users found in the users directory.
 	 */
 	public static List<Speaker> readAll() {
-		// Get a list of all the IDs of users in the "users" directory.
-		List<String> speakerIDs = Arrays.asList(getSpeakersPath().list());
-
 		// Get the user data from the metadata.json files.
 		List<Speaker> speakers = new ArrayList<Speaker>();
+
+		// Get a list of all the IDs of users in the "users" directory.
+		String[] speakerIDArray = getSpeakersPath().list();
+		if (speakerIDArray == null) {
+			return speakers;
+		}
+
+		List<String> speakerIDs = Arrays.asList(speakerIDArray);
+		
 		for (String speakerID : speakerIDs) {
 			try {
 				speakers.add(Speaker.read(speakerID));
@@ -331,7 +337,7 @@ public class Speaker implements Parcelable{
 	 *
 	 * @return	A file representing the path of the Speakers directory.
 	 */
-	 private static File getSpeakersPath() {
+	 public static File getSpeakersPath() {
 	 	File path = new File(FileIO.getAppRootPath(), PATH);
 		path.mkdirs();
 		return path;
@@ -453,5 +459,8 @@ public class Speaker implements Parcelable{
 	// The temporary UUID of the image before it gets renamed appropriately.
 	private UUID imageUUID;
 	
-	static final String PATH = "speakers/";
+	/**
+	 * Relative path where speaker files are stored
+	 */
+	public static final String PATH = "speakers/";
 }

@@ -88,8 +88,10 @@ public class GoogleCloudService extends IntentService{
 		
 		googleAuthToken = AikumaSettings.googleAuthToken;
 		
-		Log.i(TAG, "Cloud-service created(recording):" + approvedRecordingSet.toString());
-		Log.i(TAG, "Cloud-service created(speaker):" + approvedSpeakerSet.toString());
+		Log.i(TAG, "Cloud created(recording-approve):" + approvedRecordingSet.toString());
+		Log.i(TAG, "Cloud created(recording-archive):" + archivedRecordingSet.toString());
+		Log.i(TAG, "Cloud created(speaker-approve):" + approvedSpeakerSet.toString());
+		Log.i(TAG, "Cloud created(speaker-archive):" + archivedSpeakerSet.toString());
 	}
 
 	@Override
@@ -128,42 +130,124 @@ public class GoogleCloudService extends IntentService{
 		if(emailAddr != null)
 			criteria.put("user_id", emailAddr);
         
-		// Search the items not existing in this device
-        List<String> archivedRecordingIds = fi.search(criteria);
+		// Search the items not existing in this device 
+		// 1. Collect file-IDs in Cloud
+        final List<String> archivedRecordingIds = new ArrayList<String>();// = fi.search(criteria);
+        final List<String> archivedSpeakerIds = new ArrayList<String>();
+        
+        gd.list(new GoogleDriveStorage.ListItemHandler() {
+			@Override
+			public boolean processItem(String identifier, Date date) {
+				// Classify identifiers and store them in different lists 
+				if(identifier.startsWith(Recording.PATH) && 
+						!identifier.endsWith(".map")) {
+					
+					archivedRecordingIds.add(identifier);
+				} else if(identifier.startsWith(Speaker.PATH)){
+					archivedSpeakerIds.add(identifier);
+				}
+				return true;
+			}
+		});
+        
+        // 2. Collect file-IDs in device
         List<Recording> recordings = Recording.readAll();
+        List<Speaker> speakers = Speaker.readAll();
         List<String> recordingIds = new ArrayList<String>();
+        List<String> speakerIds = new ArrayList<String>();
         for(Recording item : recordings) {
-        	String extension = (item.isMovie())? ".mp4" : ".wav";
-        	String identifier = item.getId() + extension;
+        	String identifier = item.getCloudIdentifier();
         	recordingIds.add(identifier);
         }
+        for(Speaker item : speakers) {
+        	speakerIds.add(item.getCloudIdentifier(1));
+        	speakerIds.add(item.getCloudIdentifier(2));
+        }
+        
+        // 3. Filtering
+        Log.i(TAG, "Recordings in cloud: " + archivedRecordingIds.toString());
+        Log.i(TAG, "Recordings in device: " + recordingIds.toString());
+        Log.i(TAG, "Speakers in cloud: " + archivedSpeakerIds.toString());
+        Log.i(TAG, "Speakers in device: " + speakerIds.toString());
         
         archivedRecordingIds.removeAll(recordingIds);
+        archivedSpeakerIds.removeAll(speakerIds);
         
-        // Download the filtered items
-        for(String itemId: archivedRecordingIds) {
-        	Map<String, String> meta = fi.getItemMetadata(itemId);
-        	String id = itemId.substring(0, itemId.length()-4);
+        // Download the filtered recording items
+        // itemId : path + recording-name + extension / id : recording-name + extension / name : recording-name
+        for(String itemId : archivedRecordingIds) {
+        	Log.i(TAG, "id: " + itemId);
+        	Map<String, String> meta = fi.getItemMetadata(itemId);	
         	String groupId = meta.get("item_id");
         	String metadataJSONStr = meta.get("metadata");
+        	String id = itemId.substring(itemId.lastIndexOf('/')+1);
+        	String name = id.substring(0, id.length()-4);
+        	
         	File dir = new File(Recording.getRecordingsPath(), groupId);
-        	dir.mkdir();
+        	dir.mkdirs();
         	
         	try{
         		// Write the recording file
             	InputStream is = gd.load(itemId);
-            	FileOutputStream fos = new FileOutputStream(new File(dir, itemId));
+            	FileOutputStream fos = new FileOutputStream(new File(dir, id));
             	Utils.copyStream(is, fos, true);
             	
             	// Write the recording metadata
-            	FileIO.write(new File(dir, id + "-metadata.json"), metadataJSONStr);
+            	FileIO.write(new File(dir, name + "-metadata.json"), metadataJSONStr);
+            	
+            	// Write other files(map/transcript)
+            	if (name.split("-")[2].equals("source")) {
+            		//TODO: upload transcript file	
+    			} else {
+    				// download *.map file
+    				String mapFileId = 
+    						itemId.substring(0, itemId.length()-4) + ".map";
+    				InputStream is2 = gd.load(mapFileId);
+                	FileOutputStream fos2 = 
+                			new FileOutputStream(new File(dir, name + ".map"));
+                	Utils.copyStream(is2, fos2, true);
+    			}
+            	
+            	// Log that files are already archived
+            	archivedRecordingSet.add(name);
+        		prefsEditor.putStringSet(archiveKey, archivedRecordingSet);
+        		prefsEditor.commit();
+        		
         	} catch (FileNotFoundException e) {
-        		Log.e(TAG, e.getMessage());
+        		Log.e(TAG, "no-found:" + e.getMessage());
         	} catch (IOException e) {
 				Log.e(TAG, e.getMessage());
 			}
         	
         }   
+        
+        // Download the filtered speaker items
+        for(String itemId : archivedSpeakerIds) {
+        	String[] buf = itemId.split("\\/");
+        	String groupId = buf[1];
+        	String id = itemId.substring(itemId.lastIndexOf('/')+1);
+        	
+        	File dir = new File(Speaker.getSpeakersPath(), groupId);
+        	dir.mkdirs();
+        	
+			try {
+				// Write the speaker file
+				InputStream is = gd.load(itemId);
+	        	FileOutputStream fos = new FileOutputStream(new File(dir, id));
+	        	Utils.copyStream(is, fos, true);
+	        	
+	        	// Log that files are already archived
+            	String name = buf[2].split("\\-")[0];
+            	archivedSpeakerSet.add(name);
+        		prefsEditor.putStringSet(archiveSpKey, archivedSpeakerSet);
+        		prefsEditor.commit();
+			} catch (FileNotFoundException e) {
+        		Log.e(TAG, e.getMessage());
+        	} catch (IOException e) {
+				Log.e(TAG, e.getMessage());
+			}
+        	
+        }
 	}
 	
 	
@@ -292,6 +376,11 @@ public class GoogleCloudService extends IntentService{
 					updateApprovalArchiveSet(id, approvalKey, approvedRecordingSet,
 							archiveKey, archivedRecordingSet);
 				}
+				// Archive speakers together
+				List<String> speakerIds = recording.getSpeakersIds();
+				for(String speakerId : speakerIds) {
+					archive(speakerId, 1);
+				}
 			} else {
 				Speaker speaker = Speaker.read(id);
 				if(!archivedSpeakerSet.contains(id)) {
@@ -338,17 +427,19 @@ public class GoogleCloudService extends IntentService{
 	private void startArchiving(Recording recording, String requestDate, String uri, int state) throws IOException  {
 		String id = recording.getId();
 		String identifier = recording.getCloudIdentifier();		// path + id + [.wav|.mp4]
-		
+		Log.i(TAG, "cloud-Id: " + identifier);
 		switch(state) {
 		case 0:
 			File recordingFile = recording.getFile();
 			uri = uploadFile(recordingFile, identifier);
 			if(uri == null) return;
-			if (!recording.isOriginal()) {
+			if (recording.isOriginal()) {
+				// TODO: upload transcript file
+			} else {
 				// upload *.map file
 				File mapFile = recording.getMapFile();
-				identifier = recording.getMapFileCloudId();
-				uri = uploadFile(mapFile, identifier);
+				String mapIdentifier = recording.getMapFileCloudId();
+				uri = uploadFile(mapFile, mapIdentifier);
 				if(uri == null) return;
 			}
 			String recordingArchiveState = (requestDate + "|1|" + uri);
@@ -385,7 +476,7 @@ public class GoogleCloudService extends IntentService{
 			identifier = speaker.getCloudIdentifier(1);
 			uri = uploadFile(spSmallImgFile, identifier);
 			if(uri == null) return;
-			
+			Log.i(TAG, "cloud-Id: " + identifier);
 			String speakerArchiveState = (requestDate + "|1");
 			prefsEditor.putString(id, speakerArchiveState);
 			prefsEditor.commit();
@@ -394,7 +485,7 @@ public class GoogleCloudService extends IntentService{
 			identifier = speaker.getCloudIdentifier(2);
 			uri = uploadFile(spMetadataFile, identifier);
 			if(uri == null) return;
-			
+			Log.i(TAG, "cloud-Id: " + identifier);
 			updateApprovalArchiveSet(id, approvalSpKey, approvedSpeakerSet,
 					archiveSpKey, archivedSpeakerSet);
 		}
