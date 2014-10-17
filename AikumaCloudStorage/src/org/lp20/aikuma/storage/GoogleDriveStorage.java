@@ -108,7 +108,7 @@ public class GoogleDriveStorage implements DataStore {
 				JSONObject o = (JSONObject) item;
 				String identifier = (String) o.get("title");
 				String datestr = (String) o.get("modifiedDate");
-				SimpleDateFormat datefmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+				SimpleDateFormat datefmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 				Date date;
 				try {
 					date = datefmt.parse(datestr);
