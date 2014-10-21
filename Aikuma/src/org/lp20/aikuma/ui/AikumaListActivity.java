@@ -68,7 +68,7 @@ public abstract class AikumaListActivity extends ListActivity {
 	 */
 	public void onBackPressed() {
 		if (safeActivityTransition) {
-			menuBehaviour.safeGoBack(safeActivityTransitionMessage);
+			menuBehaviour.safeGoBack(safeActivityTransitionMessage, null);
 		} else {
 			this.finish();
 		}

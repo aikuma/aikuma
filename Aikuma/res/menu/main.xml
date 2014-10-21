@@ -3,8 +3,11 @@
     <item android:id="@+id/search"
 		android:icon="@drawable/search_32"
 		android:title="@string/search"
-		android:actionViewClass="android.widget.SearchView"
+		android:showAsAction="always"/>
+    <!-- 
+    	android:actionViewClass="android.widget.SearchView"
 		android:showAsAction="always|collapseActionView"/>
+     -->
 	<item android:id="@+id/record"
 		android:icon="@drawable/record_32"
 		android:title="@string/record"

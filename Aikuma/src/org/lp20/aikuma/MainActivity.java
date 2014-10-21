@@ -58,7 +58,7 @@ import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.MenuBehaviour;
 import org.lp20.aikuma.ui.RecordActivity;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;
-import org.lp20.aikuma.ui.RecordingMetadataActivity;
+import org.lp20.aikuma.ui.RecordingMetadataActivity1;
 import org.lp20.aikuma.ui.SettingsActivity;
 import org.lp20.aikuma.ui.sensors.LocationDetector;
 import org.lp20.aikuma.util.SyncUtil;
@@ -149,9 +149,10 @@ public class MainActivity extends ListActivity {
 		}
 
 		adapter = new RecordingArrayAdapter(this, originals);
+		/*
 		if(searchView != null) {
 			adapter.getFilter().filter(searchView.getQuery());
-		}
+		}*/
 		setListAdapter(adapter);
 		if (listViewState != null) {
 			getListView().onRestoreInstanceState(listViewState);
@@ -234,7 +235,8 @@ public class MainActivity extends ListActivity {
         int statusCode = GooglePlayServicesUtil
         		.isGooglePlayServicesAvailable(this);
         if (statusCode == ConnectionResult.SUCCESS) {
-        	if(emailAccount == null) {
+        	Log.i(TAG, "getAccountToken");
+        	if(googleAuthToken == null) {
         		pickUserAccount();
         	}
         } else if (GooglePlayServicesUtil.isUserRecoverableError(statusCode)) {
@@ -245,6 +247,15 @@ public class MainActivity extends ListActivity {
             Toast.makeText(this, "Unrecoverable Google-Play Services error", 
             		Toast.LENGTH_SHORT).show();
         }
+    }
+    
+    /**
+     * Clear the account and token
+     */
+    public void clearAccountToken() {
+    	emailAccount = null;
+    	googleAuthToken = null;
+    	menuBehaviour.setSignInState(false);
     }
 	
     /**
@@ -381,7 +392,7 @@ public class MainActivity extends ListActivity {
      * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
      *
      */
-    private class GetTokenTask extends AsyncTask<Void, Void, Void>{
+    private class GetTokenTask extends AsyncTask<Void, Void, Boolean>{
     	
     	private static final String TAG = "GetTokenTask";
 
@@ -394,14 +405,22 @@ public class MainActivity extends ListActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
         	try{
         		googleAuthToken = getToken();
         		Log.i(TAG, "token: " + googleAuthToken);
         	} catch(IOException e) {
         		Log.e(TAG, "IOException: " + e.getMessage());
+        		return false;
         	} 
-        	return null;
+        	return true;
+        }
+        
+        @Override
+        protected void onPostExecute(Boolean result) {
+        	if(result) {
+        		menuBehaviour.setSignInState(true);
+        	}
         }
 
         /**
@@ -538,7 +557,7 @@ public class MainActivity extends ListActivity {
 
 							// Pass the info along to RecordingMetadataActivity.
 							Intent intent = new Intent(getActivity(),
-									RecordingMetadataActivity.class);
+									RecordingMetadataActivity1.class);
 							intent.putExtra("uuidString", uuid.toString());
 							intent.putExtra("sampleRate", (long) sampleRate);
 							intent.putExtra("durationMsec", durationMsec);

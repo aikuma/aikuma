@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
+import org.lp20.aikuma.model.Recording;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -46,9 +47,7 @@ public final class VideoUtils {
 	 * @return	A File representing the no-sync Videos directory.
 	 */
 	private static File getNoSyncVideosPath() {
-		File path = new File(FileIO.getNoSyncPath(), "videos");
-		path.mkdirs();
-		return path;
+		return Recording.getNoSyncRecordingsPath();
 	}
 
 	/**

@@ -8,7 +8,7 @@
 	>
 	
     <ImageButton
-			android:id="@+id/okButton"
+			android:id="@+id/okButton3"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:scaleType="centerInside"
@@ -17,25 +17,26 @@
 			android:onClick="onOkButtonPressed"
 		/>
 	
+    <TextView
+	    android:id="@+id/description"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+		android:layout_marginBottom="10dp"
+	    android:text="test" />
+    
 	<LinearLayout
 		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_above="@id/okButton"
-		android:layout_alignParentTop="true"
+		android:layout_below="@id/description"
+		android:layout_above="@id/okButton3"
 		>
-		<FrameLayout
-	    	android:id="@+id/ListenFragment"
-	    	android:layout_marginTop="15sp"
-			android:layout_marginBottom="15sp"
-	    	android:layout_width="match_parent"
-	    	android:layout_height="wrap_content" />
-		
 		<LinearLayout
+		    android:id="@+id/userImagesAndAddUserButton"
 			android:orientation="horizontal"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/userImagesAndAddUserButton"
+			
 			>
 			<ImageButton
 				android:id="@+id/addUserButton"
@@ -47,13 +48,6 @@
 				android:onClick="onAddUserButtonPressed"
 			/>
 		</LinearLayout>
-		<EditText
-			android:id="@+id/recordingDescription"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/recording_description"
-			android:inputType="text"
-			/>
 		<ListView android:id="@android:id/list"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"

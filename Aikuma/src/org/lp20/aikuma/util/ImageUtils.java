@@ -4,13 +4,18 @@
 */
 package org.lp20.aikuma.util;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.net.Uri;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 
@@ -252,5 +257,33 @@ public final class ImageUtils {
 	 */
 	public static Bitmap retrieveFromFile(File path) throws IOException {
 		return retrieveFromFile(path.toString());
+	}
+	
+	
+	/**
+	 * Copy the file from srcUri to the no-sync video directory
+	 * 
+	 * @param context		Activity calling this function 
+	 * 						(used to get ContentResolver)
+	 * @param srcUri		SourceFile's URI
+	 * @param outputUUID	OutputFile's UUID(Filename)
+	 * @throws IOException	IOException occurs while copying the file
+	 */
+	public static void moveImageFileFromUri(Context context, 
+			Uri srcUri, UUID outputUUID) throws IOException {
+		File imageOutputFile = getNoSyncImageFile(outputUUID);
+		
+		InputStream fis = context.getContentResolver().
+				openInputStream(srcUri);
+		OutputStream fos = new FileOutputStream(imageOutputFile);
+		
+		byte buffer[] = new byte[1024];
+		int length=0;
+		while((length=fis.read(buffer)) > 0) {
+			fos.write(buffer, 0, length);
+		}
+		
+		fis.close();
+		fos.close();
 	}
 }

@@ -157,7 +157,9 @@ public class ListenActivity extends AikumaActivity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		this.player.release();
+		if(player != null) {
+			player.release();
+		}
 	}
 
 	// Prepares the original recording 

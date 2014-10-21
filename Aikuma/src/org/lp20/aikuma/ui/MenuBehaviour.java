@@ -45,10 +45,11 @@ public class MenuBehaviour {
 	 * this implementation, the display is shown.
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
+		this.menu = menu;
 		MenuInflater inflater = activity.getMenuInflater();
 		if (activity instanceof MainActivity) {
 			inflater.inflate(R.menu.main, menu);
-			((MainActivity)activity).setUpSearchInterface(menu);
+			//((MainActivity)activity).setUpSearchInterface(menu);
 		} else {
 			inflater.inflate(R.menu.other, menu);
 		}
@@ -67,6 +68,10 @@ public class MenuBehaviour {
 		switch (item.getItemId()) {
 			case android.R.id.home:
 				goToMainActivity();
+				return true;
+			case R.id.search:
+				intent = new Intent(activity, CloudSearchActivity.class);
+				activity.startActivity(intent);
 				return true;
 			case R.id.record:
 				intent = new Intent(activity, RecordActivity.class);
@@ -93,7 +98,12 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				return true;
 			case R.id.gplus_signin_menu:
-				((MainActivity)activity).getAccountToken();
+				if(signInState) {
+					((MainActivity)activity).clearAccountToken();
+				} else {
+					((MainActivity)activity).getAccountToken();
+				}
+				
 				return true;
 			default:
 				return true;
@@ -137,6 +147,32 @@ public class MenuBehaviour {
 		}
 	}
 
+	/**
+	 * Return the MenuItem corresponding to resourceId
+	 * @param resourceId	ID of the menu item
+	 * @return	the menu-item having resourceId
+	 */
+	public MenuItem findItem(int resourceId) {
+		return menu.findItem(resourceId);
+	}
+	
+	/**
+	 * Set if the user signed-in an account
+	 * @param state		true(signed-in), false(no sign-in)
+	 */
+	public void setSignInState(boolean state) {
+		this.signInState = state;
+		if(state) {
+			//TODO: get emailAccount from AikumaSettings
+			String signOutString = "Sign-out: "; // + activity.emailAccount;
+			findItem(R.id.gplus_signin_menu).setTitle(signOutString);
+		} else {
+			String signInString = 
+					activity.getResources().getString(R.string.gplus_signin_menu_label);
+			findItem(R.id.gplus_signin_menu).setTitle(signInString);
+		}
+	}
+	
 	/**
 	 * Opens the howto from lp20.org in a browser.
 	 */
@@ -190,8 +226,10 @@ public class MenuBehaviour {
 	 * data.
 	 *
 	 * @param	safeActivityTransitionMessage	The string to display in a warning message.
+	 * @param	safeBehaviour	Interface having a function required for safe back-button.
 	 */
-	public void safeGoBack(String safeActivityTransitionMessage) {
+	public void safeGoBack(String safeActivityTransitionMessage, 
+			final BackButtonBehaviour safeBehaviour) {
 		String message = DEFAULT_MESSAGE;
 		if (safeActivityTransitionMessage != null) {
 			message = safeActivityTransitionMessage;
@@ -203,6 +241,8 @@ public class MenuBehaviour {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
+								if(safeBehaviour != null)
+									safeBehaviour.onSafeBackButton();
 								activity.finish();
 							}
 						})
@@ -210,6 +250,22 @@ public class MenuBehaviour {
 				.show();
 	}
 
+	/**
+	 * Interface having a function 
+	 * required for safe back-button and defined by other activities
+	 * @author Sangyeop Lee
+	 *
+	 */
+	public static interface BackButtonBehaviour {
+		/**
+		 * The function called for safe back-button action
+		 */
+		public void onSafeBackButton();
+	}
+	
 	private Activity activity;
+	private Menu menu;
+	private boolean signInState = false;
+	
 	private String DEFAULT_MESSAGE = "This will discard the new data. Are you sure?";
 }

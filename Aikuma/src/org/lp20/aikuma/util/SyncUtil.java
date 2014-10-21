@@ -164,8 +164,11 @@ public class SyncUtil {
 
 	private static void unsetSyncFlag(String status) {
 		syncing = false;
+		String date = "";
+		if(serverCredentials != null)
+			date = serverCredentials.getLastSyncDate();
 		updateSyncTextView(status + "\n" + 
-		"Last success sync: " + serverCredentials.getLastSyncDate());
+		"Last success sync: " + date);
 	}
 
 	// Writes the server credentials with latest sync-success date

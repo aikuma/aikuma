@@ -70,8 +70,20 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent
-			intent) {
+			result) {
 		if (resultCode == RESULT_OK) {
+			// Move image-file to no-sync-path
+			Uri imageUri = result.getData();
+			try {
+				ImageUtils.moveImageFileFromUri(this, 
+						imageUri, this.imageUUID);
+			} catch (IOException e) {
+				Toast.makeText(this, 
+						"Failed to write the image to file",
+						Toast.LENGTH_LONG).show();
+			}
+			getContentResolver().delete(result.getData(), null, null);
+			
 			Intent lastIntent = new Intent(this, AddSpeakerActivity4.class);
 			lastIntent.putExtra("name", name);
 			lastIntent.putParcelableArrayListExtra("languages", selectedLanguages);
@@ -91,11 +103,6 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 
 	private void dispatchTakePictureIntent(int actionCode) {
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-		File imageFile = ImageUtils.getNoSyncImageFile(this.imageUUID);
-		Log.i("uri", ""+Uri.fromFile(imageFile));
-		takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-				Uri.fromFile(imageFile));
 
 		startActivityForResult(takePictureIntent, actionCode);
 	}
