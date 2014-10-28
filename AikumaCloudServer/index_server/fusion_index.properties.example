@@ -1,0 +1,8 @@
+#Updated with new access_token
+#Mon Jul 28 21:04:43 EDT 2014
+#
+client_id=[OAUTH2 client id for the app]
+client_secret=[OAUTH2 secret for the app]
+access_token=[OAUTH2 access token]
+refresh_token=[OAUTH2 refresh token]
+table_id=[Google FusionTables table ID for the metadata table]
