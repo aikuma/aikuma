@@ -9,8 +9,10 @@ import org.lp20.aikuma.storage.Utils;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import static org.lp20.aikuma.storage.Utils.readStream;
 
 /**
  * Created by bob on 6/4/14.
@@ -37,9 +39,8 @@ public class IndexTool {
         String tableId = null;
         String action = null;
 
-        String client_id = "119115083785-cqbtnha90hobui893c0lc33olghb4uuv.apps.googleusercontent.com";
-        String client_secret = "4Yz3JDpqbyf6q-uw0rP2BSnN";
-        GoogleAuth auth = new GoogleAuth(client_id, client_secret);
+        String client_id;
+        String client_secret;
 
         try {
             Properties config = new Properties();
@@ -47,6 +48,10 @@ public class IndexTool {
             accessToken = config.getProperty("access_token");
             refreshToken = config.getProperty("refresh_token");
             tableId = config.getProperty("table_id");
+            client_id = config.getProperty("client_id");
+            client_secret = config.getProperty("client_secret");
+
+            GoogleAuth auth = new GoogleAuth(client_id, client_secret);
 
             if (!auth.validateAccessToken(accessToken)) {
                 auth.refreshAccessToken(refreshToken);
@@ -126,7 +131,19 @@ public class IndexTool {
                 index.listTables();
             } else if ("generate_schema".equals(action)) {
                 index.generateSchema();
+            } else if ("dump".equals(action)) {
+                String tableIdToDump = args[1];
+                System.out.println(index.dumpTable(tableIdToDump));
+            } else if ("load".equals(action)) {
+                StringBuffer data = new StringBuffer();
+                BufferedReader r = new BufferedReader(new FileReader(new File(args[2])));
+                while (r.ready()) {
+                    data.append(r.readLine());
+                }
+                String tableIdToLoad = args[1];
+                index.loadData(tableIdToLoad, data.toString());
             }
+
 
         } catch (InvalidAccessTokenException e) {
             System.err.println("Invalid token; not caught by refresh code.");
@@ -154,10 +171,14 @@ public class IndexTool {
         fi.index(identifier, metadata);
     }
 
-    private FusionIndex getFusionIndex() {
+    private FusionIndex getFusionIndex(String tableId) {
         FusionIndex fi = new FusionIndex(accessToken);
         fi.setTableId(tableId);
         return fi;
+    }
+
+    private FusionIndex getFusionIndex() {
+        return getFusionIndex(tableId);
     }
 
     private void getItem(String identifier) {
@@ -316,5 +337,67 @@ public class IndexTool {
         schema.put("columns", columns);
         System.out.println(schema.toJSONString());
 
+    }
+
+    private String dumpTable(String tableId) {
+        HttpURLConnection cn = null;
+        try {
+            cn = Utils.gapi_connect(new URL("https://www.googleapis.com/fusiontables/v1/query?sql=SELECT+*+from+" + tableId +";"),
+                    "GET", accessToken);
+            if (cn.getResponseCode() == HttpURLConnection.HTTP_OK)
+                return  readStream(cn.getInputStream());
+            else if (cn.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                System.out.println("Invalid access token: " + this.accessToken);
+                throw new InvalidAccessTokenException();
+            } else {
+                System.out.println(String.valueOf(cn.getResponseCode()));
+                System.out.println(cn.getResponseMessage());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void loadData(String tableId, String json) {
+        JSONObject o = (JSONObject) JSONValue.parse(json);
+        List<String> cols = (List<String>) o.get("columns");
+        FusionIndex idx = getFusionIndex(tableId);
+        for (Object tmp: (List) o.get("rows")) {
+            List<String> row = (List<String>) tmp;
+            Map<String, String> item = new HashMap<String, String>(cols.size());
+            String identifier = "";
+            for (int i = 0; i < row.size(); i++) {
+                String key = cols.get(i);
+                String val = row.get(i);
+
+                if (val.length() == 0) continue;
+                if (key.equals("identifier")) {
+                    identifier = val;
+                    continue;
+                }
+
+                FusionIndex.MetadataField field = FusionIndex.MetadataField.byName(key);
+                String format = field.getFormat();
+                if (format != null) {
+                    SimpleDateFormat df = new SimpleDateFormat(format);
+                    try {
+                        df.parse(val);
+                    } catch (ParseException e) {
+                        continue;
+                    }
+                }
+                if (field.isMultivalue()) {
+                    val = val.replace('|', ',').substring(1, val.length() - 1);
+                    if (val.length() == 0) {
+                        val = "foo";
+                    }
+                }
+                item.put(key, val);
+
+            }
+            idx.index(identifier, item);
+            //System.out.println(item);
+        }
     }
 }
