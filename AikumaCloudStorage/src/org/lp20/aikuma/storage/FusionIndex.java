@@ -10,9 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -307,7 +304,7 @@ public class FusionIndex implements Index {
      */
 	@Override
 	public boolean index(String identifier, Map<String,String> metadata) {
-        validateMetadata(metadata, true);
+        doValidation(metadata, true);
         if (getRowId(identifier) != null) {
             log.severe("index called on item with existing index entry");
             return false;
@@ -317,7 +314,7 @@ public class FusionIndex implements Index {
 
     @Override
     public boolean update(String identifier, Map<String, String> metadata) {
-        validateMetadata(metadata, false);
+        doValidation(metadata, false);
         String rowid = getRowId(identifier);
         if (rowid == null) {
             log.severe("update called on item without an existing index entry");
@@ -390,31 +387,9 @@ public class FusionIndex implements Index {
         }
         return urlencode(String.format(UPDATE_SQL_TEMPLATE, tableId, sql.toString(), rowid));
     }
-    private void validateMetadata(Map<String, String> metadata, boolean isInsert) {
-        if (!MetadataField.areValidNames(metadata.keySet())) {
-            throw new IllegalArgumentException("Unknown metadata keys");
-        }
-        for (MetadataField f: MetadataField.values()) {
-            String name = f.getName();
-            if (isInsert && f.isRequired( )&& !metadata.containsKey(name))
-                throw new IllegalArgumentException("Missing required field " + name);
-            if (f.getFormat() != null && metadata.containsKey(name)) {
-                // TODO: this assumes all formats are date formats; it should probably be different
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat(f.getFormat());
-                    Date tmp = sdf.parse(metadata.get(name));
-                } catch (ParseException e) {
-                    throw new IllegalArgumentException("Invalid data format for " + name +
-                                                       "; does not match" + f.getFormat());
-                }
-            }
-            if ("discourse_type".equals(name)) {
-                for (String tmp : metadata.get(name).split(",")) {
-                    if (!DiscourseType.isValidName(tmp))
-                        throw new IllegalArgumentException(metadata.get(name) + " is not a valid discourse_type");
-                }
-            }
-        }
+    private void doValidation(Map<String, String> metadata, boolean forInsert) {
+        String errs = Utils.validateIndexMetadata(metadata, forInsert);
+        if (errs.length() > 0) throw new IllegalArgumentException(errs);
     }
 
     /**
