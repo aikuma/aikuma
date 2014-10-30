@@ -1,9 +1,8 @@
-package org.lp20.aikuma;
+package org.lp20.aikuma.servers.index_server;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.lp20.aikuma.storage.GoogleAuth;
 
 import java.io.*;
 import java.net.URI;

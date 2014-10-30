@@ -1,14 +1,11 @@
-package org.lp20.aikuma;
+package org.lp20.aikuma.servers.index_server;
 
-import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.lp20.aikuma.storage.FusionIndex;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
