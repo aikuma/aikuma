@@ -63,6 +63,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -101,6 +102,24 @@ public class MainActivity extends ListActivity {
 		MainActivity.locationDetector = new LocationDetector(this);
 		
 		checkDate();
+		
+		// Check version, email-account
+		SharedPreferences settings = 
+				PreferenceManager.getDefaultSharedPreferences(this);
+//		settings.edit().clear().commit();
+		String appVersionName = 
+				settings.getString(AikumaSettings.SETTING_VERSION_KEY, "");
+		emailAccount = 
+				settings.getString(AikumaSettings.SETTING_OWNER_ID_KEY, null);
+		AikumaSettings.setUserId(emailAccount);
+		Log.i(TAG, ""+emailAccount);
+
+		//TODO: Update existing files
+		/*
+		if(!appVersionName.equals(AikumaSettings.getLatestVersion())) {
+			// Update the file structure and metadata
+			new UpdateUtils(this).update();
+		} */
 	}
 
 	@Override
@@ -123,21 +142,7 @@ public class MainActivity extends ListActivity {
 	@Override
 	public void onResume() {
 		super.onResume();	
-		SharedPreferences settings = 
-				getSharedPreferences(AikumaSettings.SETTING_NAME, 0);
-//		settings.edit().clear().commit();
-		String appVersionName = 
-				settings.getString(AikumaSettings.SETTING_VERSION_KEY, "");
-		String defaultAccount = 
-				settings.getString(AikumaSettings.SETTING_OWNER_ID_KEY, "");
-		AikumaSettings.setUserId(defaultAccount);
-		Log.i(TAG, defaultAccount);
-
-		if(!appVersionName.equals(AikumaSettings.getLatestVersion())) {
-			// Update the file structure and metadata
-			new UpdateUtils(this).update();
-		} 
-
+		
 		List<Recording> recordings = Recording.readAll();
 		Log.i(TAG, "num: " +recordings.size());
 		// Filter the recordings for originals
@@ -171,6 +176,13 @@ public class MainActivity extends ListActivity {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Recording recording = (Recording) getListAdapter().getItem(position);
+		if(emailAccount == null) {
+			new AlertDialog.Builder(this)
+				.setMessage("You need to select your account")
+				.show();
+				return;
+		}
+		
 		Intent intent = new Intent(this, ListenActivity.class);
 		intent.putExtra("id", recording.getId());
 		intent.putExtra("ownerId", recording.getOwnerId());
@@ -286,7 +298,8 @@ public class MainActivity extends ListActivity {
         int statusCode = GooglePlayServicesUtil
         		.isGooglePlayServicesAvailable(this);
         if (statusCode == ConnectionResult.SUCCESS) {
-        	if(emailAccount == null) {
+        	//TODO: Sign-out, Sign-in with other accounts
+        	if(googleAuthToken == null) {
         		pickUserAccount();
         	}
         } else if (GooglePlayServicesUtil.isUserRecoverableError(statusCode)) {
@@ -316,9 +329,15 @@ public class MainActivity extends ListActivity {
             if (resultCode == RESULT_OK) {
                 emailAccount = 
                 		data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                AikumaSettings.setUserId(emailAccount);
+                SharedPreferences settings = 
+                		PreferenceManager.getDefaultSharedPreferences(this);
+                settings.edit().putString(
+                		AikumaSettings.SETTING_OWNER_ID_KEY, emailAccount).commit();
+                
                 if (isDeviceOnline()) {
                 	googleAPIScope = getScope();
-                    new GetTokenTask(emailAccount, googleAPIScope).execute();
+                	new GetTokenTask(emailAccount, googleAPIScope).execute();
                 } else {
                     Toast.makeText(this, "Network is disconnected", 
                     		Toast.LENGTH_SHORT).show();
@@ -347,7 +366,7 @@ public class MainActivity extends ListActivity {
         }
         if (resultCode == RESULT_OK) {
             // User recovered error, retry to get access_token
-            new GetTokenTask(emailAccount, googleAPIScope).execute();
+        	new GetTokenTask(emailAccount, googleAPIScope).execute();
             return;
         }
 //        if (resultCode == RESULT_CANCELED) {

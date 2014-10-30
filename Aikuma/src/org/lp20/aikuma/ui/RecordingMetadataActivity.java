@@ -63,8 +63,8 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		durationMsec = (Integer) intent.getExtras().get("durationMsec");
 		groupId = (String)
 				intent.getExtras().get("groupId");
-		sourceId = (String)
-				intent.getExtras().get("sourceId");
+		sourceVerId = (String)
+				intent.getExtras().get("sourceVerId");
 		numChannels = (Integer) intent.getExtras().get("numChannels");
 		bitsPerSample = (Integer) intent.getExtras().get("bitsPerSample");
 		latitude = (Double) intent.getExtras().get("latitude");
@@ -158,6 +158,13 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	 * @param	view	the OK button.
 	 */
 	public void onOkButtonPressed(View view) {
+		final String ownerId = AikumaSettings.getCurrentUserId();
+		if(ownerId == null) {
+			new AlertDialog.Builder(this)
+				.setMessage("You need to select an account to make a recording")
+				.show();
+				return;
+		}
 		new AlertDialog.Builder(this)
 				.setMessage(R.string.share_dialog)
 				.setPositiveButton(R.string.share, new
@@ -179,9 +186,9 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 						Recording recording = new Recording(
 								uuid, description, date, 
 								AikumaSettings.getLatestVersion(), 
-								AikumaSettings.getCurrentUserId(),
+								ownerId,
 								selectedLanguages, 
-								speakersIds, androidID, groupId, sourceId,
+								speakersIds, androidID, groupId, sourceVerId,
 								sampleRate, durationMsec, format, numChannels,
 								bitsPerSample, latitude, longitude);
 						try {
@@ -304,7 +311,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	private ImageButton okButton;
 	private boolean recordingHasSpeaker;
 	private boolean recordingHasName;
-	private String sourceId;
+	private String sourceVerId;
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;

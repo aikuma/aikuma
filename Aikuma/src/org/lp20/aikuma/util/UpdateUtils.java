@@ -19,6 +19,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -55,23 +56,27 @@ public class UpdateUtils {
 	 */
 	public void update() {
 		SharedPreferences settings = 
-				context.getSharedPreferences(AikumaSettings.SETTING_NAME, 0);
+				PreferenceManager.getDefaultSharedPreferences(context);
 		currentVersionName = 
 				settings.getString(AikumaSettings.SETTING_VERSION_KEY, "v00");
 		Integer currentVersionNum = 
 				Integer.parseInt(currentVersionName.substring(1));
-		nextVersionName = String.format("v%02d", currentVersionNum+1);
+		nextVersionName = AikumaSettings.getLatestVersion(); 
 		
 		switch(currentVersionNum) {
 		case 0:
 			AccountManager manager = AccountManager.get(context); 
 	        Account[] accounts = manager.getAccountsByType("com.google"); 
 	        if(accounts.length > 0) {
-	        	defaultAccount = accounts[0].name;
+	        	//TODO: How to decide default-account
+	        	//defaultAccount = 
+	    		//		settings.getString(AikumaSettings.SETTING_OWNER_ID_KEY, "");
+	        	//defaultAccount = accounts[0].name;
 	        	
 	        	updateVersion(0);
 	        } else {
-	        	showAccountInputDialog();
+	        	//TODO: How to input default-account
+	        	//showAccountInputDialog();
 	        }
 			return;
 		default:
@@ -83,11 +88,12 @@ public class UpdateUtils {
 		Log.i(TAG, currentVersionNum + ": " + defaultAccount);
 		switch(currentVersionNum) {
 		case 0:
-			((MainActivity)context).showProgressDialog("Updating to Aikuma v01...");
+			String progressText = String.format("Updating to Aikuma %s...", nextVersionName);
+			((MainActivity)context).showProgressDialog(progressText);
 			updateFileStructure();
         	updateRecordingsMetadata(currentVersionNum);
         	
-        	saveInSettings(AikumaSettings.SETTING_OWNER_ID_KEY, defaultAccount);
+        	//saveInSettings(AikumaSettings.SETTING_OWNER_ID_KEY, defaultAccount);
         	saveInSettings(AikumaSettings.SETTING_VERSION_KEY, nextVersionName);
         	((MainActivity)context).dismissProgressDialog();
         	
@@ -148,7 +154,7 @@ public class UpdateUtils {
 	 */
 	private void saveInSettings(String key, String value) {
 		SharedPreferences settings = 
-				context.getSharedPreferences(AikumaSettings.SETTING_NAME, 0);
+				PreferenceManager.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(key, value);
 		editor.commit();

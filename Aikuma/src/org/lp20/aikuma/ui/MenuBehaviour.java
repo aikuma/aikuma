@@ -19,6 +19,7 @@ import android.widget.SearchView;
 
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.util.AikumaSettings;
 
 /**
  * Class that unifies some inter-activity navigation code.
@@ -69,10 +70,22 @@ public class MenuBehaviour {
 				goToMainActivity();
 				return true;
 			case R.id.record:
+				if(AikumaSettings.getCurrentUserId() == null) {
+					new AlertDialog.Builder(activity)
+						.setMessage("You need to select your account")
+						.show();
+					return true;
+				}
 				intent = new Intent(activity, RecordActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.speakers:
+				if(AikumaSettings.getCurrentUserId() == null) {
+					new AlertDialog.Builder(activity)
+						.setMessage("You need to select an account")
+						.show();
+					return true;
+				}
 				intent = new Intent(activity, MainSpeakersActivity.class);
 				activity.startActivity(intent);
 				return true;
@@ -117,6 +130,12 @@ public class MenuBehaviour {
 				safeGoToMainActivity(safeActivityTransitionMessage);
 				return true;
 			case R.id.record:
+				if(AikumaSettings.getCurrentUserId() == null) {
+					new AlertDialog.Builder(activity)
+						.setMessage("You need to select an account to make a recording")
+						.show();
+					return true;
+				}
 				intent = new Intent(activity, RecordActivity.class);
 				activity.startActivity(intent);
 				return true;

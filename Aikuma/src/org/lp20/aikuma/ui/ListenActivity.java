@@ -72,6 +72,7 @@ import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
 import org.lp20.aikuma.storage.InvalidAccessTokenException;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.ImageUtils;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -216,9 +217,10 @@ public class ListenActivity extends AikumaActivity {
 					Intent intent = new Intent(ListenActivity.this, 
 							ListenRespeakingActivity.class);
 					intent.putExtra("originalId", recording.getId());
+					intent.putExtra("originalOwnerId", ownerId);
+					intent.putExtra("originalVerName", versionName);
+					
 					intent.putExtra("respeakingId", respeaking.getId());
-					intent.putExtra("ownerId", ownerId);
-					intent.putExtra("versionName", versionName);
 					
 					intent.putExtra("token", googleAuthToken);
 					startActivity(intent);
@@ -466,7 +468,8 @@ public class ListenActivity extends AikumaActivity {
 	 */
 	public void onStarButtonPressed(View view) {
 		try {
-			recording.star();
+			recording.star(AikumaSettings.getLatestVersion(), 
+					AikumaSettings.getCurrentUserId());
 		} catch (IOException e) {
 			// This isn't thrown if the file already exists (rather, if the
 			// file cannot be made for other reasons, so it's probably a
@@ -485,7 +488,8 @@ public class ListenActivity extends AikumaActivity {
 	 */
 	public void onFlagButtonPressed(View view) {
 		try {
-			recording.flag();
+			recording.flag(AikumaSettings.getLatestVersion(), 
+					AikumaSettings.getCurrentUserId());
 		} catch (IOException e) {
 			// This isn't thrown if the file already exists (rather, if the
 			// file cannot be made for other reasons, so it's probably a
@@ -604,7 +608,8 @@ public class ListenActivity extends AikumaActivity {
 
 	
 	private void updateStarButton() {
-		if(recording.isStarredByThisPhone()) {
+		if(recording.isStarredByThisPhone(AikumaSettings.getLatestVersion(), 
+				AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(0, false);
 			quickMenu.setItemImageResourceAt(0, R.drawable.star_grey);
 		} else {
@@ -614,7 +619,8 @@ public class ListenActivity extends AikumaActivity {
 	}
 	
 	private void updateFlagButton() {
-		if(recording.isFlaggedByThisPhone()) {
+		if(recording.isFlaggedByThisPhone(AikumaSettings.getLatestVersion(), 
+				AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(1, false);
 			quickMenu.setItemImageResourceAt(1, R.drawable.flag_grey);
 		} else {

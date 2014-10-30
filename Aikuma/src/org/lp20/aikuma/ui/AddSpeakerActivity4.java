@@ -4,6 +4,7 @@
 */
 package org.lp20.aikuma.ui;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -29,6 +30,7 @@ import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.ImageUtils;
 
@@ -88,8 +90,16 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 	 * @param	view	The OK button.
 	 */
 	public void onOkButtonPressed(View view) {
+		final String ownerId = AikumaSettings.getCurrentUserId();
+		if(ownerId == null) {
+			new AlertDialog.Builder(this)
+				.setMessage("You need to select an account to make a speaker")
+				.show();
+				return;
+		}
 		try {
-			Speaker newSpeaker = new Speaker(imageUUID, name, selectedLanguages);
+			Speaker newSpeaker = new Speaker(imageUUID, name, selectedLanguages, 
+					AikumaSettings.getLatestVersion(), ownerId);
 			newSpeaker.write();
 		} catch (IOException e) {
 			Toast.makeText(this, 

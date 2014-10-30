@@ -19,6 +19,6 @@ public class StandardDateFormat extends SimpleDateFormat {
 	 * Constructor that specifies the date format.
 	 */
 	public StandardDateFormat() {
-		super("yyyy-MM-dd HH:mm:ss.SSSZ");
+		super("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 	}
 }

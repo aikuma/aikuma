@@ -25,6 +25,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -55,7 +57,7 @@ public class Recording {
 	 * recording
 	 * @param	groupId	The ID of the group of recordings this recording
 	 * belongs in (Some source recording and respeakings/commentaries)
-	 * @param	sourceId	The ID of the source recording of this recording
+	 * @param	sourceVerId	The version-ID of the source recording of this recording
 	 * @param	sampleRate	The sample rate of the recording.
 	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 * @param	format	The mime type
@@ -67,7 +69,7 @@ public class Recording {
 	public Recording(UUID recordingUUID, String name, Date date,
 			String versionName, String ownerId,
 			List<Language> languages, List<String> speakersIds,
-			String androidID, String groupId, String sourceId, long sampleRate,
+			String androidID, String groupId, String sourceVerId, long sampleRate,
 			int durationMsec, String format, int numChannels, 
 			int bitsPerSample, Double latitude, Double longitude) {
 		this.recordingUUID = recordingUUID;
@@ -82,7 +84,7 @@ public class Recording {
 		setSampleRate(sampleRate);
 		setDurationMsec(durationMsec);
 		setGroupId(groupId);
-		this.sourceId = sourceId;
+		this.sourceVerId = sourceVerId;
 		this.numChannels = numChannels;
 		this.bitsPerSample = bitsPerSample;
 		this.latitude = latitude;
@@ -93,7 +95,7 @@ public class Recording {
 			setRespeakingId("");
 		} else {
 			// Then we must generate the 4 digit respeaking ID.
-			setRespeakingId(IdUtils.randomDigitString(4));
+			setRespeakingId(IdUtils.randomDigitString(6));
 		}
 		setId(determineId());
 	}
@@ -105,6 +107,7 @@ public class Recording {
 	 * @param	date	The date of creation.
 	 * @param	versionName	The recording's version(v0x)
 	 * @param	ownerId	The recording owner's ID(Google account)
+	 * @param	sourceVerId	The source's version and Id (if not respeaking, null)
 	 * @param	format	The file format
 	 * @param	languages	The languages associated with the recording
 	 * @param	speakersIds	The IDs of the speakers associated with the
@@ -119,7 +122,7 @@ public class Recording {
 	 * @param	durationMsec	The duration of the recording in milliseconds.
 	 */
 	public Recording(String name, Date date,
-			String versionName, String ownerId,
+			String versionName, String ownerId, String sourceVerId,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String respeakingId,
 			long sampleRate, int durationMsec, String format) {
@@ -136,6 +139,7 @@ public class Recording {
 		setGroupId(groupId);
 		setRespeakingId(respeakingId);
 		setId(determineId());
+		this.sourceVerId = sourceVerId;
 	}
 
 	private String determineId() {
@@ -143,7 +147,7 @@ public class Recording {
 		StringBuilder id = new StringBuilder();
 		id.append(getGroupId());
 		id.append("-");
-		id.append(getSpeakersIds().get(0));
+		id.append(getOwnerId());
 		id.append("-");
 		if (isOriginal()) {
 			id.append("source");
@@ -187,12 +191,12 @@ public class Recording {
 		File mapFile = new File(getNoSyncRecordingsPath(), wavUUID + ".map");
 		FileUtils.moveFile(mapFile,
 				new File(getRecordingsPath(), getGroupId() + "/" +
-						id + ".map"));
+						id + "-mapping.txt"));
 	}
 
 	// Create a group ID (the prefix for recordings)
 	private String createGroupId() {
-		return IdUtils.sampleFromAlphabet(8, "abcdefghijklmnopqrstuvwxyz");
+		return IdUtils.sampleFromAlphabet(12, "abcdefghijklmnopqrstuvwxyz");
 	}
 
 	/**
@@ -355,19 +359,19 @@ public class Recording {
 		encodedRecording.put("name", this.name);
 		encodedRecording.put("date", new StandardDateFormat().format(this.date));
 		encodedRecording.put("version", this.versionName);
-		encodedRecording.put("ownerID", this.ownerId);
+		encodedRecording.put("user_id", this.ownerId);
 		encodedRecording.put("languages", Language.encodeList(languages));
 		JSONArray speakersIdsArray = new JSONArray();
 		for (String id : speakersIds) {
 			speakersIdsArray.add(id.toString());
 		}
-		encodedRecording.put("people", speakersIdsArray);
+		encodedRecording.put("speakers", speakersIdsArray);
 		encodedRecording.put("androidID", this.androidID);
 		encodedRecording.put("sampleRate", getSampleRate());
 		encodedRecording.put("durationMsec", getDurationMsec());
-		encodedRecording.put("recording", this.groupId);
+		encodedRecording.put("item_id", this.groupId);
 		encodedRecording.put("suffix", this.respeakingId);
-		encodedRecording.put("source", this.sourceId);
+		encodedRecording.put("source", this.sourceVerId);
 		if(latitude != null && longitude != null) {
 			JSONArray locationData = new JSONArray();
 			locationData.add(latitude+"");
@@ -377,15 +381,15 @@ public class Recording {
 			encodedRecording.put("location", null);
 		}
 		
-		if (this.sourceId == null) {
-			encodedRecording.put("type", "source");
+		if (this.sourceVerId == null) {
+			encodedRecording.put("file_type", "source");
 		} else {
 			// Then this is either a respeaking or a translation.
 			try {
 				if (this.languages.equals(getOriginal().getLanguages())) {
-					encodedRecording.put("type", "respeaking");
+					encodedRecording.put("file_type", "respeaking");
 				} else {
-					encodedRecording.put("type", "translation");
+					encodedRecording.put("file_type", "translation");
 				}
 			} catch (IOException e) {
 				// There is an issue reading the original. A type won't be
@@ -398,6 +402,68 @@ public class Recording {
 		return encodedRecording;
 	}
 
+	/**
+	 * Make an index-file at the application root path
+	 * 
+	 * @param srcVerId		(source's versionName)-(source's ID)
+	 * @param respkVerId	(respeaking's versionName)-(respeaking's ID)
+	 * @throws IOException	thrown by read/write function
+	 */
+	private static void index(String srcVerId, String respkVerId) throws IOException {
+		File indexFile = new File(FileIO.getAppRootPath(), "index.json");
+		JSONObject indices = null;
+		try {
+			indices = FileIO.readJSONObject(indexFile);
+		} catch (IOException e) {
+			indices = new JSONObject();
+		}
+		
+		String srcId = srcVerId.substring(4);
+		String[] splitRespeakName = respkVerId.split("-");
+		String val = splitRespeakName[0] + "-" + splitRespeakName[1] + "-" + splitRespeakName[2];
+		
+		JSONArray values = (JSONArray) indices.get(srcId);
+		if(values == null) {
+			values = new JSONArray();
+		}
+		if(!values.contains(val)) {
+			values.add(val);
+			indices.put(srcId, values);
+			FileIO.writeJSONObject(indexFile, indices);
+		}
+	}
+	
+	/**
+	 * Write the recording's metadata string to path
+	 * 
+	 * @param path				Path to a file of the metadata
+	 * @param metadataJSONStr	JSON string of metadata
+	 * @throws IOException		thrown by write/index functions
+	 */
+	public static void write(File path, String metadataJSONStr) throws IOException {
+		FileIO.write(path, metadataJSONStr);
+		
+		JSONParser parser = new JSONParser();
+		JSONObject jsonObj;
+		try {
+			jsonObj = (JSONObject) parser.parse(metadataJSONStr);
+		} catch (org.json.simple.parser.ParseException e) {
+			throw new IOException(e);
+		}
+		
+		
+		String jsonSrcVerId = (String) jsonObj.get("source");
+		// if the recording is a respeaking.
+		if(jsonSrcVerId != null) {
+			String jsonVerName = (String) jsonObj.get("version");
+			String jsonGroupId = (String) jsonObj.get("item_id");
+			String jsonOwnerId = (String) jsonObj.get("user_id");
+			
+			// Write the index file
+			index(jsonSrcVerId, jsonVerName + "-" + jsonGroupId + "-" + jsonOwnerId);
+		}
+	}
+	
 	/**
 	 * Write the Recording to file in a subdirectory of the recordings and move
 	 * the recording WAV data to that directory
@@ -416,9 +482,13 @@ public class Recording {
 			importWav(recordingUUID, getId());
 		}
 
-		// Try and import the mapping file, if the recording is a respeaking.
+		// if the recording is a respeaking.
 		if (!isOriginal()) {
+			// Try and import the mapping file
 			importMapping(recordingUUID, getId());
+			
+			// Write the index file
+			index(sourceVerId, getVersionName() + "-" + getId());
 		}
 
 		JSONObject encodedRecording = this.encode();
@@ -431,6 +501,7 @@ public class Recording {
 				encodedRecording);
 	}
 
+	
 	/**
 	 * Deletes the JSON File associated with the recording.
 	 *
@@ -461,16 +532,19 @@ public class Recording {
 	 * file
 	 */
 	public Recording getOriginal() throws IOException {
-		File groupDir = new File(getRecordingsPath(), getGroupId());
+		String[] splitSourceName = sourceVerId.split("-");
+		File ownerDir = 
+				FileIO.getOwnerPath(splitSourceName[0], splitSourceName[2]);
+		File groupDir = 
+				new File(getRecordingsPath(ownerDir), getGroupId());
 
 		// Filter for files that are source metadata
 		File[] groupMetadataFileArray = groupDir.listFiles(
 				new FilenameFilter() {
 			public boolean accept(File dir, String filename) {
-				String[] splitFilename = filename.split("[-.]");
+				String[] splitFilename = filename.split("-");
 				if (splitFilename[2].equals("source") &&
-					splitFilename[3].equals("metadata") &&
-					filename.endsWith(".json")) {
+					filename.endsWith("metadata.json")) {
 					return true;
 				}
 				return false;
@@ -527,7 +601,8 @@ public class Recording {
 			throw new IOException(e);
 		}
 		String versionName = (String) jsonObj.get("version");
-		String ownerId = (String) jsonObj.get("ownerID");
+		String ownerId = (String) jsonObj.get("user_id");
+		String sourceVerId = (String) jsonObj.get("source");
 		String format = (String) jsonObj.get("Format");
 		
 		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
@@ -535,7 +610,7 @@ public class Recording {
 			throw new IOException("Null languages in the JSON file.");
 		}
 		List<Language> languages = Language.decodeJSONArray(languageArray);
-		JSONArray speakerIdArray = (JSONArray) jsonObj.get("people");
+		JSONArray speakerIdArray = (JSONArray) jsonObj.get("speakers");
 		if (speakerIdArray == null) {
 			throw new IOException("Null speakersIds in the JSON file.");
 		}
@@ -565,8 +640,8 @@ public class Recording {
 			Log.i(TAG, "reading: " + durationMsec);
 		}
 		Recording recording = new Recording(name, date, versionName, ownerId, 
-				languages, speakersIds, androidID, groupId, respeakingId,
-				sampleRate, (Integer) durationMsec, format);
+				sourceVerId, languages, speakersIds, androidID, groupId, 
+				respeakingId, sampleRate, (Integer) durationMsec, format);
 		return recording;
 	}
 
@@ -576,32 +651,61 @@ public class Recording {
 	 * group.
 	 * (If this is called by a respeaking, empty arraylist is returned)
 	 *
-	 * @return	A list of all the respeakings of the recording.
+	 * @return	A list of all the respeakings of the recording. 
+	 * 			(an error can return an empty list)
 	 */
 	public List<Recording> getRespeakings() {
-		List<Recording> respeakings = new ArrayList();
+		List<File> groupDirList = new ArrayList<File>();
+		List<Recording> respeakings = new ArrayList<Recording>();
 		if(!this.isOriginal()) return respeakings;
 		
-		File groupDir = new File(getRecordingsPath(), getGroupId());
-
-		File[] groupDirMetaFiles = groupDir.listFiles(new FilenameFilter() {
-					public boolean accept(File dir, String filename) {
-						return filename.endsWith("-metadata.json");
-					}
-				});
+		File indexFile = new File(FileIO.getAppRootPath(), "index.json");
+		JSONObject indices = null;
+		try {
+			indices = FileIO.readJSONObject(indexFile);
+		} catch (IOException e1) {
+			Log.e(TAG, "getRespeakings(): error in reading index file");
+			return respeakings;
+		}
 		
-		Recording recording;
-		for (File recordingMetaFile : groupDirMetaFiles) {
-			try {
-				recording = Recording.read(recordingMetaFile);
-				if (!recording.isOriginal()) {
-					respeakings.add(recording);
+		// Collect directories where related respeakings exist form index file
+		JSONArray respkList = (JSONArray) indices.get(getId());
+		if(respkList == null)
+			return respeakings;
+		
+		for (int i = 0; i < respkList.size(); i++) {
+			String[] splitRespkName = ((String)respkList.get(i)).split("-");
+			File ownerDir = 
+					FileIO.getOwnerPath(splitRespkName[0], splitRespkName[2]);
+			File groupDir = 
+					new File(getRecordingsPath(ownerDir), splitRespkName[1]);
+			
+			groupDirList.add(groupDir);
+		}
+
+		// Read metadata files
+		for(File groupDir: groupDirList) {
+			
+			File[] groupDirMetaFiles = groupDir.listFiles(new FilenameFilter() {
+				public boolean accept(File dir, String filename) {
+					return filename.endsWith("-metadata.json");
 				}
-			} catch (IOException e) {
-				// Well we can't read the recordings metadata file, so just
-				// continue on.
+			});
+	
+			Recording recording;
+			for (File recordingMetaFile : groupDirMetaFiles) {
+				try {
+					recording = Recording.read(recordingMetaFile);
+					if (!recording.isOriginal()) {
+						respeakings.add(recording);
+					}
+				} catch (IOException e) {
+					// Well we can't read the recordings metadata file, so just
+					// continue on.
+				}
 			}
 		}
+		
 		return respeakings;
 	}
 
@@ -941,17 +1045,19 @@ public class Recording {
 		return splitId[0];
 	}
 
+
 	/**
 	 * Star the recording with this phone's androidID
-	 *
+	 * 
+	 * @param currentVerName	Current aikuma's version
+	 * @param userId			ID of an user who liked this recording
 	 * @throws	IOException	In case there is an issue writing the star file.
 	 * Note that this will not be thrown if the file already exists.
 	 */
-	public void star() throws IOException {
+	public void star(String currentVerName, String userId) throws IOException {
 		String androidID = Aikuma.getAndroidID();
-		File starFile = new File(FileIO.getOwnerPath(versionName, ownerId), 
-				"/social/" +
-				getGroupId() + "/" + getId() + "/" + androidID + ".star");
+		File starFile = new File(FileIO.getOwnerPath(currentVerName, userId), 
+				"/social/" + getId() + "-like");
 		starFile.getParentFile().mkdirs();
 		starFile.createNewFile();
 	}
@@ -959,14 +1065,15 @@ public class Recording {
 	/**
 	 * Flag the recording with this phone's androidID
 	 *
+	 * @param currentVerName	Current aikuma's version
+	 * @param userId			ID of an user who dis-liked this recording
 	 * @throws	IOException	In case there is an issue writing the flag file.
 	 * Note that this will not be thrown if the file already exists.
 	 */
-	public void flag() throws IOException {
+	public void flag(String currentVerName, String userId) throws IOException {
 		String androidID = Aikuma.getAndroidID();
-		File flagFile = new File(FileIO.getOwnerPath(versionName, ownerId), 
-				"/social/" +
-				getGroupId() + "/" + getId() + "/" + androidID + ".flag");
+		File flagFile = new File(FileIO.getOwnerPath(currentVerName, userId), 
+				"/social/"  + getId() + "-report");
 		flagFile.getParentFile().mkdirs();
 		flagFile.createNewFile();
 	}
@@ -974,28 +1081,32 @@ public class Recording {
 	/**
 	 * Tells us whether this phone has already starred the Recording
 	 *
+	 * @param currentVerName	Current aikuma's version
+	 * @param userId			ID of an user who liked this recording
 	 * @return	true if a star file with this androidID is present; false
 	 * otherwise
 	 */
-	public boolean isStarredByThisPhone() {
+	public boolean isStarredByThisPhone(String currentVerName, String userId) {
 		String androidID = Aikuma.getAndroidID();
 		File starFile = 
-				new File(FileIO.getOwnerPath(versionName, ownerId), "/social/" +
-						getGroupId() + "/" + getId() + "/" + androidID + ".star");
+				new File(FileIO.getOwnerPath(currentVerName, userId), "/social/" +
+						getId() + "-like");
 		return starFile.exists();
 	}
 
 	/**
 	 * Tells us whether this phone has already flagged the Recording
 	 *
+	 * @param currentVerName	Current aikuma's version
+	 * @param userId			ID of an user who dis-liked this recording
 	 * @return	true if a flag file with this androidID is present; false
 	 * otherwise
 	 */
-	public boolean isFlaggedByThisPhone() {
+	public boolean isFlaggedByThisPhone(String currentVerName, String userId) {
 		String androidID = Aikuma.getAndroidID();
 		File flagFile = 
-				new File(FileIO.getOwnerPath(versionName, ownerId), "/social/" +
-				getGroupId() + "/" + getId() + "/" + androidID + ".flag");
+				new File(FileIO.getOwnerPath(currentVerName, userId), "/social/" +
+						getId() + "-report");
 		return flagFile.exists();
 	}
 
@@ -1005,6 +1116,7 @@ public class Recording {
 	 * @return	The number of stars this recording has recieved
 	 */
 	public int numStars() {
+		// TODO: New file-storage model needs to be decided (1. create index / 2. put these in app-root folder)
 		File starDir = new File(FileIO.getOwnerPath(versionName, ownerId), 
 				"/social/" +
 				getGroupId() + "/" + getId());
@@ -1029,6 +1141,7 @@ public class Recording {
 	 * @return	The number of flags this recording has recieved
 	 */
 	public int numFlags() {
+		// TODO: New file-storage model needs to be decided (1. create index / 2. put these in app-root folder)
 		File socialDir = new File(FileIO.getOwnerPath(versionName, ownerId), 
 				"/social/" +
 				getGroupId() + "/" + getId());
@@ -1053,6 +1166,7 @@ public class Recording {
 	 * @return	The number of times this recording has been viewed.
 	 */
 	public int numViews() {
+		//TODO: New file-storage model for the number of views need to be decided
 		File socialDir = new File(FileIO.getOwnerPath(versionName, ownerId),
 				"/views/" +
 				getGroupId() + "/" + getId());
@@ -1178,7 +1292,7 @@ public class Recording {
 	private String id;
 
 	//The ID of the source recording.
-	private String sourceId;
+	private String sourceVerId;
 
 	// Some info regarding the recording format.
 	private String format;

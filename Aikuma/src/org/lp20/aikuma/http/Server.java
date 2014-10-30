@@ -364,12 +364,13 @@ public class Server extends NanoHTTPD {
 	}
 	
 	private Response serveSpeakerImage(String path) {
+		// GET /speaker/versionName/owner_id/filename/image
 		String[] a = path.split("/");
-		if (a.length != 4 || !a[1].equals("speaker") || !a[3].equals("image"))
+		if (a.length != 6 || !a[1].equals("speaker") || !a[5].equals("image"))
 			return null;
 		
 		try {
-			InputStream is = new FileInputStream(Speaker.read(a[2]).getImageFile());
+			InputStream is = new FileInputStream(Speaker.read(a[2], a[3], a[4]).getImageFile());
 			return new Response(Status.OK, "image/jpeg", is);
 		}
 		catch (IOException e) {
@@ -381,12 +382,13 @@ public class Server extends NanoHTTPD {
 	}
 	
 	private Response serveSpeakerSmallImage(String path) {
+		// GET /recording/versionName/owner_id/filename/smallimage
 		String[] a = path.split("/");
-		if (a.length != 4 || !a[1].equals("speaker") || !a[3].equals("smallimage"))
+		if (a.length != 6 || !a[1].equals("speaker") || !a[5].equals("smallimage"))
 			return null;
 		
 		try {
-			InputStream is = new FileInputStream(Speaker.read(a[2]).getSmallImageFile());
+			InputStream is = new FileInputStream(Speaker.read(a[2], a[3], a[4]).getSmallImageFile());
 			return new Response(Status.OK, "image/jpeg", is);
 		}
 		catch (IOException e) {

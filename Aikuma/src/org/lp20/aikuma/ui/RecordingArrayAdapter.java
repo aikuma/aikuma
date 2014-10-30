@@ -101,8 +101,10 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				(TextView) recordingView.findViewById(R.id.recordingDateDuration);
 		LinearLayout speakerImagesView = (LinearLayout)
 				recordingView.findViewById(R.id.speakerImages);
+		String verName = recording.getVersionName();
+		String ownerId = recording.getOwnerId();
 		for (String id : recording.getSpeakersIds()) {
-			speakerImagesView.addView(makeSpeakerImageView(id));
+			speakerImagesView.addView(makeSpeakerImageView(verName, ownerId, id));
 		}
 		recordingNameView.setText(recording.getNameAndLang());
 		
@@ -121,7 +123,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		StringBuilder sb = new StringBuilder();
 		for(String speakerId : speakers) {
 			try {
-				sb.append(Speaker.read(speakerId).getName()+", ");
+				sb.append(Speaker.read(verName, ownerId, speakerId).getName()+", ");
 			} catch (IOException e) {
 				// If the reader can't be read for whatever reason 
 				// (perhaps JSON file wasn't formatted correctly),
@@ -200,17 +202,20 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	/**
 	 * Creates the view for a given speaker.
 	 *
+	 * @param	verName		The version of the recording
+	 * @param	ownerId		The owner ID of the speaker
 	 * @param	speakerId	The ID of the speaker.
 	 * @return	The image view for the speaker.
 	 */
-	private ImageView makeSpeakerImageView(String speakerId) {
+	private ImageView makeSpeakerImageView(String verName, String ownerId, 
+			String speakerId) {
 		ImageView speakerImage = new ImageView(context);
 		speakerImage.setAdjustViewBounds(true);
 //		speakerImage.setScaleType(ImageView.ScaleType.FIT_END);
 		speakerImage.setMaxHeight(60);//40
 		speakerImage.setMaxWidth(60);//40
 		try {
-			speakerImage.setImageBitmap(Speaker.getSmallImage(speakerId));
+			speakerImage.setImageBitmap(Speaker.getSmallImage(verName, ownerId, speakerId));
 		} catch (IOException e) {
 			// Not much can be done if the image can't be loaded.
 		}

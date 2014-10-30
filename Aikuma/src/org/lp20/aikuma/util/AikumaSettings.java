@@ -12,14 +12,16 @@ package org.lp20.aikuma.util;
 public class AikumaSettings {
 
 	/**
-	 * Name of the persistent settings of the application
+	 * Key for a versionName in default SharedPreferences
 	 */
-	public static final String SETTING_NAME = "settings";
 	public static final String SETTING_VERSION_KEY = "version";
+	/**
+	 * Key for a current user ID in default SharedPreferences
+	 */
 	public static final String SETTING_OWNER_ID_KEY = "ownerID";
 	
 	// Current default owner_id(== default google account)
-	private static String DEFAULT_USER_ID = "";
+	private static String DEFAULT_USER_ID = null;
 	private static int NUM_OF_USERS = 0;
 	private static int NUM_OF_ITEMS = 0;
 	private static float RATIO_OF_FTP_SYNC = 0;
@@ -61,7 +63,7 @@ public class AikumaSettings {
 	}
 	/**
 	 * Set the number of users
-	 * @param Id	the number of users
+	 * @param num	the number of users
 	 */
 	public static void setNumberOfUsers(int num) {
 		NUM_OF_USERS = num;
@@ -76,7 +78,7 @@ public class AikumaSettings {
 	}
 	/**
 	 * Set the number of items
-	 * @param Id	the number of items
+	 * @param num	the number of items
 	 */
 	public static void setNumberOfItems(int num) {
 		NUM_OF_ITEMS = num;
@@ -91,7 +93,7 @@ public class AikumaSettings {
 	}
 	/**
 	 * Set the current ftp upload ratio
-	 * @param Id	the ratio of ftp-upload success
+	 * @param ratio		the ratio of ftp-upload success
 	 */
 	public static void setFtpRatio(float ratio) {
 		RATIO_OF_FTP_SYNC = ratio;
@@ -106,7 +108,7 @@ public class AikumaSettings {
 	}
 	/**
 	 * Set the current cloud upload ratio
-	 * @param Id	the ratio of cloud-upload success
+	 * @param ratio		the ratio of cloud-upload success
 	 */
 	public static void setCloudRatio(float ratio) {
 		RATIO_OF_CLOUD_SYNC = ratio;
@@ -121,7 +123,7 @@ public class AikumaSettings {
 	}
 	/**
 	 * Set the current central upload ratio
-	 * @param Id	the ratio of central-upload success
+	 * @param ratio		the ratio of central-upload success
 	 */
 	public static void setCentralRatio(float ratio) {
 		RATIO_OF_CENTRAL_SYNC = ratio;

@@ -49,7 +49,7 @@ public class Transcript {
 	public Transcript(String versionName, String ownerId,
 			String groupId, String transcriberId) throws RuntimeException {
 		try {
-			Speaker.read(transcriberId);
+			Speaker.read(versionName, ownerId, transcriberId);
 		}
 		catch (IOException e) {
 			throw new RuntimeException("No such person: " + transcriberId);
@@ -114,7 +114,7 @@ public class Transcript {
 			throw new RuntimeException("No such file: " + path);
 		
 		try {
-			Speaker.read(a[1]);
+			Speaker.read(versionName, ownerId, a[1]);
 		}
 		catch (IOException e) {
 			throw new RuntimeException("No such person: " + a[1]);

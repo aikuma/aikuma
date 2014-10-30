@@ -83,8 +83,8 @@ public class IdUtils {
 	 */
 	public static String getOwnerDirName(String ownerId) {
 		String ownerDirName =  ownerId.toLowerCase();
-		ownerDirName = ownerDirName.replaceAll("@(.*)$", "_at_$1");
-		ownerDirName = ownerDirName.replace('.', '_');
+		//ownerDirName = ownerDirName.replaceAll("@(.*)$", "_at_$1");
+		//ownerDirName = ownerDirName.replace('.', '_');
 		return ownerDirName;
 	}
 	
