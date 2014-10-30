@@ -158,6 +158,10 @@
   <path id="aikumacloudstorage.module.sourcepath">
     <dirset dir="${module.aikumacloudstorage.basedir}">
       <include name="src"/>
+        <!-- 
+             NOTE: copy out the include below if you don't want the 
+                   demo classes compiled (and included in the jars)
+        -->
       <include name="demo"/>
     </dirset>
   </path>
@@ -182,7 +186,9 @@
           <exclude name="**/*.py"/>
           <exclude name="**/*.json"/>
           <exclude name="**/sample.aikuma"/>
+          <exclude name="**/*.java"/>
       </fileset>
+
       <fileset dir="${module.aikumacloudstorage.basedir}/src">
         <patternset refid="compiler.resources"/>
         <type type="file"/>
