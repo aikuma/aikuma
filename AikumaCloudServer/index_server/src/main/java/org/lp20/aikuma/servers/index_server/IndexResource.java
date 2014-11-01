@@ -3,7 +3,6 @@ package org.lp20.aikuma.servers.index_server;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import org.glassfish.jersey.server.ResourceConfig;
 import org.lp20.aikuma.storage.FusionIndex;
 
 import java.util.HashMap;
@@ -11,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.json.simple.JSONValue;
-import org.lp20.aikuma.storage.GoogleAuth;
 import org.lp20.aikuma.storage.InvalidAccessTokenException;
+import static org.lp20.aikuma.storage.Utils.validateIndexMetadata;
 
 
 /**
@@ -23,22 +22,16 @@ public class IndexResource {
     private final FusionIndex idx;
     private static final Logger log = Logger.getLogger(IndexResource.class.getName());
 
-    private String access_token;
-    private String refresh_token;
     private String table_id;
-    private String client_id;
-    private String client_secret;
+    private TokenManager tokenManager;
 
     public IndexResource(@Context Application app) {
         //TODO: is there another way to do this?
-        ResourceConfig rc = (ResourceConfig) app;
-        access_token = (String) rc.getProperty("access_token");
-        refresh_token = (String) rc.getProperty("refresh_token");
-        table_id =  (String) rc.getProperty("table_id");
-        client_id = (String) rc.getProperty("client_id");
-        client_secret = (String) rc.getProperty("client_secret");
+        IndexServerApplication a = (IndexServerApplication) app;
+        table_id =  (String) a.getProperty("table_id");
+        tokenManager = a.tokenManager;
 
-        idx = new FusionIndex(access_token);
+        idx = new FusionIndex(tokenManager.getAccessToken());
         idx.setTableId(table_id);
     }
 
@@ -54,19 +47,27 @@ public class IndexResource {
     @Consumes(MediaType.WILDCARD)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getItem(@PathParam("identifier") String identifier) {
-        Response resp;
         try {
-            Map<String, String> md = idx.getItemMetadata(identifier);
-            if (md != null)  {
-                resp = Response.ok(JSONValue.toJSONString(md)).build();
-            }
-            else {
-                resp = Response.status(404).build();
-            }
+            return doGetItem(identifier);
         } catch (InvalidAccessTokenException e) {
-            log.warning(e.toString());
-            resp = Response.serverError().build();
+            idx.setAccessToken(tokenManager.updateAccessToken());
+            try {
+                return doGetItem(identifier);
+            } catch (InvalidAccessTokenException ex) {
+                log.severe("Unable to refresh access_token successfully");
+                return Response.serverError().build();
+            }
+        }
+    }
 
+    private Response doGetItem(String identifier) {
+        Response resp;
+        Map<String, String> md = idx.getItemMetadata(identifier);
+        if (md != null)  {
+            resp = Response.ok(JSONValue.toJSONString(md)).build();
+        }
+        else {
+            resp = Response.status(404).build();
         }
         return resp;
     }
@@ -75,8 +76,25 @@ public class IndexResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{identifier}")
     public Response addItem(@PathParam("identifier") String identifier, MultivaluedMap<String, String> formParams) {
-        Map<String, String> data = makeMetadataMap(formParams);
+        try {
+            return doAddItem(identifier, formParams);
+        } catch (InvalidAccessTokenException e) {
+            idx.setAccessToken(tokenManager.updateAccessToken());
+            try {
+                return doAddItem(identifier, formParams);
+            } catch (InvalidAccessTokenException e1) {
+                log.severe("Unable to refresh access_token successfully");
+                return Response.serverError().build();
+            }
+        }
+    }
 
+    private Response doAddItem(String identifier, MultivaluedMap<String, String> formParams) {
+        Map<String, String> data = makeMetadataMap(formParams);
+        String msg = validateIndexMetadata(data, true);
+        if (msg.length() != 0) {
+            return Response.status(new ErrorStatus(400, msg.replace('\n', ';'))).build();
+        }
         try {
             if (idx.index(identifier, data)) {
                 return Response.accepted().build();
@@ -85,39 +103,39 @@ public class IndexResource {
             }
         } catch (IllegalArgumentException e) {
             return Response.status(new ErrorStatus(400, e.getMessage())).build();
-        } catch (InvalidAccessTokenException e) {
-            log.severe("Invalid access token; work out this logic, Bob");
-            return Response.serverError().build();
         }
     }
 
     @PUT
     @Path("{identifier}")
     public Response updateItem(@PathParam("identifier") String identifier, MultivaluedMap<String, String> formParams) {
-        Map<String, String> data = makeMetadataMap(formParams);
+        try {
+            return doUpdateItem(identifier, formParams);
+        } catch (InvalidAccessTokenException e) {
+            idx.setAccessToken(tokenManager.updateAccessToken());
+            try {
+                return doUpdateItem(identifier, formParams);
+            } catch (InvalidAccessTokenException e1) {
+                log.severe("Invalid access token; work out this logic, Bob");
+                return Response.serverError().build();
+            }
+        }
+    }
 
+    private Response doUpdateItem(String identifier, MultivaluedMap<String, String> formParams) {
+        Map<String, String> data = makeMetadataMap(formParams);
+        String msg = validateIndexMetadata(data, false);
+        if (msg.length() != 0) {
+            return Response.status(new ErrorStatus(400, msg)).build();
+        }
         try {
             idx.update(identifier, data);
             return Response.accepted().build();
         } catch (IllegalArgumentException e) {
             return Response.status(new ErrorStatus(400, e.getMessage())).build();
-        } catch (InvalidAccessTokenException e) {
-            log.severe("Invalid access token; work out this logic, Bob");
-            return Response.serverError().build();
         }
     }
 
-    private boolean refreshToken() {
-        log.warning("Invalid access_token; attempting to refresh");
-        GoogleAuth ga = new GoogleAuth(client_id, client_secret);
-        if (ga.refreshAccessToken(refresh_token)) {
-            access_token = ga.getAccessToken();
-            return true;
-        } else {
-            log.severe("Unable to refresh access_token");
-            return false;
-        }
-    }
 
     private static Map<String, String> makeMetadataMap(MultivaluedMap<String, String> formParams) {
         Map<String, String> data = new HashMap<>(10);

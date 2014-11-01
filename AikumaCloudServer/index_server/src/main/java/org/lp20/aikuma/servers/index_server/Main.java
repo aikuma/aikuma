@@ -2,7 +2,6 @@ package org.lp20.aikuma.servers.index_server;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
 
 import java.io.*;
 import java.net.URI;
@@ -19,12 +18,13 @@ public class Main {
     // Base URI the Grizzly HTTP server will listen on
     public static final String BASE_URI = "http://localhost:8080/";
 
+
     private static final Logger log = Logger.getLogger(Main.class.getName());
     private static String accessToken;
     private static String refreshToken;
     private static String tableId;
 
-    private static boolean setup(ResourceConfig rc) {
+    private static boolean setup(IndexServerApplication app) {
         Properties props = new Properties();
         String fileLoc = System.getProperty("user.dir");
         fileLoc += System.getProperty("file.separator");
@@ -34,13 +34,14 @@ public class Main {
             props.load(in);
             in.close();
             Map<String,Object> tmp = new HashMap<String, Object>(5);
-            tmp.put("access_token", props.getProperty("access_token"));
-            tmp.put("refresh_token", props.getProperty("refresh_token"));
             tmp.put("table_id", props.getProperty("table_id"));
-            tmp.put("client_id", props.getProperty("client_id"));
-            tmp.put("client_secret", props.getProperty("client_secret"));
 
-            rc.addProperties(tmp);
+            app.tokenManager = new TokenManager(props.getProperty("client_id"),
+                                                props.getProperty("client_secret"),
+                                                props.getProperty("refresh_token"),
+                                                props.getProperty("access_token"));
+
+            app.addProperties(tmp);
         } catch (NullPointerException | IOException e) {
             log.severe("Unable to load FusionIndex config from " + fileLoc + ". Cannot continue.");
             return false;
@@ -56,15 +57,17 @@ public class Main {
     public static HttpServer startServer() {
         // create a resource config that scans for JAX-RS resources and providers
         // in org.lp20.aikuma package
-        final ResourceConfig rc = new ResourceConfig().packages("org.lp20.aikuma");
+        //final IndexServerApplication rc = new IndexServerApplication().packages("org.lp20.aikuma");
+        final IndexServerApplication app = new IndexServerApplication();
+        app.packages("org.lp20.aikuma.servers.index_server");
 
-        if (!setup(rc)) {
+        if (!setup(app)) {
             System.err.println("Fatal configuration error");
             System.exit(1);
         }
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
-        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
+        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), app);
     }
 
     /**
@@ -80,5 +83,7 @@ public class Main {
         System.in.read();
         server.shutdownNow();
     }
+
+
 }
 
