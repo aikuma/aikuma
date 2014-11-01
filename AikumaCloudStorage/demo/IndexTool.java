@@ -1,10 +1,7 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.lp20.aikuma.storage.FusionIndex;
-import org.lp20.aikuma.storage.GoogleAuth;
-import org.lp20.aikuma.storage.InvalidAccessTokenException;
-import org.lp20.aikuma.storage.Utils;
+import org.lp20.aikuma.storage.*;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -102,7 +99,7 @@ public class IndexTool {
                 index.approveItem(identifier);
             } else if ("search".equals(action)) {
                 Map<String,String> criteria = new HashMap<String, String>();
-                criteria.put("speakers", "bob");
+                criteria.put("file_type", "source");
                 index.doSearch(criteria);
 
             } else if ("create".equals(action)) {
@@ -266,8 +263,17 @@ public class IndexTool {
     }
     private void doSearch(Map<String, String> params) {
         FusionIndex fi = getFusionIndex();
-        for (String id : fi.search(params)) {
-            System.out.println(id);
+        if (false) {
+            for (String id : fi.search(params)) {
+                System.out.println(id);
+            }
+        } else {
+            fi.search(params, new Index.SearchResultProcessor() {
+                @Override
+                public void process(Map<String, String> result) {
+                    System.out.println(result);
+                }
+            });
         }
     }
 
