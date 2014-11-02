@@ -85,6 +85,7 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 			getContentResolver().delete(result.getData(), null, null);
 			
 			Intent lastIntent = new Intent(this, AddSpeakerActivity4.class);
+			lastIntent.putExtra("origin", getIntent().getExtras().getInt("origin"));
 			lastIntent.putExtra("name", name);
 			lastIntent.putParcelableArrayListExtra("languages", selectedLanguages);
 			lastIntent.putExtra("imageUUID", imageUUID.toString());

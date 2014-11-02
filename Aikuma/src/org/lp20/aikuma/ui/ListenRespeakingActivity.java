@@ -373,7 +373,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 
 	private void updateArchiveButton(QuickActionMenu quickMenu, 
 			Recording recording) {
-		if(recording.isArchived()) {
+		if(recording.isArchived() || 
+				!recording.getOwnerId().equals(AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(3, false);
 			quickMenu.setItemImageResourceAt(3, R.drawable.archive_grey);
 		} else {

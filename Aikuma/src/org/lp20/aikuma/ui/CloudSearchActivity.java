@@ -59,7 +59,11 @@ public class CloudSearchActivity extends AikumaListActivity {
 			
 	}
 	
-	
+	/**
+	 * Search the recordings using the query
+	 * 
+	 * @param searchQueryView	View having the query
+	 */
 	public void onSearchButton(EditText searchQueryView) {
 		String langQuery = searchQueryView.getText().toString();
 		String emailAccount = AikumaSettings.getCurrentUserId();

@@ -18,8 +18,12 @@
 		android:showAsAction="always"/>
 	<item android:id="@+id/start_http_server"
 	    android:title="@string/connect"/>
+	<item android:id="@+id/audio_import"
+	    android:title="@string/audio_import_label"/>
 	<item android:id="@+id/gplus_signin_menu"
 	    android:title="@string/gplus_signin_menu_label"/>
+	<item android:id="@+id/sync_refresh"
+	    android:title="@string/sync_refresh_label"/>
 	<item android:id="@+id/settings"
 		android:icon="@drawable/settings_32"
 		android:title="@string/settings"/>

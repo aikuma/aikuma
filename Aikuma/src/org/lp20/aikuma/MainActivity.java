@@ -19,7 +19,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -59,8 +61,10 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -116,6 +120,7 @@ public class MainActivity extends ListActivity {
     	Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
     	
     	AikumaSettings.setUserId(emailAccount);
+    	showUserAccount(emailAccount);
     	AikumaSettings.setUserToken(googleAuthToken);
 		AikumaSettings.isBackupEnabled = 
 				settings.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
@@ -139,7 +144,38 @@ public class MainActivity extends ListActivity {
 		// Start gathering location data
 		MainActivity.locationDetector = new LocationDetector(this);
 		
+		// Create a broadcastReceiver to receive sync-data
+		syncReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				String status = intent.getStringExtra(GoogleCloudService.SYNC_STATUS);
+				Log.i(TAG, "receive from cloud: " + status);
+				
+				if(status.equals("start")) {
+					showProgressStatus(View.VISIBLE);
+				} else if(status.equals("end")) {
+					showProgressStatus(View.GONE);
+				} else {
+					if(status.endsWith("source")) {
+						String[] splitName = status.split("-");
+						String verName = splitName[0];
+						String ownerId = splitName[2];
+						String recordingId = status.substring(4);
+						
+						try {
+							originals.add(Recording.read(verName, ownerId, recordingId));
+						} catch (IOException e) {
+							Log.e(TAG, e.getMessage());
+						}
+						adapter.notifyDataSetChanged();
+					}
+
+				}
+			}
+		};
+		
 		checkDate();
+		
 		
 		//TODO: Update existing files
 		/*
@@ -175,7 +211,7 @@ public class MainActivity extends ListActivity {
 		List<Recording> recordings = Recording.readAll();
 		Log.i(TAG, "num: " +recordings.size());
 		// Filter the recordings for originals
-		List<Recording> originals = new ArrayList<Recording>();
+		originals = new ArrayList<Recording>();
 		for (Recording recording : recordings) {
 			if (recording.isOriginal()) {
 				originals.add(recording);
@@ -195,6 +231,19 @@ public class MainActivity extends ListActivity {
 
 		MainActivity.locationDetector.start();
 		
+	}
+	
+	@Override
+	protected void onStart() {
+	    super.onStart();
+	    registerReceiver(syncReceiver, new IntentFilter(GoogleCloudService.SYNC_RESULT));
+	    showProgressStatus(View.GONE);
+	}
+
+	@Override
+	protected void onStop() {
+	    unregisterReceiver(syncReceiver);
+	    super.onStop();
 	}
 	
 	@Override
@@ -260,6 +309,26 @@ public class MainActivity extends ListActivity {
     	progressDialog.dismiss();
     }
     
+    /**
+     * Show the status of cloud-background thread
+     * @param status	(true: background-progressing, false: none)
+     */
+    private void showProgressStatus(int visibility) {
+    	ProgressBar pStatus = (ProgressBar) findViewById(R.id.cloudProgress);
+    	pStatus.setVisibility(visibility);
+    }
+    
+    /**
+     * Show the current user's ID
+     * @param userId	The user's ID
+     */
+    public void showUserAccount(String userId) {
+    	if(userId != null) {
+    		TextView userIdView = (TextView) findViewById(R.id.userIdView);
+        	userIdView.setText(userId);
+    	}
+    }
+    
 	/**
 	 * Setup the search-menu-item interface (called by MenuBehavior)
 	 * @param menu	menu object
@@ -300,8 +369,32 @@ public class MainActivity extends ListActivity {
 			}
 		});	
 	}
+	
+	/**
+	 * Sync the device with Google-Cloud
+	 */
+	public void syncRefresh() {
+		if(recordingSet.size() > 0 || speakerSet.size() > 0) {
+    		// If there are items to be uploaded,
+			// start the GoogleCloud upload service 
+    		Intent intent = new Intent(MainActivity.this, 
+    				GoogleCloudService.class);
+    		intent.putExtra("id", "retry");
+			startService(intent);
+		}
+    	
+    	if(AikumaSettings.isAutoDownloadEnabled) {
+    		Intent intent = new Intent(MainActivity.this, 
+    				GoogleCloudService.class);
+    		intent.putExtra("id", "autoDownload");
+    		startService(intent);
+    	}
+	}
+	
 
-
+	BroadcastReceiver syncReceiver;
+	private List<Recording> originals;
+	
 	SearchView searchView;
 	
 	MenuBehaviour menuBehaviour;
@@ -374,6 +467,7 @@ public class MainActivity extends ListActivity {
             			data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             	// Stores the account for next-use
             	AikumaSettings.setUserId(emailAccount);
+            	showUserAccount(emailAccount);
                 settings.edit().putString(
                 		AikumaSettings.SETTING_OWNER_ID_KEY, emailAccount).commit();
             	
@@ -532,22 +626,7 @@ public class MainActivity extends ListActivity {
         	
         	menuBehaviour.setSignInState(true);
         	
-        	if(recordingSet.size() > 0 || speakerSet.size() > 0) {
-        		// If there are items to be uploaded,
-    			// start the GoogleCloud upload service 
-        		Intent intent = new Intent(MainActivity.this, 
-        				GoogleCloudService.class);
-        		intent.putExtra("id", "retry");
-				startService(intent);
-    		}
-        	
-        	if(AikumaSettings.isAutoDownloadEnabled) {
-        		Intent intent = new Intent(MainActivity.this, 
-        				GoogleCloudService.class);
-        		intent.putExtra("id", "autoDownload");
-        		startService(intent);
-        	}
-    
+        	syncRefresh();
         }
         
         /**

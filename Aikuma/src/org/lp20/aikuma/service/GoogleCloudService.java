@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -46,6 +48,15 @@ import android.util.Log;
  * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
  */
 public class GoogleCloudService extends IntentService{
+	
+	/**
+	 * Broadcast message signature
+	 */
+	public final static String SYNC_RESULT = "org.lp20.aikuma";
+	/**
+	 * Key of data in the broadcast message
+	 */
+	public final static String SYNC_STATUS = "sync_status";
 	
 	private final static String TAG = "GoogleCloudService";
 	
@@ -95,6 +106,19 @@ public class GoogleCloudService extends IntentService{
 		Log.i(TAG, "Cloud created(recording-archive):" + archivedRecordingSet.toString());
 		Log.i(TAG, "Cloud created(speaker-approve):" + approvedSpeakerSet.toString());
 		Log.i(TAG, "Cloud created(speaker-archive):" + archivedSpeakerSet.toString());
+		
+		// schedule task
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+        	@Override
+        	public void run() {
+        		Log.i(TAG, "run by timer");
+        		
+        		backUp();
+        		autoDownloadFiles();
+        		broadcastStatus("end");
+        	}
+        }, AikumaSettings.SYNC_INTERVAL, AikumaSettings.SYNC_INTERVAL);
+        
 	}
 
 	@Override
@@ -119,6 +143,7 @@ public class GoogleCloudService extends IntentService{
 			else
 				archive(id, 1);
 		}
+		broadcastStatus("end");
 	}
 	
 	private void autoDownloadFiles() {
@@ -143,13 +168,16 @@ public class GoogleCloudService extends IntentService{
 			@Override
 			public boolean processItem(String identifier, Date date) {
 				// Classify identifiers and store them in different lists 
-				String relPath = identifier.substring(0, identifier.lastIndexOf('/')+1);
-				if(relPath.endsWith(Recording.PATH) && 
-						!identifier.endsWith("-mapping.txt")) {
-					archivedRecordingIds.add(identifier);
-				} else if(relPath.endsWith(Speaker.PATH)){
-					archivedSpeakerIds.add(identifier);
+				if(identifier.length() > 30) {
+					String relPath = identifier.substring(0, identifier.lastIndexOf('/')-12);
+					if(relPath.endsWith(Recording.PATH) && 
+							!identifier.endsWith("-mapping.txt")) {
+						archivedRecordingIds.add(identifier);
+					} else if(relPath.endsWith(Speaker.PATH)){
+						archivedSpeakerIds.add(identifier);
+					}
 				}
+				
 				return true;
 			}
 		});
@@ -176,6 +204,42 @@ public class GoogleCloudService extends IntentService{
         
         archivedRecordingIds.removeAll(recordingIds);
         archivedSpeakerIds.removeAll(speakerIds);
+        
+        // Download the filtered speaker items
+        for(String itemId : archivedSpeakerIds) {
+    		broadcastStatus("start");
+        	Log.i(TAG, "id: " + itemId);
+        	String[] buf = itemId.split("\\/");
+        	
+        	String relPath = itemId.substring(0, itemId.lastIndexOf('/'));
+        	String id = itemId.substring(itemId.lastIndexOf('/')+1);
+        	
+        	//String groupId = buf[];
+        	//File dir = new File(Speaker.getSpeakersPath(), groupId);
+        	File dir = new File(FileIO.getAppRootPath(), relPath);
+        	dir.mkdirs();
+        	
+			try {
+				// Write the speaker file
+				InputStream is = gd.load(itemId);
+	        	FileOutputStream fos = new FileOutputStream(new File(dir, id));
+	        	Utils.copyStream(is, fos, true);
+	        	
+	        	// Log that files are archived
+	        	if(buf[buf.length-1].endsWith("-metadata.json")) {
+	        		String name = buf[buf.length-1].split("\\-")[0];
+	            	archivedSpeakerSet.add(name);
+	        		prefsEditor.putStringSet(archiveSpKey, archivedSpeakerSet);
+	        		prefsEditor.commit();
+	        	}
+			} catch (FileNotFoundException e) {
+        		Log.e(TAG, e.getMessage());
+        	} catch (IOException e) {
+				Log.e(TAG, e.getMessage());
+			}
+        	
+        }
+        
         
         // Download the filtered recording items
         // itemId : path + recording-name + extension / id : recording-name + extension / name : recording-name
@@ -220,6 +284,7 @@ public class GoogleCloudService extends IntentService{
         		prefsEditor.putStringSet(archiveKey, archivedRecordingSet);
         		prefsEditor.commit();
         		
+        		broadcastStatus(itemId.substring(0, 3) + "-" + name);
         	} catch (FileNotFoundException e) {
         		Log.e(TAG, "no-found:" + e.getMessage());
         	} catch (IOException e) {
@@ -228,36 +293,6 @@ public class GoogleCloudService extends IntentService{
         	
         }   
         
-        // Download the filtered speaker items
-        for(String itemId : archivedSpeakerIds) {
-        	String[] buf = itemId.split("\\/");
-        	
-        	String relPath = itemId.substring(0, itemId.lastIndexOf('/'));
-        	String id = itemId.substring(itemId.lastIndexOf('/')+1);
-        	
-        	//String groupId = buf[];
-        	//File dir = new File(Speaker.getSpeakersPath(), groupId);
-        	File dir = new File(FileIO.getAppRootPath(), relPath);
-        	dir.mkdirs();
-        	
-			try {
-				// Write the speaker file
-				InputStream is = gd.load(itemId);
-	        	FileOutputStream fos = new FileOutputStream(new File(dir, id));
-	        	Utils.copyStream(is, fos, true);
-	        	
-	        	// Log that files are already archived
-            	String name = buf[buf.length-1].split("\\-")[0];
-            	archivedSpeakerSet.add(name);
-        		prefsEditor.putStringSet(archiveSpKey, archivedSpeakerSet);
-        		prefsEditor.commit();
-			} catch (FileNotFoundException e) {
-        		Log.e(TAG, e.getMessage());
-        	} catch (IOException e) {
-				Log.e(TAG, e.getMessage());
-			}
-        	
-        }
 	}
 	
 	
@@ -277,7 +312,7 @@ public class GoogleCloudService extends IntentService{
 		String archiveState = (requestDate + "|" + "0");
 		
 		for(Recording recording : recordings) {
-			if(!recording.isArchived()) {
+			if(!archivedRecordingSet.contains(recording.getId())) {
 				String recordingVerId = recording.getVersionName() + "-" + recording.getId();
 				approvedRecordingSet.add(recordingVerId);
 				prefsEditor.putString(recording.getId(), 
@@ -320,7 +355,8 @@ public class GoogleCloudService extends IntentService{
 			String recordingId = recordingVerId.substring(4);
 			try {
 				recording = Recording.read(versionName, ownerId, recordingId);
-				if(!recording.isArchived()) {
+				if(!archivedRecordingSet.contains(recordingId)) {
+					broadcastStatus("start");
 					// Get the current state of archiving
 					String[] requestArchiveState = 
 							preferences.getString(recordingId, "").split("\\|");
@@ -356,6 +392,7 @@ public class GoogleCloudService extends IntentService{
 			try {
 				Speaker speaker = Speaker.read(versionName, ownerId, speakerId);
 				if(!archivedSpeakerSet.contains(speakerId)) {
+					broadcastStatus("start");
 					String[] requestArchiveState = 
 							preferences.getString(speakerId, "").split("\\|");
 					String requestDate = requestArchiveState[0];
@@ -395,7 +432,7 @@ public class GoogleCloudService extends IntentService{
 				String id = verId.substring(4);
 				
 				Recording recording = Recording.read(versionName, ownerId, id);
-				if(!recording.isArchived()) {
+				if(!archivedRecordingSet.contains(id)) {
 					// Record archive-approved date
 					approvedRecordingSet.add(verId);
 					prefsEditor.putStringSet(approvalKey, approvedRecordingSet);
@@ -410,7 +447,8 @@ public class GoogleCloudService extends IntentService{
 				// Archive speakers together
 				List<String> speakerIds = recording.getSpeakersIds();
 				for(String speakerId : speakerIds) {
-					archive(speakerId, 1);
+					//Assume that recording and speaker's versions/owner are the same
+					archive(versionName + "-" + ownerId + "-" + speakerId, 1);
 				}
 			} else {
 				String[] splitName = verId.split("-");
@@ -535,7 +573,7 @@ public class GoogleCloudService extends IntentService{
 	private String uploadFile(File file, String identifier) throws IOException {
 		Data data = Data.fromFile(file);
 		if (data == null) {
-			Log.e(TAG, "Source file doesn't exist");
+			Log.e(TAG, "Source file doesn't exist(file:" + file.getName() + ", ID:" + identifier +")");
 			return null;		
 		}
 		
@@ -563,7 +601,7 @@ public class GoogleCloudService extends IntentService{
 		JSONObject jsonfile = (JSONObject) JSONValue.parse(jsonstr);
 
 		Map<String, String> metadata = new HashMap<String,String>();
-		JSONArray speakers_arr = (JSONArray) jsonfile.get("people");
+		JSONArray speakers_arr = (JSONArray) jsonfile.get("speakers");
 		String speakers = "";
 		String joiner = "";
 		for (Object obj: speakers_arr) {
@@ -579,7 +617,7 @@ public class GoogleCloudService extends IntentService{
 		}
 		//SharedPreferences preferences = 
 		//		PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		String emailAddr = preferences.getString(AikumaSettings.SETTING_OWNER_ID_KEY, null);
+		String emailAddr = recording.getOwnerId();
 		if (emailAddr == null) {
 			Log.i(TAG, "defaultGoogleAccount is null");
 			return null;
@@ -587,8 +625,8 @@ public class GoogleCloudService extends IntentService{
 		metadata.put("user_id", emailAddr);
 		metadata.put("metadata", jsonstr);
 		metadata.put("data_store_uri", uri);
-		metadata.put("item_id", (String) jsonfile.get("recording"));
-		metadata.put("file_type", (String) jsonfile.get("type"));
+		metadata.put("item_id", (String) jsonfile.get("item_id"));
+		metadata.put("file_type", (String) jsonfile.get("file_type"));
 		metadata.put("speakers", speakers);
 		metadata.put("languages", languages);
 		metadata.put("date_approved", requestDate);
@@ -605,6 +643,13 @@ public class GoogleCloudService extends IntentService{
 			Log.i(TAG, "Metadata-upload failed");
 			return null;
 		}
+	}
+	
+	// status(0: start, 1:new file download, 2:stop)
+	private void broadcastStatus(String status) {
+		Intent intent = new Intent(SYNC_RESULT);
+		intent.putExtra(SYNC_STATUS, status);    
+	    sendBroadcast(intent);
 	}
 
 }

@@ -735,14 +735,19 @@ public class Recording {
 		try {
 			indices = FileIO.readJSONObject(indexFile);
 		} catch (IOException e1) {
+			// TODO: How to deal with no index-file?
 			Log.e(TAG, "getRespeakings(): error in reading index file");
-			return respeakings;
+			indices = new JSONObject();
+			//return respeakings;
 		}
 		
 		// Collect directories where related respeakings exist form index file
 		JSONArray respkList = (JSONArray) indices.get(getId());
-		if(respkList == null)
-			return respeakings;
+		if(respkList == null) {
+			// TODO: How to deal with no index-file?
+			respkList = new JSONArray();
+			//return respeakings;
+		}
 		
 		for (int i = 0; i < respkList.size(); i++) {
 			String[] splitRespkName = ((String)respkList.get(i)).split("-");
@@ -753,7 +758,12 @@ public class Recording {
 			
 			groupDirList.add(groupDir);
 		}
-
+		// For the respeakings existing in the same folder of original
+		File currentDir = new File(getRecordingsPath(), getGroupId());
+		if(!groupDirList.contains(currentDir)) {
+			groupDirList.add(currentDir);
+		}
+		
 		// Read metadata files
 		for(File groupDir: groupDirList) {
 			
@@ -851,7 +861,8 @@ public class Recording {
 				// recordings they refer to to the recordings list
 				for (File jsonFile : groupDirFiles) {
 					try {
-						recordings.add(Recording.read(jsonFile));
+						Recording rec = Recording.read(jsonFile);
+						recordings.add(rec);
 					} catch (IOException e) {
 						// Couldn't read that recording for whateve rreason
 						// (perhaps json file wasn't formatted correctly).

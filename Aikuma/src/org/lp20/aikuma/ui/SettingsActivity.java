@@ -22,11 +22,9 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import org.lp20.aikuma.R;
-import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
-import org.lp20.aikuma.util.UsageUtils;
 
 /**
  * The mother activity for settings - hosts buttons that link to various
@@ -65,21 +63,18 @@ public class SettingsActivity extends AikumaActivity {
 		readRespeakingMode();
 		readRespeakingRewind();
 		setupSensitivitySlider();
-		setupBackupCheckBox();
+		setupSyncCheckBox();
 	}
 	
-	private void setupBackupCheckBox() {
-		CheckBox backupCheckBox = (CheckBox)
-				findViewById(R.id.backup_checkBox);
-		CheckBox autoDownloadCheckBox = (CheckBox)
-				findViewById(R.id.autoDownload_checkBox);
+	private void setupSyncCheckBox() {
+		CheckBox syncCheckBox = (CheckBox)
+				findViewById(R.id.sync_checkBox);
 		isBackupEnabled =
 				preferences.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
 		isAutoDownloadEnabled = 
 				preferences.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
-		Log.i(TAG, "backup: " + isBackupEnabled);
-		backupCheckBox.setChecked(isBackupEnabled);
-		autoDownloadCheckBox.setChecked(isAutoDownloadEnabled);
+		
+		syncCheckBox.setChecked(isBackupEnabled);
 	}
 
 	// Set the respeaking mode radio buttons as per the settings.
@@ -206,11 +201,11 @@ public class SettingsActivity extends AikumaActivity {
 	}
 	
 	/**
-	 * Adjusts the settings when the backup checkbox is pressed.
+	 * Adjusts the settings when the sync checkbox is checked.
 	 * 
 	 * @param checkBox	The checkbox 
 	 */
-	public void onBackupCheckBoxClicked(View checkBox) {
+	public void onSyncCheckBoxClicked(View checkBox) {
 		boolean checked = ((CheckBox) checkBox).isChecked();
 		Editor prefsEditor = preferences.edit();
 		Log.i(TAG, "checkbox: " + checked);
@@ -221,25 +216,6 @@ public class SettingsActivity extends AikumaActivity {
 				startService(intent);
 				isBackupEnabled = true;
 			}
-			
-			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, true);
-			prefsEditor.commit();
-		} else {
-			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
-			prefsEditor.commit();
-		}
-	}
-	
-	/**
-	 * Adjusts the settings when the auto-download checkbox is pressed.
-	 * 
-	 * @param checkBox	The checkbox 
-	 */
-	public void onDownloadCheckBoxClicked(View checkBox) {
-		boolean checked = ((CheckBox) checkBox).isChecked();
-		Editor prefsEditor = preferences.edit();
-		Log.i(TAG, "checkbox: " + checked);
-		if(checked) {
 			if(!isAutoDownloadEnabled) {
 				Intent intent = new Intent(this, GoogleCloudService.class);
 				intent.putExtra("id", "autoDownload");
@@ -247,9 +223,11 @@ public class SettingsActivity extends AikumaActivity {
 				isAutoDownloadEnabled = true;
 			}
 			
+			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, true);
 			prefsEditor.putBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, true);
 			prefsEditor.commit();
 		} else {
+			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
 			prefsEditor.putBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
 			prefsEditor.commit();
 		}

@@ -110,6 +110,7 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 	 */
 	public void onOkButtonPressed(View view) {	
 		Intent intent = new Intent(this, AddSpeakerActivity3.class);
+		intent.putExtra("origin", getIntent().getExtras().getInt("origin"));
 		intent.putExtra("name", name);
 		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		startActivity(intent);

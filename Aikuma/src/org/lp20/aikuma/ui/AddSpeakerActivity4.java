@@ -36,6 +36,7 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 		setContentView(R.layout.add_speaker4);
 		
 		Intent intent = getIntent();
+		origin = intent.getExtras().getInt("origin");
 		name = (String) intent.getExtras().getString("name");
 		selectedLanguages = intent.getParcelableArrayListExtra("languages");
 		String imageUUIDStr = intent.getExtras().getString("imageUUID");
@@ -99,8 +100,11 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 			startService(serviceIntent);
 		}
 		
-		
-		Intent intent = new Intent(this, RecordingSpeakersActivity.class);
+		Intent intent;
+		if(origin == 0)
+			intent = new Intent(this, MainSpeakersActivity.class);
+		else
+			intent = new Intent(this, RecordingSpeakersActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		startActivity(intent);
@@ -133,6 +137,7 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 	
 	private static final String TAG = "AddSpeakerActivity4";
 	
+	private int origin;	//0: MainSpeakersActivity, 1:RecordingSpeakersActivity
 	private String name;
 	private ArrayList<Language> selectedLanguages;
 	private UUID imageUUID;

@@ -78,6 +78,7 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 	 */
 	public void addSpeakerButtonPressed(View _view) {
 		Intent intent = new Intent(this, AddSpeakerActivity1.class);
+		intent.putExtra("origin", 1);
 		startActivity(intent);
 	}
 	

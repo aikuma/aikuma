@@ -19,7 +19,7 @@ public class StandardDateFormat extends SimpleDateFormat {
 	 * Constructor that specifies the date format.
 	 */
 	public StandardDateFormat() {
-		super("yyyy-MM-dd'T'HH:mm:ss.SS'Z'");
+		super("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		super.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
 	}
 }

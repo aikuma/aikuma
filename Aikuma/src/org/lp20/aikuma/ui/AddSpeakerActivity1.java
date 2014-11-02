@@ -96,6 +96,7 @@ public class AddSpeakerActivity1 extends AikumaActivity {
 		String name = textField.getText().toString();
 		
 		Intent intent = new Intent(this, AddSpeakerActivity2.class);
+		intent.putExtra("origin", getIntent().getExtras().getInt("origin"));
 		intent.putExtra("name", name);
 		startActivity(intent);
 	}

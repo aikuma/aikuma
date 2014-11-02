@@ -47,6 +47,11 @@ public class AikumaSettings {
 	public static final String SETTING_AUTH_TOKEN_KEY = "userToken";
 	
 	/**
+	 * Sync time interval (30min)
+	 */
+	public static final long SYNC_INTERVAL = 30 * 60 * 1000;
+	
+	/**
 	 *  List of keys in default SharedPreferences
 	 *  
 	 *  APPROVED_RECORDING_KEY	: A set of recording's version and IDs approved to be archived

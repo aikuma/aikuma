@@ -126,7 +126,8 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		
 		TextView speakerNameView = (TextView)
 				recordingView.findViewById(R.id.speakerNames);
-		speakerNameView.setText(sb.substring(0, sb.length()-2));
+		if(sb.length() > 2)
+			speakerNameView.setText(sb.substring(0, sb.length()-2));
 
 		// Add the comment(two way arrow icon) or movie icon
 		LinearLayout icons = (LinearLayout)

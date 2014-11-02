@@ -110,6 +110,9 @@ public class MenuBehaviour {
 				intent = new Intent(activity, HttpServerActivity.class);
 				activity.startActivity(intent);
 				return true;
+			case R.id.audio_import:
+				((MainActivity)activity).audioImport(null);
+				return true;
 			case R.id.gplus_signin_menu:
 				if(signInState) {
 					((MainActivity)activity).clearAccountToken();
@@ -117,6 +120,9 @@ public class MenuBehaviour {
 					((MainActivity)activity).getAccountToken();
 				}
 				
+				return true;
+			case R.id.sync_refresh:
+				((MainActivity)activity).syncRefresh();
 				return true;
 			default:
 				return true;
