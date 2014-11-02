@@ -108,8 +108,12 @@ public class MainActivity extends ListActivity {
 				PreferenceManager.getDefaultSharedPreferences(this);
 		
 		recordingSet = (HashSet<String>)
-				preferences.getStringSet(AikumaSettings.ARCHIVE_RECORDING_KEY, 
+				preferences.getStringSet(AikumaSettings.APPROVED_RECORDING_KEY, 
 						new HashSet<String>());
+		speakerSet = (HashSet<String>)
+				preferences.getStringSet(AikumaSettings.APPROVED_SPEAKERS_KEY,
+						new HashSet<String>());
+		
 		emailAccount = preferences.getString("defaultGoogleAccount", null);
 		googleAuthToken = preferences.getString("googleAuthToken", null);
 		googleAPIScope = getScope();
@@ -130,7 +134,7 @@ public class MainActivity extends ListActivity {
 	         		preferences).execute();
 		} else if(AikumaSettings.isBackupEnabled 
 				|| AikumaSettings.isAutoDownloadEnabled) {
-			// When backup was enabled but the user never signed-in google account
+			// When backup was enabled but the user hasn't ever signed-in google account
 			getAccountToken();
 		}
 			
@@ -242,8 +246,10 @@ public class MainActivity extends ListActivity {
 	MenuBehaviour menuBehaviour;
 	
 	private Set<String> recordingSet;
+	private Set<String> speakerSet;
+
 	private RecordingArrayAdapter adapter;
-	
+
 	/////////////////////////////////////////////////////
 	////                                   			/////
 	//// Things pertaining to getting Google token. /////
@@ -464,7 +470,7 @@ public class MainActivity extends ListActivity {
         	
         	menuBehaviour.setSignInState(true);
         	
-        	if(recordingSet.size() > 0) {
+        	if(recordingSet.size() > 0 || speakerSet.size() > 0) {
         		// If there are items to be uploaded,
     			// start the GoogleCloud upload service 
         		Intent intent = new Intent(MainActivity.this, 

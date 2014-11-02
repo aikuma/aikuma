@@ -29,15 +29,25 @@ public class AikumaSettings {
 	/**
 	 *  List of keys in default SharedPreferences
 	 *  
-	 *  ARCHIVE_RECORDING_KEY	: A set of recording IDs approved to be archived
-	 *  [archivedRecording Id]	: <Approved-date>|<archive-state>|<data-store-uri>
+	 *  APPROVED_RECORDING_KEY	: A set of recording IDs approved to be archived
+	 *  [archive-approved Recording Id]	: <Approved-date>|<archive-state>|<data-store-uri>
+	 *  ARCHIVED_RECORDING_KEY	: A set of recording IDs archived
+	 *  APPROVED_SPEAKERS_KEY	: A set of speaker IDs approved to be archived
+	 *  [archive-approved Speaker Id]	: <Approved-date>|<archive-state>
+	 *  ARCHIVED_SPEAKERS_KEY	: A set of speaker IDs archived
 	 *  GOOGLE_AUTH_TOKEN_KEY
 	 *  GOOGLE_ACCOUNT_KEY
 	 *  BACKUP_MODE_KEY			: true/false
 	 *  AUTO_DOWNLOAD_MODE_KEY  : true/false
 	 *  RESPEAKING_MODE_KEY		: "phone"/"thumb"
 	 */
-	public static final String ARCHIVE_RECORDING_KEY = "approvedRecordings";
+	public static final String APPROVED_RECORDING_KEY = "approvedRecordings";
+	/** */
+	public static final String ARCHIVED_RECORDING_KEY = "archivedRecordings";
+	/** */
+	public static final String APPROVED_SPEAKERS_KEY = "approvedSpeakers";
+	/** */
+	public static final String ARCHIVED_SPEAKERS_KEY = "archivedSpeakers";
 	/** */
 	public static final String GOOGLE_AUTH_TOKEN_KEY = "googleAuthToken";
 	/** */

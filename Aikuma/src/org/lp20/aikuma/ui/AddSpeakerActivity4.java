@@ -29,6 +29,8 @@ import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.R;
+import org.lp20.aikuma.service.GoogleCloudService;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.ImageUtils;
 
@@ -88,14 +90,24 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 	 * @param	view	The OK button.
 	 */
 	public void onOkButtonPressed(View view) {
+		Speaker newSpeaker = new Speaker(imageUUID, name, selectedLanguages);
 		try {
-			Speaker newSpeaker = new Speaker(imageUUID, name, selectedLanguages);
 			newSpeaker.write();
 		} catch (IOException e) {
 			Toast.makeText(this, 
 					"Failed to write the Speaker to file or import speaker image",
 					Toast.LENGTH_LONG).show();
 		}
+		
+		// If automatic-backup is enabled, archive this file
+		if(AikumaSettings.isBackupEnabled) {
+			Intent serviceIntent = new Intent(AddSpeakerActivity4.this, 
+					GoogleCloudService.class);
+			serviceIntent.putExtra("id", newSpeaker.getId());
+			serviceIntent.putExtra("type", "speaker");
+			startService(serviceIntent);
+		}
+		
 		
 		Intent intent = new Intent(this, RecordingSpeakersActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

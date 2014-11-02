@@ -17,6 +17,8 @@ import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.service.GoogleCloudService;
+import org.lp20.aikuma.util.AikumaSettings;
 
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
@@ -187,6 +189,15 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 								"Failed to write the Recording metadata:\t" +
 								e.getMessage(), Toast.LENGTH_LONG).show();
 						}
+						// If automatic-backup is enabled, archive this file
+						if(AikumaSettings.isBackupEnabled) {
+							Intent serviceIntent = new Intent(RecordingMetadataActivity4.this, 
+									GoogleCloudService.class);
+							serviceIntent.putExtra("id", recording.getId());
+							serviceIntent.putExtra("type", "recording");
+							startService(serviceIntent);
+						}
+						
 						startActivity(intent);
 					}
 				})
