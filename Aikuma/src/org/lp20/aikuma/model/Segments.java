@@ -33,9 +33,9 @@ public class Segments {
 		this();
 		this.respeaking = respeaking;
 		try {
-			readSegments(new File(Recording.getRecordingsPath(),
+			readSegments(new File(respeaking.getRecordingsPath(), 
 					respeaking.getGroupId() + "/" +
-					respeaking.getId() + ".map"));
+					respeaking.getId() + "-mapping.txt"));
 		} catch (IOException e) {
 			//Issue with reading mapping.
 			throw new RuntimeException(e);

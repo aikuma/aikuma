@@ -47,7 +47,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		originalListenFragment = new ListenFragment();
 		respeakingListenFragment = new ListenFragment();
 		
-		googleAuthToken = AikumaSettings.googleAuthToken;
+		googleAuthToken = AikumaSettings.getCurrentUserToken();
 	}
 	
 	private void addNewFragment(FragmentManager fm, 
@@ -75,14 +75,18 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		String respeakingId = (String)
 				intent.getExtras().get("respeakingId");
 
-		setUpOriginal(originalId);
+		String originalVerName = (String) intent.getExtras().get("originalVerName");
+		String originalOwnerId = (String) intent.getExtras().get("originalOwnerId");
+		
+		setUpOriginal(originalVerName, originalOwnerId, originalId);
 		setUpRespeaking(respeakingId);
 	}
 	
 	// Prepares the selected original
-	private void setUpOriginal(String originalId) {
+	private void setUpOriginal(String versionName, 
+			String ownerId, String originalId) {
 		try {
-			original = Recording.read(originalId);
+			original = Recording.read(versionName, ownerId, originalId);
 			originalQuickMenu = new QuickActionMenu(this);
 			setUpQuickMenu(originalQuickMenu, original);
 			List<Recording> originalBox = new ArrayList<Recording>();
@@ -105,8 +109,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	// Prepares the selected respeaking
 	private void setUpRespeaking(String respeakingId) {
 		List<Recording> respeakings = original.getRespeakings();
+
 		for(Recording buf : respeakings) {
-			
 			if(buf.getId().equals(respeakingId)) {
 				respeaking = buf;
 				break;
@@ -270,7 +274,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	 */
 	public void onStarButtonPressed(Recording recording) {
 		try {
-			recording.star();
+			recording.star(AikumaSettings.getLatestVersion(), 
+					AikumaSettings.getCurrentUserId());
 		} catch (IOException e) {
 			// This isn't thrown if the file already exists (rather, if the
 			// file cannot be made for other reasons, so it's probably a
@@ -289,7 +294,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	 */
 	public void onFlagButtonPressed(Recording recording) {
 		try {
-			recording.flag();
+			recording.flag(AikumaSettings.getLatestVersion(), 
+					AikumaSettings.getCurrentUserId());
 		} catch (IOException e) {
 			// This isn't thrown if the file already exists (rather, if the
 			// file cannot be made for other reasons, so it's probably a
@@ -321,7 +327,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	 */
 	public void onArchiveButtonPressed(Recording recording) {
 		Intent intent = new Intent(this, GoogleCloudService.class);
-		intent.putExtra("id", recording.getId());
+		intent.putExtra("id", recording.getVersionName() + "-" + recording.getId());
 		intent.putExtra("type", "recording");
 		startService(intent);
 	}
@@ -343,7 +349,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	
 	private void updateStarButton(QuickActionMenu quickMenu, 
 			Recording recording) {
-		if(recording.isStarredByThisPhone()) {
+		if(recording.isStarredByThisPhone(AikumaSettings.getLatestVersion(), 
+				AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(0, false);
 			quickMenu.setItemImageResourceAt(0, R.drawable.star_grey);
 		} else {
@@ -354,7 +361,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	
 	private void updateFlagButton(QuickActionMenu quickMenu, 
 			Recording recording) {
-		if(recording.isFlaggedByThisPhone()) {
+		if(recording.isFlaggedByThisPhone(AikumaSettings.getLatestVersion(), 
+				AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(1, false);
 			quickMenu.setItemImageResourceAt(1, R.drawable.flag_grey);
 		} else {

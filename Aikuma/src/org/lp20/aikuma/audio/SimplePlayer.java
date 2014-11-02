@@ -201,7 +201,10 @@ public class SimplePlayer extends Player implements Sampler {
 	 * directory.
 	 */
 	private void incrementViewCount() throws IOException {
-		File viewDir = new File(FileIO.getAppRootPath(), "views/" +
+		String versionName = recording.getVersionName();
+		String ownerId = recording.getOwnerId();
+		File viewDir = new File(FileIO.getOwnerPath(versionName, ownerId), 
+				"views/" +
 				recording.getGroupId() + "/" + recording.getId());
 		viewDir.mkdirs();
 

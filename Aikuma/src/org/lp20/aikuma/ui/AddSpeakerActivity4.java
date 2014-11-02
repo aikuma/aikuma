@@ -4,29 +4,18 @@
 */
 package org.lp20.aikuma.ui;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import org.lp20.aikuma.model.Language;
-import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.service.GoogleCloudService;
@@ -90,7 +79,8 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 	 * @param	view	The OK button.
 	 */
 	public void onOkButtonPressed(View view) {
-		Speaker newSpeaker = new Speaker(imageUUID, name, selectedLanguages);
+		Speaker newSpeaker = new Speaker(imageUUID, name, selectedLanguages, 
+				AikumaSettings.getLatestVersion(), AikumaSettings.getCurrentUserId());
 		try {
 			newSpeaker.write();
 		} catch (IOException e) {
@@ -103,7 +93,8 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 		if(AikumaSettings.isBackupEnabled) {
 			Intent serviceIntent = new Intent(AddSpeakerActivity4.this, 
 					GoogleCloudService.class);
-			serviceIntent.putExtra("id", newSpeaker.getId());
+			String verId = newSpeaker.getVersionName() + "-" + newSpeaker.getOwnerId() + "-" + newSpeaker.getId();
+			serviceIntent.putExtra("id", verId);
 			serviceIntent.putExtra("type", "speaker");
 			startService(serviceIntent);
 		}

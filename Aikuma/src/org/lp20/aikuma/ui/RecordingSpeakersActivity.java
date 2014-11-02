@@ -44,7 +44,6 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 		
 		selectedSpeakers = new ArrayList<Speaker>();
 
-		Toast.makeText(this, "onCreate", Toast.LENGTH_LONG).show();
 	}
 
 	@Override

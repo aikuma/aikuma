@@ -48,12 +48,15 @@ public class ThumbRespeakActivity extends AikumaActivity {
 	// Creates an appropriate ThumbRespeaker for this activity.
 	private void setUpThumbRespeaker() {
 		Intent intent = getIntent();
-		sourceId = (String)
-				intent.getExtras().get("sourceId");
+		sourceId = (String) intent.getExtras().get("sourceId");
 		int rewindAmount = intent.getExtras().getInt("rewindAmount");
+		ownerId = (String) intent.getExtras().get("ownerId");
+		versionName = (String) intent.getExtras().get("versionName");
+		
 		respeakingUUID = UUID.randomUUID();
+		
 		try {
-			recording = Recording.read(sourceId);
+			recording = Recording.read(versionName, ownerId, sourceId);
 			respeaker = new ThumbRespeaker(recording, respeakingUUID, rewindAmount);
 		} catch (IOException e) {
 			ThumbRespeakActivity.this.finish();
@@ -72,7 +75,8 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		Intent intent = new Intent(this, RecordingMetadataActivity1.class);
 		intent.putExtra("uuidString", respeakingUUID.toString());
 		intent.putExtra("sampleRate", recording.getSampleRate());
-		intent.putExtra("sourceId", recording.getId());
+		intent.putExtra("sourceVerId", 
+				recording.getVersionName() + "-" + recording.getId());
 		intent.putExtra("groupId",
 				Recording.getGroupIdFromId(sourceId));
 		intent.putExtra("durationMsec", respeaker.getCurrentMsec());
@@ -96,6 +100,8 @@ public class ThumbRespeakActivity extends AikumaActivity {
 	private ThumbRespeakFragment fragment;
 	private ThumbRespeaker respeaker;
 	private String sourceId;
+	private String ownerId;
+	private String versionName;
 	private UUID respeakingUUID;
 	private Recording recording;
 	private long sampleRate;

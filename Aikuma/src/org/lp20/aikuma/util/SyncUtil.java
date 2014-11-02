@@ -81,22 +81,22 @@ public class SyncUtil {
 						Client client = new Client();
 						client.setClientBaseDir(
 								FileIO.getAppRootPath().toString());
-						Log.i("sync", "beginning sync run");
+						Log.i(TAG, "beginning sync run");
 						if (!client.login(serverCredentials.getIPAddress(),
 								serverCredentials.getUsername(),
 								serverCredentials.getPassword())) {
 							unsetSyncFlag(previousStatus + 
 									"\nAuthentication failed.\n(Check IP/UserID/Password/FTP-setup)\n");
-							Log.i("sync", "login failed: " +
+							Log.i(TAG, "login failed: " +
 									serverCredentials.getIPAddress());
 						} else if (!client.sync()) {
-							Log.i("sync", "sync failed.");
+							Log.i(TAG, "sync failed.");
 							unsetSyncFlag(previousStatus + "\nTransfer failed\n");
 						} else if (!client.logout()) {
-							Log.i("sync", "Logout failed.");
+							Log.i(TAG, "Logout failed.");
 							unsetSyncFlag("Logout failed.");
 						} else {
-							Log.i("sync", "sync complete.");
+							Log.i(TAG, "sync complete.");
 							// Log the success-date in credential file
 							serverCredentials.setLastSyncDate(
 									new StandardDateFormat().format(new Date()));
@@ -104,11 +104,11 @@ public class SyncUtil {
 							
 							unsetSyncFlag("Sync was finished successfully");
 						}
-						Log.i("sync", "end of conditional block");
+						Log.i(TAG, "end of conditional block");
 						waitMins = 1;
-						Log.i("sync", "sync complete");
+						Log.i(TAG, "sync complete");
 					} else {
-						Log.i("sync", "not syncing");
+						Log.i(TAG, "not syncing");
 					}
 				} catch (IOException e) {
 					Log.i("npe", "ioexception on serverCredentials.read()");
@@ -176,7 +176,7 @@ public class SyncUtil {
 		try {
 			serverCredentials.write();
 		} catch (IllegalArgumentException e) {
-			Log.e("sync", e.getMessage());
+			Log.e(TAG, e.getMessage());
 		}
 	}	
 	
@@ -186,4 +186,7 @@ public class SyncUtil {
 	private static boolean syncing;
 	
 	private static String previousStatus;
+
+	private static final String TAG = "SyncUtil";
+
 }

@@ -58,7 +58,7 @@ public class ListenActivity extends AikumaActivity {
 		videoView = (VideoView) findViewById(R.id.videoView);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
-		googleAuthToken = AikumaSettings.googleAuthToken;
+		googleAuthToken = AikumaSettings.getCurrentUserToken();
 
 		setUpRecording();
 		setUpRespeakings();
@@ -87,6 +87,10 @@ public class ListenActivity extends AikumaActivity {
 		super.onResume();
 		updateStarButton();
 		updateFlagButton();
+		if(googleAuthToken != null) {
+			updateArchiveButton();
+		}
+		
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
 				WindowManager.LayoutParams params = getWindow().getAttributes();
@@ -116,6 +120,7 @@ public class ListenActivity extends AikumaActivity {
 	@Override
 	public void onStop() {
 		super.onStop();
+		
 		if(player != null) {
 			player.release();
 		}
@@ -124,10 +129,12 @@ public class ListenActivity extends AikumaActivity {
 	// Prepares the original recording 
 	private void setUpRecording() {
 		Intent intent = getIntent();
-		String id = (String)
-				intent.getExtras().get("id");
+		String id = (String) intent.getExtras().get("id");
+		versionName = (String) intent.getExtras().get("versionName");
+		ownerId = (String) intent.getExtras().get("ownerId");
 		try {
-			recording = Recording.read(id);
+			recording = Recording.read(versionName, ownerId, id);
+			
 			setUpQuickMenu();
 			List<Recording> original = new ArrayList<Recording>();
 			original.add(recording);
@@ -167,7 +174,11 @@ public class ListenActivity extends AikumaActivity {
 					Intent intent = new Intent(ListenActivity.this, 
 							ListenRespeakingActivity.class);
 					intent.putExtra("originalId", recording.getId());
+					intent.putExtra("originalOwnerId", ownerId);
+					intent.putExtra("originalVerName", versionName);
+					
 					intent.putExtra("respeakingId", respeaking.getId());
+
 					startActivity(intent);
 				}
 			});
@@ -307,21 +318,11 @@ public class ListenActivity extends AikumaActivity {
 			intent = new Intent(this, ThumbRespeakActivity.class);
 		}
 		intent.putExtra("sourceId", recording.getId());
+		intent.putExtra("ownerId", ownerId);
+		intent.putExtra("versionName", versionName);
 		intent.putExtra("sampleRate", recording.getSampleRate());
 		intent.putExtra("rewindAmount", rewindAmount);
 		
-		startActivity(intent);
-	}
-
-	/**
-	 * Change to the phone respeaking activity
-	 *
-	 * @param	view	The phone respeaking button
-	 */
-	public void onPhoneRespeakingButton(View view) {
-		Intent intent = new Intent(this, PhoneRespeakActivity.class);
-		intent.putExtra("sourceId", recording.getId());
-		intent.putExtra("sampleRate", recording.getSampleRate());
 		startActivity(intent);
 	}
 
@@ -332,7 +333,8 @@ public class ListenActivity extends AikumaActivity {
 	 */
 	public void onStarButtonPressed(View view) {
 		try {
-			recording.star();
+			recording.star(AikumaSettings.getLatestVersion(), 
+					AikumaSettings.getCurrentUserId());
 		} catch (IOException e) {
 			// This isn't thrown if the file already exists (rather, if the
 			// file cannot be made for other reasons, so it's probably a
@@ -351,7 +353,8 @@ public class ListenActivity extends AikumaActivity {
 	 */
 	public void onFlagButtonPressed(View view) {
 		try {
-			recording.flag();
+			recording.flag(AikumaSettings.getLatestVersion(), 
+					AikumaSettings.getCurrentUserId());
 		} catch (IOException e) {
 			// This isn't thrown if the file already exists (rather, if the
 			// file cannot be made for other reasons, so it's probably a
@@ -383,13 +386,14 @@ public class ListenActivity extends AikumaActivity {
 	 */
 	public void onArchiveButtonPressed(View view) {
 		Intent intent = new Intent(this, GoogleCloudService.class);
-		intent.putExtra("id", recording.getId());
+		intent.putExtra("id", recording.getVersionName() + "-" + recording.getId());
 		intent.putExtra("type", "recording");
 		startService(intent);
 	}
 	
 	private void updateStarButton() {
-		if(recording.isStarredByThisPhone()) {
+		if(recording.isStarredByThisPhone(AikumaSettings.getLatestVersion(), 
+				AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(0, false);
 			quickMenu.setItemImageResourceAt(0, R.drawable.star_grey);
 		} else {
@@ -399,7 +403,8 @@ public class ListenActivity extends AikumaActivity {
 	}
 	
 	private void updateFlagButton() {
-		if(recording.isFlaggedByThisPhone()) {
+		if(recording.isFlaggedByThisPhone(AikumaSettings.getLatestVersion(), 
+				AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(1, false);
 			quickMenu.setItemImageResourceAt(1, R.drawable.flag_grey);
 		} else {
@@ -443,6 +448,8 @@ public class ListenActivity extends AikumaActivity {
 	private ListenFragment fragment;
 	private VideoView videoView;
 	private Recording recording;
+	private String ownerId;
+	private String versionName;
 	private MenuBehaviour menuBehaviour;
 	private SimpleDateFormat simpleDateFormat;
 	private ProximityDetector proximityDetector;

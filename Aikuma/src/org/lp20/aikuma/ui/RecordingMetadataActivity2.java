@@ -39,8 +39,8 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 		durationMsec = (Integer) intent.getExtras().get("durationMsec");
 		groupId = (String)
 				intent.getExtras().get("groupId");
-		sourceId = (String)
-				intent.getExtras().get("sourceId");
+		sourceVerId = (String)
+				intent.getExtras().get("sourceVerId");
 		numChannels = (Integer) intent.getExtras().get("numChannels");
 		bitsPerSample = (Integer) intent.getExtras().get("bitsPerSample");
 		latitude = (Double) intent.getExtras().get("latitude");
@@ -95,8 +95,8 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 			intent.putExtra("longitude", longitude);
 		}
 		
-		if(sourceId != null)
-			intent.putExtra("sourceId", sourceId);
+		if(sourceVerId != null)
+			intent.putExtra("sourceVerId", sourceVerId);
 		if(groupId != null)
 			intent.putExtra("groupId", groupId);
 		
@@ -150,7 +150,7 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 	private EditText nameField;
 	private ImageButton okButton;
 	private boolean recordingHasName;
-	private String sourceId;
+	private String sourceVerId;
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;

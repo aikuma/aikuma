@@ -54,8 +54,8 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 		durationMsec = (Integer) intent.getExtras().get("durationMsec");
 		groupId = (String)
 				intent.getExtras().get("groupId");
-		sourceId = (String)
-				intent.getExtras().get("sourceId");
+		sourceVerId = (String)
+				intent.getExtras().get("sourceVerId");
 		numChannels = (Integer) intent.getExtras().get("numChannels");
 		bitsPerSample = (Integer) intent.getExtras().get("bitsPerSample");
 		latitude = (Double) intent.getExtras().get("latitude");
@@ -123,7 +123,8 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 			
 			Speaker speaker = null;
 			try {
-				speaker = Speaker.read(speakerId);
+				speaker = Speaker.read(AikumaSettings.getLatestVersion(), 
+						AikumaSettings.getCurrentUserId(), speakerId);
 				speakerImage.setImageBitmap(speaker.getSmallImage());
 			} catch (IOException e) {
 				Log.e(TAG, e.getMessage() + ": " + speakerId);
@@ -176,8 +177,11 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 						Log.i("duration", "when recording created: " + durationMsec);
 
 						Recording recording = new Recording(
-								uuid, description, date, selectedLanguages,
-								speakersIds, androidID, groupId, sourceId,
+								uuid, description, date, 
+								AikumaSettings.getLatestVersion(), 
+								AikumaSettings.getCurrentUserId(),
+								selectedLanguages, 
+								speakersIds, androidID, groupId, sourceVerId,
 								sampleRate, durationMsec, format, numChannels,
 								bitsPerSample, latitude, longitude);
 						try {
@@ -193,7 +197,7 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 						if(AikumaSettings.isBackupEnabled) {
 							Intent serviceIntent = new Intent(RecordingMetadataActivity4.this, 
 									GoogleCloudService.class);
-							serviceIntent.putExtra("id", recording.getId());
+							serviceIntent.putExtra("id", recording.getVersionName() + "-" + recording.getId());
 							serviceIntent.putExtra("type", "recording");
 							startService(serviceIntent);
 						}
@@ -216,7 +220,7 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 	private long sampleRate;
 	private int durationMsec;
 	private String groupId;
-	private String sourceId;
+	private String sourceVerId;
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;

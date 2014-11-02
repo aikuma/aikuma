@@ -57,11 +57,13 @@ public class PhoneRespeakActivity extends AikumaActivity {
 	private void setUpPhoneRespeaker() {
 		Intent intent = getIntent();
 		sourceId = (String) intent.getExtras().get("sourceId");
+		ownerId = (String) intent.getExtras().get("ownerId");
+		versionName = (String) intent.getExtras().get("versionName");
 		sampleRate = (Long) intent.getExtras().get("sampleRate");
 		int rewindAmount = intent.getExtras().getInt("rewindAmount");
 		respeakingUUID = UUID.randomUUID();
 		try {
-			originalRecording = Recording.read(sourceId);
+			originalRecording = Recording.read(versionName, ownerId, sourceId);
 			//The threshold speech analyzer here should be automatically
 			//detected using Florian's method.
 			respeaker = new PhoneRespeaker(originalRecording, respeakingUUID,
@@ -114,7 +116,8 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		Intent intent = new Intent(this, RecordingMetadataActivity1.class);
 		intent.putExtra("uuidString", respeakingUUID.toString());
 		intent.putExtra("sampleRate", originalRecording.getSampleRate());
-		intent.putExtra("sourceId", originalRecording.getId());
+		intent.putExtra("sourceVerId", 
+				originalRecording.getVersionName() + "-" + originalRecording.getId());
 		intent.putExtra("groupId",
 				Recording.getGroupIdFromId(sourceId));
 		intent.putExtra("durationMsec", respeaker.getCurrentMsec());
@@ -165,6 +168,8 @@ public class PhoneRespeakActivity extends AikumaActivity {
 	private PhoneRespeakFragment fragment;
 	private PhoneRespeaker respeaker;
 	private String sourceId;
+	private String ownerId;
+	private String versionName;
 	private UUID respeakingUUID;
 	private Recording originalRecording;
 	private long sampleRate;

@@ -9,6 +9,7 @@ import android.os.Parcelable;
 import android.os.Parcel;
 import android.util.Log;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.IdUtils;
 import org.lp20.aikuma.util.ImageUtils;
@@ -33,6 +35,9 @@ import org.lp20.aikuma.util.ImageUtils;
  */
 public class Speaker implements Parcelable{
 
+	// String tag for debugging
+	private static final String TAG = "Speaker";
+	
 	/**
 	 * The constructor used when first creating a Speaker.
 	 *
@@ -44,12 +49,17 @@ public class Speaker implements Parcelable{
 	 * image files
 	 * @param	name	The name of the speaker
 	 * @param	languages	A list of languages of the speaker.
+	 * @param	versionName	The speaker-metadata's version(v0x)
+	 * @param	ownerId	The speaker owner's ID(Google account)
 	 */
-	public Speaker(UUID imageUUID, String name, List<Language> languages) {
+	public Speaker(UUID imageUUID, String name, List<Language> languages,
+			String versionName, String ownerId) {
 		this.imageUUID = imageUUID;
 		setName(name);
 		setId(createId(name));
 		setLanguages(languages);
+		setVersionName(versionName);
+		setOwnerId(ownerId);
 	}
 
 	private void importImage(UUID imageUUID) throws IOException {
@@ -72,15 +82,28 @@ public class Speaker implements Parcelable{
 	 * @param	name	The name of the speaker
 	 * @param	languages	A list of languages of the speaker.
 	 * @param	id	The 8+ char string identifier of the speaker.
+	 * @param versionName	Current aikuma's version
+	 * @param ownerId		Current user's ID
 	 */
-	public Speaker(String name, List<Language> languages, String id) {
+	public Speaker(String name, List<Language> languages, String id,
+			String versionName, String ownerId) {
 		setName(name);
 		setLanguages(languages);
 		setId(id);
+		setVersionName(versionName);
+		setOwnerId(ownerId);
 	}
 
 	public String getId() {
 		return this.id;
+	}
+	
+	public String getOwnerId() {
+		return ownerId;
+	}
+	
+	public String getVersionName() {
+		return versionName;
 	}
 
 	/**
@@ -139,7 +162,7 @@ public class Speaker implements Parcelable{
 	public File getMetadataFile() {
 		return new File(getSpeakersPath(), getId() + "/" + getId() + "-metadata.json");
 	}
-	
+
 	/**
 	 * Returns a identifier used in cloud-storage
 	 * @param option	0: image, 1: small-image, 2: metadata
@@ -157,7 +180,11 @@ public class Speaker implements Parcelable{
 		else
 			suffix = "-metadata.json";
 		
-		return (PATH + getId() + "/" + getId() + suffix);
+		String ownerIdDirName = IdUtils.getOwnerDirName(ownerId);
+		String ownerDirStr = (versionName + "/" + 
+				ownerIdDirName.substring(0, 1) + "/" + 
+				ownerIdDirName.substring(0, 2) + "/" + ownerId + "/");
+		return (ownerDirStr + PATH + getId() + "/" + getId() + suffix);
 	}
 	
 	/**
@@ -183,13 +210,17 @@ public class Speaker implements Parcelable{
 	/**
 	 * Gets the small version of the Speaker's image.
 	 *
+	 * @param	verName		The version name of the recording
+	 * @param	ownerAccount OwnerID of the recording
 	 * @param	speakerId	The ID of the speaker whose image is to be fetched.
 	 * @return	A Bitmap object.
 	 * @throws	IOException	If the image cannot be retrieved.
 	 */
-	public static Bitmap getSmallImage(String speakerId) throws IOException {
+	public static Bitmap getSmallImage(String verName, String ownerAccount,
+			String speakerId) throws IOException {
+		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
 		return ImageUtils.retrieveFromFile(
-				new File(getSpeakersPath(),
+				new File(getSpeakersPath(ownerDir),
 						speakerId + "/" + speakerId + "-image-small.jpg"));
 	}
 
@@ -204,6 +235,8 @@ public class Speaker implements Parcelable{
 		encodedSpeaker.put("name", this.name);
 		encodedSpeaker.put("id", this.id);
 		encodedSpeaker.put("languages", Language.encodeList(languages));
+		encodedSpeaker.put("version", this.versionName);
+		encodedSpeaker.put("user_id", this.ownerId);
 		return encodedSpeaker;
 	}
 
@@ -257,27 +290,34 @@ public class Speaker implements Parcelable{
 	/**
 	 * Read a Speaker from the file containing the JSON describing the speaker
 	 *
+	 * @param verName	The speaker-data's version
+	 * @param ownerAccount	Account ID of the speaker's owner
 	 * @param	id	The ID of the speaker.
 	 * @return	A Speaker object corresponding to the given speaker ID.
 	 * @throws	IOException	If the speaker metadata cannot be read from file.
 	 */
-	public static Speaker read(String id) throws IOException {
+	public static Speaker read(String verName, String ownerAccount, 
+			String id) throws IOException {
+		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
+		
 		JSONObject jsonObj = FileIO.readJSONObject(
-				new File(getSpeakersPath(), id + "/" + id + "-metadata.json"));
+				new File(getSpeakersPath(ownerDir), id + "/" + id + "-metadata.json"));
 		String name = (String) jsonObj.get("name");
 		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
 		if (languageArray == null) {
 			throw new IOException("Null languages in the JSON file.");
 		}
 		List<Language> languages = Language.decodeJSONArray(languageArray);
-		return new Speaker(name, languages, id);
+		String versionName = (String) jsonObj.get("version");
+		String ownerId = (String) jsonObj.get("user_id");
+		return new Speaker(name, languages, id, versionName, ownerId);
 	}
 
 	/**
 	 * Read all users from file
 	 *
 	 * @return	A list of the users found in the users directory.
-	 */
+	 *//*
 	public static List<Speaker> readAll() {
 		// Get the user data from the metadata.json files.
 		List<Speaker> speakers = new ArrayList<Speaker>();
@@ -299,8 +339,63 @@ public class Speaker implements Parcelable{
 			}
 		}
 		return speakers;
+	}*/
+	
+	/**
+	 * Read all speakers from file
+	 *
+	 * @return	A list of all the speakers in the Aikuma directory.
+	 */
+	public static List<Speaker> readAll() {
+		String ownerId = AikumaSettings.getCurrentUserId();
+		List<Speaker> speakers = new ArrayList<Speaker>();
+
+		// Get a list of version directories
+		File[] versionDirs = 
+				FileIO.getAppRootPath().listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String filename) {
+				return filename.startsWith("v") && filename.substring(1).matches("\\d+");
+			}	
+		});
+
+		for(File f1 : versionDirs) {
+			File[] firstHashDirs = f1.listFiles();
+			for(File f2 : firstHashDirs) {
+				File[] secondHashDirs = f2.listFiles();
+				for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f3.listFiles();
+					for(File f : ownerIdDirs) {
+						Log.i(TAG, "readAll: " + f.getPath());
+						
+						if(f.getName().equals(ownerId))
+							addSpeakersInDir(speakers, f, f1.getName(), ownerId);
+					}
+				}
+			}
+		}
+
+		return speakers;
 	}
 
+	private static void addSpeakersInDir(List<Speaker> speakers, File dir, 
+			String verName, String ownerAccount) {
+		// Constructs a list of directories in the speakers directory.
+		List<String> speakerIDs = Arrays.asList(getSpeakersPath(dir).list());
+		
+		for (String speakerID : speakerIDs) {
+			try {
+				speakers.add(Speaker.read(verName, ownerAccount, speakerID));
+			} catch (IOException e) {
+				// Couldn't read that user for whatever reason (perhaps JSON
+				// file wasn't formatted correctly). Lets just ignore that user.
+				Log.e(TAG, "read exception: " + speakerID);
+			}
+		}
+		
+	}
+	
+	
 	/**
 	 * Compares the given object with the Speaker, and returns true if the
 	 * Speaker ID, name and languages are equal.
@@ -331,18 +426,32 @@ public class Speaker implements Parcelable{
 				getLanguages().toString();
 		return s;
 	}
-
-	/**
-	 * Get the directory where the Speaker data is stored.
-	 *
-	 * @return	A file representing the path of the Speakers directory.
-	 */
-	 public static File getSpeakersPath() {
-	 	File path = new File(FileIO.getAppRootPath(), PATH);
+	 
+	 /**
+	  * Get the application's speakers directory
+	  * 
+	  * @param ownerDir	A File representing the path of owner's directory
+	  * @return	A File representing the path of the recordings directory
+	  */
+	 public static File getSpeakersPath(File ownerDir) {
+		File path = new File(ownerDir, PATH);
 		path.mkdirs();
 		return path;
 	 }
 
+	 /**
+	  * Get the speaker owner's directory
+	  * 
+	  * @return	A file representing the path of the speaker owner's dir
+	  */
+	 private File getSpeakersPath() {
+			File path = new File(
+					FileIO.getOwnerPath(versionName, ownerId), PATH);
+			path.mkdirs();
+			return path;
+	 }
+	
+		
 	private void setId(String id) {
 		Log.i("setId", "set Id: " + id);
 		this.id = id;
@@ -371,6 +480,16 @@ public class Speaker implements Parcelable{
 		}
 		this.languages = languages;
 	}
+	
+	// Sets the versionName(v0x)
+	private void setVersionName(String versionName) {
+		this.versionName = versionName;
+	}
+		
+	// Sets the ownerId(Google account)
+	private void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
+	}
 
 	@Override
 	public int describeContents() {
@@ -388,6 +507,8 @@ public class Speaker implements Parcelable{
 		out.writeString(id.toString());
 		out.writeString(name);
 		out.writeTypedList(languages);
+		out.writeString(versionName);
+		out.writeString(ownerId);
 	}
 
 	/**
@@ -414,12 +535,14 @@ public class Speaker implements Parcelable{
 		List<Language> languages = new ArrayList<Language>();
 		in.readTypedList(languages, Language.CREATOR);
 		setLanguages(languages);
+		setVersionName(in.readString());
+		setOwnerId(in.readString());
 	}
 
 	// Creates a purely numeric speaker ID
 	private String createId(String name) {
-		// Generate 8 random digits.
-		return IdUtils.randomDigitString(8);
+		// Generate 12 random uppercase alphabets.
+		return IdUtils.sampleFromAlphabet(12, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 	}
 
 	// Extracts the first character of each token in a string and uppercases, but
@@ -451,6 +574,16 @@ public class Speaker implements Parcelable{
 	 */
 	private String name;
 
+	/**
+	 * The speaker's format version
+	 */
+	private String versionName;
+	
+	/**
+	 * The speaker's owner ID
+	 */
+	private String ownerId;
+	
 	/**
 	 * The languages of the Speaker.
 	 */

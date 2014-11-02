@@ -4,7 +4,6 @@
 */
 package org.lp20.aikuma;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -19,7 +18,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.util.Log;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -37,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -53,12 +52,13 @@ import org.lp20.aikuma.ui.RecordingMetadataActivity1;
 import org.lp20.aikuma.ui.sensors.LocationDetector;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.SyncUtil;
+import org.lp20.aikuma.util.UpdateUtils;
 
 // For audio imports
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
-import android.app.SearchManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -67,14 +67,9 @@ import android.preference.PreferenceManager;
 import android.widget.Toast;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.lp20.aikuma.R;
-import org.lp20.aikuma.model.Recording;
-import org.lp20.aikuma.model.WaveFile;
 
 /**
  * The primary activity that lists existing recordings and allows you to select
@@ -104,34 +99,37 @@ public class MainActivity extends ListActivity {
 		actionBar.setDisplayShowTitleEnabled(false);
 		
 		// Load setting values
-		SharedPreferences preferences = 
+		SharedPreferences settings = 
 				PreferenceManager.getDefaultSharedPreferences(this);
+//		settings.edit().clear().commit();
 		
 		recordingSet = (HashSet<String>)
-				preferences.getStringSet(AikumaSettings.APPROVED_RECORDING_KEY, 
+				settings.getStringSet(AikumaSettings.APPROVED_RECORDING_KEY, 
 						new HashSet<String>());
 		speakerSet = (HashSet<String>)
-				preferences.getStringSet(AikumaSettings.APPROVED_SPEAKERS_KEY,
+				settings.getStringSet(AikumaSettings.APPROVED_SPEAKERS_KEY,
 						new HashSet<String>());
 		
-		emailAccount = preferences.getString("defaultGoogleAccount", null);
-		googleAuthToken = preferences.getString("googleAuthToken", null);
+		emailAccount = settings.getString(AikumaSettings.SETTING_OWNER_ID_KEY, null);
+		googleAuthToken = settings.getString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, null);
 		googleAPIScope = getScope();
     	Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
     	
-    	AikumaSettings.googleAuthToken = googleAuthToken;
+    	AikumaSettings.setUserId(emailAccount);
+    	AikumaSettings.setUserToken(googleAuthToken);
 		AikumaSettings.isBackupEnabled = 
-				preferences.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
+				settings.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
 		AikumaSettings.isAutoDownloadEnabled =
-				preferences.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
+				settings.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
 		
 		Log.i(TAG, recordingSet.toString());
 	
+		// Automatic validation
 		if(emailAccount != null) {
 			// Validate access token
 			// (And if there are items to be archived, upload them)
 			new GetTokenTask(emailAccount, googleAPIScope, 
-	         		preferences).execute();
+	         		settings).execute();
 		} else if(AikumaSettings.isBackupEnabled 
 				|| AikumaSettings.isAutoDownloadEnabled) {
 			// When backup was enabled but the user hasn't ever signed-in google account
@@ -140,6 +138,17 @@ public class MainActivity extends ListActivity {
 			
 		// Start gathering location data
 		MainActivity.locationDetector = new LocationDetector(this);
+		
+		checkDate();
+		
+		//TODO: Update existing files
+		/*
+		String appVersionName = 
+				settings.getString(AikumaSettings.SETTING_VERSION_KEY, "");
+		if(!appVersionName.equals(AikumaSettings.getLatestVersion())) {
+			// Update the file structure and metadata
+			new UpdateUtils(this).update();
+		} */
 	}
 
 	@Override
@@ -161,9 +170,10 @@ public class MainActivity extends ListActivity {
 
 	@Override
 	public void onResume() {
-		super.onResume();
+		super.onResume();	
+		
 		List<Recording> recordings = Recording.readAll();
-
+		Log.i(TAG, "num: " +recordings.size());
 		// Filter the recordings for originals
 		List<Recording> originals = new ArrayList<Recording>();
 		for (Recording recording : recordings) {
@@ -171,6 +181,7 @@ public class MainActivity extends ListActivity {
 				originals.add(recording);
 			}
 		}
+		Log.i(TAG, "original num: " + originals.size());
 
 		adapter = new RecordingArrayAdapter(this, originals);
 		/*
@@ -183,6 +194,7 @@ public class MainActivity extends ListActivity {
 		}
 
 		MainActivity.locationDetector.start();
+		
 	}
 	
 	@Override
@@ -194,11 +206,60 @@ public class MainActivity extends ListActivity {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Recording recording = (Recording) getListAdapter().getItem(position);
+		if(emailAccount == null) {
+			new AlertDialog.Builder(this)
+				.setMessage("You need to select your account")
+				.show();
+				return;
+		}
+		
 		Intent intent = new Intent(this, ListenActivity.class);
 		intent.putExtra("id", recording.getId());
+		intent.putExtra("ownerId", recording.getOwnerId());
+		intent.putExtra("versionName", recording.getVersionName());
+
 		startActivity(intent);
 	}
 	
+	// If current year < 2000, make the user type in the correct date continuously
+	private void checkDate() {
+		Calendar calendar = Calendar.getInstance();
+		int year = calendar.get(Calendar.YEAR);
+		Log.i(TAG, "year: " + year);
+		if(year < 2000) {
+			new AlertDialog.Builder(this)
+			.setTitle("Set the current date correctly")
+			.setPositiveButton(android.R.string.yes, 
+					new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					Intent intent = new Intent(
+							android.provider.Settings.ACTION_DATE_SETTINGS);
+					startActivityForResult(intent, PICK_DATE_REQUEST_CODE);
+				}
+			}).show();
+		}
+		
+	}
+	
+	/**
+     * Display the progress dialog to the user
+     * 
+     * @param message	String to display
+     */
+    public void showProgressDialog(String message) {
+        progressDialog =
+            ProgressDialog.show(this, "Update", message);
+    }
+	
+    /**
+     * Dismiss the progress dialog
+     */
+    public void dismissProgressDialog() {
+    	progressDialog.dismiss();
+    }
+    
 	/**
 	 * Setup the search-menu-item interface (called by MenuBehavior)
 	 * @param menu	menu object
@@ -249,7 +310,10 @@ public class MainActivity extends ListActivity {
 	private Set<String> speakerSet;
 
 	private RecordingArrayAdapter adapter;
-
+	private ProgressDialog progressDialog;
+	
+	private static final int PICK_DATE_REQUEST_CODE = 0;
+	
 	/////////////////////////////////////////////////////
 	////                                   			/////
 	//// Things pertaining to getting Google token. /////
@@ -264,6 +328,8 @@ public class MainActivity extends ListActivity {
         		.isGooglePlayServicesAvailable(this);
         if (statusCode == ConnectionResult.SUCCESS) {
         	Log.i(TAG, "getAccountToken");
+
+        	//TODO: Sign-out, Sign-in with other accounts
         	if(googleAuthToken == null) {
         		pickUserAccount();
         	}
@@ -290,16 +356,6 @@ public class MainActivity extends ListActivity {
      * Start an activity which allows a user to pick up an account
      */
     private void pickUserAccount() {
-    	AccountManager manager = AccountManager.get(this); 
-        Account[] accounts = manager.getAccountsByType("com.google"); 
-
-        for (Account account : accounts) {
-          // TODO: Check possibleEmail against an email regex or treat
-          // account.name as an email address only for certain account.type values.
-        	Log.i("login", account.name);
-        }
-        
-        
         String[] accountTypes = new String[]{"com.google"};
         Intent intent = AccountPicker.newChooseAccountIntent(null, null,
                 accountTypes, false, " (Default Google-account)", 
@@ -312,13 +368,18 @@ public class MainActivity extends ListActivity {
     		int resultCode, Intent data) {
         if (requestCode == PICK_ACCOUNT_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-            	SharedPreferences preferences = 
+            	SharedPreferences settings = 
         				PreferenceManager.getDefaultSharedPreferences(this);
             	emailAccount = 
             			data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                if (isDeviceOnline()) {	
+            	// Stores the account for next-use
+            	AikumaSettings.setUserId(emailAccount);
+                settings.edit().putString(
+                		AikumaSettings.SETTING_OWNER_ID_KEY, emailAccount).commit();
+            	
+            	if (isDeviceOnline()) {	
                     new GetTokenTask(emailAccount, googleAPIScope, 
-                    		preferences).execute();
+                    		settings).execute();
                 } else {
                     Toast.makeText(this, "Network is disconnected", 
                     		Toast.LENGTH_SHORT).show();
@@ -333,6 +394,8 @@ public class MainActivity extends ListActivity {
                 && resultCode == RESULT_OK) {
             handleReRequestResult(resultCode, data);
             return;
+        } else if(requestCode == PICK_DATE_REQUEST_CODE) {
+        	checkDate();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -345,10 +408,10 @@ public class MainActivity extends ListActivity {
         }
         if (resultCode == RESULT_OK) {
             // User recovered error, retry to get access_token
-        	SharedPreferences preferences = 
+        	SharedPreferences settings = 
     				PreferenceManager.getDefaultSharedPreferences(this);
             new GetTokenTask(emailAccount, googleAPIScope, 
-            		preferences).execute();
+            		settings).execute();
             return;
         }
 //        if (resultCode == RESULT_CANCELED) {
@@ -448,12 +511,11 @@ public class MainActivity extends ListActivity {
         	try {
         		googleAuthToken = getToken();
 				
-				// Store the default account, access-token for next use
+				// Store the access-token for next use
 				SharedPreferences.Editor prefsEditor = preferences.edit();
-				prefsEditor.putString("googleAuthToken", googleAuthToken);
-				prefsEditor.putString("defaultGoogleAccount", mEmailAccount);
+				prefsEditor.putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, googleAuthToken);
 				prefsEditor.commit();
-				AikumaSettings.googleAuthToken = googleAuthToken;
+				AikumaSettings.setUserToken(googleAuthToken);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				Log.e(TAG, e.getMessage());

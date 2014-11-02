@@ -72,7 +72,7 @@ public final class FileIO {
 		assert path != null;
 		return path;
 	}
-
+	
 	/**
 	 * Returns the path to the directory containing files that are not to be
 	 * synced.
@@ -83,6 +83,24 @@ public final class FileIO {
 	public static File getNoSyncPath(){
 		File path = new File(Environment.getExternalStorageDirectory(),
 				NO_SYNC_PATH);
+		path.mkdirs();
+		return path;
+	}
+	
+	/**
+	 * Returns the path to the directory containing files of the owner
+	 * 
+	 * @param versionName	versionName of the files
+	 * @param ownerId		Owner's ID for the path
+	 * @return	A File representing the owner's directory of versionName
+	 */
+	public static File getOwnerPath(String versionName, String ownerId) {
+		String ownerIdDirName = IdUtils.getOwnerDirName(ownerId);
+		String ownerDirStr = (APP_ROOT_PATH + versionName + "/" + 
+				ownerIdDirName.substring(0, 1) + "/" + 
+				ownerIdDirName.substring(0, 2) + "/" + ownerId + "/");	
+		File path = new File(Environment.getExternalStorageDirectory(), 
+				ownerDirStr);
 		path.mkdirs();
 		return path;
 	}
@@ -140,7 +158,7 @@ public final class FileIO {
 		String jsonStr = stringWriter.toString();
 		write(path, jsonStr);
 	}
-
+	
 	/**
 	 * Takes a file path (relative to the aikuma directory) and
 	 * returns a string containing the file's contents.

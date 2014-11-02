@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.storage.FusionIndex;
+import org.lp20.aikuma.util.AikumaSettings;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -61,8 +62,10 @@ public class CloudSearchActivity extends AikumaListActivity {
 	
 	public void onSearchButton(EditText searchQueryView) {
 		String langQuery = searchQueryView.getText().toString();
+		String emailAccount = AikumaSettings.getCurrentUserId();
+		String accessToken = AikumaSettings.getCurrentUserToken();
 		
-		GetSearchResultsTask(langQuery, emailAccount, accessToken).execute();
+		new GetSearchResultsTask(langQuery, emailAccount, accessToken).execute();
 	}
 
 	private boolean showRecordingsOnCloud(List<String> recordingsMetadata) {
