@@ -35,7 +35,7 @@
         <dependency>
             <groupId>org.lp20.aikuma</groupId>
             <artifactId>cloud-storage-with-deps</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
     </dependencies>
 

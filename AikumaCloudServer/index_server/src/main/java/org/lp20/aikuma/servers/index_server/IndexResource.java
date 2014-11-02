@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.json.simple.JSONValue;
+import org.lp20.aikuma.storage.Index;
 import org.lp20.aikuma.storage.InvalidAccessTokenException;
 import static org.lp20.aikuma.storage.Utils.validateIndexMetadata;
 
@@ -57,14 +58,17 @@ public class IndexResource {
     private Response doSearch(MultivaluedMap<String, String> formParams, String detail)  {
         Response resp;
         Map<String, String> params = makeMetadataMap(formParams);
-        if (detail.equals("false")) {
-            try {
-                resp = Response.ok(JSONValue.toJSONString(idx.search(params))).build();
-            } catch (IllegalArgumentException e) {
-                resp = Response.status(new ErrorStatus(400, e.getMessage())).build();
-            }
-        }   else {
-            resp = Response.status(new ErrorStatus(500, "Not implemented yet")).build();
+        if (detail.equals("true")) {
+            JSONArray data = new JSONArray();
+            idx.search(params, new Index.SearchResultProcessor() {
+                @Override
+                public void process(Map<String, String> result) {
+                    data.add(result);
+                }
+            });
+            resp = Response.ok(data.toJSONString()).build();
+        } else {
+            resp = Response.ok(JSONValue.toJSONString(idx.search(params))).build();
         }
         return resp;
     }
