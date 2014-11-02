@@ -3,6 +3,7 @@ package org.lp20.aikuma.servers.index_server;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import org.json.simple.JSONArray;
 import org.lp20.aikuma.storage.FusionIndex;
 
 import java.util.HashMap;
@@ -38,8 +39,34 @@ public class IndexResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response search(MultivaluedMap<String, String> formParams) {
-        return Response.status(new ErrorStatus(500, "Not implemented yet.")).build();
+    public Response search(MultivaluedMap<String, String> formParams,
+                           @DefaultValue("false") @QueryParam("detail") String detail) {
+        try {
+            return doSearch(formParams, detail);
+        } catch (InvalidAccessTokenException e1) {
+            idx.setAccessToken(tokenManager.updateAccessToken());
+            try {
+                return doSearch(formParams, detail);
+            } catch (InvalidAccessTokenException e2) {
+                log.severe("Unable to refresh access_token successfully");
+                return Response.serverError().build();
+            }
+        }
+    }
+
+    private Response doSearch(MultivaluedMap<String, String> formParams, String detail)  {
+        Response resp;
+        Map<String, String> params = makeMetadataMap(formParams);
+        if (detail.equals("false")) {
+            try {
+                resp = Response.ok(JSONValue.toJSONString(idx.search(params))).build();
+            } catch (IllegalArgumentException e) {
+                resp = Response.status(new ErrorStatus(400, e.getMessage())).build();
+            }
+        }   else {
+            resp = Response.status(new ErrorStatus(500, "Not implemented yet")).build();
+        }
+        return resp;
     }
 
     @GET
