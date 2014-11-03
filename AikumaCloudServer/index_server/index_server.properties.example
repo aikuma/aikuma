@@ -1,0 +1,12 @@
+#
+# Example index_server.properties file. Use real values for production!
+#
+client_id=[OAUTH2 client id for the app]
+client_secret=[OAUTH2 secret for the app]
+access_token=[OAUTH2 access token]
+refresh_token=[OAUTH2 refresh token]
+table_id=[Google FusionTables table ID for the metadata table]
+base_uri=[base uri on which to listen e.g., https://0.0.0.0:8080]
+use_ssl=[if true, use ssl; if false, don't]
+keystore_file=[a file url that points to a java keystore with your ssl cert in it]
+keystore_password=[the password for the keystore above]
