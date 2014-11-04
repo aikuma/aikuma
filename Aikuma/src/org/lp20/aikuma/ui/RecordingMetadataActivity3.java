@@ -12,9 +12,12 @@ import java.util.UUID;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.util.FileIO;
+import org.lp20.aikuma.util.ImageUtils;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -59,9 +62,19 @@ public class RecordingMetadataActivity3 extends AikumaListActivity {
 		// settings to add speakers to recording
 		userImages =
 				(LinearLayout) findViewById(R.id.userImagesAndAddUserButton);
-		speakersIds = new ArrayList<String>();
-		languages = new ArrayList<Language>();
-		selectedLanguages = new ArrayList<Language>();
+		
+		selectedSpeakers = new ArrayList<Speaker>();
+		if(savedInstanceState != null) {
+			ArrayList<Speaker> savedSpeakers = 
+					savedInstanceState.getParcelableArrayList("selectedSpeakers");
+			languages = savedInstanceState.getParcelableArrayList("languages");
+			selectedLanguages = 
+					savedInstanceState.getParcelableArrayList("selectedLanguages");
+			updateSpeakerLanguageView(savedSpeakers);
+		} else {
+			languages = new ArrayList<Language>();
+			selectedLanguages = new ArrayList<Language>();
+		}
 		
 		// settings for OK button
 		okButton = (ImageButton) findViewById(R.id.okButton3);
@@ -83,6 +96,17 @@ public class RecordingMetadataActivity3 extends AikumaListActivity {
 		setListAdapter(adapter);
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	    // Save the current activity state
+		savedInstanceState.putParcelableArrayList("selectedSpeakers", selectedSpeakers);
+		savedInstanceState.putParcelableArrayList("languages", languages);
+	    savedInstanceState.putParcelableArrayList("selectedLanguages", selectedLanguages);
+	    
+	    //Call the superclass to save the view hierarchy state
+	    super.onSaveInstanceState(savedInstanceState);
+	}
+	
 
 	/**
 	 * Starts the AddSpeakerActivity.
@@ -106,31 +130,8 @@ public class RecordingMetadataActivity3 extends AikumaListActivity {
 				ArrayList<Speaker> speakers = intent.getParcelableArrayListExtra("speakers");
 				
 				//Speaker speaker = intent.getParcelableExtra("speaker");
-				for(Speaker speaker : speakers) {
-					if (!speakersIds.contains(speaker.getId())) {
-						speakersIds.add(speaker.getId());
-						for (Language language : speaker.getLanguages()) {
-							if (!languages.contains(language)) {
-								languages.add(language);
-								adapter.notifyDataSetChanged();
-							}
-						}
-						
-						ImageView speakerImage = new ImageView(this);
-						speakerImage.setAdjustViewBounds(true);
-						speakerImage.setMaxHeight(60);
-						speakerImage.setMaxWidth(60);
-						//speakerImage.setPaddingRelative(5,5,5,5);
-						try {
-							speakerImage.setImageBitmap(speaker.getSmallImage());
-						} catch (IOException e) {
-							// If the image can't be loaded, we just leave it at that.
-						}
-						userImages.addView(speakerImage);
-						recordingHasSpeaker = true;
-						updateOkButton();
-					}
-				}
+				updateSpeakerLanguageView(speakers);
+				updateOkButton();
 			}
 		}
 	}
@@ -161,7 +162,8 @@ public class RecordingMetadataActivity3 extends AikumaListActivity {
 			intent.putExtra("groupId", groupId);
 		
 		intent.putExtra("description", description);
-		intent.putStringArrayListExtra("speakersIds", speakersIds);
+
+		intent.putParcelableArrayListExtra("speakers", selectedSpeakers);
 		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		
 		startActivity(intent);
@@ -184,11 +186,38 @@ public class RecordingMetadataActivity3 extends AikumaListActivity {
 			safeActivityTransition = false;
 		}
 	}
+	
+	private void updateSpeakerLanguageView(List<Speaker> speakers) {
+		for(Speaker speaker : speakers) {
+			if (!selectedSpeakers.contains(speaker)) {
+				selectedSpeakers.add(speaker);
+				for (Language language : speaker.getLanguages()) {
+					if (!languages.contains(language)) {
+						languages.add(language);
+						adapter.notifyDataSetChanged();
+					}
+				}
+				
+				ImageView speakerImage = new ImageView(this);
+				speakerImage.setAdjustViewBounds(true);
+				speakerImage.setMaxHeight(ImageUtils.getPixelsFromDp(this, 40));
+				speakerImage.setMaxWidth(ImageUtils.getPixelsFromDp(this, 40));
+				//speakerImage.setPaddingRelative(5,5,5,5);
+				try {
+					speakerImage.setImageBitmap(speaker.getSmallImage());
+				} catch (IOException e) {
+					// If the image can't be loaded, we just leave it at that.
+				}
+				userImages.addView(speakerImage);
+				recordingHasSpeaker = true;
+			}
+		}
+	}
 
 	static final int ADD_SPEAKER = 0;
 	private UUID uuid;
-	private ArrayList<String> speakersIds;
-	private List<Language> languages;
+	private ArrayList<Speaker> selectedSpeakers;
+	private ArrayList<Language> languages;
 	private ArrayList<Language> selectedLanguages;
 	private ArrayAdapter<Language> adapter;
 	private LinearLayout userImages;

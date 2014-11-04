@@ -122,7 +122,13 @@ public class MenuBehaviour {
 				
 				return true;
 			case R.id.sync_refresh:
-				((MainActivity)activity).syncRefresh();
+				if(AikumaSettings.isBackupEnabled 
+						|| AikumaSettings.isAutoDownloadEnabled) {
+					((MainActivity)activity).syncRefresh();
+				} else {
+					((MainActivity)activity).showAlertDialog("Sync is currently diabled");
+				}
+				
 				return true;
 			default:
 				return true;

@@ -72,18 +72,6 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent
 			result) {
 		if (resultCode == RESULT_OK) {
-			// Move image-file to no-sync-path
-			Uri imageUri = result.getData();
-			try {
-				ImageUtils.moveImageFileFromUri(this, 
-						imageUri, this.imageUUID);
-			} catch (IOException e) {
-				Toast.makeText(this, 
-						"Failed to write the image to file",
-						Toast.LENGTH_LONG).show();
-			}
-			getContentResolver().delete(result.getData(), null, null);
-			
 			Intent lastIntent = new Intent(this, AddSpeakerActivity4.class);
 			lastIntent.putExtra("origin", getIntent().getExtras().getInt("origin"));
 			lastIntent.putExtra("name", name);
@@ -103,8 +91,13 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 	}
 
 	private void dispatchTakePictureIntent(int actionCode) {
+		// Create an no-sync-path for an image-file
+		File imageOutputFile = ImageUtils.getNoSyncImageFile(this.imageUUID);
+		Uri imageUri = Uri.fromFile(imageOutputFile);
+		
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+		
 		startActivityForResult(takePictureIntent, actionCode);
 	}
 

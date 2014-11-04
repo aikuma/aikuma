@@ -77,7 +77,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 			
 			FragmentTransaction ft = getFragmentManager().beginTransaction();
 			listenFragment = new ListenFragment();
-			ft.add(R.id.ListenFragment, listenFragment);
+			ft.replace(R.id.ListenFragment, listenFragment);
 			ft.commit();
 			
 			setUpPlayer(uuid, sampleRate);

@@ -7,6 +7,7 @@ package org.lp20.aikuma.ui;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -36,7 +37,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.phone_respeak);
-
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		//Lets a method in AikumaActivity superclass know to ask user if they
 		//are not willing to discard new data on an activity transition via the
 		//menu.

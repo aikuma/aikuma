@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.widget.ImageView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -285,5 +286,17 @@ public final class ImageUtils {
 		
 		fis.close();
 		fos.close();
+	}
+	
+	/**
+	 * Return the number of pixels in the device corresponding to dp
+	 * @param context	Application device context
+	 * @param dp		The device independent pixels
+	 * @return			The number of pixels calculated with device's scale and dp
+	 */
+	public static int getPixelsFromDp(Context context, int dp) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		int pixels = (int) (dp * scale + 0.5f);
+		return pixels;
 	}
 }

@@ -50,11 +50,60 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		googleAuthToken = AikumaSettings.getCurrentUserToken();
 	}
 	
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+		FragmentManager fm = getFragmentManager();
+		addNewFragment(fm, R.id.recordingPlayerInterface, 
+				originalListenFragment, "original");
+		addNewFragment(fm, R.id.respeakingPlayerInterface, 
+				respeakingListenFragment, "respeak");
+		fm.executePendingTransactions();
+		
+		setUp();
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		updateStarButtons();
+		updateFlagButtons();
+		if(googleAuthToken != null) {
+			updateArchiveButtons();
+		}
+		
+		this.proximityDetector = new ProximityDetector(this) {
+			public void near(float distance) {
+				WindowManager.LayoutParams params = getWindow().getAttributes();
+				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
+				params.screenBrightness = 0;
+				getWindow().setAttributes(params);
+				//record();
+			}
+			public void far(float distance) {
+				WindowManager.LayoutParams params = getWindow().getAttributes();
+				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
+				params.screenBrightness = 1;
+				getWindow().setAttributes(params);
+				//pause();
+			}
+		};
+		this.proximityDetector.start();
+	}
+
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		this.proximityDetector.stop();
+	}
+	
 	private void addNewFragment(FragmentManager fm, 
 			int containerId, Fragment fragment, String tag) {
 		
 	    FragmentTransaction ft = fm.beginTransaction();
-	    ft.add(containerId, fragment, tag);
+	    ft.replace(containerId, fragment, tag);
 	    
 	    //ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 	    //ft.addToBackStack(null);
@@ -218,54 +267,6 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		this.finish();
 	}
 
-	@Override
-	public void onStart() {
-		super.onStart();
-		
-		FragmentManager fm = getFragmentManager();
-		addNewFragment(fm, R.id.recordingPlayerInterface, 
-				originalListenFragment, "original");
-		addNewFragment(fm, R.id.respeakingPlayerInterface, 
-				respeakingListenFragment, "respeak");
-		fm.executePendingTransactions();
-		
-		setUp();
-	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		updateStarButtons();
-		updateFlagButtons();
-		if(googleAuthToken != null) {
-			updateArchiveButtons();
-		}
-		
-		this.proximityDetector = new ProximityDetector(this) {
-			public void near(float distance) {
-				WindowManager.LayoutParams params = getWindow().getAttributes();
-				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
-				params.screenBrightness = 0;
-				getWindow().setAttributes(params);
-				//record();
-			}
-			public void far(float distance) {
-				WindowManager.LayoutParams params = getWindow().getAttributes();
-				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
-				params.screenBrightness = 1;
-				getWindow().setAttributes(params);
-				//pause();
-			}
-		};
-		this.proximityDetector.start();
-	}
-
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-		this.proximityDetector.stop();
-	}
 
 	/**
 	 * When the star button is pressed

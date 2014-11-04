@@ -6,6 +6,7 @@ package org.lp20.aikuma.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.util.AikumaSettings;
+import org.lp20.aikuma.util.ImageUtils;
 
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
@@ -65,7 +67,8 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 		
 		// settings for recording information
 		description = (String) intent.getExtras().get("description");
-		speakersIds = intent.getStringArrayListExtra("speakersIds");
+		speakersIds = new ArrayList<String>();
+		selectedSpeakers = intent.getParcelableArrayListExtra("speakers");
 		selectedLanguages = intent.getParcelableArrayListExtra("languages");
 		// Speakers images
 		userImages =
@@ -81,6 +84,9 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 			sb.append(lang.getName() + "\n");
 		}
 		languageView.setText(sb);
+		for(Speaker speaker : selectedSpeakers) {
+			speakersIds.add(speaker.getId());
+		}
 
 		//Lets method in superclass know to ask user if they are willing to go back
 		safeActivityTransition = true;
@@ -115,19 +121,16 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 	
 	// Show the speakers' images
 	private void setUpSpeakersImages() {
-		for(String speakerId : speakersIds) {
+		for(Speaker speaker : selectedSpeakers) {
 			ImageView speakerImage = new ImageView(this);
 			speakerImage.setAdjustViewBounds(true);
-			speakerImage.setMaxHeight(60);
-			speakerImage.setMaxWidth(60);
+			speakerImage.setMaxHeight(ImageUtils.getPixelsFromDp(this, 40));
+			speakerImage.setMaxWidth(ImageUtils.getPixelsFromDp(this, 40));
 			
-			Speaker speaker = null;
 			try {
-				speaker = Speaker.read(AikumaSettings.getLatestVersion(), 
-						AikumaSettings.getCurrentUserId(), speakerId);
 				speakerImage.setImageBitmap(speaker.getSmallImage());
 			} catch (IOException e) {
-				Log.e(TAG, e.getMessage() + ": " + speakerId);
+				Log.e(TAG, e.getMessage() + ": " + speaker.getId());
 			}
 			userImages.addView(speakerImage);
 		}
@@ -146,7 +149,7 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 			
 			FragmentTransaction ft = getFragmentManager().beginTransaction();
 			listenFragment = new ListenFragment();
-			ft.add(R.id.ListenFragment, listenFragment);
+			ft.replace(R.id.ListenFragment, listenFragment);
 			ft.commit();
 			
 			setUpPlayer(uuid, sampleRate);
@@ -215,6 +218,7 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 	static final int ADD_SPEAKER = 0;
 	private UUID uuid;
 	private List<String> speakersIds;
+	private List<Speaker> selectedSpeakers;
 	private List<Language> selectedLanguages;
 	private LinearLayout userImages;
 	private long sampleRate;

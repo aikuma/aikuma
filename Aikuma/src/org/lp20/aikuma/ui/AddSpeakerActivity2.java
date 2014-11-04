@@ -46,8 +46,15 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 		safeActivityTransitionMessage = 
 				"This will discard the new speaker's language information.";
 		
-		languages = FileIO.readDefaultLanguages();
-		selectedLanguages = new ArrayList<Language>();
+		
+		if(savedInstanceState != null) {
+			languages = savedInstanceState.getParcelableArrayList("languages");
+			selectedLanguages = 
+					savedInstanceState.getParcelableArrayList("selectedLanguages");
+		} else {
+			languages = FileIO.readDefaultLanguages();
+			selectedLanguages = new ArrayList<Language>();
+		}
 		
 		okButton = (ImageButton) findViewById(R.id.okButton2);
 		okButton.setImageResource(R.drawable.ok_disabled_48);
@@ -68,6 +75,16 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 		super.onResume();
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	    // Save the current activity state
+		savedInstanceState.putParcelableArrayList("languages", languages);
+	    savedInstanceState.putParcelableArrayList("selectedLanguages", selectedLanguages);
+	    
+	    //Call the superclass to save the view hierarchy state
+	    super.onSaveInstanceState(savedInstanceState);
+	}
+	
 	/**
 	 * Called when a user presses the add ISO language button.
 	 *
@@ -139,7 +156,7 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 	
 	private ImageButton okButton;
 	
-	private List<Language> languages = new ArrayList<Language>();
+	private ArrayList<Language> languages = new ArrayList<Language>();
 	private ArrayList<Language> selectedLanguages;
 	private ArrayAdapter<Language> adapter;
 }

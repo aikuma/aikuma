@@ -79,8 +79,8 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	 */
 	@Override
 	public void onPause() {
-		super.onPause();
 		pause();
+		super.onPause();
 	}
 
 	/**
@@ -88,12 +88,12 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	 */
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
 		if (player != null) {
 			//If you hit the stop button really quickly, the player may not
 			//have been initialized fully.
 			player.release();
 		}
+		super.onDestroy();
 	}
 
 	/**

@@ -5,6 +5,7 @@
 package org.lp20.aikuma.ui;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,6 +39,7 @@ public class RecordActivity extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		this.soundUUID = UUID.randomUUID();
 		// Disable the stopButton(saveButton) before the recording starts
 		ImageButton stopButton = 

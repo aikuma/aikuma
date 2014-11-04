@@ -260,8 +260,8 @@ public final class FileIO {
 	 *
 	 * @return	An ArrayList of Language objects.
 	 */
-	public static List readDefaultLanguages() {
-		List<Language> defaultLanguages = new ArrayList<Language>();
+	public static ArrayList<Language> readDefaultLanguages() {
+		ArrayList<Language> defaultLanguages = new ArrayList<Language>();
 		try {
 			CSVReader reader = new CSVReader(new FileReader(
 					new File(getAppRootPath(), "default_languages.csv")), '\t');

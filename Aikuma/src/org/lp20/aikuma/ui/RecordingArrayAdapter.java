@@ -93,6 +93,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				(TextView) recordingView.findViewById(R.id.recordingDateDuration);
 		LinearLayout speakerImagesView = (LinearLayout)
 				recordingView.findViewById(R.id.speakerImages);
+
 		String verName = recording.getVersionName();
 		String ownerId = recording.getOwnerId();
 		for (String id : recording.getSpeakersIds()) {
@@ -202,11 +203,12 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	 */
 	private ImageView makeSpeakerImageView(String verName, String ownerId, 
 			String speakerId) {
+		int pixels = ImageUtils.getPixelsFromDp(context, 40);
 		ImageView speakerImage = new ImageView(context);
 		speakerImage.setAdjustViewBounds(true);
 //		speakerImage.setScaleType(ImageView.ScaleType.FIT_END);
-		speakerImage.setMaxHeight(60);//40
-		speakerImage.setMaxWidth(60);//40
+		speakerImage.setMaxHeight(pixels);//40
+		speakerImage.setMaxWidth(pixels);//40
 		try {
 			speakerImage.setImageBitmap(Speaker.getSmallImage(verName, ownerId, speakerId));
 		} catch (IOException e) {

@@ -52,9 +52,6 @@ public class ListenActivity extends AikumaActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listen);
 		menuBehaviour = new MenuBehaviour(this);
-		fragment =
-				(ListenFragment)
-				getFragmentManager().findFragmentById(R.id.ListenFragment);
 		videoView = (VideoView) findViewById(R.id.videoView);
 		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -62,12 +59,13 @@ public class ListenActivity extends AikumaActivity {
 
 		setUpRecording();
 		setUpRespeakings();
+
 	}
 	
 	@Override
 	public void onStart() {
 		super.onStart();
-
+		
 		if(recording.isMovie()) {
 			setUpVideoView();
 		} else {
@@ -75,7 +73,7 @@ public class ListenActivity extends AikumaActivity {
 			
 			FragmentTransaction ft = getFragmentManager().beginTransaction();
 			fragment = new ListenFragment();
-			ft.add(R.id.listenFragment, fragment);
+			ft.replace(R.id.listenFragment, fragment);
 			ft.commit();
 			
 			setUpPlayer();
@@ -117,14 +115,7 @@ public class ListenActivity extends AikumaActivity {
 		this.proximityDetector.stop();
 	}
 	
-	@Override
-	public void onStop() {
-		super.onStop();
-		
-		if(player != null) {
-			player.release();
-		}
-	}
+	
 
 	// Prepares the original recording 
 	private void setUpRecording() {

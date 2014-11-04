@@ -66,6 +66,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
@@ -120,8 +121,8 @@ public class MainActivity extends ListActivity {
     	Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
     	
     	AikumaSettings.setUserId(emailAccount);
-    	showUserAccount(emailAccount);
     	AikumaSettings.setUserToken(googleAuthToken);
+    	showUserAccount(emailAccount, null);
 		AikumaSettings.isBackupEnabled = 
 				settings.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
 		AikumaSettings.isAutoDownloadEnabled =
@@ -256,10 +257,9 @@ public class MainActivity extends ListActivity {
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		if(emailAccount == null) {
-			new AlertDialog.Builder(this)
-				.setMessage("You need to select your account")
-				.show();
-				return;
+			showAlertDialog("You need to select your account");
+			
+			return;
 		}
 		
 		Intent intent = new Intent(this, ListenActivity.class);
@@ -321,12 +321,28 @@ public class MainActivity extends ListActivity {
     /**
      * Show the current user's ID
      * @param userId	The user's ID
+     * @param token		The user-account's auth_token
      */
-    public void showUserAccount(String userId) {
+    public void showUserAccount(String userId, String token) {
+    	TextView userIdView = (TextView) findViewById(R.id.userIdView);
     	if(userId != null) {
-    		TextView userIdView = (TextView) findViewById(R.id.userIdView);
+    		if(token != null)
+    			userIdView.setTextColor(Color.BLACK);
+    		else
+    			userIdView.setTextColor(Color.GRAY);
         	userIdView.setText(userId);
+    	} else {
+    		userIdView.setText("");
     	}
+    		
+    }
+    
+    /**
+     * Show the warning dialog with the message
+     * @param message	the message shown in the dialog
+     */
+    public void showAlertDialog(String message) {
+    	new AlertDialog.Builder(this).setMessage(message).show();
     }
     
 	/**
@@ -441,7 +457,11 @@ public class MainActivity extends ListActivity {
      */
     public void clearAccountToken() {
     	emailAccount = null;
+    	AikumaSettings.setUserId(null);
     	googleAuthToken = null;
+    	AikumaSettings.setUserToken(null);
+    	showUserAccount(emailAccount, googleAuthToken);
+    	
     	menuBehaviour.setSignInState(false);
     }
 	
@@ -467,7 +487,7 @@ public class MainActivity extends ListActivity {
             			data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             	// Stores the account for next-use
             	AikumaSettings.setUserId(emailAccount);
-            	showUserAccount(emailAccount);
+            	showUserAccount(emailAccount, null);
                 settings.edit().putString(
                 		AikumaSettings.SETTING_OWNER_ID_KEY, emailAccount).commit();
             	
@@ -604,7 +624,7 @@ public class MainActivity extends ListActivity {
         protected Boolean doInBackground(Void... params) {
         	try {
         		googleAuthToken = getToken();
-				
+        		
 				// Store the access-token for next use
 				SharedPreferences.Editor prefsEditor = preferences.edit();
 				prefsEditor.putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, googleAuthToken);
@@ -621,6 +641,7 @@ public class MainActivity extends ListActivity {
 
         @Override
         protected void onPostExecute(Boolean result) {
+        	showUserAccount(emailAccount, googleAuthToken);
         	if(!result)
         		return;
         	
