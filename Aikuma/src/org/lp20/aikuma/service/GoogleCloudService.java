@@ -64,6 +64,7 @@ public class GoogleCloudService extends IntentService{
 	private final String archiveKey = AikumaSettings.ARCHIVED_RECORDING_KEY;
 	private final String approvalSpKey = AikumaSettings.APPROVED_SPEAKERS_KEY;
 	private final String archiveSpKey = AikumaSettings.ARCHIVED_SPEAKERS_KEY;
+	private final String cloudIdFormat = "^v\\d{2}\\/\\S\\/\\S{2}\\/.+\\/.+\\/.+\\/.+$";
 	
 	private SharedPreferences preferences;
 	private Editor prefsEditor;
@@ -168,7 +169,7 @@ public class GoogleCloudService extends IntentService{
 			@Override
 			public boolean processItem(String identifier, Date date) {
 				// Classify identifiers and store them in different lists 
-				if(identifier.length() > 30) {
+				if(identifier.matches(cloudIdFormat)) {
 					String relPath = identifier.substring(0, identifier.lastIndexOf('/')-12);
 					if(relPath.endsWith(Recording.PATH) && 
 							!identifier.endsWith("-mapping.txt")) {
