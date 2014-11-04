@@ -95,7 +95,7 @@ public class MainActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		menuBehaviour = new MenuBehaviour(this);
-		SyncUtil.startSyncLoop();
+		SyncUtil.startSyncLoop(this);
 		
 		Aikuma.loadLanguages();
 
@@ -121,7 +121,6 @@ public class MainActivity extends ListActivity {
     	Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
     	
     	AikumaSettings.setUserId(emailAccount);
-    	AikumaSettings.setUserToken(googleAuthToken);
     	showUserAccount(emailAccount, null);
 		AikumaSettings.isBackupEnabled = 
 				settings.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
@@ -135,7 +134,7 @@ public class MainActivity extends ListActivity {
 			// Validate access token
 			// (And if there are items to be archived, upload them)
 			new GetTokenTask(emailAccount, googleAPIScope, 
-	         		settings).execute();
+	         		settings, false).execute();
 		} else if(AikumaSettings.isBackupEnabled 
 				|| AikumaSettings.isAutoDownloadEnabled) {
 			// When backup was enabled but the user hasn't ever signed-in google account
@@ -164,11 +163,10 @@ public class MainActivity extends ListActivity {
 						String recordingId = status.substring(4);
 						
 						try {
-							originals.add(Recording.read(verName, ownerId, recordingId));
+							updateRecordingView(Recording.read(verName, ownerId, recordingId));
 						} catch (IOException e) {
 							Log.e(TAG, e.getMessage());
 						}
-						adapter.notifyDataSetChanged();
 					}
 
 				}
@@ -311,9 +309,9 @@ public class MainActivity extends ListActivity {
     
     /**
      * Show the status of cloud-background thread
-     * @param status	(true: background-progressing, false: none)
+     * @param visibility	Visibility of the progress bar View
      */
-    private void showProgressStatus(int visibility) {
+    public void showProgressStatus(int visibility) {
     	ProgressBar pStatus = (ProgressBar) findViewById(R.id.cloudProgress);
     	pStatus.setVisibility(visibility);
     }
@@ -343,6 +341,17 @@ public class MainActivity extends ListActivity {
      */
     public void showAlertDialog(String message) {
     	new AlertDialog.Builder(this).setMessage(message).show();
+    }
+    
+    /**
+     * Update the list of recordings view
+     * @param recording		New recording to be updated
+     */
+    public void updateRecordingView(Recording recording) {
+    	if(!originals.contains(recording)) {
+    		originals.add(recording);
+    		adapter.notifyDataSetChanged();
+    	}
     }
     
 	/**
@@ -388,23 +397,45 @@ public class MainActivity extends ListActivity {
 	
 	/**
 	 * Sync the device with Google-Cloud
+	 * 
+	 * @param	forceSync	Force the cloud-sync
 	 */
-	public void syncRefresh() {
-		if(recordingSet.size() > 0 || speakerSet.size() > 0) {
-    		// If there are items to be uploaded,
-			// start the GoogleCloud upload service 
-    		Intent intent = new Intent(MainActivity.this, 
-    				GoogleCloudService.class);
-    		intent.putExtra("id", "retry");
-			startService(intent);
+	public void syncRefresh(boolean forceSync) {
+		if(forceSync) {
+			if(AikumaSettings.getCurrentUserToken() == null) {
+				showAlertDialog("You need to connect to Google-Drive with your account");
+				return;
+			} else {
+				Intent backupIntent = new Intent(this, GoogleCloudService.class);
+				backupIntent.putExtra("id", "backup");
+				startService(backupIntent);
+				
+				Intent downIntent = new Intent(this, GoogleCloudService.class);
+				downIntent.putExtra("id", "autoDownload");
+				startService(downIntent);
+				
+				Intent cancelTimerIntent = new Intent(this, GoogleCloudService.class);
+				cancelTimerIntent.putExtra("id", "cancel");
+				startService(cancelTimerIntent);
+			}
+		} else {
+			if(recordingSet.size() > 0 || speakerSet.size() > 0) {
+	    		// If there are items to be uploaded,
+				// start the GoogleCloud upload service 
+	    		Intent intent = new Intent(MainActivity.this, 
+	    				GoogleCloudService.class);
+	    		intent.putExtra("id", "retry");
+				startService(intent);
+			}
+	    	
+	    	if(AikumaSettings.isAutoDownloadEnabled) {
+	    		Intent intent = new Intent(MainActivity.this, 
+	    				GoogleCloudService.class);
+	    		intent.putExtra("id", "autoDownload");
+	    		startService(intent);
+	    	}
 		}
-    	
-    	if(AikumaSettings.isAutoDownloadEnabled) {
-    		Intent intent = new Intent(MainActivity.this, 
-    				GoogleCloudService.class);
-    		intent.putExtra("id", "autoDownload");
-    		startService(intent);
-    	}
+		
 	}
 	
 
@@ -439,7 +470,7 @@ public class MainActivity extends ListActivity {
         	Log.i(TAG, "getAccountToken");
 
         	//TODO: Sign-out, Sign-in with other accounts
-        	if(googleAuthToken == null) {
+        	if(AikumaSettings.getCurrentUserToken() == null) {
         		pickUserAccount();
         	}
         } else if (GooglePlayServicesUtil.isUserRecoverableError(statusCode)) {
@@ -460,7 +491,7 @@ public class MainActivity extends ListActivity {
     	AikumaSettings.setUserId(null);
     	googleAuthToken = null;
     	AikumaSettings.setUserToken(null);
-    	showUserAccount(emailAccount, googleAuthToken);
+    	showUserAccount(emailAccount, null);
     	
     	menuBehaviour.setSignInState(false);
     }
@@ -493,7 +524,7 @@ public class MainActivity extends ListActivity {
             	
             	if (isDeviceOnline()) {	
                     new GetTokenTask(emailAccount, googleAPIScope, 
-                    		settings).execute();
+                    		settings, false).execute();
                 } else {
                     Toast.makeText(this, "Network is disconnected", 
                     		Toast.LENGTH_SHORT).show();
@@ -525,7 +556,7 @@ public class MainActivity extends ListActivity {
         	SharedPreferences settings = 
     				PreferenceManager.getDefaultSharedPreferences(this);
             new GetTokenTask(emailAccount, googleAPIScope, 
-            		settings).execute();
+            		settings, false).execute();
             return;
         }
 //        if (resultCode == RESULT_CANCELED) {
@@ -612,12 +643,14 @@ public class MainActivity extends ListActivity {
         private String mScope;
         private String mEmailAccount;
         private SharedPreferences preferences;
+        private boolean forceSync;
         
         GetTokenTask(String email, String scope, 
-        		SharedPreferences preferences) {
+        		SharedPreferences preferences, boolean forceSync) {
             this.mEmailAccount = email;
             this.mScope = scope;
             this.preferences = preferences;
+            this.forceSync = forceSync;
         }
 
         @Override
@@ -641,13 +674,16 @@ public class MainActivity extends ListActivity {
 
         @Override
         protected void onPostExecute(Boolean result) {
-        	showUserAccount(emailAccount, googleAuthToken);
+        	showUserAccount(emailAccount, AikumaSettings.getCurrentUserToken());
         	if(!result)
         		return;
-        	
-        	menuBehaviour.setSignInState(true);
-        	
-        	syncRefresh();
+
+        	if(AikumaSettings.isBackupEnabled 
+					|| AikumaSettings.isAutoDownloadEnabled) {
+				syncRefresh(false);
+			} else if(forceSync) {
+        		syncRefresh(true);
+        	}
         }
         
         /**

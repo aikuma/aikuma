@@ -18,7 +18,7 @@ import org.json.simple.JSONArray;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class Language implements Parcelable {
+public class Language implements Parcelable, Comparable<Language> {
 
 	/**
 	 * The name of the language
@@ -179,4 +179,15 @@ public class Language implements Parcelable {
 				.append(name, rhs.name).append(code, rhs.code).isEquals();
 	}
 
+
+	/**
+	 * Compares the given language with this language
+	 *
+	 * @param	that	Language object compared with this object
+	 * @return			compare result of language
+	 */
+	public int compareTo(Language that) {
+		return name.compareTo(that.getName());
+	}
+	
 }

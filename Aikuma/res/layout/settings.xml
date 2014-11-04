@@ -6,20 +6,6 @@
 		android:focusable="true"
 		android:focusableInTouchMode="true"
 	>
-	<Button
-		android:id="@+id/goToDefaultLanguages"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:text="Default Languages"
-		android:onClick="onDefaultLanguagesButton"
-	/>
-	<Button
-		android:id="@+id/goToSyncSettings"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:text="Sync Settings"
-		android:onClick="onSyncSettingsButton"
-	/>
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -37,7 +23,7 @@
 	<TextView
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:text="Automatic Sync" />
+	    android:text="Automatic Google-cloud sync" />
 
 	<CheckBox
 	    android:id="@+id/sync_checkBox"

@@ -76,9 +76,8 @@ public class MenuBehaviour {
 				return true;
 			case R.id.record:
 				if(AikumaSettings.getCurrentUserId() == null) {
-					new AlertDialog.Builder(activity)
-						.setMessage("You need to select your account")
-						.show();
+					((MainActivity)activity).showAlertDialog(
+							"You need to select your account");
 					return true;
 				}
 				intent = new Intent(activity, RecordActivity.class);
@@ -86,9 +85,8 @@ public class MenuBehaviour {
 				return true;
 			case R.id.speakers:
 				if(AikumaSettings.getCurrentUserId() == null) {
-					new AlertDialog.Builder(activity)
-						.setMessage("You need to select an account")
-						.show();
+					((MainActivity)activity).showAlertDialog(
+							"You need to select your account");
 					return true;
 				}
 				intent = new Intent(activity, MainSpeakersActivity.class);
@@ -96,6 +94,10 @@ public class MenuBehaviour {
 				return true;
 			case R.id.help:
 				intent = new Intent(activity, HowtoActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.language_setting_menu:
+				intent = new Intent(activity, DefaultLanguagesActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.settings:
@@ -110,7 +112,7 @@ public class MenuBehaviour {
 				intent = new Intent(activity, HttpServerActivity.class);
 				activity.startActivity(intent);
 				return true;
-			case R.id.audio_import:
+			case R.id.audio_import_menu:
 				((MainActivity)activity).audioImport(null);
 				return true;
 			case R.id.gplus_signin_menu:
@@ -121,14 +123,14 @@ public class MenuBehaviour {
 				}
 				
 				return true;
-			case R.id.sync_refresh:
-				if(AikumaSettings.isBackupEnabled 
-						|| AikumaSettings.isAutoDownloadEnabled) {
-					((MainActivity)activity).syncRefresh();
-				} else {
-					((MainActivity)activity).showAlertDialog("Sync is currently diabled");
-				}
-				
+			case R.id.cloud_sync_menu:
+				((MainActivity)activity).syncRefresh(true);
+				//intent = new Intent(activity, CloudSyncSettingsActivity.class);
+				//activity.startActivity(intent);
+				return true;
+			case R.id.ftp_sync_menu:
+				intent = new Intent(activity, SyncSettingsActivity.class);
+				activity.startActivity(intent);
 				return true;
 			default:
 				return true;
@@ -153,9 +155,8 @@ public class MenuBehaviour {
 				return true;
 			case R.id.record:
 				if(AikumaSettings.getCurrentUserId() == null) {
-					new AlertDialog.Builder(activity)
-						.setMessage("You need to select an account to make a recording")
-						.show();
+					((MainActivity)activity).showAlertDialog(
+							"You need to select an account to make a recording");
 					return true;
 				}
 				intent = new Intent(activity, RecordActivity.class);

@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -34,6 +35,7 @@ import org.lp20.aikuma.storage.Utils;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.StandardDateFormat;
+import org.lp20.aikuma.util.SyncUtil;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -66,6 +68,7 @@ public class GoogleCloudService extends IntentService{
 	private final String archiveSpKey = AikumaSettings.ARCHIVED_SPEAKERS_KEY;
 	private final String cloudIdFormat = "^v\\d{2}\\/\\S\\/\\S{2}\\/.+\\/.+\\/.+\\/.+$";
 	
+	private Timer timer;
 	private SharedPreferences preferences;
 	private Editor prefsEditor;
 	private Set<String> approvedRecordingSet;
@@ -109,7 +112,8 @@ public class GoogleCloudService extends IntentService{
 		Log.i(TAG, "Cloud created(speaker-archive):" + archivedSpeakerSet.toString());
 		
 		// schedule task
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+		timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
         	@Override
         	public void run() {
         		Log.i(TAG, "run by timer");
@@ -118,8 +122,7 @@ public class GoogleCloudService extends IntentService{
         		autoDownloadFiles();
         		broadcastStatus("end");
         	}
-        }, AikumaSettings.SYNC_INTERVAL, AikumaSettings.SYNC_INTERVAL);
-        
+        }, AikumaSettings.SYNC_INTERVAL, AikumaSettings.SYNC_INTERVAL);  
 	}
 
 	@Override
@@ -135,6 +138,8 @@ public class GoogleCloudService extends IntentService{
 			retry();
 		} else if(id.equals("autoDownload")) {
 			autoDownloadFiles();
+		} else if(id.equals("cancel")) {
+			timer.cancel();
 		} else {						// Called when archive button is pressed
 			String itemType = (String)
 					intent.getExtras().get("type");

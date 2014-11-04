@@ -40,7 +40,7 @@ public class MainSpeakersActivity extends AikumaListActivity {
 
 		speakers = Speaker.readAll();
 		Collections.reverse(speakers);
-		
+
 		ArrayAdapter<Speaker> adapter =
 				new SpeakerArrayAdapter(this, speakers);
 		setListAdapter(adapter);

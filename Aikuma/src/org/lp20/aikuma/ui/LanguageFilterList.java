@@ -37,7 +37,8 @@ public class LanguageFilterList extends AikumaListActivity {
 		setContentView(R.layout.filter_list);
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
-		safeActivityTransition = true;
+		//safeActivityTransition = true;
+		
 		filterText = (EditText) findViewById(R.id.search_box);
 		filterText.addTextChangedListener(filterTextWatcher);
 		List<Language> languages;

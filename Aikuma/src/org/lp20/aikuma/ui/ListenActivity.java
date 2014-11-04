@@ -231,6 +231,14 @@ public class ListenActivity extends AikumaActivity {
 				if(recording.getTranscript() != null) {
 					TranscriptPlayer player =
 							new TranscriptPlayer(recording, this);
+					
+					// TODO: How to deal with transcripts needs to be decided
+					findViewById(R.id.topLine).setVisibility(View.VISIBLE);
+					findViewById(R.id.transcriptView).setVisibility(View.VISIBLE);
+					findViewById(R.id.middleLine).setVisibility(View.VISIBLE);
+					findViewById(R.id.transcriptView2).setVisibility(View.VISIBLE);
+					findViewById(R.id.bottomLine).setVisibility(View.VISIBLE);
+
 					setPlayer(player);
 				} else {
 					setPlayer(new SimplePlayer(recording, true));

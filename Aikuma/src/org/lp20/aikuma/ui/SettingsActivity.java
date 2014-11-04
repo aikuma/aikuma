@@ -153,26 +153,6 @@ public class SettingsActivity extends AikumaActivity {
 	}
 
 	/**
-	 * Starts up the default languages activity.
-	 *
-	 * @param	view	The default language activity button.
-	 */
-	public void onDefaultLanguagesButton(View view) {
-		Intent intent = new Intent(this, DefaultLanguagesActivity.class);
-		startActivity(intent);
-	}
-
-	/**
-	 * Starts up the sync settings activity.
-	 *
-	 * @param	view	The sync settings activity button.
-	 */
-	public void onSyncSettingsButton(View view) {
-		Intent intent = new Intent(this, SyncSettingsActivity.class);
-		startActivity(intent);
-	}
-
-	/**
 	 * Adjusts the settings when the respeaking mode radio buttons are pressed.
 	 *
 	 * @param	radioButton	The radio button pressed
@@ -227,6 +207,10 @@ public class SettingsActivity extends AikumaActivity {
 			prefsEditor.putBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, true);
 			prefsEditor.commit();
 		} else {
+			Intent intent = new Intent(this, GoogleCloudService.class);
+			intent.putExtra("id", "cancel");
+			startService(intent);
+			
 			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
 			prefsEditor.putBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
 			prefsEditor.commit();

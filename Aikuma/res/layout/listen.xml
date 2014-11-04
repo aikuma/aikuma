@@ -33,6 +33,7 @@
 		android:background="#999999"
 		android:layout_margin="5dp"
 		android:layout_below="@id/listenFragment"
+		android:visibility="gone"
 	/>
 	<TextView
 		android:id="@+id/transcriptView"
@@ -40,6 +41,7 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/topLine"
 		android:text=""
+		android:visibility="gone"
 	/>
 	<View
 		android:id="@+id/middleLine"
@@ -48,6 +50,7 @@
 		android:background="#999999"
 		android:layout_below="@id/transcriptView"
 		android:layout_margin="5dp"
+		android:visibility="gone"
 	/>
 	<TextView
 		android:id="@+id/transcriptView2"
@@ -56,6 +59,7 @@
 		android:layout_below="@id/middleLine"
 		android:text=""
 		android:textStyle="italic"
+		android:visibility="gone"
 	/>
 	<View
 	    android:id="@+id/bottomLine"
@@ -64,6 +68,7 @@
 		android:background="#999999"
 		android:layout_below="@id/transcriptView2"
 		android:layout_margin="5dp"
+		android:visibility="gone"
 	/>
 	
 	<LinearLayout 

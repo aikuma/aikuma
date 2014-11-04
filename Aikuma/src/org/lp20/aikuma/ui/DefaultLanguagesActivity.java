@@ -10,8 +10,11 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 
@@ -30,6 +33,19 @@ public class DefaultLanguagesActivity extends AikumaListActivity {
 		// Default languages are initially selected
 		defaultLanguages = FileIO.readDefaultLanguages();
 		selectedDefaultLanguages=  FileIO.readDefaultLanguages();
+		// 8 languages will be selected as default languages when app is installed
+		if(defaultLanguages.size() == 0) {
+			List<Language> langs = Aikuma.getLanguages();
+			List<String> langCodes = 
+					Arrays.asList("eng", "fra", "spa", "por", "rus", "cmn", "ara", "hin");
+			for(Language lang : langs) {
+				if(langCodes.contains(lang.getCode())) {
+					defaultLanguages.add(lang);
+					selectedDefaultLanguages.add(lang);
+				}
+			}
+			Collections.sort(defaultLanguages);
+		}
 		adapter = new LanguagesArrayAdapter(this, defaultLanguages, 
 						selectedDefaultLanguages);
 		setListAdapter(adapter);
@@ -96,6 +112,7 @@ public class DefaultLanguagesActivity extends AikumaListActivity {
 						(Language) intent.getParcelableExtra("language");
 				if (!defaultLanguages.contains(language)) {
 					defaultLanguages.add(language);
+					Collections.sort(defaultLanguages);
 					adapter.notifyDataSetChanged();
 					selectedDefaultLanguages.add(language);
 				}

@@ -37,7 +37,7 @@ public class ThumbRespeakActivity extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.thumb_respeak);
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
 		safeActivityTransition = true;

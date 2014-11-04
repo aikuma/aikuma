@@ -36,7 +36,7 @@
 		android:id="@+id/automaticSync"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Automatic sync"
+		android:text="Automatic FTP sync"
 		android:onClick="onCheckBoxClicked"
 	/>
 	<Button

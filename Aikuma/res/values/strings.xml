@@ -3,7 +3,7 @@
 
     <string name="app_name">Aikuma</string>
     <string name="search">Search</string>
-    <string name="settings">Settings</string>
+    <string name="settings">General Settings</string>
     <string name="sync">Sync</string>
     <string name="record">Record</string>
     <string name="mainlist">Main list</string>
@@ -36,9 +36,11 @@
 	<string name="language_name">Language name</string>
 	<string name="about">About</string>
 	<string name="connect">HTTP Server</string>
-	<string name="audio_import_label">Import audio</string>
+	<string name="audio_import_label">Import Audio</string>
 	<string name="gplus_signin_menu_label">Google Sign-in</string>
-	<string name="sync_refresh_label">Sync Refresh</string>
+	<string name="cloud_sync_label">Google-Cloud Sync</string>
+	<string name="ftp_sync_label">FTP Sync Settings</string>
+	<string name="language_setting_label">Language Settings</string>
 	<string name="http_dialog_success">Server started at port %1$d</string>
 	<string name="http_dialog_failure">Failed to start server</string>
 	<string name="http_server_activity_title">HTTP Server</string>
