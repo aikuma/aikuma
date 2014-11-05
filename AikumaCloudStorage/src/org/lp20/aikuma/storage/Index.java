@@ -22,6 +22,8 @@ public interface Index {
 	 */
 	public abstract List<String> search(Map<String,String> constraints);
 
+    public abstract void search(Map<String, String> constraints, SearchResultProcessor processor);
+
 	/**
 	 * Index an item. If item already exists, it gets updated.
 	 * For metadata, the following keys are required:
@@ -35,6 +37,9 @@ public interface Index {
 	 * @param identifier
 	 * @param metadata
 	 */
+
+
+
 	public abstract boolean index(String identifier, Map<String,String> metadata);
 
 
@@ -44,5 +49,11 @@ public interface Index {
      * @param metadata  entry metadata
      */
     public abstract boolean update(String identifier, Map<String,String> metadata);
+
+
+
+    public interface SearchResultProcessor {
+        public void process(Map<String, String> result);
+    }
 
 }

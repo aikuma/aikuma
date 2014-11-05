@@ -30,6 +30,9 @@ import static org.lp20.aikuma.storage.Utils.readStream;
  *
  */
 public class FusionIndex implements Index {
+
+
+
     private static final Logger log = Logger.getLogger(FusionIndex.class.getName());
     private String tableId;
 
@@ -193,20 +196,27 @@ public class FusionIndex implements Index {
 	public Map<String,String> getItemMetadata(String identifier) {
         Map json = getMetadata(identifier);
         if (json == null || !json.containsKey("rows")) return null;
-        Map<String, String> ret = new HashMap<String, String>(10);
         List<String> columns = (List<String>) json.get("columns");
         List<String> row = (List<String>) ((List) json.get("rows")).get(0);
 
+        Map<String, String> ret = makeMetadataMapFromQueryResult(columns, row);
+        return ret;
+	}
+
+    private Map<String, String> makeMetadataMapFromQueryResult(List<String> columns, List<String> row) {
+        Map<String, String> ret = new HashMap<String, String>(10);
         for (int i = 0; i < columns.size(); i++) {
             String key = columns.get(i);
             String value = row.get(i);
-            if (MetadataField.byName(key).isMultivalue() && value.length() > 0) {
+
+            if (MetadataField.isValidName(key) && MetadataField.byName(key).isMultivalue() && value.length() > 0) {
                 value = value.replace('|', ',').substring(1, value.length() - 1);
             }
             ret.put(key, value);
         }
         return ret;
-	}
+    }
+
     /**
     * Get rowid for an identifier
     * @param forIdentifier the identifier for which to get data
@@ -266,30 +276,55 @@ public class FusionIndex implements Index {
      */
 	@Override
 	public List<String> search(Map<String,String> constraints) {
+        String sql = makeSearchSQL(constraints, false);
+        JSONObject tmp = (JSONObject) doGet("[None]", sql);
+
         List<String> retval = new ArrayList<String>();
-        StringBuilder sql = new StringBuilder();
-
-        sql.append(String.format("SELECT identifier FROM %s WHERE date_approved NOT EQUAL TO ''", tableId));
-        for (String key: constraints.keySet()) {
-            if (!MetadataField.isValidName(key))
-                throw new IllegalArgumentException("Unknown field: " + key);
-            sql.append(" AND ");
-            if (MetadataField.byName(key).isMultivalue())
-                sql.append(String.format("%s CONTAINS '|%s|'", key, constraints.get(key)));
-            else
-                sql.append(String.format("%s = '%s'", key, constraints.get(key)));
-        }
-        sql.append(";");
-
-        JSONObject tmp = (JSONObject) doGet("[None]", sql.toString());
         if (tmp.containsKey("rows"))  {
             for (Object row : (List) tmp.get("rows")) {
                 retval.add((String) ((List) row).get(0));
             }
-
         }
         return retval;
 	}
+
+    @Override
+    public void search(Map<String, String> constraints, SearchResultProcessor processor ) {
+        String sql = makeSearchSQL(constraints, true);
+        JSONObject json = (JSONObject) doGet("[None]", sql);
+
+        if (json == null || !json.containsKey("rows")) return;
+
+        List<String> columns = (List<String>) json.get("columns");
+        for (Object tmp : (List) json.get("rows")) {
+            List<String> row = (List<String>) tmp;
+            processor.process(makeMetadataMapFromQueryResult(columns, row));
+        }
+    }
+
+
+    private String makeSearchSQL(Map<String, String> constraints, boolean fullRecord) {
+        StringBuilder sqlBuilder = new StringBuilder();
+        if (fullRecord) {
+            sqlBuilder.append(String.format("SELECT * FROM %s WHERE date_approved NOT EQUAL TO ''", tableId));
+        } else {
+            sqlBuilder.append(String.format("SELECT identifier FROM %s WHERE date_approved NOT EQUAL TO ''", tableId));
+        }
+        for (String key: constraints.keySet()) {
+            if (!MetadataField.isValidName(key))
+                throw new IllegalArgumentException("Unknown field: " + key);
+            sqlBuilder.append(" AND ");
+            if (MetadataField.byName(key).isMultivalue())
+                sqlBuilder.append(String.format("%s CONTAINS '|%s|'", key, constraints.get(key)));
+            else
+                sqlBuilder.append(String.format("%s = '%s'", key, constraints.get(key)));
+        }
+        sqlBuilder.append(";");
+        return sqlBuilder.toString();
+    }
+
+
+
 
     /**
      * Validates search parameters
