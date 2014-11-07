@@ -51,9 +51,16 @@ public interface Index {
     public abstract boolean update(String identifier, Map<String,String> metadata);
 
 
-
+    /**
+     * Provides a method that processes search results one at a time.
+     */
     public interface SearchResultProcessor {
-        public void process(Map<String, String> result);
+        /**
+         * Process search result.
+         * @param result key-value pairs
+         * @return true to process more results, or false to stop processing.
+         */
+        public boolean process(Map<String, String> result);
     }
 
 }

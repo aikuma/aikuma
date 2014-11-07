@@ -291,8 +291,9 @@ public class IndexTool {
         } else {
             fi.search(params, new Index.SearchResultProcessor() {
                 @Override
-                public void process(Map<String, String> result) {
+                public boolean process(Map<String, String> result) {
                     System.out.println(result);
+                    return true;
                 }
             });
         }

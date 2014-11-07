@@ -295,7 +295,8 @@ public class FusionIndex implements Index {
         List<String> columns = (List<String>) json.get("columns");
         for (Object tmp : (List) json.get("rows")) {
             List<String> row = (List<String>) tmp;
-            processor.process(makeMetadataMapFromQueryResult(columns, row));
+            if (!processor.process(makeMetadataMapFromQueryResult(columns, row)))
+                break;
         }
     }
 
