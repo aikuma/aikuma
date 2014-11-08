@@ -82,8 +82,16 @@ public class SyncSettingsActivity extends AikumaActivity {
 			} else {
 				ipAddressField.setText(serverCredentials.getIPAddress());
 			}
-			usernameField.setText(serverCredentials.getUsername());
-			passwordField.setText(serverCredentials.getPassword());
+			if (serverCredentials.getUsername().equals("")) {
+				usernameField.setText("admin");
+			} else {
+				usernameField.setText(serverCredentials.getUsername());
+			}
+			if (serverCredentials.getPassword().equals("")) {
+				passwordField.setText("admin");
+			} else {
+				passwordField.setText(serverCredentials.getPassword());
+			}
 			automaticSyncCheckBox.setChecked(
 					serverCredentials.getSyncActivated());
 			syncActivated = serverCredentials.getSyncActivated();
@@ -92,6 +100,8 @@ public class SyncSettingsActivity extends AikumaActivity {
 			//If reading fails, then no text is put into the fields, except for
 			//the default IP.
 			ipAddressField.setText("192.168.0.1");
+			usernameField.setText("admin");
+			passwordField.setText("admin");
 		}
 	}
 

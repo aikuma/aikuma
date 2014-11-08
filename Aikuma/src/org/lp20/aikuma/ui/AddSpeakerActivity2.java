@@ -16,9 +16,12 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.FileIO;
 
@@ -53,6 +56,23 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 					savedInstanceState.getParcelableArrayList("selectedLanguages");
 		} else {
 			languages = FileIO.readDefaultLanguages();
+			// 8 languages will be selected as default languages when app is installed
+			if(languages.size() == 0) {
+				List<Language> langs = Aikuma.getLanguages();
+				List<String> langCodes = 
+						Arrays.asList("eng", "fra", "spa", "por", "rus", "cmn", "ara", "hin");
+				for(Language lang : langs) {
+					if(langCodes.contains(lang.getCode())) {
+						languages.add(lang);
+					}
+				}
+				Collections.sort(languages);
+				try {
+					FileIO.writeDefaultLanguages(languages);
+				} catch (IOException e) {
+					Log.e(TAG, e.getMessage());
+				}
+			}
 			selectedLanguages = new ArrayList<Language>();
 		}
 		
@@ -159,4 +179,6 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 	private ArrayList<Language> languages = new ArrayList<Language>();
 	private ArrayList<Language> selectedLanguages;
 	private ArrayAdapter<Language> adapter;
+	
+	private static final String TAG = "AddSpeakerActivity2";
 }

@@ -234,7 +234,7 @@ public final class ImageUtils {
 			break;
 		}
 
-		Bitmap small = ImageUtils.resizeBitmap(image, 0.05f);
+		Bitmap small = ImageUtils.resizeBitmap(image, 0.1f);
 		if (rotate != 0) {
 			Matrix matrix = new Matrix();
 			matrix.postRotate(rotate);

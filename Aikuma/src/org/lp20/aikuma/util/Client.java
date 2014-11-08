@@ -21,6 +21,8 @@ import android.util.Log;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  * FTP client that allows the application to sync it's data with a server.
@@ -266,12 +268,42 @@ public class Client {
 			
 		
 			for (String filename : clientFilenames) {
+				Log.i("sync", "name: " + filename);
 				file = new File(clientDir.getPath() + "/" + filename);
-				if (!file.getName().endsWith(".inprogress")) {
+				if (!filename.endsWith(".inprogress") && !filename.startsWith("default_languages")) {
 					// If file doesn't end with '.inprogress', 
 					// it is not the one Aikuma previously made. Then check the file.
 					if (!file.isDirectory()) { // If it is not a directory
-						if (!serverFilenames.contains(filename)) { 
+						// In case of index, update the index file (Only one device can update it)
+						// Currently it takes an optimistic approach (lost update can occur)
+						if(filename.startsWith("index")) {
+							File tempIndexFile = new File(clientDir.getPath() + "/" + "temp");
+							if(pullFile(directoryPath, file, tempIndexFile)) {
+								JSONObject clientIndices = FileIO.readJSONObject(file);
+								JSONObject serverIndices = FileIO.readJSONObject(tempIndexFile);
+								for(Object key : serverIndices.keySet()) {
+									String srcId = (String) key;
+									JSONArray clientValues = (JSONArray) clientIndices.get(srcId);
+									JSONArray serverValues = (JSONArray) serverIndices.get(srcId);
+									if(clientValues == null) {
+										clientIndices.put(srcId, serverValues);
+									} else {
+										for(Object val : serverValues) {
+											String mappedRspkId = (String) val;
+											if(!clientValues.contains(mappedRspkId)) {
+												clientValues.add(mappedRspkId);
+											}
+										}
+										clientIndices.put(srcId, serverValues);
+									}
+								}
+								FileIO.writeJSONObject(file, clientIndices);
+								boolean st = tempIndexFile.delete();
+								Log.i("sync", "delete: " + st);
+							}
+						}
+						
+						if (!serverFilenames.contains(filename) || filename.startsWith("index") ) { 
 							// and if Server doesn't have the file, upload/count.
 							if(mode == 0) {
 								if(pushFile(directoryPath, file)) {
@@ -299,7 +331,7 @@ public class Client {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e("sync", e.getMessage());
 			return -1;
 		}
 
@@ -343,9 +375,10 @@ public class Client {
 	 * @param	file	The file to be pulled.
 	 * @param	directoryPath	The directory the file resides in, relative to
 	 * the base directory.
+	 * @param	outputFile		File to be output in the client device (should be in the same directory with file)
 	 * @return	true if successful; false otherwise.
 	 */
-	public boolean pullFile(String directoryPath, File file) {
+	public boolean pullFile(String directoryPath, File file, File outputFile) {
 		boolean result = false;
 		try {
 			File inProgressFile = new File(file.getPath() + ".inprogress");
@@ -357,11 +390,15 @@ public class Client {
 							file.getName(),
 					stream);
 			stream.close();
-			inProgressFile.renameTo(file);
+			inProgressFile.renameTo(outputFile);
 		} catch (IOException e) {
 			return false;
 		}
 		return result;
+	}
+	
+	private boolean pullFile(String directoryPath, File file) {
+		return pullFile(directoryPath, file, file);
 	}
 	
 	/**

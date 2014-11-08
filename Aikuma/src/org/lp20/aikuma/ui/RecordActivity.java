@@ -44,7 +44,7 @@ public class RecordActivity extends AikumaActivity {
 		// Disable the stopButton(saveButton) before the recording starts
 		ImageButton stopButton = 
 				(ImageButton) findViewById(R.id.stopButton);
-		stopButton.setImageResource(R.drawable.save48);
+		stopButton.setImageResource(R.drawable.ok_disabled_48);
 		stopButton.setEnabled(false);
 		
 		// Set up the Beeper that will make beeps when recording starts and
@@ -171,8 +171,9 @@ public class RecordActivity extends AikumaActivity {
 			ImageButton stopButton =
 					(ImageButton) findViewById(R.id.stopButton);
 			recordButton.setEnabled(true);
-			stopButton.setImageResource(R.drawable.save_activate48);
+			stopButton.setImageResource(R.drawable.ok_48);
 			stopButton.setEnabled(true);
+			
 			recordButton.setVisibility(View.VISIBLE);
 			pauseButton.setVisibility(View.GONE);
 			try {

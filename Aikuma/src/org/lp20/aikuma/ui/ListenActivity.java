@@ -416,10 +416,10 @@ public class ListenActivity extends AikumaActivity {
 		if(recording.isArchived() || 
 				!recording.getOwnerId().equals(AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(3, false);
-			quickMenu.setItemImageResourceAt(3, R.drawable.archive_grey);
+			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
 		} else {
 			quickMenu.setItemEnabledAt(3, true);
-			quickMenu.setItemImageResourceAt(3, R.drawable.archive_32);
+			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_48);
 		}
 	}
 

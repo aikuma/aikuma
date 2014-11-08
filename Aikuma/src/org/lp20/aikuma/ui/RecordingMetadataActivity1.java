@@ -115,7 +115,14 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 	 * @param	view	the OK button.
 	 */
 	public void onOkButtonPressed(View view) {
-		Intent intent = new Intent(this, RecordingMetadataActivity2.class);
+		Intent intent;
+		if(sourceVerId != null) {
+			intent = new Intent(this, RecordingMetadataActivity3.class);
+			intent.putExtra("sourceVerId", sourceVerId);
+			intent.putExtra("description", "");
+		} else {
+			intent = new Intent(this, RecordingMetadataActivity2.class);
+		} 
 		intent.putExtra("uuidString", uuid.toString());
 		intent.putExtra("sampleRate", sampleRate);
 		intent.putExtra("durationMsec", durationMsec);
@@ -128,8 +135,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 			intent.putExtra("longitude", longitude);
 		}
 		
-		if(sourceVerId != null)
-			intent.putExtra("sourceVerId", sourceVerId);
+		
 		if(groupId != null)
 			intent.putExtra("groupId", groupId);
 		

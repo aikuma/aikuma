@@ -73,6 +73,11 @@ public class ThumbRespeakFragment extends Fragment {
 
 	// Implements the behaviour for the play and respeak buttons.
 	private void installButtonBehaviour(View v) {
+		final ImageButton okButton = (ImageButton) 
+				v.findViewById(R.id.saveButton);
+		okButton.setImageResource(R.drawable.ok_disabled_48);
+		okButton.setEnabled(false);
+		
 		final ImageButton playButton = (ImageButton)
 				v.findViewById(R.id.PlayButton);
 		final ImageButton respeakButton = (ImageButton)
@@ -141,6 +146,10 @@ public class ThumbRespeakFragment extends Fragment {
 					respeaker.recordRespeaking();
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
+					if(!okButton.isEnabled()) {
+						okButton.setImageResource(R.drawable.ok_48);
+						okButton.setEnabled(true);
+					}
 					//respeakButton.setBackgroundColor(greyColor);
 					try {
 						respeaker.pauseRespeaking();

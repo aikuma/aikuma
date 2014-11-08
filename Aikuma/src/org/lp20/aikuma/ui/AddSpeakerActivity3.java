@@ -97,7 +97,9 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 		
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-		
+        // TODO: This is a temporary solution, custom camera activity is needed for facing-camera
+		takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+        
 		startActivityForResult(takePictureIntent, actionCode);
 	}
 
