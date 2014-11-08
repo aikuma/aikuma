@@ -10,7 +10,7 @@ import org.lp20.aikuma.audio.Player.OnCompletionListener;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.model.TempTranscript;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 import android.util.Log;
 

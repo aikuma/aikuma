@@ -25,7 +25,7 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * @author	Oliver Adams	<oliver.adams@gmail.com>

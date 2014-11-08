@@ -23,7 +23,7 @@ import org.lp20.aikuma.model.ServerCredentials;
 import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.MainActivity;
 //import org.lp20.sync.FTPSyncUtil;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * Periodically syncs with to a server specified in a ServerCredentials object

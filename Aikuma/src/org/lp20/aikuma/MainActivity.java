@@ -74,7 +74,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * The primary activity that lists existing recordings and allows you to select

@@ -7,7 +7,7 @@ package org.lp20.aikuma.ui;
 import java.util.UUID;
 
 
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 import android.content.Intent;
 import android.os.Bundle;

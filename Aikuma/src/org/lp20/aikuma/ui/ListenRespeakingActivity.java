@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;

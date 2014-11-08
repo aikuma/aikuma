@@ -15,7 +15,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.SeekBar;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import java.util.ArrayList;
 import java.util.List;
 

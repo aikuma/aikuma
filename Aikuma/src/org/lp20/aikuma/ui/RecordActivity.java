@@ -24,7 +24,7 @@ import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Recording;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 
 /**

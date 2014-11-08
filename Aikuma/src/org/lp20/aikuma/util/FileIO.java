@@ -9,7 +9,7 @@ import android.os.Environment;
 import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import com.google.common.base.Charsets;
 import java.io.File;
 import java.io.FileNotFoundException;

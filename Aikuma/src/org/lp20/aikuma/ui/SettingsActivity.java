@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 
 import java.io.IOException;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;

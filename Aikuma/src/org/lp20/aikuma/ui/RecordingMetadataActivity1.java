@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.util.FileIO;

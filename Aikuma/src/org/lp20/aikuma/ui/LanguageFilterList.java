@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.Aikuma;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.model.Language;
 

@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.MainActivity;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.audio.SimplePlayer;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;

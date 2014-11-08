@@ -16,7 +16,7 @@ import org.lp20.aikuma.audio.record.analyzers.Analyzer;
 import org.lp20.aikuma.audio.record.analyzers.SimpleAnalyzer;
 import org.lp20.aikuma.audio.Beeper;
 import org.lp20.aikuma.audio.Sampler;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.ui.RecordActivity;
 import static org.lp20.aikuma.audio.record.Microphone.MicException;
 

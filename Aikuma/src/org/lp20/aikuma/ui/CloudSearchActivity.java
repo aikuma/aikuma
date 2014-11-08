@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.lp20.aikuma.MainActivity;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.util.AikumaSettings;
 

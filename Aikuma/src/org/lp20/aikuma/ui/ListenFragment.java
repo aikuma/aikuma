@@ -27,7 +27,7 @@ import org.lp20.aikuma.audio.MarkedPlayer;
 import org.lp20.aikuma.audio.TranscriptPlayer;
 import org.lp20.aikuma.model.Segments;
 import org.lp20.aikuma.model.Segments.Segment;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * A fragment used to perform audio playback; offers a seekbar, a play and

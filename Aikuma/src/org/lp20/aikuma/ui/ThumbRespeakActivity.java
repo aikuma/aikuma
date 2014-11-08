@@ -18,7 +18,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.UUID;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;

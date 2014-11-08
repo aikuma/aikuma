@@ -21,7 +21,7 @@ import org.lp20.aikuma.audio.record.analyzers.ThresholdSpeechAnalyzer;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.recognizers.AverageRecognizer;
 import org.lp20.aikuma.model.Recording;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.util.FileIO;
 
 /**

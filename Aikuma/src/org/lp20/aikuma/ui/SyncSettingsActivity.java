@@ -21,7 +21,7 @@ import android.widget.Toast;
 import android.widget.CheckBox;
 import java.io.IOException;
 import org.lp20.aikuma.model.ServerCredentials;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.SyncUtil;
 

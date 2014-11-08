@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import org.lp20.aikuma.model.Language;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * Allows the user to add a custom language as a default language that isn't in

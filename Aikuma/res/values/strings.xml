@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Aikuma</string>
+    <string name="app_name">Aikuma2</string>
     <string name="search">Search</string>
     <string name="settings">General Settings</string>
     <string name="sync">Sync</string>

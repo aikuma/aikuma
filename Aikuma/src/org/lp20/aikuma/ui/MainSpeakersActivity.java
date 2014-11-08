@@ -17,7 +17,7 @@ import android.widget.ListView;
 import java.util.Collections;
 import java.util.List;
 import org.lp20.aikuma.model.Speaker;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * @author	Oliver Adams	<oliver.adams@gmail.com>

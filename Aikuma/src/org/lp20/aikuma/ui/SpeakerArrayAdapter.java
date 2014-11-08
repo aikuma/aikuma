@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Language;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * The array adapter for dealing with lists of Speakers.

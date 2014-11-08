@@ -11,7 +11,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import java.io.IOException;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * Provides methods to make beeping noises for when recording is started and

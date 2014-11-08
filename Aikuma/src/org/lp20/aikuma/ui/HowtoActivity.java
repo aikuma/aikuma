@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import org.lp20.aikuma.Aikuma;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import android.net.Uri;
 import android.content.Intent;
 

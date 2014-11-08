@@ -19,7 +19,7 @@ import java.util.List;
 
 
 import org.lp20.aikuma.model.Language;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * An array adapter to handle the list of languages associated with speakers.

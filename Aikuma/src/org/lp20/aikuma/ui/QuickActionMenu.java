@@ -1,6 +1,6 @@
 package org.lp20.aikuma.ui;
 
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 import android.content.Context;
 import android.graphics.Rect;
