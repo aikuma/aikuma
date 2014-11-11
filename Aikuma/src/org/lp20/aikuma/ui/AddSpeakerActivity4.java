@@ -67,6 +67,7 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 		try {
 			ImageUtils.createSmallSpeakerImage(this.imageUUID);
 			image = ImageUtils.getNoSyncSmallImage(this.imageUUID);
+			
 		} catch (IOException e) {
 			image = null;
 		}

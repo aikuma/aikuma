@@ -63,15 +63,28 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 		safeActivityTransition = false;
 		safeActivityTransitionMessage = 
 				"This will discard the new speaker's photo.";
-
-		imageUUID = UUID.randomUUID();
+		
+		if(savedInstanceState != null) {
+			imageUUID = UUID.fromString(savedInstanceState.getString("imageUUID"));
+		} else {
+			imageUUID = UUID.randomUUID();
+		}
+		
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	    // Save the current activity state
+		savedInstanceState.putString("imageUUID", imageUUID.toString());
+	    
+	    //Call the superclass to save the view hierarchy state
+	    super.onSaveInstanceState(savedInstanceState);
+	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent
 			result) {
-		if (resultCode == RESULT_OK) {
+		if (resultCode == RESULT_OK) {	
 			Intent lastIntent = new Intent(this, AddSpeakerActivity4.class);
 			lastIntent.putExtra("origin", getIntent().getExtras().getInt("origin"));
 			lastIntent.putExtra("name", name);
@@ -99,8 +112,11 @@ public class AddSpeakerActivity3 extends AikumaActivity {
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         // TODO: This is a temporary solution, custom camera activity is needed for facing-camera
 		takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-        
-		startActivityForResult(takePictureIntent, actionCode);
+		
+		if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+			startActivityForResult(takePictureIntent, actionCode);
+	    }
+		
 	}
 
 	static final int PHOTO_REQUEST_CODE = 1;
