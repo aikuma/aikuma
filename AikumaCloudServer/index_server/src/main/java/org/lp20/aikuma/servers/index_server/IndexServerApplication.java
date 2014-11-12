@@ -7,5 +7,6 @@ import org.glassfish.jersey.server.ResourceConfig;
  */
 public class IndexServerApplication extends ResourceConfig{
     public TokenManager tokenManager;
+    public JWTVerifier jwtVerifier = null;
 
 }
