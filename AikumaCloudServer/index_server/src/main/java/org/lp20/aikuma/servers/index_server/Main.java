@@ -15,9 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -37,19 +35,41 @@ public class Main {
             InputStream in = new FileInputStream(fileLoc);
             props.load(in);
             in.close();
-            Map<String,Object> tmp = new HashMap<String, Object>(5);
-            tmp.put("table_id", props.getProperty("table_id"));
-            tmp.put("base_uri", props.getProperty("base_uri"));
-            tmp.put("use_ssl", props.getProperty("use_ssl"));
-            tmp.put("keystore_file", props.getProperty("keystore_file"));
-            tmp.put("keystore_password", props.getProperty("keystore_password"));
+            Map<String,Object> localProps = new HashMap<String, Object>(5);
+            localProps.put("table_id", props.getProperty("table_id"));
+            localProps.put("base_uri", props.getProperty("base_uri"));
+            localProps.put("use_ssl", props.getProperty("use_ssl"));
+            localProps.put("keystore_file", props.getProperty("keystore_file"));
+            localProps.put("keystore_password", props.getProperty("keystore_password"));
 
             app.tokenManager = new TokenManager(props.getProperty("client_id"),
                                                 props.getProperty("client_secret"),
                                                 props.getProperty("refresh_token"),
                                                 props.getProperty("access_token"));
+            if ("yes".equals(props.getProperty("require_auth"))) {
+                localProps.put("require_auth", "yes");
+                String audience = props.getProperty("client_id");
+                List<String> client_ids = new LinkedList<String>();
+                String tmp = props.getProperty("valid_app_client_ids");
+                if (tmp != null) {
+                    for (String s : tmp.split(",")) {
+                        client_ids.add(s.replace("\\s*", ""));
+                    }
 
-            app.addProperties(tmp);
+                    if (!"yes".equals(localProps.get("use_ssl"))) {
+                        log.warning("require_auth = yes, but use_ssl != yes; this is insecure!");
+                    }
+
+                    app.jwtVerifier = new GoogleJWTVerifier(audience, client_ids);
+                } else {
+                    log.severe("require_auth == yes, but no valid_app_client_ids specified. Aborting.");
+                    System.exit(1);
+                }
+            } else {
+                localProps.put("require_auth", "no");
+                app.jwtVerifier = new DummyJWTVerifier();
+            }
+            app.addProperties(localProps);
         } catch (NullPointerException | IOException e) {
             log.severe("Unable to load FusionIndex config from " + fileLoc + ". Cannot continue.");
             return false;
@@ -78,7 +98,7 @@ public class Main {
         HttpServer server;
         URI base_uri = URI.create((String) app.getProperty("base_uri"));
 
-        if (((String) app.getProperty("use_ssl")).equals("true")) {
+        if (((String) app.getProperty("use_ssl")).equals("yes")) {
             SSLContextConfigurator scc = new SSLContextConfigurator();
             URL url = null;
             try {
