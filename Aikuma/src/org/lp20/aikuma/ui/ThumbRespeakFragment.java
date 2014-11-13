@@ -89,8 +89,9 @@ public class ThumbRespeakFragment extends Fragment {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					// Color change
 					//playButton.setBackgroundColor(0xff00d500);
-					int previousGestureTime = gestureTime;
-					gestureTime = respeaker.getSimplePlayer().getCurrentMsec();
+					long previousGestureTime = gestureTime;
+					gestureTime = System.currentTimeMillis();
+					gestureTimeUpToDown = System.currentTimeMillis() - gestureTimeUpToDown;
 					
 					if(isCommented){ // After commentary is recorded(or At the start)
 						//Rewind and Store the start-point
@@ -99,8 +100,11 @@ public class ThumbRespeakFragment extends Fragment {
 							 // green-arrow button is pressed more than once
 						if(previousGestureTime < VALID_GESTURE_TIME) {
 							respeaker.playOriginal(2); //Rewind
-						} else {
+						} else if(gestureTimeUpToDown < VALID_GESTURE_TIME) {
 							respeaker.playOriginal(0); //Continue
+						} else {
+							respeaker.playOriginal(1); //Rewind and Store the start-point
+							isCommented = true;
 						}
 					}
 					
@@ -127,7 +131,8 @@ public class ThumbRespeakFragment extends Fragment {
 					//playButton.setBackgroundColor(greyColor);
 					respeaker.pauseOriginal();
 					stopThread(seekBarThread);
-					gestureTime = (respeaker.getSimplePlayer().getCurrentMsec() - gestureTime);
+					gestureTime = System.currentTimeMillis() - gestureTime;
+					gestureTimeUpToDown = System.currentTimeMillis();
 					Log.i("Thumb", ""+ gestureTime);
 					if(gestureTime >= VALID_GESTURE_TIME) {
 						isCommented = false;
@@ -140,22 +145,24 @@ public class ThumbRespeakFragment extends Fragment {
 		respeakButton.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					//respeakButton.setBackgroundColor(0xffff2020);
-					respeaker.pauseOriginal();
-					respeaker.recordRespeaking();
-				}
-				if (event.getAction() == MotionEvent.ACTION_UP) {
-					if(!okButton.isEnabled()) {
-						okButton.setImageResource(R.drawable.ok_48);
-						okButton.setEnabled(true);
+				if(!isCommented) {
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						//respeakButton.setBackgroundColor(0xffff2020);
+						respeaker.pauseOriginal();
+						respeaker.recordRespeaking();
 					}
-					//respeakButton.setBackgroundColor(greyColor);
-					try {
-						respeaker.pauseRespeaking();
-						isCommented = true;
-					} catch (MicException e) {
-						ThumbRespeakFragment.this.getActivity().finish();
+					if (event.getAction() == MotionEvent.ACTION_UP) {
+						if(!okButton.isEnabled()) {
+							okButton.setImageResource(R.drawable.ok_48);
+							okButton.setEnabled(true);
+						}
+						//respeakButton.setBackgroundColor(greyColor);
+						try {
+							respeaker.pauseRespeaking();
+							isCommented = true;
+						} catch (MicException e) {
+							ThumbRespeakFragment.this.getActivity().finish();
+						}
 					}
 				}
 				return false;
@@ -224,6 +231,7 @@ public class ThumbRespeakFragment extends Fragment {
 	private int sampleRate;
 	
 	private final int VALID_GESTURE_TIME = 100; //0.1sec
-	private int gestureTime = VALID_GESTURE_TIME;
+	private long gestureTime = VALID_GESTURE_TIME;
+	private long gestureTimeUpToDown = VALID_GESTURE_TIME;
 	private boolean isCommented = true;
 }

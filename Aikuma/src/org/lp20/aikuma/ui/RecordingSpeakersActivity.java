@@ -43,7 +43,6 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 		okButton.setEnabled(false);
 		
 		selectedSpeakers = new ArrayList<Speaker>();
-
 	}
 
 	@Override
