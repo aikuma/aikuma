@@ -1,0 +1,22 @@
+apply plugin: 'eclipse'
+
+subprojects {
+    apply plugin: 'java'
+    sourceSets.main.java {
+        srcDir project.projectDir
+    }
+    dependencies {
+        compile fileTree(dir:project.rootDir.path + '/libs', include:['*.jar'])
+    }
+}
+
+project(':api') {
+    jar.baseName = 'aikuma-cloud-storage'
+}
+
+project(':demo') {
+    dependencies {
+        compile project(':api')
+    }
+}
+
