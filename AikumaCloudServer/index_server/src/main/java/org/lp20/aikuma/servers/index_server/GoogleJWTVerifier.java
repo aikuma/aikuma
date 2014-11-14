@@ -7,8 +7,10 @@ import io.jsonwebtoken.*;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.annotation.Retention;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -102,6 +104,8 @@ public class GoogleJWTVerifier implements JWTVerifier {
 
     @Override
     public boolean verifyToken(String token) {
+        if (token == null) return false;
+
         String head = token.split("\\.")[0];
         String kid = (String) ((JSONObject) JSONValue.parse(new String(Base64.getDecoder().decode(head)))).get("kid");
         if (!keys.containsKey(kid)) {
@@ -114,9 +118,9 @@ public class GoogleJWTVerifier implements JWTVerifier {
         assert key != null;
         try {
             Claims body = (Claims) Jwts.parser().setSigningKey(key).parse(token).getBody();
-            String aud = body.getAudience();
+            String aud = (String) body.get("aud");
             String azp = (String) body.get("azp");
-            if (body.getAudience().equals(audience) && client_ids.contains(azp)) {
+            if (aud.equals(audience) && client_ids.contains(azp)) {
                 return true;
             }
         } catch (JwtException e) {

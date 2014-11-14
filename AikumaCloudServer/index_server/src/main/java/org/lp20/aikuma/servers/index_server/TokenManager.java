@@ -12,20 +12,17 @@ import java.util.logging.Logger;
  *
  */
 public class TokenManager {
-    private GoogleAuth auth;
+    private GoogleServiceAuth auth;
 
-    private final String refresh_token;
     private String access_token;
+    private String scopes;
     private static Logger log = Logger.getLogger(TokenManager.class.getName());
 
 
-    public TokenManager(String client_id, String client_secret, String refresh_token, String access_token) {
-        auth = new GoogleAuth(client_id, client_secret);
-        this.refresh_token = refresh_token;
-        this.access_token = access_token;
-        if (!GoogleAuth.validateAccessToken(this.access_token)) {
-            this.access_token = updateAccessToken();
-        }
+    public TokenManager(String service_email, String scopes, String privateKeyPath, String password) {
+        this.scopes = scopes;
+        auth = new GoogleServiceAuth(service_email, privateKeyPath, password);
+        this.access_token = auth.getAccessToken(scopes);
     }
 
 
@@ -34,15 +31,14 @@ public class TokenManager {
     }
 
     public String updateAccessToken() {
-        if (auth.refreshAccessToken(this.refresh_token)) {
-            return auth.getAccessToken();
-        } else {
+        String token = auth.getAccessToken(scopes);
+        if (token == null) {
             log.severe("Unable to refresh access token");
             // I should probably just kill the app here, there's no way forward
             System.err.println("Fatal problem: invalid access token and can't refresh token");
             System.exit(2);
         }
-        return null;
+        return token;
     }
 
 }

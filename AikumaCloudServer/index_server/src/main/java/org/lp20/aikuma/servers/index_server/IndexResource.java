@@ -1,5 +1,6 @@
 package org.lp20.aikuma.servers.index_server;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
@@ -40,6 +41,7 @@ public class IndexResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"authenticatedUser"})
     public Response search(MultivaluedMap<String, String> formParams,
                            @DefaultValue("false") @QueryParam("detail") String detail) {
         try {
@@ -77,6 +79,7 @@ public class IndexResource {
     @Path("{identifier}")
     @Consumes(MediaType.WILDCARD)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"authenticatedUser"})
     public Response getItem(@PathParam("identifier") String identifier) {
         try {
             return doGetItem(identifier);
@@ -106,6 +109,7 @@ public class IndexResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{identifier}")
+    @RolesAllowed({"authenticatedUser"})
     public Response addItem(@PathParam("identifier") String identifier, MultivaluedMap<String, String> formParams) {
         try {
             return doAddItem(identifier, formParams);
@@ -139,6 +143,7 @@ public class IndexResource {
 
     @PUT
     @Path("{identifier}")
+    @RolesAllowed({"authenticatedUser"})
     public Response updateItem(@PathParam("identifier") String identifier, MultivaluedMap<String, String> formParams) {
         try {
             return doUpdateItem(identifier, formParams);

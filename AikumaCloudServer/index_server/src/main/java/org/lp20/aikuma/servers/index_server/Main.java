@@ -1,23 +1,17 @@
 package org.lp20.aikuma.servers.index_server;
 
-import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ContainerFactory;
 
-import javax.net.ssl.SSLContext;
-import javax.ws.rs.core.Application;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.logging.Logger;
-
+import org.glassfish.jersey.message.filtering.SecurityEntityFilteringFeature;
 /**
  * Main class.
  *
@@ -42,13 +36,15 @@ public class Main {
             localProps.put("keystore_file", props.getProperty("keystore_file"));
             localProps.put("keystore_password", props.getProperty("keystore_password"));
 
-            app.tokenManager = new TokenManager(props.getProperty("client_id"),
-                                                props.getProperty("client_secret"),
-                                                props.getProperty("refresh_token"),
-                                                props.getProperty("access_token"));
+            app.tokenManager = new TokenManager(props.getProperty("service_email"),
+                                                props.getProperty("scopes"),
+                                                props.getProperty("private_key_path"),
+                                                props.getProperty("private_key_password"));
+
+
             if ("yes".equals(props.getProperty("require_auth"))) {
                 localProps.put("require_auth", "yes");
-                String audience = props.getProperty("client_id");
+                String audience = props.getProperty("audience");
                 List<String> client_ids = new LinkedList<String>();
                 String tmp = props.getProperty("valid_app_client_ids");
                 if (tmp != null) {
@@ -70,6 +66,9 @@ public class Main {
                 app.jwtVerifier = new DummyJWTVerifier();
             }
             app.addProperties(localProps);
+
+            app.register(SecurityEntityFilteringFeature.class);
+
         } catch (NullPointerException | IOException e) {
             log.severe("Unable to load FusionIndex config from " + fileLoc + ". Cannot continue.");
             return false;
