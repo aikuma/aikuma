@@ -11,10 +11,12 @@ subprojects {
 }
 
 project(':api') {
+    buildDir file(project.rootDir.path + '/build/api')
     jar.baseName = 'aikuma-cloud-storage'
 }
 
 project(':demo') {
+    buildDir file(project.rootDir.path + '/build/demo')
     dependencies {
         compile project(':api')
     }
