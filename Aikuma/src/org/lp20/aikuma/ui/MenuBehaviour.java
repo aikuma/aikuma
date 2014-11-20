@@ -51,6 +51,8 @@ public class MenuBehaviour {
 		if (activity instanceof MainActivity) {
 			inflater.inflate(R.menu.main, menu);
 			//((MainActivity)activity).setUpSearchInterface(menu);
+			if(AikumaSettings.getCurrentUserId() != null)
+				setSignInState(true);
 		} else {
 			inflater.inflate(R.menu.other, menu);
 		}

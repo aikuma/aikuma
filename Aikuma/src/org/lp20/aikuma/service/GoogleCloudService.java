@@ -309,7 +309,7 @@ public class GoogleCloudService extends IntentService{
 	 */
 	private void backUp() {
 		//List<Recording> recordings = Recording.readAll();
-		List<Recording> recordings = Recording.readAll(googleEmailAccount);
+		List<Recording> recordings = Recording.readAll(AikumaSettings.getCurrentUserId());
 		
 		List<Speaker> speakers = Speaker.readAll();
 		

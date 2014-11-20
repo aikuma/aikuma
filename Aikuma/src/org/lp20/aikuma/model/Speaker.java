@@ -342,7 +342,7 @@ public class Speaker implements Parcelable{
 	}*/
 	
 	/**
-	 * Read all speakers from file
+	 * Read current-user's all speakers from file
 	 *
 	 * @return	A list of all the speakers in the Aikuma directory.
 	 */

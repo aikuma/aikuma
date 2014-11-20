@@ -133,8 +133,14 @@ public class MainActivity extends ListActivity {
 		if(emailAccount != null) {
 			// Validate access token
 			// (And if there are items to be archived, upload them)
-			new GetTokenTask(emailAccount, googleAPIScope, 
-	         		settings, false).execute();
+			if (isDeviceOnline()) {	
+                new GetTokenTask(emailAccount, googleAPIScope, 
+                		settings, false).execute();
+            } else {
+                Toast.makeText(this, "Network is disconnected", 
+                		Toast.LENGTH_SHORT).show();
+            }
+
 		} else if(AikumaSettings.isBackupEnabled 
 				|| AikumaSettings.isAutoDownloadEnabled) {
 			// When backup was enabled but the user hasn't ever signed-in google account
@@ -470,7 +476,7 @@ public class MainActivity extends ListActivity {
         	Log.i(TAG, "getAccountToken");
 
         	//TODO: Sign-out, Sign-in with other accounts
-        	if(AikumaSettings.getCurrentUserToken() == null) {
+        	if(AikumaSettings.getCurrentUserId() == null) {
         		pickUserAccount();
         	}
         } else if (GooglePlayServicesUtil.isUserRecoverableError(statusCode)) {
@@ -519,6 +525,7 @@ public class MainActivity extends ListActivity {
             	// Stores the account for next-use
             	AikumaSettings.setUserId(emailAccount);
             	showUserAccount(emailAccount, null);
+            	menuBehaviour.setSignInState(true);
                 settings.edit().putString(
                 		AikumaSettings.SETTING_OWNER_ID_KEY, emailAccount).commit();
             	
@@ -553,10 +560,16 @@ public class MainActivity extends ListActivity {
         }
         if (resultCode == RESULT_OK) {
             // User recovered error, retry to get access_token
-        	SharedPreferences settings = 
-    				PreferenceManager.getDefaultSharedPreferences(this);
-            new GetTokenTask(emailAccount, googleAPIScope, 
-            		settings, false).execute();
+        	if (isDeviceOnline()) {	
+        		SharedPreferences settings = 
+        				PreferenceManager.getDefaultSharedPreferences(this);
+                new GetTokenTask(emailAccount, googleAPIScope, 
+                		settings, false).execute();
+            } else {
+                Toast.makeText(this, "Network is disconnected", 
+                		Toast.LENGTH_SHORT).show();
+            }
+
             return;
         }
 //        if (resultCode == RESULT_CANCELED) {
@@ -605,7 +618,7 @@ public class MainActivity extends ListActivity {
                     Intent intent = 
                     		((UserRecoverableAuthException)e).getIntent();
                     startActivityForResult(intent,
-                    		RECOVER_FROM_GOOGLEPLAY_ERROR_REQUEST_CODE);
+                    		RECOVER_FROM_AUTH_ERROR_REQUEST_CODE);
                 }
             }
         });
@@ -631,7 +644,7 @@ public class MainActivity extends ListActivity {
     }
     
     /**
-     * Inner class to get an access token from google server
+     * Inner class to get/validate an access token from google server
      * 
      * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
      *
