@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
 
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma2.R;
 import org.lp20.aikuma.util.AikumaSettings;
@@ -78,7 +79,7 @@ public class MenuBehaviour {
 				return true;
 			case R.id.record:
 				if(AikumaSettings.getCurrentUserId() == null) {
-					((MainActivity)activity).showAlertDialog(
+					Aikuma.showAlertDialog(activity,
 							"You need to select your account");
 					return true;
 				}
@@ -87,7 +88,7 @@ public class MenuBehaviour {
 				return true;
 			case R.id.speakers:
 				if(AikumaSettings.getCurrentUserId() == null) {
-					((MainActivity)activity).showAlertDialog(
+					Aikuma.showAlertDialog(activity,
 							"You need to select your account");
 					return true;
 				}
@@ -157,7 +158,7 @@ public class MenuBehaviour {
 				return true;
 			case R.id.record:
 				if(AikumaSettings.getCurrentUserId() == null) {
-					((MainActivity)activity).showAlertDialog(
+					Aikuma.showAlertDialog(activity,
 							"You need to select an account to make a recording");
 					return true;
 				}

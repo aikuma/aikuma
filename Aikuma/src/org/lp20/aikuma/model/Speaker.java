@@ -33,7 +33,7 @@ import org.lp20.aikuma.util.ImageUtils;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class Speaker implements Parcelable{
+public class Speaker extends FileModel {
 
 	// String tag for debugging
 	private static final String TAG = "Speaker";
@@ -54,6 +54,7 @@ public class Speaker implements Parcelable{
 	 */
 	public Speaker(UUID imageUUID, String name, List<Language> languages,
 			String versionName, String ownerId) {
+		super(versionName, ownerId, null, "speaker", "jpg");
 		this.imageUUID = imageUUID;
 		setName(name);
 		setId(createId(name));
@@ -87,23 +88,10 @@ public class Speaker implements Parcelable{
 	 */
 	public Speaker(String name, List<Language> languages, String id,
 			String versionName, String ownerId) {
+		super(versionName, ownerId, null, "speaker", "jpg");
 		setName(name);
 		setLanguages(languages);
 		setId(id);
-		setVersionName(versionName);
-		setOwnerId(ownerId);
-	}
-
-	public String getId() {
-		return this.id;
-	}
-	
-	public String getOwnerId() {
-		return ownerId;
-	}
-	
-	public String getVersionName() {
-		return versionName;
 	}
 
 	/**
@@ -153,38 +141,6 @@ public class Speaker implements Parcelable{
 	 */
 	public File getSmallImageFile() {
 		return new File(getSpeakersPath(), getId() + "/" + getId() + "-image-small.jpg");
-	}
-	
-	/**
-	 * Get the Speaker's json metadata as a File
-	 * @return A File containing the Speaker's json metadata
-	 */
-	public File getMetadataFile() {
-		return new File(getSpeakersPath(), getId() + "/" + getId() + "-metadata.json");
-	}
-
-	/**
-	 * Returns a identifier used in cloud-storage
-	 * @param option	0: image, 1: small-image, 2: metadata
-	 * @return			a relative-path of speaker to 'aikuma/'
-	 */
-	public String getCloudIdentifier(int option) {
-		if(option < 0 || option > 2)
-			return null;
-		
-		String suffix = "";
-		if(option == 0)
-			suffix = "-image.jpg";
-		else if(option == 1)
-			suffix = "-image-small.jpg";
-		else
-			suffix = "-metadata.json";
-		
-		String ownerIdDirName = IdUtils.getOwnerDirName(ownerId);
-		String ownerDirStr = (versionName + "/" + 
-				ownerIdDirName.substring(0, 1) + "/" + 
-				ownerIdDirName.substring(0, 2) + "/" + ownerId + "/");
-		return (ownerDirStr + PATH + getId() + "/" + getId() + suffix);
 	}
 	
 	/**
@@ -284,7 +240,7 @@ public class Speaker implements Parcelable{
 		JSONObject encodedSpeaker = this.encode();
 
 		FileIO.writeJSONObject(new File(getSpeakersPath(), getId() +
-				"/" + getId() + "-metadata.json"), encodedSpeaker);
+				"/" + getId() + metadataSuffix), encodedSpeaker);
 	}
 
 	/**
@@ -301,7 +257,7 @@ public class Speaker implements Parcelable{
 		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
 		
 		JSONObject jsonObj = FileIO.readJSONObject(
-				new File(getSpeakersPath(ownerDir), id + "/" + id + "-metadata.json"));
+				new File(getSpeakersPath(ownerDir), id + "/" + id + metadataSuffix));
 		String name = (String) jsonObj.get("name");
 		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
 		if (languageArray == null) {
@@ -480,16 +436,6 @@ public class Speaker implements Parcelable{
 		}
 		this.languages = languages;
 	}
-	
-	// Sets the versionName(v0x)
-	private void setVersionName(String versionName) {
-		this.versionName = versionName;
-	}
-		
-	// Sets the ownerId(Google account)
-	private void setOwnerId(String ownerId) {
-		this.ownerId = ownerId;
-	}
 
 	@Override
 	public int describeContents() {
@@ -504,11 +450,11 @@ public class Speaker implements Parcelable{
 	 * written.
 	 */
 	public void writeToParcel(Parcel out, int _flags) {
+		out.writeString(versionName);
+		out.writeString(ownerId);
 		out.writeString(id.toString());
 		out.writeString(name);
 		out.writeTypedList(languages);
-		out.writeString(versionName);
-		out.writeString(ownerId);
 	}
 
 	/**
@@ -530,13 +476,12 @@ public class Speaker implements Parcelable{
 	 * @param	in	The parcel representing the Speaker to be constructed.
 	 */
 	public Speaker(Parcel in) {
+		super(in);
 		setId(in.readString());
 		setName(in.readString());
 		List<Language> languages = new ArrayList<Language>();
 		in.readTypedList(languages, Language.CREATOR);
 		setLanguages(languages);
-		setVersionName(in.readString());
-		setOwnerId(in.readString());
 	}
 
 	// Creates a purely numeric speaker ID
@@ -565,24 +510,9 @@ public class Speaker implements Parcelable{
 	}
 
 	/**
-	 * The ID of the Speaker.
-	 */
-	 private String id;
-
-	/**
 	 * The name of the Speaker.
 	 */
 	private String name;
-
-	/**
-	 * The speaker's format version
-	 */
-	private String versionName;
-	
-	/**
-	 * The speaker's owner ID
-	 */
-	private String ownerId;
 	
 	/**
 	 * The languages of the Speaker.

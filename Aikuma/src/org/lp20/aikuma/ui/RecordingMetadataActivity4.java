@@ -200,8 +200,14 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 						if(AikumaSettings.isBackupEnabled) {
 							Intent serviceIntent = new Intent(RecordingMetadataActivity4.this, 
 									GoogleCloudService.class);
-							serviceIntent.putExtra("id", recording.getVersionName() + "-" + recording.getId());
-							serviceIntent.putExtra("type", "recording");
+							serviceIntent.putExtra(GoogleCloudService.ACTION_KEY, 
+									recording.getVersionName() + "-" + recording.getId());
+							serviceIntent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "recording");
+							serviceIntent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
+									AikumaSettings.getCurrentUserId());
+							serviceIntent.putExtra(GoogleCloudService.TOKEN_KEY, 
+									AikumaSettings.getCurrentUserToken());
+							
 							startService(serviceIntent);
 						}
 						

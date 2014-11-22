@@ -4,7 +4,10 @@
 */
 package org.lp20.aikuma;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.provider.Settings.Secure;
 import java.util.List;
 import java.io.IOException;
@@ -54,6 +57,28 @@ public class Aikuma extends android.app.Application {
 				getContext().getContentResolver(), Secure.ANDROID_ID);
 	}
 
+	/**
+     * Checks whether the device is currently connected to a network
+     * @return	boolean for status
+     */
+    public static boolean isDeviceOnline() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Show the warning dialog with the message
+     * @param message	the message shown in the dialog
+     */
+    public static void showAlertDialog(Context activity, String message) {
+    	new AlertDialog.Builder(activity).setMessage(message).show();
+    }
+	
 	/**
 	 * Returns the ISO 639-3 languages once they are loaded.
 	 * 

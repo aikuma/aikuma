@@ -4,6 +4,9 @@
 */
 package org.lp20.aikuma.util;
 
+import org.lp20.aikuma.storage.FusionIndex;
+import org.lp20.aikuma.storage.GoogleDriveStorage;
+
 /**
  * The class storing setting parameters which can be accessed
  * by all Android components in the application
@@ -52,17 +55,31 @@ public class AikumaSettings {
 	public static final long SYNC_INTERVAL = 30 * 60 * 1000;
 	
 	/**
-	 *  List of keys in default SharedPreferences
-	 *  
-	 *  APPROVED_RECORDING_KEY	: A set of recording's version and IDs approved to be archived
-	 *  [archive-approved Recording Id]	: <Approved-date>|<archive-state>|<data-store-uri>
-	 *  ARCHIVED_RECORDING_KEY	: A set of recording IDs archived
-	 *  APPROVED_SPEAKERS_KEY	: A set of speaker IDs approved to be archived
-	 *  [archive-approved Speaker Id]	: <Approved-date>|<archive-state>
-	 *  ARCHIVED_SPEAKERS_KEY	: A set of speaker IDs archived
+	 * 	List of keys in default setting (application default SharedPreferences)
+	 * 
 	 *  BACKUP_MODE_KEY			: true/false
 	 *  AUTO_DOWNLOAD_MODE_KEY  : true/false
 	 *  RESPEAKING_MODE_KEY		: "phone"/"thumb"
+	 */
+	public static final String BACKUP_MODE_KEY = "backup_mode";
+	/** */
+	public static final String AUTO_DOWNLOAD_MODE_KEY = "autoDownload_mode";
+	/** */
+	public static final String RESPEAKING_MODE_KEY = "respeaking_mode";
+
+
+	/**
+	 *  List of keys in each user's setting (SharedPreferences of emailAccount)
+	 *  
+	 *  APPROVED_RECORDING_KEY	: A set of recording's version, ID and format-extensions approved to be archived
+	 *  [archive-approved Recording Id]	: <Approved-date>|<archive-state>|<data-store-uri>
+	 *  ARCHIVED_RECORDING_KEY	: A set of recording IDs archived
+	 *  APPROVED_SPEAKERS_KEY	: A set of speaker's version, ID and format-extensions approved to be archived
+	 *  [archive-approved Speaker Id]	: <Approved-date>|<archive-state>
+	 *  ARCHIVED_SPEAKERS_KEY	: A set of speaker IDs archived
+	 *  APPROVED_OTHERS_KEY	: A set of other files' version, ID and format-extensions approved to be archived
+	 *  [archive-approved other-file Id]	: <Approved-date>|<archive-state>
+	 *  ARCHIVED_OTHERS_KEY	: A set of other files' IDs archived (transcript, mapping files)
 	 */
 	public static final String APPROVED_RECORDING_KEY = "approvedRecordings";
 	/** */
@@ -72,12 +89,11 @@ public class AikumaSettings {
 	/** */
 	public static final String ARCHIVED_SPEAKERS_KEY = "archivedSpeakers";
 	/** */
-	public static final String BACKUP_MODE_KEY = "backup_mode";
+	public static final String APPROVED_OTHERS_KEY = "approvedOthers";
 	/** */
-	public static final String AUTO_DOWNLOAD_MODE_KEY = "autoDownload_mode";
-	/** */
-	public static final String RESPEAKING_MODE_KEY = "respeaking_mode";
-
+	public static final String ARCHIVED_OTHERS_KEY = "archivedOthers";
+	
+	
 	// Latest version name.
 	private static final String DEFAULT_VERSION = "v01";
 	
@@ -194,5 +210,24 @@ public class AikumaSettings {
 	public static void setCentralRatio(float ratio) {
 		RATIO_OF_CENTRAL_SYNC = ratio;
 	}
+	
+	/**
+     * Return an scope for google-API scope
+     * @return the scope of Google-Cloud
+     */
+    public static String getScope() {
+    	String joiner = "";
+		String scope = "oauth2:";
+		for (String s: GoogleDriveStorage.getScopes()) {
+			scope += joiner + s;
+			joiner = " ";
+		}
+
+		for (String s: FusionIndex.getScopes()) {
+			scope += joiner + s;
+			joiner = " ";
+		}
+		return scope;
+    }
 }
 

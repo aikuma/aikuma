@@ -328,8 +328,14 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	 */
 	public void onArchiveButtonPressed(Recording recording) {
 		Intent intent = new Intent(this, GoogleCloudService.class);
-		intent.putExtra("id", recording.getVersionName() + "-" + recording.getId());
-		intent.putExtra("type", "recording");
+		intent.putExtra(GoogleCloudService.ACTION_KEY, 
+				recording.getVersionName() + "-" + recording.getId());
+		intent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "recording");
+		intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
+				AikumaSettings.getCurrentUserId());
+		intent.putExtra(GoogleCloudService.TOKEN_KEY, 
+				AikumaSettings.getCurrentUserToken());
+		
 		startService(intent);
 	}
 
