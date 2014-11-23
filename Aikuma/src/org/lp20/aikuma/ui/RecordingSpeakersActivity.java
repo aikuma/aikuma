@@ -19,6 +19,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
 
 /**
@@ -54,7 +55,7 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 	public void onResume() {
 		super.onResume();
 
-		speakers = Speaker.readAll();
+		speakers = Speaker.readAll(AikumaSettings.getCurrentUserId());
 		ArrayAdapter<Speaker> adapter =
 				new RecordingSpeakerArrayAdapter(
 						this, speakers, selectedSpeakers) {

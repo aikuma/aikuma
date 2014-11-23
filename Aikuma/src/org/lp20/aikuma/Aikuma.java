@@ -73,6 +73,7 @@ public class Aikuma extends android.app.Application {
     
     /**
      * Show the warning dialog with the message
+     * @param activity	The activity where the message will be shown
      * @param message	the message shown in the dialog
      */
     public static void showAlertDialog(Context activity, String message) {

@@ -240,7 +240,7 @@ public class Speaker extends FileModel {
 		JSONObject encodedSpeaker = this.encode();
 
 		FileIO.writeJSONObject(new File(getSpeakersPath(), getId() +
-				"/" + getId() + metadataSuffix), encodedSpeaker);
+				"/" + getId() + METADATA_SUFFIX), encodedSpeaker);
 	}
 
 	/**
@@ -257,7 +257,7 @@ public class Speaker extends FileModel {
 		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
 		
 		JSONObject jsonObj = FileIO.readJSONObject(
-				new File(getSpeakersPath(ownerDir), id + "/" + id + metadataSuffix));
+				new File(getSpeakersPath(ownerDir), id + "/" + id + METADATA_SUFFIX));
 		String name = (String) jsonObj.get("name");
 		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
 		if (languageArray == null) {
@@ -298,12 +298,21 @@ public class Speaker extends FileModel {
 	}*/
 	
 	/**
-	 * Read current-user's all speakers from file
+	 * Read all speakers
 	 *
-	 * @return	A list of all the speakers in the Aikuma directory.
+	 * @return	A list of all speakers in the Aikuma directory.
 	 */
 	public static List<Speaker> readAll() {
-		String ownerId = AikumaSettings.getCurrentUserId();
+		return readAll(null);
+	}
+
+	/**
+	 * Read all speakers of the user
+	 *
+	 * @param userId	The user's ID
+	 * @return	A list of all the user's speakers in the Aikuma directory.
+	 */
+	public static List<Speaker> readAll(String userId) {
 		List<Speaker> speakers = new ArrayList<Speaker>();
 
 		// Get a list of version directories
@@ -324,8 +333,8 @@ public class Speaker extends FileModel {
 					for(File f : ownerIdDirs) {
 						Log.i(TAG, "readAll: " + f.getPath());
 						
-						if(f.getName().equals(ownerId))
-							addSpeakersInDir(speakers, f, f1.getName(), ownerId);
+						if(userId == null || f.getName().equals(userId))
+							addSpeakersInDir(speakers, f, f1.getName(), f.getName());
 					}
 				}
 			}

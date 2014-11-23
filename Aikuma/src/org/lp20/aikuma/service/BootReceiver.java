@@ -1,3 +1,7 @@
+/*
+	Copyright (C) 2013, The Aikuma Project
+	AUTHORS: Sangyeop Lee
+*/
 package org.lp20.aikuma.service;
 
 import org.lp20.aikuma.util.AikumaSettings;
@@ -10,6 +14,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+/**
+ * The broadcast-receiver listening for the device-boot event
+ * Re-initialize the alaram-event of cloud-service to be executed peirodically
+ *
+ * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+ */
 public class BootReceiver extends BroadcastReceiver {
 	
 	@Override

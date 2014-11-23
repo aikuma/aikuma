@@ -108,7 +108,8 @@ public class Recording extends FileModel {
 	 * @param	versionName	The recording's version(v0x)
 	 * @param	ownerId	The recording owner's ID(Google account)
 	 * @param	sourceVerId	The source's version and Id (if not respeaking, null)
-	 * @param	format	The file format
+	 * @param	format		The file format
+	 * @param	fileType	The file type
 	 * @param	languages	The languages associated with the recording
 	 * @param	speakersIds	The IDs of the speakers associated with the
 	 * recording
@@ -125,7 +126,7 @@ public class Recording extends FileModel {
 			String versionName, String ownerId, String sourceVerId,
 			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String respeakingId,
-			long sampleRate, int durationMsec, String format) {
+			long sampleRate, int durationMsec, String format, String fileType) {
 		super(versionName, ownerId, null, null, format);
 		setName(name);
 		setDate(date);
@@ -138,7 +139,7 @@ public class Recording extends FileModel {
 		setRespeakingId(respeakingId);
 		setId(determineId());
 		this.sourceVerId = sourceVerId;
-		setFileType(sourceVerId, languages);
+		this.fileType = fileType;
 	}
 
 	private String determineId() {
@@ -231,16 +232,16 @@ public class Recording extends FileModel {
 		if(isOriginal())
 			return null;
 		return new File(getRecordingsPath(), getGroupId() + "/" +
-				id + mappingSuffix);
+				id + MAPPING_SUFFIX);
 	}
 	
 	public String getTranscriptId() {
 		return (getGroupId() + "-" + getOwnerId() + "-" 
-					+ transcriptSuffix.substring(0, transcriptSuffix.lastIndexOf('.')));
+					+ TRANSCRIPT_SUFFIX.substring(0, TRANSCRIPT_SUFFIX.lastIndexOf('.')));
 	}
 	
 	public String getMapId() {
-		return (id + mappingSuffix.substring(0, mappingSuffix.lastIndexOf('.')));
+		return (id + MAPPING_SUFFIX.substring(0, MAPPING_SUFFIX.lastIndexOf('.')));
 	}
 
 	/**
@@ -317,7 +318,7 @@ public class Recording extends FileModel {
 	
 	/**
 	 * speakers' file-models accessor.
-	 * @return
+	 * @return	a list of File-model instances of the recording's speakers
 	 */
 	public List<FileModel> getSpeakers() {
 		List<FileModel> speakers = new ArrayList<FileModel>();
@@ -525,7 +526,7 @@ public class Recording extends FileModel {
 		// Write the json metadata.
 		FileIO.writeJSONObject(new File(
 				getRecordingsPath(), getGroupId() + "/" +
-						id + metadataSuffix),
+						id + METADATA_SUFFIX),
 				encodedRecording);
 	}
 
@@ -572,7 +573,7 @@ public class Recording extends FileModel {
 			public boolean accept(File dir, String filename) {
 				String[] splitFilename = filename.split("-");
 				if (splitFilename[2].equals("source") &&
-					filename.endsWith(metadataSuffix)) {
+					filename.endsWith(METADATA_SUFFIX)) {
 					return true;
 				}
 				return false;
@@ -599,7 +600,7 @@ public class Recording extends FileModel {
 		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
 		File metadataFile = 
 				new File(getRecordingsPath(ownerDir),
-						groupId + "/" + id + metadataSuffix);
+						groupId + "/" + id + METADATA_SUFFIX);
 		Log.i(TAG, metadataFile.getAbsolutePath());
 		return read(metadataFile);
 	}
@@ -645,6 +646,7 @@ public class Recording extends FileModel {
 		String ownerId = (String) jsonObj.get("user_id");
 		String sourceVerId = (String) jsonObj.get("source");
 		String format = (String) jsonObj.get("Format");
+		String fileType = (String) jsonObj.get("file_type");
 		
 		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
 		if (languageArray == null) {
@@ -682,7 +684,7 @@ public class Recording extends FileModel {
 		}
 		Recording recording = new Recording(name, date, versionName, ownerId, 
 				sourceVerId, languages, speakersIds, androidID, groupId, 
-				respeakingId, sampleRate, (Integer) durationMsec, format);
+				respeakingId, sampleRate, (Integer) durationMsec, format, fileType);
 		return recording;
 	}
 
@@ -739,7 +741,7 @@ public class Recording extends FileModel {
 			
 			File[] groupDirMetaFiles = groupDir.listFiles(new FilenameFilter() {
 				public boolean accept(File dir, String filename) {
-					return filename.endsWith(metadataSuffix);
+					return filename.endsWith(METADATA_SUFFIX);
 				}
 			});
 	
@@ -823,7 +825,7 @@ public class Recording extends FileModel {
 				// within that end in .json
 				File[] groupDirFiles = f.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
-						return filename.endsWith(metadataSuffix);
+						return filename.endsWith(METADATA_SUFFIX);
 					}
 				});
 
@@ -894,7 +896,7 @@ public class Recording extends FileModel {
 				// within that end in .json
 				File[] groupDirFiles = f.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String filename) {
-						return filename.endsWith(metadataSuffix);
+						return filename.endsWith(METADATA_SUFFIX);
 					}
 				});
 

@@ -1,3 +1,7 @@
+/*
+	Copyright (C) 2013, The Aikuma Project
+	AUTHORS: Sangyeop Lee
+*/
 package org.lp20.aikuma.model;
 
 import java.io.File;
@@ -8,14 +12,34 @@ import org.lp20.aikuma.util.IdUtils;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * The file modeled from the viewpoint of GoogleCloud
+ * (The parent class of Recording and Speaker / 
+ * This can encapsulate the transcript/mapping as well)
+ *
+ *
+ * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+ */
 public class FileModel implements Parcelable {
 
-	protected static final String metadataSuffix = "-metadata.json";
+	/**
+	 *  Suffix of metadata, maaping and transcript
+	 */
+	protected static final String METADATA_SUFFIX = "-metadata.json";
+	/** */
+	protected static final String MAPPING_SUFFIX = "-mapping.txt";
+	/** */
+	protected static final String TRANSCRIPT_SUFFIX = "-transcript.txt";
 	
-	protected static final String mappingSuffix = "-mapping.txt";
-	
-	protected static final String transcriptSuffix = "-transcript.txt";
-	
+	/**
+	 * Constructor of FileModel
+	 * 
+	 * @param versionName	versionName of the file-format
+	 * @param ownerId		OwnerID(UserID) of the file
+	 * @param id			Id of the file
+	 * @param type			Type of the file(speaker, mapping, ...)
+	 * @param format		Format of the file(jpg, mp4, wav, json, txt)
+	 */
 	public FileModel(
 			String versionName, String ownerId, String id, String type, String format) {
 		setVersionName(versionName);
@@ -26,8 +50,33 @@ public class FileModel implements Parcelable {
 	}
 	
 	/**
+	 * Factory function creating an instance of FileModel from cloud-ID
+	 * @param cloudIdentifier	Cloud-identifier of the file
+	 * @return	an instance of FileModel
+	 */
+	public static FileModel fromCloudId(String cloudIdentifier) {
+		String[] splitCloudId = cloudIdentifier.split("\\/");
+		
+		int index = splitCloudId[6].lastIndexOf('.');
+		String fileName = splitCloudId[6].substring(0, index);
+		String ext = splitCloudId[6].substring(index+1);
+		
+		if(ext.equals("json"))
+			return null;
+		else if(ext.equals("jpg")) {
+			return new FileModel(splitCloudId[0], splitCloudId[3], splitCloudId[5], "speaker", ext);
+		} else if(ext.equals("txt")) {
+			String[] splitName = fileName.split("-");
+			return new FileModel(splitCloudId[0], splitCloudId[3], fileName, splitName[splitName.length-1], ext);
+		} else {
+			String[] splitName = fileName.split("-");
+			return new FileModel(splitCloudId[0], splitCloudId[3], fileName, splitName[2], ext);
+		}
+	}
+	
+	/**
 	 * Constructor for parcel (only used by Speaker)
-	 * @param in
+	 * @param in	Parcel where the speaker will be created
 	 */
 	protected FileModel(Parcel in) {
 		String versionName = in.readString();
@@ -38,20 +87,32 @@ public class FileModel implements Parcelable {
 		this.format = "jpg";
 	}
 	
-	
+	/**
+	 * Getter of the file ID
+	 * @return	the ID of this file-model
+	 */
 	public String getId() {
 		return id;
 	}
 	
-	public String getVerIdFormat() {
+	/**
+	 * Getter of the file ID + extension (used in GoogleCloudService)
+	 * @return	The ID + extension of the file-model
+	 */
+	public String getIdExt() {
 		if(fileType.equals("speaker")) {
-			String verId = getVersionName() + "-" + getId() + "-" + getOwnerId() + getExtension();
-			return verId;
-		} else {	
-			// recording-type (source, respeaking, translation) and other-type (mapping, transcript)
-			String verId = getVersionName() + "-" + getId() + getExtension();
-			return verId;
+			return (id + "-image-small.jpg");
+		} else {
+			return (id + getExtension());
 		}
+	}
+	
+	/**
+	 * Getter of the file's metadata ID + extension
+	 * @return	The metadata ID + extension of the file-model
+	 */
+	public String getMetadataIdExt() {
+		return (id + METADATA_SUFFIX);
 	}
 	
 	/**
@@ -73,22 +134,28 @@ public class FileModel implements Parcelable {
 			if(option == 0)
 				suffix = "-image-small.jpg";
 			else
-				suffix = metadataSuffix;
+				suffix = METADATA_SUFFIX;
 			
 			return (ownerDirStr + Speaker.PATH + getId() + "/" + getId() + suffix);
 		} else {
 			if(option == 0)
 				suffix = getExtension();
-			else if(format.equals("txt"))
+			else if(format.equals("txt"))	// No metadata for transcript/mapping
 				return null;
 			else
-				suffix = metadataSuffix;
+				suffix = METADATA_SUFFIX;
 			String groupId = getId().split("-")[0];
 			
 			return (ownerDirStr + Recording.PATH + groupId + "/" + getId() + suffix);
 		}
 	}
 	
+	/**
+	 * Returns a File that refers to the item's file/metadata-file.
+	 * 
+	 * @param option	0: file, 1: metadata-file
+	 * @return	The file/metadata-file of the item
+	 */
 	public File getFile(int option) {
 		if(option != 0 && option != 1)
 			return null;
@@ -103,7 +170,7 @@ public class FileModel implements Parcelable {
 			if(option == 0)
 				suffix = "-image-small.jpg";
 			else
-				suffix = metadataSuffix;
+				suffix = METADATA_SUFFIX;
 			
 			return new File(itemPath, getId() + "/" + getId() + suffix);
 		} else {
@@ -113,10 +180,10 @@ public class FileModel implements Parcelable {
 			
 			if(option == 0)
 				suffix = getExtension();
-			else if(format.equals("txt"))
+			else if(format.equals("txt"))	// No metadata for transcript/mapping
 				return null;
 			else
-				suffix = metadataSuffix;
+				suffix = METADATA_SUFFIX;
 			String groupId = getId().split("-")[0];
 			
 			return new File(itemPath, groupId + "/" + getId() + suffix);
@@ -126,6 +193,10 @@ public class FileModel implements Parcelable {
 
 	public String getFileType() {
 		return fileType;
+	}
+	
+	public String getFormat() {
+		return format;
 	}
 	
 	public String getOwnerId() {
@@ -184,8 +255,13 @@ public class FileModel implements Parcelable {
 	 */
 	protected String id;
 	
+	/**
+	 * The filetype (speaker, mapping, ...)
+	 */
 	protected String fileType;
 
-	// vnd.wave / mp4 / jpg / txt
+	/**
+	 * vnd.wave / mp4 / jpg / txt
+	 */
 	protected String format;
 }

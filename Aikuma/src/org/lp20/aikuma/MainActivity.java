@@ -109,13 +109,6 @@ public class MainActivity extends ListActivity {
 				PreferenceManager.getDefaultSharedPreferences(this);
 //		settings.edit().clear().commit();
 		
-		recordingSet = (HashSet<String>)
-				settings.getStringSet(AikumaSettings.APPROVED_RECORDING_KEY, 
-						new HashSet<String>());
-		speakerSet = (HashSet<String>)
-				settings.getStringSet(AikumaSettings.APPROVED_SPEAKERS_KEY,
-						new HashSet<String>());
-		
 		emailAccount = settings.getString(AikumaSettings.SETTING_OWNER_ID_KEY, null);
 		googleAuthToken = settings.getString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, null);
 		googleAPIScope = AikumaSettings.getScope();
@@ -128,7 +121,6 @@ public class MainActivity extends ListActivity {
 		AikumaSettings.isAutoDownloadEnabled =
 				settings.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
 		
-		Log.i(TAG, recordingSet.toString());
 	
 		// Automatic validation
 		if(emailAccount != null) {
@@ -156,26 +148,22 @@ public class MainActivity extends ListActivity {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				String status = intent.getStringExtra(GoogleCloudService.SYNC_STATUS);
-				Log.i(TAG, "receive from cloud: " + status);
 				
 				if(status.equals("start")) {
 					showProgressStatus(View.VISIBLE);
 				} else if(status.equals("end")) {
 					showProgressStatus(View.GONE);
-				} else {
-					if(status.endsWith("source")) {
-						String[] splitName = status.split("-");
-						String verName = splitName[0];
-						String ownerId = splitName[2];
-						String recordingId = status.substring(4);
-						
-						try {
-							updateRecordingView(Recording.read(verName, ownerId, recordingId));
-						} catch (IOException e) {
-							Log.e(TAG, e.getMessage());
-						}
+				} else if(status.endsWith("source")) {	//source-download
+					String[] splitName = status.split("-");
+					String verName = splitName[0];
+					String ownerId = splitName[2];
+					String recordingId = status.substring(4);
+					
+					try {
+						updateRecordingView(Recording.read(verName, ownerId, recordingId));
+					} catch (IOException e) {
+						Log.e(TAG, e.getMessage());
 					}
-
 				}
 			}
 		};
@@ -413,10 +401,28 @@ public class MainActivity extends ListActivity {
 						AikumaSettings.getCurrentUserId());
 				syncIntent.putExtra(GoogleCloudService.TOKEN_KEY, 
 						AikumaSettings.getCurrentUserToken());
+				syncIntent.putExtra("forceSync", forceSync);
 				startService(syncIntent);
 			}
 		} else {
-			if(recordingSet.size() > 0 || speakerSet.size() > 0) {
+			SharedPreferences settings = 
+					getSharedPreferences(AikumaSettings.getCurrentUserId(), MODE_PRIVATE);
+	
+			int sz = 0;
+			sz += settings.getStringSet(AikumaSettings.APPROVED_RECORDING_KEY, 
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.APPROVED_SPEAKERS_KEY,
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.APPROVED_OTHERS_KEY,
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_RECORDING_KEY, 
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_SPEAKERS_KEY,
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_OTHERS_KEY,
+					new HashSet<String>()).size();
+
+			if(sz > 0) {
 	    		// If there are items to be uploaded,
 				// start the GoogleCloud upload service 
 	    		Intent intent = new Intent(MainActivity.this, 
@@ -428,17 +434,6 @@ public class MainActivity extends ListActivity {
 						AikumaSettings.getCurrentUserToken());
 				startService(intent);
 			}
-	    	
-	    	if(AikumaSettings.isAutoDownloadEnabled) {
-	    		Intent intent = new Intent(MainActivity.this, 
-	    				GoogleCloudService.class);
-	    		intent.putExtra(GoogleCloudService.ACTION_KEY, "autoDownload");
-	    		intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
-						AikumaSettings.getCurrentUserId());
-				intent.putExtra(GoogleCloudService.TOKEN_KEY, 
-						AikumaSettings.getCurrentUserToken());
-	    		startService(intent);
-	    	}
 		}
 		
 	}
@@ -450,9 +445,6 @@ public class MainActivity extends ListActivity {
 	SearchView searchView;
 	
 	MenuBehaviour menuBehaviour;
-	
-	private Set<String> recordingSet;
-	private Set<String> speakerSet;
 
 	private RecordingArrayAdapter adapter;
 	private ProgressDialog progressDialog;

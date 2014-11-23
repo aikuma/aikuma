@@ -50,9 +50,6 @@ public class SettingsActivity extends AikumaActivity {
 	private SeekBar sensitivitySlider;
 	private int defaultSensitivity;
 	private SharedPreferences preferences;
-
-	private boolean isBackupEnabled;
-	private boolean isAutoDownloadEnabled;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -77,12 +74,12 @@ public class SettingsActivity extends AikumaActivity {
 		if(AikumaSettings.getCurrentUserId() == null) {
 			syncCheckBox.setEnabled(false);
 		}
-		isBackupEnabled =
+		AikumaSettings.isBackupEnabled =
 				preferences.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
-		isAutoDownloadEnabled = 
+		AikumaSettings.isAutoDownloadEnabled = 
 				preferences.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
 		
-		syncCheckBox.setChecked(isBackupEnabled);
+		syncCheckBox.setChecked(AikumaSettings.isBackupEnabled);
 	}
 
 	// Set the respeaking mode radio buttons as per the settings.
@@ -198,7 +195,7 @@ public class SettingsActivity extends AikumaActivity {
 		Editor prefsEditor = preferences.edit();
 		Log.i(TAG, "checkbox: " + checked);
 		if(checked) {
-			if(!isBackupEnabled && !isAutoDownloadEnabled) {
+			if(!AikumaSettings.isBackupEnabled && !AikumaSettings.isAutoDownloadEnabled) {
 				Intent intent = new Intent(this, GoogleCloudService.class);
 				intent.putExtra(GoogleCloudService.ACTION_KEY, "sync");
 				intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
@@ -220,8 +217,8 @@ public class SettingsActivity extends AikumaActivity {
 				        PackageManager.DONT_KILL_APP);
 			}
 			
-			isBackupEnabled = true;
-			isAutoDownloadEnabled = true;
+			AikumaSettings.isBackupEnabled = true;
+			AikumaSettings.isAutoDownloadEnabled = true;
 			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, true);
 			prefsEditor.putBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, true);
 			prefsEditor.commit();
@@ -239,8 +236,8 @@ public class SettingsActivity extends AikumaActivity {
 			        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
 			        PackageManager.DONT_KILL_APP);
 			
-			isBackupEnabled = false;
-			isAutoDownloadEnabled = false;
+			AikumaSettings.isBackupEnabled = false;
+			AikumaSettings.isAutoDownloadEnabled = false;
 			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
 			prefsEditor.putBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
 			prefsEditor.commit();
