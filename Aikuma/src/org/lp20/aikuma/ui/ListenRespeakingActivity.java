@@ -190,7 +190,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		
 		if(googleAuthToken != null) {
 			QuickActionItem archiveAct = 
-					new QuickActionItem("archive", R.drawable.archive_32);
+					new QuickActionItem("share", R.drawable.aikuma_32);
 			quickMenu.addActionItem(archiveAct);
 		}
 		
@@ -386,7 +386,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
 		} else {
 			quickMenu.setItemEnabledAt(3, true);
-			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_48);
+			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_32);
 		}
 	}
 	
