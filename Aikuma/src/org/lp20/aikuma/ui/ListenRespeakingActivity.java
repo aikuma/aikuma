@@ -46,6 +46,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 
 		originalListenFragment = new ListenFragment();
 		respeakingListenFragment = new ListenFragment();
+		originalListenFragment.setOtherPlayer(respeakingListenFragment);
+		respeakingListenFragment.setOtherPlayer(originalListenFragment);
 		
 		googleAuthToken = AikumaSettings.getCurrentUserToken();
 	}
