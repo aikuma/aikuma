@@ -40,10 +40,9 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 				"This will discard the selected speakers";
 		
 		okButton = (ImageButton) findViewById(R.id.recordingSpeakerOkButton);
-		okButton.setImageResource(R.drawable.ok_disabled_48);
-		okButton.setEnabled(false);
-		
-		selectedSpeakers = new ArrayList<Speaker>();
+
+		selectedSpeakers = getIntent().getParcelableArrayListExtra("selectedSpeakers");
+		updateOkButton();
 	}
 
 	@Override
