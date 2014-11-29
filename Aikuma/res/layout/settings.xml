@@ -21,18 +21,6 @@
 	/>
 
 	<TextView
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:text="Automatic Google-cloud sync" />
-
-	<CheckBox
-	    android:id="@+id/sync_checkBox"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:text="Enable Sync" 
-	    android:onClick="onSyncCheckBoxClicked" />
-
-	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:text="Respeaking mode:"

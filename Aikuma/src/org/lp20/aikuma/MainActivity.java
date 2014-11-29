@@ -390,7 +390,10 @@ public class MainActivity extends ListActivity {
 	 */
 	public void syncRefresh(boolean forceSync) {
 		if(forceSync) {
-			if(AikumaSettings.getCurrentUserToken() == null) {
+			if(!Aikuma.isDeviceOnline()) {
+				Aikuma.showAlertDialog(this, "Network needs to be connected");
+				return;
+			} else if(AikumaSettings.getCurrentUserToken() == null) {
 				Aikuma.showAlertDialog(this, 
 						"You need to connect to Google-Drive with your account");
 				return;

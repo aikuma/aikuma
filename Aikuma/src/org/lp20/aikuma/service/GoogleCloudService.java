@@ -47,7 +47,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 /**
@@ -126,41 +125,61 @@ public class GoogleCloudService extends IntentService{
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		String id = intent.getStringExtra(ACTION_KEY);
-		Log.i(TAG, "Receive intent: " + id);
-		googleEmailAccount = intent.getStringExtra(ACCOUNT_KEY);
-		googleAuthToken = intent.getStringExtra(TOKEN_KEY);
-		forceSync = intent.getBooleanExtra("forceSync", false);
-		prepareSettings(googleEmailAccount);
 		
-		if(id.equals("sync")) {
-			validateToken();
-			backUp();
-			autoDownloadFiles();
-			retryBackup();
-			retryDownload();
-		} else if(id.equals("retry")) {	// Called with the start of application
-			validateToken();
-			retryBackup();
-			retryDownload();
-		} else if(id.equals("backup")) {		// Called when backup-setting is enabled
-			validateToken();
-			backUp();
-			retryBackup(); 
-		} else if(id.equals("autoDownload")) {
-			validateToken();
-			autoDownloadFiles();
-			retryDownload();
-		} else {						// Called when archive button is pressed (and token was already validated)
-			String itemType = (String)
-					intent.getExtras().get("type");
-			// id : (version)-(file's ID)
-			if(itemType.equals("recording"))
-				archive(id, 0);
-			else
-				archive(id, 1);
-			
-			retryBackup();
+		googleAuthToken = intent.getStringExtra(TOKEN_KEY);
+		
+		List<String> googleAccountList;
+		if(googleAuthToken == null) {
+			googleAccountList = intent.getStringArrayListExtra(ACCOUNT_KEY);
+		} else {
+			googleAccountList = new ArrayList<String>();
+			googleAccountList.add(intent.getStringExtra(ACCOUNT_KEY));
 		}
+		
+		forceSync = intent.getBooleanExtra("forceSync", false);
+		
+		// If this is triggered by AlarmManager (CloudSettingsActivity, BootReceiver),
+		// sync happens across all accounts.
+		for(String googleAccount : googleAccountList) {
+			Log.i(TAG, "intent-action: " + id + " using " + googleAccount);
+			
+			googleEmailAccount = googleAccount;
+			
+			prepareSettings(googleEmailAccount);
+			
+			if(id.equals("sync")) {
+				backUp();
+				autoDownloadFiles();
+				validateToken();
+				retryBackup();
+				retryDownload();
+			} else if(id.equals("retry")) {	// Called with the start of application
+				validateToken();
+				retryBackup();
+				retryDownload();
+			} else if(id.equals("backup")) {		// Called when backup-setting is enabled
+				backUp();
+				validateToken();
+				retryBackup(); 
+			} else if(id.equals("autoDownload")) {
+				autoDownloadFiles();
+				validateToken();
+				retryDownload();
+			} else {						// Called when archive button is pressed (and token was already validated)
+				String itemType = (String)
+						intent.getExtras().get("type");
+				// id : (version)-(file's ID)
+				if(itemType.equals("recording"))
+					archive(id, 0);
+				else
+					archive(id, 1);
+				
+				retryBackup();
+			}
+			
+			googleAuthToken = null;
+		}
+		
 		broadcastStatus("end");
 	}
 	
@@ -191,10 +210,18 @@ public class GoogleCloudService extends IntentService{
 		
 		prefsEditor = preferences.edit();
 		
-		if(archivedRecordingSet.size() + archivedSpeakerSet.size() + archivedOtherSet.size() == 0 || forceSync) {
-			if(googleAuthToken == null || !Aikuma.isDeviceOnline())
-				return;
+		if(!Aikuma.isDeviceOnline())
+			return;
+		else if(googleAuthToken == null) {
+			try {
+				googleAuthToken = GoogleAuthUtil.getToken(
+						getApplicationContext(), googleEmailAccount, AikumaSettings.getScope());
+			} catch (Exception e) {
+				Log.e(TAG, e.getMessage());
+			}
+		}
 			
+		if(archivedRecordingSet.size() + archivedSpeakerSet.size() + archivedOtherSet.size() == 0 || forceSync) {
 			prepareArchiveSet();
 		}
 		
@@ -211,11 +238,12 @@ public class GoogleCloudService extends IntentService{
 	
 	private void prepareArchiveSet() {
 		GoogleDriveStorage gd = new GoogleDriveStorage(googleAuthToken);
-		
+
 		// Collect archived file-cloudIDs in GoogleCloud
         gd.list(new GoogleDriveStorage.ListItemHandler() {
 			@Override
 			public boolean processItem(String identifier, Date date) {
+				
 				// Classify identifiers and store them in different lists 
 				if(identifier.matches(cloudIdFormat)) {
 					String relPath = identifier.substring(0, identifier.lastIndexOf('/')-12);
@@ -345,7 +373,6 @@ public class GoogleCloudService extends IntentService{
 	 *  Retry function: Upload all recording-items in the Set
 	 */
 	private void retryBackup() {
-		Log.i(TAG, "retry start");
 		if(googleAuthToken == null || !Aikuma.isDeviceOnline())
 			return;
 		DataStore gd = new GoogleDriveStorage(googleAuthToken);

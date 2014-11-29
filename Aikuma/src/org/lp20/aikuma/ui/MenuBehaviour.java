@@ -131,7 +131,11 @@ public class MenuBehaviour {
 				//intent = new Intent(activity, CloudSyncSettingsActivity.class);
 				//activity.startActivity(intent);
 				return true;
-			case R.id.ftp_sync_menu:
+			case R.id.cloud_sync_setting_menu:
+				intent = new Intent(activity, CloudSettingsActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.ftp_sync_setting_menu:
 				intent = new Intent(activity, SyncSettingsActivity.class);
 				activity.startActivity(intent);
 				return true;

@@ -23,6 +23,10 @@ public class AikumaSettings {
 	 * Setting value for auto-download
 	 */
 	public static boolean isAutoDownloadEnabled;
+	/**
+	 * Setting value for sync-only-over-wifi
+	 */
+	public static boolean isOnlyWifi;
 	
 	// Current default owner_id(== default Google account)
 	private static String DEFAULT_USER_ID = null;
@@ -59,11 +63,14 @@ public class AikumaSettings {
 	 * 
 	 *  BACKUP_MODE_KEY			: true/false
 	 *  AUTO_DOWNLOAD_MODE_KEY  : true/false
+	 *  WIFI_MODE_KEY			: true/false
 	 *  RESPEAKING_MODE_KEY		: "phone"/"thumb"
 	 */
 	public static final String BACKUP_MODE_KEY = "backup_mode";
 	/** */
 	public static final String AUTO_DOWNLOAD_MODE_KEY = "autoDownload_mode";
+	/** */
+	public static final String WIFI_MODE_KEY = "only_wifi";
 	/** */
 	public static final String RESPEAKING_MODE_KEY = "respeaking_mode";
 
