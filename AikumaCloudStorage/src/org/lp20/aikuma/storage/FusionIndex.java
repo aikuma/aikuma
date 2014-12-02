@@ -284,7 +284,6 @@ public class FusionIndex implements Index {
         }
         return retval;
 	}
-<<<<<<< HEAD
 
     @Override
     public void search(Map<String, String> constraints, SearchResultProcessor processor ) {
@@ -300,25 +299,6 @@ public class FusionIndex implements Index {
                 break;
         }
     }
-
-=======
-
-    @Override
-    public void search(Map<String, String> constraints, SearchResultProcessor processor ) {
-        String sql = makeSearchSQL(constraints, true);
-        JSONObject json = (JSONObject) doGet("[None]", sql);
-
-        if (json == null || !json.containsKey("rows")) return;
-
-        List<String> columns = (List<String>) json.get("columns");
-        for (Object tmp : (List) json.get("rows")) {
-            List<String> row = (List<String>) tmp;
-            if (!processor.process(makeMetadataMapFromQueryResult(columns, row)))
-                break;
-        }
-    }
-
->>>>>>> master
 
     private String makeSearchSQL(Map<String, String> constraints, boolean fullRecord) {
         StringBuilder sqlBuilder = new StringBuilder();
