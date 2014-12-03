@@ -19,6 +19,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
 
 /**
@@ -39,10 +40,9 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 				"This will discard the selected speakers";
 		
 		okButton = (ImageButton) findViewById(R.id.recordingSpeakerOkButton);
-		okButton.setImageResource(R.drawable.ok_disabled_48);
-		okButton.setEnabled(false);
-		
-		selectedSpeakers = new ArrayList<Speaker>();
+
+		selectedSpeakers = getIntent().getParcelableArrayListExtra("selectedSpeakers");
+		updateOkButton();
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 	public void onResume() {
 		super.onResume();
 
-		speakers = Speaker.readAll();
+		speakers = Speaker.readAll(AikumaSettings.getCurrentUserId());
 		ArrayAdapter<Speaker> adapter =
 				new RecordingSpeakerArrayAdapter(
 						this, speakers, selectedSpeakers) {

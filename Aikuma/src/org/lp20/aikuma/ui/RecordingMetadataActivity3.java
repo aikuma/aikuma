@@ -117,6 +117,7 @@ public class RecordingMetadataActivity3 extends AikumaListActivity {
 		Intent intent =
 			new Intent(RecordingMetadataActivity3.this,
 						RecordingSpeakersActivity.class);
+		intent.putParcelableArrayListExtra("selectedSpeakers", selectedSpeakers);
 		startActivityForResult(intent, ADD_SPEAKER);
 	}
 
@@ -188,8 +189,13 @@ public class RecordingMetadataActivity3 extends AikumaListActivity {
 	}
 	
 	private void updateSpeakerLanguageView(List<Speaker> speakers) {
-		for(Speaker speaker : speakers) {
-			if (!selectedSpeakers.contains(speaker)) {
+		userImages.removeAllViews();
+		selectedSpeakers.clear();
+		languages.clear();
+		recordingHasSpeaker = false;
+		
+		if(speakers.size() > 0) {
+			for(Speaker speaker : speakers) {
 				selectedSpeakers.add(speaker);
 				for (Language language : speaker.getLanguages()) {
 					if (!languages.contains(language)) {
@@ -212,6 +218,16 @@ public class RecordingMetadataActivity3 extends AikumaListActivity {
 				recordingHasSpeaker = true;
 			}
 		}
+		
+		// In the case when a speaker is removed after being added, 
+		// remove the speaker's languages
+		for(Language lang : selectedLanguages) {
+			if(!languages.contains(lang)) {
+				selectedLanguages.remove(lang);
+			}
+		}
+		
+		
 	}
 
 	static final int ADD_SPEAKER = 0;

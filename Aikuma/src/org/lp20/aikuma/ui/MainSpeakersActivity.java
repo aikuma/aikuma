@@ -17,6 +17,7 @@ import android.widget.ListView;
 import java.util.Collections;
 import java.util.List;
 import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
 
 /**
@@ -38,7 +39,7 @@ public class MainSpeakersActivity extends AikumaListActivity {
 	public void onResume() {
 		super.onResume();
 
-		speakers = Speaker.readAll();
+		speakers = Speaker.readAll(AikumaSettings.getCurrentUserId());
 		Collections.reverse(speakers);
 
 		ArrayAdapter<Speaker> adapter =

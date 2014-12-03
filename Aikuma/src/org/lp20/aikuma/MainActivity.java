@@ -14,6 +14,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -108,16 +109,9 @@ public class MainActivity extends ListActivity {
 				PreferenceManager.getDefaultSharedPreferences(this);
 //		settings.edit().clear().commit();
 		
-		recordingSet = (HashSet<String>)
-				settings.getStringSet(AikumaSettings.APPROVED_RECORDING_KEY, 
-						new HashSet<String>());
-		speakerSet = (HashSet<String>)
-				settings.getStringSet(AikumaSettings.APPROVED_SPEAKERS_KEY,
-						new HashSet<String>());
-		
 		emailAccount = settings.getString(AikumaSettings.SETTING_OWNER_ID_KEY, null);
 		googleAuthToken = settings.getString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, null);
-		googleAPIScope = getScope();
+		googleAPIScope = AikumaSettings.getScope();
     	Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
     	
     	AikumaSettings.setUserId(emailAccount);
@@ -127,14 +121,19 @@ public class MainActivity extends ListActivity {
 		AikumaSettings.isAutoDownloadEnabled =
 				settings.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
 		
-		Log.i(TAG, recordingSet.toString());
 	
 		// Automatic validation
 		if(emailAccount != null) {
 			// Validate access token
 			// (And if there are items to be archived, upload them)
-			new GetTokenTask(emailAccount, googleAPIScope, 
-	         		settings, false).execute();
+			if (Aikuma.isDeviceOnline()) {	
+                new GetTokenTask(emailAccount, googleAPIScope, 
+                		settings, false).execute();
+            } else {
+                Toast.makeText(this, "Network is disconnected", 
+                		Toast.LENGTH_SHORT).show();
+            }
+
 		} else if(AikumaSettings.isBackupEnabled 
 				|| AikumaSettings.isAutoDownloadEnabled) {
 			// When backup was enabled but the user hasn't ever signed-in google account
@@ -149,26 +148,22 @@ public class MainActivity extends ListActivity {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				String status = intent.getStringExtra(GoogleCloudService.SYNC_STATUS);
-				Log.i(TAG, "receive from cloud: " + status);
 				
 				if(status.equals("start")) {
 					showProgressStatus(View.VISIBLE);
 				} else if(status.equals("end")) {
 					showProgressStatus(View.GONE);
-				} else {
-					if(status.endsWith("source")) {
-						String[] splitName = status.split("-");
-						String verName = splitName[0];
-						String ownerId = splitName[2];
-						String recordingId = status.substring(4);
-						
-						try {
-							updateRecordingView(Recording.read(verName, ownerId, recordingId));
-						} catch (IOException e) {
-							Log.e(TAG, e.getMessage());
-						}
+				} else if(status.endsWith("source")) {	//source-download
+					String[] splitName = status.split("-");
+					String verName = splitName[0];
+					String ownerId = splitName[2];
+					String recordingId = status.substring(4);
+					
+					try {
+						updateRecordingView(Recording.read(verName, ownerId, recordingId));
+					} catch (IOException e) {
+						Log.e(TAG, e.getMessage());
 					}
-
 				}
 			}
 		};
@@ -235,13 +230,14 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onStart() {
 	    super.onStart();
-	    registerReceiver(syncReceiver, new IntentFilter(GoogleCloudService.SYNC_RESULT));
+	    LocalBroadcastManager.getInstance(this).registerReceiver(
+	    		syncReceiver, new IntentFilter(GoogleCloudService.SYNC_RESULT));
 	    showProgressStatus(View.GONE);
 	}
 
 	@Override
 	protected void onStop() {
-	    unregisterReceiver(syncReceiver);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(syncReceiver);
 	    super.onStop();
 	}
 	
@@ -255,7 +251,7 @@ public class MainActivity extends ListActivity {
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		if(emailAccount == null) {
-			showAlertDialog("You need to select your account");
+			Aikuma.showAlertDialog(this, "You need to select your account");
 			
 			return;
 		}
@@ -334,15 +330,7 @@ public class MainActivity extends ListActivity {
     	}
     		
     }
-    
-    /**
-     * Show the warning dialog with the message
-     * @param message	the message shown in the dialog
-     */
-    public void showAlertDialog(String message) {
-    	new AlertDialog.Builder(this).setMessage(message).show();
-    }
-    
+
     /**
      * Update the list of recordings view
      * @param recording		New recording to be updated
@@ -403,37 +391,49 @@ public class MainActivity extends ListActivity {
 	public void syncRefresh(boolean forceSync) {
 		if(forceSync) {
 			if(AikumaSettings.getCurrentUserToken() == null) {
-				showAlertDialog("You need to connect to Google-Drive with your account");
+				Aikuma.showAlertDialog(this, 
+						"You need to connect to Google-Drive with your account");
 				return;
 			} else {
-				Intent backupIntent = new Intent(this, GoogleCloudService.class);
-				backupIntent.putExtra("id", "backup");
-				startService(backupIntent);
-				
-				Intent downIntent = new Intent(this, GoogleCloudService.class);
-				downIntent.putExtra("id", "autoDownload");
-				startService(downIntent);
-				
-				Intent cancelTimerIntent = new Intent(this, GoogleCloudService.class);
-				cancelTimerIntent.putExtra("id", "cancel");
-				startService(cancelTimerIntent);
+				Intent syncIntent = new Intent(this, GoogleCloudService.class);
+				syncIntent.putExtra(GoogleCloudService.ACTION_KEY, "sync");
+				syncIntent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
+						AikumaSettings.getCurrentUserId());
+				syncIntent.putExtra(GoogleCloudService.TOKEN_KEY, 
+						AikumaSettings.getCurrentUserToken());
+				syncIntent.putExtra("forceSync", forceSync);
+				startService(syncIntent);
 			}
 		} else {
-			if(recordingSet.size() > 0 || speakerSet.size() > 0) {
+			SharedPreferences settings = 
+					getSharedPreferences(AikumaSettings.getCurrentUserId(), MODE_PRIVATE);
+	
+			int sz = 0;
+			sz += settings.getStringSet(AikumaSettings.APPROVED_RECORDING_KEY, 
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.APPROVED_SPEAKERS_KEY,
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.APPROVED_OTHERS_KEY,
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_RECORDING_KEY, 
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_SPEAKERS_KEY,
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_OTHERS_KEY,
+					new HashSet<String>()).size();
+
+			if(sz > 0) {
 	    		// If there are items to be uploaded,
 				// start the GoogleCloud upload service 
 	    		Intent intent = new Intent(MainActivity.this, 
 	    				GoogleCloudService.class);
-	    		intent.putExtra("id", "retry");
+	    		intent.putExtra(GoogleCloudService.ACTION_KEY, "retry");
+	    		intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
+						AikumaSettings.getCurrentUserId());
+				intent.putExtra(GoogleCloudService.TOKEN_KEY, 
+						AikumaSettings.getCurrentUserToken());
 				startService(intent);
 			}
-	    	
-	    	if(AikumaSettings.isAutoDownloadEnabled) {
-	    		Intent intent = new Intent(MainActivity.this, 
-	    				GoogleCloudService.class);
-	    		intent.putExtra("id", "autoDownload");
-	    		startService(intent);
-	    	}
 		}
 		
 	}
@@ -445,9 +445,6 @@ public class MainActivity extends ListActivity {
 	SearchView searchView;
 	
 	MenuBehaviour menuBehaviour;
-	
-	private Set<String> recordingSet;
-	private Set<String> speakerSet;
 
 	private RecordingArrayAdapter adapter;
 	private ProgressDialog progressDialog;
@@ -470,7 +467,7 @@ public class MainActivity extends ListActivity {
         	Log.i(TAG, "getAccountToken");
 
         	//TODO: Sign-out, Sign-in with other accounts
-        	if(AikumaSettings.getCurrentUserToken() == null) {
+        	if(AikumaSettings.getCurrentUserId() == null) {
         		pickUserAccount();
         	}
         } else if (GooglePlayServicesUtil.isUserRecoverableError(statusCode)) {
@@ -519,10 +516,11 @@ public class MainActivity extends ListActivity {
             	// Stores the account for next-use
             	AikumaSettings.setUserId(emailAccount);
             	showUserAccount(emailAccount, null);
+            	menuBehaviour.setSignInState(true);
                 settings.edit().putString(
                 		AikumaSettings.SETTING_OWNER_ID_KEY, emailAccount).commit();
             	
-            	if (isDeviceOnline()) {	
+            	if (Aikuma.isDeviceOnline()) {	
                     new GetTokenTask(emailAccount, googleAPIScope, 
                     		settings, false).execute();
                 } else {
@@ -553,10 +551,16 @@ public class MainActivity extends ListActivity {
         }
         if (resultCode == RESULT_OK) {
             // User recovered error, retry to get access_token
-        	SharedPreferences settings = 
-    				PreferenceManager.getDefaultSharedPreferences(this);
-            new GetTokenTask(emailAccount, googleAPIScope, 
-            		settings, false).execute();
+        	if (Aikuma.isDeviceOnline()) {	
+        		SharedPreferences settings = 
+        				PreferenceManager.getDefaultSharedPreferences(this);
+                new GetTokenTask(emailAccount, googleAPIScope, 
+                		settings, false).execute();
+            } else {
+                Toast.makeText(this, "Network is disconnected", 
+                		Toast.LENGTH_SHORT).show();
+            }
+
             return;
         }
 //        if (resultCode == RESULT_CANCELED) {
@@ -565,20 +569,6 @@ public class MainActivity extends ListActivity {
 //        }
         Toast.makeText(this, "Unknown error, Retry it", 
         		Toast.LENGTH_SHORT).show();
-    }
-    
-    /**
-     * Checks whether the device is currently connected to a network
-     * @return	boolean for status
-     */
-    private boolean isDeviceOnline() {
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            return true;
-        }
-        return false;
     }
 	
     /**
@@ -605,33 +595,14 @@ public class MainActivity extends ListActivity {
                     Intent intent = 
                     		((UserRecoverableAuthException)e).getIntent();
                     startActivityForResult(intent,
-                    		RECOVER_FROM_GOOGLEPLAY_ERROR_REQUEST_CODE);
+                    		RECOVER_FROM_AUTH_ERROR_REQUEST_CODE);
                 }
             }
         });
     }
     
     /**
-     * Return an scope for google-API scope
-     * @return
-     */
-    private String getScope() {
-    	String joiner = "";
-		String scope = "oauth2:";
-		for (String s: GoogleDriveStorage.getScopes()) {
-			scope += joiner + s;
-			joiner = " ";
-		}
-
-		for (String s: FusionIndex.getScopes()) {
-			scope += joiner + s;
-			joiner = " ";
-		}
-		return scope;
-    }
-    
-    /**
-     * Inner class to get an access token from google server
+     * Inner class to get/validate an access token from google server
      * 
      * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
      *

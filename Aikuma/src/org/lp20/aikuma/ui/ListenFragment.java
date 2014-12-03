@@ -107,7 +107,11 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		if (v == playPauseButton) {
 			if (player.isPlaying()) {
 				pause();
+				if(otherPlayer != null)
+					otherPlayer.setEnabled(true);
 			} else {
+				if(otherPlayer != null)
+					otherPlayer.setEnabled(false);
 				play();
 			}
 		}
@@ -156,7 +160,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 				}
 		});
 		seekBarThread.start();
-		playPauseButton.setImageResource(R.drawable.pause);
+		playPauseButton.setImageResource(R.drawable.pause_g);
 	}
 
 	/**
@@ -209,6 +213,29 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		}
 		player.setOnCompletionListener(onCompletionListener);
 	}
+	
+	/**
+	 * Connet this player with the other player
+	 * 
+	 * @param player	The other player
+	 */
+	public void setOtherPlayer(ListenFragment player) {
+		this.otherPlayer = player;
+	}
+	
+	/**
+	 * Enable/Disable the play-pause button of the player
+	 * 
+	 * @param isEnabled		true: enable, false: disable
+	 */
+	private void setEnabled(boolean isEnabled) {
+		playPauseButton.setEnabled(isEnabled);
+		if(isEnabled) {
+			playPauseButton.setImageResource(R.drawable.play_g);
+		} else {
+			playPauseButton.setImageResource(R.drawable.play_grey);
+		}
+	}
 
 	/** Defines behaviour for the fragment when a recording finishes playing.*/
 	private Player.OnCompletionListener onCompletionListener =
@@ -224,4 +251,6 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	private ImageButton playPauseButton;
 	private InterleavedSeekBar seekBar;
 	private Thread seekBarThread;
+	
+	private ListenFragment otherPlayer;
 }

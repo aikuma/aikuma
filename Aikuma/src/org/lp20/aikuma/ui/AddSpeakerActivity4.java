@@ -95,9 +95,14 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 		if(AikumaSettings.isBackupEnabled) {
 			Intent serviceIntent = new Intent(AddSpeakerActivity4.this, 
 					GoogleCloudService.class);
-			String verId = newSpeaker.getVersionName() + "-" + newSpeaker.getOwnerId() + "-" + newSpeaker.getId();
-			serviceIntent.putExtra("id", verId);
-			serviceIntent.putExtra("type", "speaker");
+			String verId = newSpeaker.getVersionName() + "-" + newSpeaker.getId() + "-" + newSpeaker.getOwnerId();
+			serviceIntent.putExtra(GoogleCloudService.ACTION_KEY, verId);
+			serviceIntent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "speaker");
+			serviceIntent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
+					AikumaSettings.getCurrentUserId());
+			serviceIntent.putExtra(GoogleCloudService.TOKEN_KEY, 
+					AikumaSettings.getCurrentUserToken());
+			
 			startService(serviceIntent);
 		}
 		

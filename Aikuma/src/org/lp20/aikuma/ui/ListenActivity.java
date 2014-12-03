@@ -193,7 +193,7 @@ public class ListenActivity extends AikumaActivity {
 		
 		if(googleAuthToken != null) {
 			QuickActionItem archiveAct = 
-					new QuickActionItem("archive", R.drawable.archive_32);
+					new QuickActionItem("share", R.drawable.aikuma_32);
 			quickMenu.addActionItem(archiveAct);
 		}
 		
@@ -385,8 +385,14 @@ public class ListenActivity extends AikumaActivity {
 	 */
 	public void onArchiveButtonPressed(View view) {
 		Intent intent = new Intent(this, GoogleCloudService.class);
-		intent.putExtra("id", recording.getVersionName() + "-" + recording.getId());
-		intent.putExtra("type", "recording");
+		intent.putExtra(GoogleCloudService.ACTION_KEY, 
+				recording.getVersionName() + "-" + recording.getId());
+		intent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "recording");
+		intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
+				AikumaSettings.getCurrentUserId());
+		intent.putExtra(GoogleCloudService.TOKEN_KEY, 
+				AikumaSettings.getCurrentUserToken());
+		
 		startService(intent);
 	}
 	
@@ -419,7 +425,7 @@ public class ListenActivity extends AikumaActivity {
 			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
 		} else {
 			quickMenu.setItemEnabledAt(3, true);
-			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_48);
+			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_32);
 		}
 	}
 
