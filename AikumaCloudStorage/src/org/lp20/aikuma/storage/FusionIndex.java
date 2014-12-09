@@ -401,7 +401,7 @@ public class FusionIndex implements Index {
             }  else header = true;
             String key = e.getKey();
             fieldList.append((key));
-            String value = e.getValue().replaceAll("'", "\'");
+            String value = e.getValue().replaceAll("'", "\\\\'");
             if (MetadataField.byName(key).isMultivalue()) {
                 value = "|" + value.replaceAll("\\s*,\\s*", "|") + "|";
             }
