@@ -36,7 +36,8 @@ The following properties relate to the credentials you just created:
 
 * **service_email** - This is the email address associated with the service account created above. Make sure to use the
 email address rather than the client ID.
-* **private_key_path** - The path to the P12 private key file you were prompted to download above.
+* **private_key_path** - The path to the P12 private key file you were prompted to download above. Obviously, this should
+be the location on the server itself.
 * **private_key_password** - The password for the P12 file that was displayed after creating the service account/private
 key. Should probably be "notasecret".
 
