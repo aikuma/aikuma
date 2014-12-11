@@ -29,7 +29,7 @@ project(':api') {
                 from components.java
                 groupId = 'org.lp20'
                 artifactId = jar.baseName
-                version = '0.1.0'
+                version = '0.2.0'
             }
         }
     }
