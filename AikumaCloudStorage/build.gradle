@@ -4,6 +4,8 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
 
+    sourceCompatibility = '1.6'
+
     repositories {
         mavenCentral()
     }
