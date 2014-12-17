@@ -72,9 +72,9 @@ public class CloudSettingsActivity extends AikumaActivity {
 			wifiCheckBox.setEnabled(false);
 		}
 		AikumaSettings.isOnlyWifi =
-				preferences.getBoolean(AikumaSettings.WIFI_MODE_KEY, false);
+				preferences.getBoolean(AikumaSettings.WIFI_MODE_KEY, true);
 		
-		wifiCheckBox.setChecked(AikumaSettings.isOnlyWifi);
+		wifiCheckBox.setChecked(!AikumaSettings.isOnlyWifi);
 	}
 
 	/**
@@ -92,18 +92,7 @@ public class CloudSettingsActivity extends AikumaActivity {
 				intent.putStringArrayListExtra(GoogleCloudService.ACCOUNT_KEY, 
 						Aikuma.getGoogleAccounts());
 				
-				PendingIntent pIntent = PendingIntent.getService(
-						this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-				
-				AlarmManager alm = (AlarmManager) getSystemService(ALARM_SERVICE);
-				alm.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, 
-						1000, AikumaSettings.SYNC_INTERVAL, pIntent);
-				
-				ComponentName receiver = new ComponentName(this, BootReceiver.class);
-				PackageManager pm = this.getPackageManager();
-				pm.setComponentEnabledSetting(receiver,
-				        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-				        PackageManager.DONT_KILL_APP);
+				startService(intent);
 			}
 			
 			AikumaSettings.isBackupEnabled = true;
@@ -114,25 +103,12 @@ public class CloudSettingsActivity extends AikumaActivity {
 			
 			wifiCheckBox.setEnabled(true);
 		} else {
-			Intent intent = new Intent(this, GoogleCloudService.class);
-			PendingIntent pIntent = PendingIntent.getService(
-					this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-			
-			AlarmManager alm = (AlarmManager) getSystemService(ALARM_SERVICE);
-			alm.cancel(pIntent);		
-			
-			ComponentName receiver = new ComponentName(this, BootReceiver.class);
-			PackageManager pm = this.getPackageManager();
-			pm.setComponentEnabledSetting(receiver,
-			        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-			        PackageManager.DONT_KILL_APP);
-			
 			AikumaSettings.isBackupEnabled = false;
 			AikumaSettings.isAutoDownloadEnabled = false;
-			AikumaSettings.isOnlyWifi = false;
+			AikumaSettings.isOnlyWifi = true;
 			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
 			prefsEditor.putBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
-			prefsEditor.putBoolean(AikumaSettings.WIFI_MODE_KEY, false);
+			prefsEditor.putBoolean(AikumaSettings.WIFI_MODE_KEY, true);
 			prefsEditor.commit();
 			
 			wifiCheckBox.setChecked(false);
@@ -144,12 +120,12 @@ public class CloudSettingsActivity extends AikumaActivity {
 		boolean checked = ((CheckBox) checkBox).isChecked();
 		Log.i(TAG, "wifi-checkbox: " + checked);
 		if(checked) {
-			AikumaSettings.isOnlyWifi = true;
-			prefsEditor.putBoolean(AikumaSettings.WIFI_MODE_KEY, true);
-			prefsEditor.commit();
-		} else {
 			AikumaSettings.isOnlyWifi = false;
 			prefsEditor.putBoolean(AikumaSettings.WIFI_MODE_KEY, false);
+			prefsEditor.commit();
+		} else {
+			AikumaSettings.isOnlyWifi = true;
+			prefsEditor.putBoolean(AikumaSettings.WIFI_MODE_KEY, true);
 			prefsEditor.commit();
 		}
 

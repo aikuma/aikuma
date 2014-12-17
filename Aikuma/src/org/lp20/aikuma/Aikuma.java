@@ -74,7 +74,7 @@ public class Aikuma extends android.app.Application {
     		preferences = 
     				PreferenceManager.getDefaultSharedPreferences(getContext());
     		AikumaSettings.isOnlyWifi = 
-    				preferences.getBoolean(AikumaSettings.WIFI_MODE_KEY, false);
+    				preferences.getBoolean(AikumaSettings.WIFI_MODE_KEY, true);
     	}
     	
     	ConnectivityManager connMgr = (ConnectivityManager)

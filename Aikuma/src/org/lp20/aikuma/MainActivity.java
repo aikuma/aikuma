@@ -9,8 +9,6 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -40,14 +38,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Set;
 
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.service.GoogleCloudService;
-import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.GoogleAuth;
-import org.lp20.aikuma.storage.GoogleDriveStorage;
 import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.MenuBehaviour;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;
@@ -121,7 +116,7 @@ public class MainActivity extends ListActivity {
 		AikumaSettings.isAutoDownloadEnabled =
 				settings.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
 		
-	
+		
 		// Automatic validation
 		if(emailAccount != null) {
 			// Validate access token
@@ -224,7 +219,6 @@ public class MainActivity extends ListActivity {
 		}
 
 		MainActivity.locationDetector.start();
-		
 	}
 	
 	@Override
@@ -232,7 +226,7 @@ public class MainActivity extends ListActivity {
 	    super.onStart();
 	    LocalBroadcastManager.getInstance(this).registerReceiver(
 	    		syncReceiver, new IntentFilter(GoogleCloudService.SYNC_RESULT));
-	    showProgressStatus(View.GONE);
+	    showProgressStatus(View.GONE);  
 	}
 
 	@Override

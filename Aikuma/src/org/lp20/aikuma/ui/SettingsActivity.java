@@ -67,22 +67,8 @@ public class SettingsActivity extends AikumaActivity {
 		readRespeakingMode();
 		readRespeakingRewind();
 		setupSensitivitySlider();
-		setupSyncCheckBox();
 	}
-	
-	private void setupSyncCheckBox() {
-		CheckBox syncCheckBox = (CheckBox)
-				findViewById(R.id.sync_checkBox);
-		if(AikumaSettings.getCurrentUserId() == null) {
-			syncCheckBox.setEnabled(false);
-		}
-		AikumaSettings.isBackupEnabled =
-				preferences.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
-		AikumaSettings.isAutoDownloadEnabled = 
-				preferences.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
-		
-		syncCheckBox.setChecked(AikumaSettings.isBackupEnabled);
-	}
+
 
 	// Set the respeaking mode radio buttons as per the settings.
 	private void readRespeakingMode() {

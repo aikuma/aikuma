@@ -16,15 +16,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.lp20.aikuma.Aikuma;
-import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.FileModel;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
@@ -129,7 +126,9 @@ public class GoogleCloudService extends IntentService{
 		googleAuthToken = intent.getStringExtra(TOKEN_KEY);
 		
 		List<String> googleAccountList;
-		if(googleAuthToken == null) {
+		if(googleAuthToken == null) {	
+			// when the automatic-sync is checked or 
+			// when the connectivity changes after the automatic-sync is enabled
 			googleAccountList = intent.getStringArrayListExtra(ACCOUNT_KEY);
 		} else {
 			googleAccountList = new ArrayList<String>();
@@ -138,7 +137,8 @@ public class GoogleCloudService extends IntentService{
 		
 		forceSync = intent.getBooleanExtra("forceSync", false);
 		
-		// If this is triggered by AlarmManager (CloudSettingsActivity, BootReceiver),
+		Log.i(TAG, "device-connectivit: " + Aikuma.isDeviceOnline());
+		// If this is triggered by (CloudSettingsActivity or BootReceiver),
 		// sync happens across all accounts.
 		for(String googleAccount : googleAccountList) {
 			Log.i(TAG, "intent-action: " + id + " using " + googleAccount);
@@ -157,7 +157,7 @@ public class GoogleCloudService extends IntentService{
 				validateToken();
 				retryBackup();
 				retryDownload();
-			} else if(id.equals("backup")) {		// Called when backup-setting is enabled
+			} else if(id.equals("backup")) {	// Called when backup-setting is enabled
 				backUp();
 				validateToken();
 				retryBackup(); 
@@ -165,7 +165,7 @@ public class GoogleCloudService extends IntentService{
 				autoDownloadFiles();
 				validateToken();
 				retryDownload();
-			} else {						// Called when archive button is pressed (and token was already validated)
+			} else {					// Called when archive button is pressed (and token was already validated)
 				String itemType = (String)
 						intent.getExtras().get("type");
 				// id : (version)-(file's ID)
@@ -319,6 +319,7 @@ public class GoogleCloudService extends IntentService{
 		Set<String> itemIdentifiers = new HashSet<String>(downloadSet);
 		
 		for(String itemIdentifier : itemIdentifiers) {
+			Log.i(TAG, "download: " + itemIdentifier);
 			broadcastStatus("start");
 			FileModel item = FileModel.fromCloudId(itemIdentifier);
 			
@@ -332,11 +333,15 @@ public class GoogleCloudService extends IntentService{
 					InputStream metaIs = gd.load(item.getCloudIdentifier(1));
 					FileOutputStream metaFos = 
 							new FileOutputStream(new File(dir, item.getMetadataIdExt()));
+					if(metaIs == null || metaFos == null)
+						break;
 					Utils.copyStream(metaIs, metaFos, true);
 				case 1:
 					InputStream is = gd.load(itemIdentifier);
 					FileOutputStream fos = 
 							new FileOutputStream(new File(dir, item.getIdExt()));
+					if(is == null || fos == null)
+						break;
 					Utils.copyStream(is, fos, true);
 				
 					downloadSet.remove(itemIdentifier);
@@ -378,17 +383,18 @@ public class GoogleCloudService extends IntentService{
 		DataStore gd = new GoogleDriveStorage(googleAuthToken);
 		Index fi = new FusionIndex(googleAuthToken);
 		
-		// Recordings
-		retryBackup(gd, fi, approvalKey, approvedRecordingSet, 
-				archiveKey, archivedRecordingSet);
+		// Others
+		retryBackup(gd, fi, approvalOtherKey, approvedOtherSet, 
+				archiveOtherKey, archivedOtherSet);
 		
 		// Speakers
 		retryBackup(gd, fi, approvalSpKey, approvedSpeakerSet,
 				archiveSpKey, archivedSpeakerSet);
 		
-		// Others
-		retryBackup(gd, fi, approvalOtherKey, approvedOtherSet, 
-				archiveOtherKey, archivedOtherSet);
+		// Recordings
+		retryBackup(gd, fi, approvalKey, approvedRecordingSet, 
+				archiveKey, archivedRecordingSet);
+		
 	}
 	
 	private void retryBackup(DataStore gd, Index fi, 

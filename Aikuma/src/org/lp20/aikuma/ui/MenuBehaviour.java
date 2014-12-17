@@ -74,6 +74,11 @@ public class MenuBehaviour {
 				goToMainActivity();
 				return true;
 			case R.id.search:
+				if(AikumaSettings.getCurrentUserId() == null) {
+					Aikuma.showAlertDialog(activity,
+							"You need to select your account");
+					return true;
+				}
 				intent = new Intent(activity, CloudSearchActivity.class);
 				activity.startActivity(intent);
 				return true;

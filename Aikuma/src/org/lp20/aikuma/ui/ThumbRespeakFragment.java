@@ -230,7 +230,7 @@ public class ThumbRespeakFragment extends Fragment {
 	private UUID uuid;
 	private int sampleRate;
 	
-	private final int VALID_GESTURE_TIME = 100; //0.1sec
+	private final int VALID_GESTURE_TIME = 250; //0.25sec
 	private long gestureTime = VALID_GESTURE_TIME;
 	private long gestureTimeUpToDown = VALID_GESTURE_TIME;
 	private boolean isCommented = true;
