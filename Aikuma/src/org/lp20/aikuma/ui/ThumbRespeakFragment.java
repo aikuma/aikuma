@@ -87,6 +87,10 @@ public class ThumbRespeakFragment extends Fragment {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					if(count > 0) {
+						respeaker.saveRespeaking();
+					}
+					
 					// Color change
 					//playButton.setBackgroundColor(0xff00d500);
 					long previousGestureTime = gestureTime;
@@ -145,24 +149,23 @@ public class ThumbRespeakFragment extends Fragment {
 		respeakButton.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				if(!isCommented) {
-					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						//respeakButton.setBackgroundColor(0xffff2020);
-						respeaker.pauseOriginal();
-						respeaker.recordRespeaking();
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					//respeakButton.setBackgroundColor(0xffff2020);
+					respeaker.pauseOriginal();
+					respeaker.recordRespeaking();
+					count++;
+				}
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					if(!okButton.isEnabled()) {
+						okButton.setImageResource(R.drawable.ok_48);
+						okButton.setEnabled(true);
 					}
-					if (event.getAction() == MotionEvent.ACTION_UP) {
-						if(!okButton.isEnabled()) {
-							okButton.setImageResource(R.drawable.ok_48);
-							okButton.setEnabled(true);
-						}
-						//respeakButton.setBackgroundColor(greyColor);
-						try {
-							respeaker.pauseRespeaking();
-							isCommented = true;
-						} catch (MicException e) {
-							ThumbRespeakFragment.this.getActivity().finish();
-						}
+					//respeakButton.setBackgroundColor(greyColor);
+					try {
+						respeaker.pauseRespeaking();
+						isCommented = true;
+					} catch (MicException e) {
+						ThumbRespeakFragment.this.getActivity().finish();
 					}
 				}
 				return false;
@@ -234,4 +237,5 @@ public class ThumbRespeakFragment extends Fragment {
 	private long gestureTime = VALID_GESTURE_TIME;
 	private long gestureTimeUpToDown = VALID_GESTURE_TIME;
 	private boolean isCommented = true;
+	private int count = 0;
 }

@@ -95,13 +95,18 @@ public class ThumbRespeaker {
 	 */
 	public void pauseRespeaking() throws MicException {
 		recorder.pause();
+	}
+
+	public void saveRespeaking() {
+		recorder.save();
+		
 		// Because of rewind after each respeaking-segment,
 		// Force user to record respeaking after listening next original-segment
 		if(player.getCurrentSample() > mapper.getOriginalStartSample()) {
 			mapper.store(player, recorder);
 		}
 	}
-
+	
 	/**
 	 * Stops/finishes the respeaking process
 	 *
