@@ -89,10 +89,11 @@ public class CloudSearchActivity extends AikumaListActivity {
 		MainActivity.locationDetector.stop();
 	}
 	
+	
 	/**
 	 * Search the recordings using the query
 	 * 
-	 * @param searchQueryView	View having the query
+	 * @param view	View having the query
 	 */
 	public void onSearchButton(View view) {
 		if(!Aikuma.isDeviceOnline())

@@ -21,8 +21,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 
-
-
+/**
+ * The activity for cloud-sync settings.
+ *
+ * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+ */
 public class CloudSettingsActivity extends AikumaActivity {
 
 	private final String TAG = "CloudSettingsActivity";
@@ -116,6 +119,11 @@ public class CloudSettingsActivity extends AikumaActivity {
 		}
 	}
 	
+	/**
+	 * Callback function for the checkbox allowing sync over cellular network
+	 * 
+	 * @param checkBox	Unchecked(default): allow sync only over wifi-network
+	 */
 	public void onWifiCheckBoxClicked(View checkBox) {
 		boolean checked = ((CheckBox) checkBox).isChecked();
 		Log.i(TAG, "wifi-checkbox: " + checked);

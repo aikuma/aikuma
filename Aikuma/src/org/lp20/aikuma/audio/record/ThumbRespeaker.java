@@ -97,6 +97,9 @@ public class ThumbRespeaker {
 		recorder.pause();
 	}
 
+	/**
+	 * Saves the respeaking audio and mapping-information
+	 */
 	public void saveRespeaking() {
 		recorder.save();
 		
