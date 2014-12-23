@@ -22,8 +22,10 @@
 	    android:title="@string/gplus_signin_menu_label"/>
 	<item android:id="@+id/cloud_sync_menu"
 	    android:title="@string/cloud_sync_label"/>
-	<item android:id="@+id/ftp_sync_menu"
-	    android:title="@string/ftp_sync_label"/>
+	<item android:id="@+id/cloud_sync_setting_menu"
+	    android:title="@string/cloud_sync_setting_label"/>
+	<item android:id="@+id/ftp_sync_setting_menu"
+	    android:title="@string/ftp_sync_setting_label"/>
 	<item android:id="@+id/language_setting_menu"
 	    android:title="@string/language_setting_label"/>
 	<item android:id="@+id/settings"

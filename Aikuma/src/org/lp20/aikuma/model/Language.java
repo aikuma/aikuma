@@ -45,7 +45,7 @@ public class Language implements Parcelable, Comparable<Language> {
 	public String getCode() {
 		return this.code;
 	}
-
+	
 	/**
 	 * The minimal constructor.
 	 *

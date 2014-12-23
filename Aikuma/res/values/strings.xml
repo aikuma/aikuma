@@ -38,8 +38,9 @@
 	<string name="connect">HTTP Server</string>
 	<string name="audio_import_label">Import Audio</string>
 	<string name="gplus_signin_menu_label">Google Sign-in</string>
-	<string name="cloud_sync_label">Google-Cloud Sync</string>
-	<string name="ftp_sync_label">FTP Sync Settings</string>
+	<string name="cloud_sync_label">GoogleCloud Sync</string>
+	<string name="cloud_sync_setting_label">GoogleCloud Settings</string>
+	<string name="ftp_sync_setting_label">FTP Sync Settings</string>
 	<string name="language_setting_label">Language Settings</string>
 	<string name="http_dialog_success">Server started at port %1$d</string>
 	<string name="http_dialog_failure">Failed to start server</string>

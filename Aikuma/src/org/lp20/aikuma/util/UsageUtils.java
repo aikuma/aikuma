@@ -132,8 +132,46 @@ public class UsageUtils {
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(hours).append("h ");
-		stringBuilder.append(mins).append("m ");
+		stringBuilder.append(mins).append("m");
 		return stringBuilder.toString();
+	}
+	
+	/**
+	 * Return a formatted string of space
+	 * @param space	The size in Bytes.
+	 * @return	the formatted string of space
+	 */
+	public static String getStorageFormat(long space) {
+		double convertedSpace = (double) space;
+		int count = 0;
+		String unit = "KB";
+		while(convertedSpace > 100 && count < 3) {
+			convertedSpace /= 1000;
+			count++;
+		}
+		switch(count) {
+		case 2:
+			unit = "MB";
+			break;
+		case 3:
+			unit = "GB";
+			break;
+		}
+		
+		return String.format("%5.2f%s", convertedSpace, unit);
+	}
+	
+	/**
+	 * Return a formatted string of time converted from space
+	 * @param sampleRate	The sample rate of the recordings
+	 * @param sampleSize	The size of each sample in bits.
+	 * @param space			The size to be converted in Bytes.
+	 * @return	the formatted string of time
+	 */
+	public static String getTimeFormat(
+			int sampleRate, int sampleSize, long space) {
+		long convertedSecs = space / ((sampleSize == 16 ? 2 : 1) * sampleRate);
+		return formatSeconds(convertedSecs);
 	}
 
 	/**

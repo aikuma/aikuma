@@ -49,4 +49,17 @@
 		android:text="Copyright (C) 2013, The Aikuma Project"
 		android:textSize="15sp"
 	/>
+	<View
+		android:layout_width="fill_parent"
+		android:layout_height="2dip"
+		android:background="#999999"
+	/>
+	<TextView
+	    android:id="@+id/cloudStatus"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="15sp"
+	/>
+
+	
 </LinearLayout>

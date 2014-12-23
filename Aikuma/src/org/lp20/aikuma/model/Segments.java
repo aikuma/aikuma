@@ -72,6 +72,15 @@ public class Segments {
 					Segment respeakingSegment) {
 		segmentMap.put(originalSegment, respeakingSegment);
 	}
+	
+	/**
+	 * Removes a pair of segments; analogous to Map.remove()
+	 * 
+	 * @param originalSegment	A segment of an original recording.
+	 */
+	public void remove(Segment originalSegment) {
+		segmentMap.remove(originalSegment);
+	}
 
 	/**
 	 * Returns an iterator over the segments of the original recording.

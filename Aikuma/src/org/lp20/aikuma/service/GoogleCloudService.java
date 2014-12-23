@@ -16,15 +16,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.lp20.aikuma.Aikuma;
-import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.FileModel;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
@@ -47,7 +44,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 /**
@@ -126,41 +122,64 @@ public class GoogleCloudService extends IntentService{
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		String id = intent.getStringExtra(ACTION_KEY);
-		Log.i(TAG, "Receive intent: " + id);
-		googleEmailAccount = intent.getStringExtra(ACCOUNT_KEY);
-		googleAuthToken = intent.getStringExtra(TOKEN_KEY);
-		forceSync = intent.getBooleanExtra("forceSync", false);
-		prepareSettings(googleEmailAccount);
 		
-		if(id.equals("sync")) {
-			validateToken();
-			backUp();
-			autoDownloadFiles();
-			retryBackup();
-			retryDownload();
-		} else if(id.equals("retry")) {	// Called with the start of application
-			validateToken();
-			retryBackup();
-			retryDownload();
-		} else if(id.equals("backup")) {		// Called when backup-setting is enabled
-			validateToken();
-			backUp();
-			retryBackup(); 
-		} else if(id.equals("autoDownload")) {
-			validateToken();
-			autoDownloadFiles();
-			retryDownload();
-		} else {						// Called when archive button is pressed (and token was already validated)
-			String itemType = (String)
-					intent.getExtras().get("type");
-			// id : (version)-(file's ID)
-			if(itemType.equals("recording"))
-				archive(id, 0);
-			else
-				archive(id, 1);
-			
-			retryBackup();
+		googleAuthToken = intent.getStringExtra(TOKEN_KEY);
+		
+		List<String> googleAccountList;
+		if(googleAuthToken == null) {	
+			// when the automatic-sync is checked or 
+			// when the connectivity changes after the automatic-sync is enabled
+			googleAccountList = intent.getStringArrayListExtra(ACCOUNT_KEY);
+		} else {
+			googleAccountList = new ArrayList<String>();
+			googleAccountList.add(intent.getStringExtra(ACCOUNT_KEY));
 		}
+		
+		forceSync = intent.getBooleanExtra("forceSync", false);
+		
+		Log.i(TAG, "device-connectivit: " + Aikuma.isDeviceOnline());
+		// If this is triggered by (CloudSettingsActivity or BootReceiver),
+		// sync happens across all accounts.
+		for(String googleAccount : googleAccountList) {
+			Log.i(TAG, "intent-action: " + id + " using " + googleAccount);
+			
+			googleEmailAccount = googleAccount;
+			
+			prepareSettings(googleEmailAccount);
+			
+			if(id.equals("sync")) {
+				backUp();
+				autoDownloadFiles();
+				validateToken();
+				retryBackup();
+				retryDownload();
+			} else if(id.equals("retry")) {	// Called with the start of application
+				validateToken();
+				retryBackup();
+				retryDownload();
+			} else if(id.equals("backup")) {	// Called when backup-setting is enabled
+				backUp();
+				validateToken();
+				retryBackup(); 
+			} else if(id.equals("autoDownload")) {
+				autoDownloadFiles();
+				validateToken();
+				retryDownload();
+			} else {					// Called when archive button is pressed (and token was already validated)
+				String itemType = (String)
+						intent.getExtras().get("type");
+				// id : (version)-(file's ID)
+				if(itemType.equals("recording"))
+					archive(id, 0);
+				else
+					archive(id, 1);
+				
+				retryBackup();
+			}
+			
+			googleAuthToken = null;
+		}
+		
 		broadcastStatus("end");
 	}
 	
@@ -191,10 +210,18 @@ public class GoogleCloudService extends IntentService{
 		
 		prefsEditor = preferences.edit();
 		
-		if(archivedRecordingSet.size() + archivedSpeakerSet.size() + archivedOtherSet.size() == 0 || forceSync) {
-			if(googleAuthToken == null || !Aikuma.isDeviceOnline())
-				return;
+		if(!Aikuma.isDeviceOnline())
+			return;
+		else if(googleAuthToken == null) {
+			try {
+				googleAuthToken = GoogleAuthUtil.getToken(
+						getApplicationContext(), googleEmailAccount, AikumaSettings.getScope());
+			} catch (Exception e) {
+				Log.e(TAG, e.getMessage());
+			}
+		}
 			
+		if(archivedRecordingSet.size() + archivedSpeakerSet.size() + archivedOtherSet.size() == 0 || forceSync) {
 			prepareArchiveSet();
 		}
 		
@@ -211,11 +238,12 @@ public class GoogleCloudService extends IntentService{
 	
 	private void prepareArchiveSet() {
 		GoogleDriveStorage gd = new GoogleDriveStorage(googleAuthToken);
-		
+
 		// Collect archived file-cloudIDs in GoogleCloud
         gd.list(new GoogleDriveStorage.ListItemHandler() {
 			@Override
 			public boolean processItem(String identifier, Date date) {
+				
 				// Classify identifiers and store them in different lists 
 				if(identifier.matches(cloudIdFormat)) {
 					String relPath = identifier.substring(0, identifier.lastIndexOf('/')-12);
@@ -291,6 +319,7 @@ public class GoogleCloudService extends IntentService{
 		Set<String> itemIdentifiers = new HashSet<String>(downloadSet);
 		
 		for(String itemIdentifier : itemIdentifiers) {
+			Log.i(TAG, "download: " + itemIdentifier);
 			broadcastStatus("start");
 			FileModel item = FileModel.fromCloudId(itemIdentifier);
 			
@@ -304,11 +333,15 @@ public class GoogleCloudService extends IntentService{
 					InputStream metaIs = gd.load(item.getCloudIdentifier(1));
 					FileOutputStream metaFos = 
 							new FileOutputStream(new File(dir, item.getMetadataIdExt()));
+					if(metaIs == null || metaFos == null)
+						break;
 					Utils.copyStream(metaIs, metaFos, true);
 				case 1:
 					InputStream is = gd.load(itemIdentifier);
 					FileOutputStream fos = 
 							new FileOutputStream(new File(dir, item.getIdExt()));
+					if(is == null || fos == null)
+						break;
 					Utils.copyStream(is, fos, true);
 				
 					downloadSet.remove(itemIdentifier);
@@ -345,23 +378,23 @@ public class GoogleCloudService extends IntentService{
 	 *  Retry function: Upload all recording-items in the Set
 	 */
 	private void retryBackup() {
-		Log.i(TAG, "retry start");
 		if(googleAuthToken == null || !Aikuma.isDeviceOnline())
 			return;
 		DataStore gd = new GoogleDriveStorage(googleAuthToken);
 		Index fi = new FusionIndex(googleAuthToken);
 		
-		// Recordings
-		retryBackup(gd, fi, approvalKey, approvedRecordingSet, 
-				archiveKey, archivedRecordingSet);
+		// Others
+		retryBackup(gd, fi, approvalOtherKey, approvedOtherSet, 
+				archiveOtherKey, archivedOtherSet);
 		
 		// Speakers
 		retryBackup(gd, fi, approvalSpKey, approvedSpeakerSet,
 				archiveSpKey, archivedSpeakerSet);
 		
-		// Others
-		retryBackup(gd, fi, approvalOtherKey, approvedOtherSet, 
-				archiveOtherKey, archivedOtherSet);
+		// Recordings
+		retryBackup(gd, fi, approvalKey, approvedRecordingSet, 
+				archiveKey, archivedRecordingSet);
+		
 	}
 	
 	private void retryBackup(DataStore gd, Index fi, 
