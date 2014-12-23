@@ -33,7 +33,7 @@ public class Mapper {
 	private Long originalEndOfSegment;
 	private Long respeakingStartOfSegment = 0L;
 	private Long respeakingEndOfSegment;
-
+	
 	/** The mapping file */
 	private File mappingFile;
 
@@ -132,6 +132,8 @@ public class Mapper {
 		//We currently have no end for these segments.
 		originalEndOfSegment = null;
 		respeakingEndOfSegment = null;
+		
+		
 		return true;
 	}
 	

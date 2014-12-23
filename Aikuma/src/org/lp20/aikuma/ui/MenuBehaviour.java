@@ -74,6 +74,11 @@ public class MenuBehaviour {
 				goToMainActivity();
 				return true;
 			case R.id.search:
+				if(AikumaSettings.getCurrentUserId() == null) {
+					Aikuma.showAlertDialog(activity,
+							"You need to select your account");
+					return true;
+				}
 				intent = new Intent(activity, CloudSearchActivity.class);
 				activity.startActivity(intent);
 				return true;
@@ -131,7 +136,11 @@ public class MenuBehaviour {
 				//intent = new Intent(activity, CloudSyncSettingsActivity.class);
 				//activity.startActivity(intent);
 				return true;
-			case R.id.ftp_sync_menu:
+			case R.id.cloud_sync_setting_menu:
+				intent = new Intent(activity, CloudSettingsActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.ftp_sync_setting_menu:
 				intent = new Intent(activity, SyncSettingsActivity.class);
 				activity.startActivity(intent);
 				return true;

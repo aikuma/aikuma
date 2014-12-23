@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import org.lp20.aikuma2.R;
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.service.BootReceiver;
 import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.util.AikumaSettings;
@@ -55,32 +56,19 @@ public class SettingsActivity extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings);
+		preferences =
+				PreferenceManager.getDefaultSharedPreferences(this);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		preferences =
-				PreferenceManager.getDefaultSharedPreferences(this);
+		
 		readRespeakingMode();
 		readRespeakingRewind();
 		setupSensitivitySlider();
-		setupSyncCheckBox();
 	}
-	
-	private void setupSyncCheckBox() {
-		CheckBox syncCheckBox = (CheckBox)
-				findViewById(R.id.sync_checkBox);
-		if(AikumaSettings.getCurrentUserId() == null) {
-			syncCheckBox.setEnabled(false);
-		}
-		AikumaSettings.isBackupEnabled =
-				preferences.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
-		AikumaSettings.isAutoDownloadEnabled = 
-				preferences.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
-		
-		syncCheckBox.setChecked(AikumaSettings.isBackupEnabled);
-	}
+
 
 	// Set the respeaking mode radio buttons as per the settings.
 	private void readRespeakingMode() {
@@ -182,65 +170,6 @@ public class SettingsActivity extends AikumaActivity {
 					prefsEditor.commit();
 				}
 				break;
-		}
-	}
-	
-	/**
-	 * Adjusts the settings when the sync checkbox is checked.
-	 * 
-	 * @param checkBox	The checkbox 
-	 */
-	public void onSyncCheckBoxClicked(View checkBox) {
-		boolean checked = ((CheckBox) checkBox).isChecked();
-		Editor prefsEditor = preferences.edit();
-		Log.i(TAG, "checkbox: " + checked);
-		if(checked) {
-			if(!AikumaSettings.isBackupEnabled && !AikumaSettings.isAutoDownloadEnabled) {
-				Intent intent = new Intent(this, GoogleCloudService.class);
-				intent.putExtra(GoogleCloudService.ACTION_KEY, "sync");
-				intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
-						AikumaSettings.getCurrentUserId());
-				intent.putExtra(GoogleCloudService.TOKEN_KEY, 
-						AikumaSettings.getCurrentUserToken());
-				
-				PendingIntent pIntent = PendingIntent.getService(
-						this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-				
-				AlarmManager alm = (AlarmManager) getSystemService(ALARM_SERVICE);
-				alm.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, 
-						1000, AikumaSettings.SYNC_INTERVAL, pIntent);
-				
-				ComponentName receiver = new ComponentName(this, BootReceiver.class);
-				PackageManager pm = this.getPackageManager();
-				pm.setComponentEnabledSetting(receiver,
-				        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-				        PackageManager.DONT_KILL_APP);
-			}
-			
-			AikumaSettings.isBackupEnabled = true;
-			AikumaSettings.isAutoDownloadEnabled = true;
-			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, true);
-			prefsEditor.putBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, true);
-			prefsEditor.commit();
-		} else {
-			Intent intent = new Intent(this, GoogleCloudService.class);
-			PendingIntent pIntent = PendingIntent.getService(
-					this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-			
-			AlarmManager alm = (AlarmManager) getSystemService(ALARM_SERVICE);
-			alm.cancel(pIntent);		
-			
-			ComponentName receiver = new ComponentName(this, BootReceiver.class);
-			PackageManager pm = this.getPackageManager();
-			pm.setComponentEnabledSetting(receiver,
-			        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-			        PackageManager.DONT_KILL_APP);
-			
-			AikumaSettings.isBackupEnabled = false;
-			AikumaSettings.isAutoDownloadEnabled = false;
-			prefsEditor.putBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
-			prefsEditor.putBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
-			prefsEditor.commit();
 		}
 	}
 

@@ -4,14 +4,21 @@
 */
 package org.lp20.aikuma;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
 import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
 
 /**
@@ -29,6 +36,7 @@ public class Aikuma extends android.app.Application {
 
 	private static Aikuma instance;
 	private static List<Language> languages;
+	private static SharedPreferences preferences;
 
 	/**
 	 * The constructor.
@@ -62,14 +70,44 @@ public class Aikuma extends android.app.Application {
      * @return	boolean for status
      */
     public static boolean isDeviceOnline() {
-        ConnectivityManager connMgr = (ConnectivityManager)
+    	if(preferences == null) {
+    		preferences = 
+    				PreferenceManager.getDefaultSharedPreferences(getContext());
+    		AikumaSettings.isOnlyWifi = 
+    				preferences.getBoolean(AikumaSettings.WIFI_MODE_KEY, true);
+    	}
+    	
+    	ConnectivityManager connMgr = (ConnectivityManager)
                 getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
+    	NetworkInfo networkInfo;
+    	if(AikumaSettings.isOnlyWifi) {
+    		networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+    	} else {
+    		networkInfo = connMgr.getActiveNetworkInfo();   
+    	}
+    	
+    	if (networkInfo != null && networkInfo.isConnected()) {
             return true;
         }
-        return false;
+    	return false;
     }
+    
+    /**
+     * Return an arraylist of available google-accounts in a device
+     * @return	ArrayList of google-accounts
+     */
+    public static ArrayList<String> getGoogleAccounts() {
+    	ArrayList<String> accountList = new ArrayList<String>();
+    	
+    	Account[] accounts = 
+    			AccountManager.get(getContext()).getAccountsByType("com.google");
+    	for(Account ac : accounts) {
+    		accountList.add(ac.name);
+    	}
+    	
+    	return accountList;
+    }
+    
     
     /**
      * Show the warning dialog with the message

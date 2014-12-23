@@ -7,6 +7,7 @@ package org.lp20.aikuma.util;
 import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
 
+
 /**
  * The class storing setting parameters which can be accessed
  * by all Android components in the application
@@ -23,17 +24,22 @@ public class AikumaSettings {
 	 * Setting value for auto-download
 	 */
 	public static boolean isAutoDownloadEnabled;
+	/**
+	 * Setting value for sync-only-over-wifi
+	 */
+	public static boolean isOnlyWifi;
 	
 	// Current default owner_id(== default Google account)
 	private static String DEFAULT_USER_ID = null;
 	// Current default owner_auth_token(== default Google API access_token)
 	private static String DEFAULT_USER_AUTH_TOKEN = null;
 	
-	private static int NUM_OF_USERS = 0;
-	private static int NUM_OF_ITEMS = 0;
-	private static float RATIO_OF_FTP_SYNC = 0;
-	private static float RATIO_OF_CLOUD_SYNC = 0;
-	private static float RATIO_OF_CENTRAL_SYNC = 0;
+	private static int numOfUsers;
+	private static int numOfSpeakers;
+	private static int numOfItems;
+	private static float ratioOfFtpSync;
+	private static float ratioOfCloudSync;
+	private static float ratioOfCentralSync;
 	
 	
 	/**
@@ -48,6 +54,14 @@ public class AikumaSettings {
 	 * Key for a current user ID's auth_token in default SharedPreferences
 	 */
 	public static final String SETTING_AUTH_TOKEN_KEY = "userToken";
+	/**
+	 * Key for a ratio of backup to Google Drive in default SharedPreferences
+	 */
+	public static final String SETTING_CLOUD_RATIO_KEY = "cloudSyncRatio";
+	/**
+	 * Key for a ratio of central-archive in default SharedPreferences
+	 */
+	public static final String SETTING_CENTRAL_RATIO_KEY = "centralSyncRatio";
 	
 	/**
 	 * Sync time interval (30min)
@@ -59,11 +73,14 @@ public class AikumaSettings {
 	 * 
 	 *  BACKUP_MODE_KEY			: true/false
 	 *  AUTO_DOWNLOAD_MODE_KEY  : true/false
+	 *  WIFI_MODE_KEY			: true/false
 	 *  RESPEAKING_MODE_KEY		: "phone"/"thumb"
 	 */
 	public static final String BACKUP_MODE_KEY = "backup_mode";
 	/** */
 	public static final String AUTO_DOWNLOAD_MODE_KEY = "autoDownload_mode";
+	/** */
+	public static final String WIFI_MODE_KEY = "only_wifi";
 	/** */
 	public static final String RESPEAKING_MODE_KEY = "respeaking_mode";
 
@@ -155,14 +172,30 @@ public class AikumaSettings {
 	 * @return	the number of users
 	 */
 	public static int getNumberOfUsers() {
-		return NUM_OF_USERS;
+		return numOfUsers;
 	}
 	/**
 	 * Set the number of users
 	 * @param num	the number of users
 	 */
 	public static void setNumberOfUsers(int num) {
-		NUM_OF_USERS = num;
+		numOfUsers = num;
+	}
+	
+	/**
+	 * Return current number of speakers
+	 * @return	the number of speakers
+	 */
+	public static int getNumberOfSpeakers() {
+		return numOfSpeakers;
+	}
+	
+	/**
+	 * Set the number of speakers
+	 * @param num	the number of speakers
+	 */
+	public static void setNumberOfSpeakers(int num) {
+		numOfSpeakers = num;
 	}
 	
 	/**
@@ -170,14 +203,14 @@ public class AikumaSettings {
 	 * @return	the number of items
 	 */
 	public static int getNumberOfItems() {
-		return NUM_OF_ITEMS;
+		return numOfItems;
 	}
 	/**
 	 * Set the number of items
 	 * @param num	the number of items
 	 */
 	public static void setNumberOfItems(int num) {
-		NUM_OF_ITEMS = num;
+		numOfItems = num;
 	}
 	
 	/**
@@ -185,14 +218,14 @@ public class AikumaSettings {
 	 * @return	the ratio of ftp-upload success
 	 */
 	public static float getFtpRatio() {
-		return RATIO_OF_FTP_SYNC;
+		return ratioOfFtpSync;
 	}
 	/**
 	 * Set the current ftp upload ratio
 	 * @param ratio		the ratio of ftp-upload success
 	 */
 	public static void setFtpRatio(float ratio) {
-		RATIO_OF_FTP_SYNC = ratio;
+		ratioOfFtpSync = ratio;
 	}
 	
 	/**
@@ -200,14 +233,14 @@ public class AikumaSettings {
 	 * @return	the ratio of Cloud-upload success
 	 */
 	public static float getCloudRatio() {
-		return RATIO_OF_CLOUD_SYNC;
+		return ratioOfCloudSync;
 	}
 	/**
 	 * Set the current cloud upload ratio
 	 * @param ratio		the ratio of cloud-upload success
 	 */
 	public static void setCloudRatio(float ratio) {
-		RATIO_OF_CLOUD_SYNC = ratio;
+		ratioOfCloudSync = ratio;
 	}
 	
 	/**
@@ -215,14 +248,14 @@ public class AikumaSettings {
 	 * @return	the ratio of central-upload success
 	 */
 	public static float getCentralRatio() {
-		return RATIO_OF_CENTRAL_SYNC;
+		return ratioOfCentralSync;
 	}
 	/**
 	 * Set the current central upload ratio
 	 * @param ratio		the ratio of central-upload success
 	 */
 	public static void setCentralRatio(float ratio) {
-		RATIO_OF_CENTRAL_SYNC = ratio;
+		ratioOfCentralSync = ratio;
 	}
 	
 	/**

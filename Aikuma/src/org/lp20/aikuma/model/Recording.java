@@ -738,25 +738,28 @@ public class Recording extends FileModel {
 		
 		// Read metadata files
 		for(File groupDir: groupDirList) {
-			
+
 			File[] groupDirMetaFiles = groupDir.listFiles(new FilenameFilter() {
 				public boolean accept(File dir, String filename) {
 					return filename.endsWith(METADATA_SUFFIX);
 				}
 			});
 	
-			Recording recording;
-			for (File recordingMetaFile : groupDirMetaFiles) {
-				try {
-					recording = Recording.read(recordingMetaFile);
-					if (!recording.isOriginal()) {
-						respeakings.add(recording);
+			if(groupDirMetaFiles != null) {
+				Recording recording;
+				for (File recordingMetaFile : groupDirMetaFiles) {
+					try {
+						recording = Recording.read(recordingMetaFile);
+						if (!recording.isOriginal()) {
+							respeakings.add(recording);
+						}
+					} catch (IOException e) {
+						// Well we can't read the recordings metadata file, so just
+						// continue on.
 					}
-				} catch (IOException e) {
-					// Well we can't read the recordings metadata file, so just
-					// continue on.
 				}
 			}
+			
 		}
 		
 		return respeakings;
