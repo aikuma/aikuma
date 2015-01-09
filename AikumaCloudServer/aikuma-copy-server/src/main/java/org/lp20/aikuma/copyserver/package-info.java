@@ -5,4 +5,4 @@
  * @author haejoong
  *
  */
-package org.lp20.aikuma.servers;
+package org.lp20.aikuma.copyserver;

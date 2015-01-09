@@ -1,4 +1,4 @@
-package org.lp20.aikuma.servers;
+package org.lp20.aikuma.copyserver;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -62,7 +62,7 @@ public class ProcessLogManager {
 	/**
 	 * Use to record that dateProcessed field has been updated.
 	 * 
-	 * @param item_id
+	 * @param itemId Item ID
 	 */
 	public boolean setDated(String itemId) {
 		try {

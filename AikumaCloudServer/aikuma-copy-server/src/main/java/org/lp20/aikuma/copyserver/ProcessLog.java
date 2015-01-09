@@ -1,4 +1,4 @@
-package org.lp20.aikuma.servers;
+package org.lp20.aikuma.copyserver;
 
 /**
  * A prcess log recording whether a file has been copied, and
@@ -53,7 +53,6 @@ public class ProcessLog implements java.io.Serializable {
 	
 	/**
 	 * Records that the date of copy has been recorded.
-	 * @param v
 	 */
 	public void setDated() {
 		dated = true;
