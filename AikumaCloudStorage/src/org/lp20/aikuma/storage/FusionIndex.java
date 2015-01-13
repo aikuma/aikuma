@@ -300,7 +300,6 @@ public class FusionIndex implements Index {
         }
     }
 
-
     private String makeSearchSQL(Map<String, String> constraints, boolean fullRecord) {
         StringBuilder sqlBuilder = new StringBuilder();
         if (fullRecord) {
