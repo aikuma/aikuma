@@ -22,9 +22,7 @@ public class Main {
 
     private static boolean setup(IndexServerApplication app) {
         Properties props = new Properties();
-        String fileLoc = System.getProperty("user.dir");
-        fileLoc += System.getProperty("file.separator");
-        fileLoc += "index_server.properties";
+        String fileLoc = (String) app.getProperty("config_file");
         try {
             InputStream in = new FileInputStream(fileLoc);
             props.load(in);
@@ -81,11 +79,12 @@ public class Main {
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
      * @return Grizzly HTTP server.
      */
-    public static HttpServer startServer() {
+    public static HttpServer startServer(String configLoc) {
         // create a resource config that scans for JAX-RS resources and providers
         // in org.lp20.aikuma package
         //final IndexServerApplication rc = new IndexServerApplication().packages("org.lp20.aikuma");
         final IndexServerApplication app = new IndexServerApplication();
+        app.property("config_file", configLoc);
         app.packages("org.lp20.aikuma.servers.index_server");
 
         if (!setup(app)) {
@@ -126,8 +125,17 @@ public class Main {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
+        String configLoc;
+        if (args.length > 0)
+            configLoc = args[0];
+        else {
+            configLoc = System.getProperty("user.dir");
+            configLoc += System.getProperty("file.separator");
+            configLoc += "index_server.properties";
+        }
+
         long startTime = System.currentTimeMillis();
-        final HttpServer server = startServer();
+        final HttpServer server = startServer(configLoc);
         long startup = System.currentTimeMillis() - startTime;
 
         System.out.println("Application started in " + startup + " milliseconds");
