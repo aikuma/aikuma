@@ -64,8 +64,9 @@ public class IndexResource {
             JSONArray data = new JSONArray();
             idx.search(params, new Index.SearchResultProcessor() {
                 @Override
-                public void process(Map<String, String> result) {
+                public boolean process(Map<String, String> result) {
                     data.add(result);
+                    return true;
                 }
             });
             resp = Response.ok(data.toJSONString()).build();
