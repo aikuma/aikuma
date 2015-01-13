@@ -116,8 +116,7 @@ public class GoogleServiceAuth {
         try {
             File pkcs12 = new File(path);
             KeyStore ks = KeyStore.getInstance("pkcs12");
-            ks.load(new FileInputStream(
-                    new File("private_key.p12")), password.toCharArray());
+            ks.load(new FileInputStream(pkcs12), password.toCharArray());
             this.privateKey = ks.getKey(KEY_ALIAS, password.toCharArray());
             return true;
         } catch (FileNotFoundException e) {
