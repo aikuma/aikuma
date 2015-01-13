@@ -1,4 +1,4 @@
-package org.lp20.aikuma.servers;
+package org.lp20.aikuma.copyserver;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -12,11 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.lp20.aikuma.storage.Data;
-import org.lp20.aikuma.storage.DataStore;
-import org.lp20.aikuma.storage.FusionIndex;
-import org.lp20.aikuma.storage.GoogleDriveStorage;
-import org.lp20.aikuma.storage.InvalidAccessTokenException;
+import org.lp20.aikuma.storage.*;
 
 /**
  * For each file in fusion table that meets the following conditions,
@@ -46,7 +42,7 @@ public class CopyArchivedFiles {
 		String credentialFile = args[0];
 		String processLogFile = args[1];
 		
-		CredentialManager cm = new CredentialManager(credentialFile);
+		GoogleCredentialManager cm = new GoogleCredentialManager(credentialFile);
 		ProcessLogManager pm = new ProcessLogManager(processLogFile);
 		
 		String accessToken = cm.getAccessToken();

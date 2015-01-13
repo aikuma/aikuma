@@ -53,7 +53,6 @@ public class ProcessLog implements java.io.Serializable {
 	
 	/**
 	 * Records that the date of copy has been recorded.
-	 * @param v
 	 */
 	public void setDated() {
 		dated = true;

@@ -20,11 +20,11 @@ get_next_time() {
 }
 
 run_app() {
-    java -jar aikuma-copy-archived-files.jar $CREDENTIALS $TRACKING_DB 
+    aikuma-copy-server-*/bin/aikuma-copy-server $CREDENTIALS $TRACKING_DB
 }
 
 rm_old_logs() {
-    find $VAR -name "${LOG_PREFIX}*" -ctime +7 -exec rm \{} \;
+    find $VAR -name "$(basename $LOG_PREFIX)*" -ctime +7 -exec rm \{} \;
 }
 
 while true; do
