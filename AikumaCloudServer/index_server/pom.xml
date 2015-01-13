@@ -37,14 +37,24 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.lp20.aikuma</groupId>
-            <artifactId>cloud-storage-with-deps</artifactId>
-            <version>1.1</version>
+            <groupId>org.lp20</groupId>
+            <artifactId>aikuma-cloud-storage</artifactId>
+            <version>0.2.1</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.10</version>
         </dependency>
     </dependencies>
 
