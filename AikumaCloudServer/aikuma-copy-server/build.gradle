@@ -19,7 +19,7 @@ dependencies {
     compile('com.googlecode.json-simple:json-simple:1.1.1') {
         exclude module: 'junit'
     }
-    compile 'org.lp20:aikuma-cloud-storage:0.2.0'
+    compile 'org.lp20:aikuma-cloud-storage:0.2.1'
     compile files(rootDir.path + '/libs/jdbm-2.4.jar')
     compile 'org.mapdb:mapdb:1.0.6'
 }
