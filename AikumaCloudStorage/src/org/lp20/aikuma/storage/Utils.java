@@ -10,6 +10,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -67,8 +70,40 @@ public class Utils {
 		}
 		return sb.toString();		
 	}
-	
-	/**
+
+    public static String validateIndexMetadata(Map<String, String> metadata, boolean forInsert) {
+        StringBuilder ret = new StringBuilder();
+
+        for (String key : metadata.keySet()) {
+            if (!FusionIndex.MetadataField.isValidName(key)) {
+                ret.append("Unknown metadata field: " + key + "\n");
+            }
+        }
+        for (FusionIndex.MetadataField f: FusionIndex.MetadataField.values()) {
+            String name = f.getName();
+            if (forInsert && f.isRequired( )&& !metadata.containsKey(name))
+                ret.append("Missing required field " + name + "\n");
+            if (f.getFormat() != null && metadata.containsKey(name)) {
+                // TODO: this assumes all formats are date formats; it should probably be different
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat(f.getFormat());
+                    Date tmp = sdf.parse(metadata.get(name));
+                } catch (ParseException e) {
+                    ret.append("Invalid data format for " + name +
+                                                       "; does not match" + f.getFormat() + "\n");
+                }
+            }
+            if ("discourse_type".equals(name)) {
+                for (String tmp : metadata.get(name).split(",")) {
+                    if (!FusionIndex.DiscourseType.isValidName(tmp))
+                        ret.append(metadata.get(name) + " is not a valid discourse_type\n");
+                }
+            }
+        }
+        return ret.toString();
+    }
+
+    /**
 	 * Helps build a URL.
 	 * 
 	 * @author haejoong
