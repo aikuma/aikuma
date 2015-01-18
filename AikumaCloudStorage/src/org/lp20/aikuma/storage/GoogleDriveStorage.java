@@ -55,7 +55,7 @@ public class GoogleDriveStorage implements DataStore {
 	}
 
 	@Override
-	public String store(String identifier, Data data) {
+	public String store(String identifier, Data data, String folderId) {
 		// identifier - aikuma file path
 		JSONObject obj = gapi_insert(data);
 		if (obj == null)
@@ -63,6 +63,15 @@ public class GoogleDriveStorage implements DataStore {
 		
 		JSONObject meta = new JSONObject();
 		meta.put("title", identifier);
+		if (folderId != null) {
+			JSONArray parentField = new JSONArray();
+			JSONObject parentValue = new JSONObject ();
+			// folderId returned by createFolder function (eg. "0B_EEqVf0vlvRZFBzR3puOV9aSkU")
+			parentValue.put("id", folderId);
+			parentField.add(parentValue);
+			meta.put("parents", parentField);	
+		}
+		
 		String fileid = (String) obj.get("id");
 		JSONObject obj2 = gapi_update_metadata(fileid, meta);
 		if (obj2 != null)
@@ -97,6 +106,49 @@ public class GoogleDriveStorage implements DataStore {
 			return true;
 		else
 			return false;
+	}
+	
+	@Override
+	public String createFolder(String identifier) {
+		// Folder name should have no extension
+		if(identifier.contains("."))
+			return null;
+		
+		JSONObject meta = new JSONObject();
+		meta.put("title", identifier);
+		meta.put("mimeType", "application/vnd.google-apps.folder");
+		JSONArray parentField = new JSONArray();
+		JSONObject parentValue = new JSONObject ();
+		parentValue.put("id", "root");
+		parentField.add(parentValue);
+		meta.put("parents", parentField);
+		
+		String metajson = meta.toJSONString();
+		
+		try {
+			URL url = new URL("https://www.googleapis.com/drive/v2/files");
+			HttpURLConnection con = gapi_connect(url, "POST", accessToken_);
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Content-Length", String.valueOf(metajson.length()));
+			OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+			writer.write(metajson);
+			writer.flush();
+			writer.close();
+
+			if (con.getResponseCode() != HttpURLConnection.HTTP_OK)
+				return null;
+	
+			String jsonStr = Utils.readStream(con.getInputStream());
+			JSONObject jsonObj = (JSONObject) JSONValue.parse(jsonStr);
+			
+			if(jsonObj != null)
+				return (String) jsonObj.get("id");
+			else
+				return null;
+		}
+		catch (IOException e) {
+			return null;
+		}
 	}
 	
 	@Override

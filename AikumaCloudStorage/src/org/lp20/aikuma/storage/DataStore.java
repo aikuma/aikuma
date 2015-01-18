@@ -15,9 +15,10 @@ public interface DataStore {
 	 * Store a data item to the storage.
 	 * @param identifier Unique identifier for the data item to store.
 	 * @param data An InputStream containing the data.
+	 * @param folderId	A parent-folder's ID in Drive
 	 * @return A URI or part of the URI that can be used to download the data item.
 	 */
-	public String store(String identifier, Data data);
+	public String store(String identifier, Data data, String folderId);
 	
 	/**
 	 * Allow public access to the data item.
@@ -25,6 +26,13 @@ public interface DataStore {
 	 * @return true on success, false on failure. 
 	 */
 	public boolean share(String identifier);
+	
+	/**
+	 * Create a folder in the storage
+	 * @param identifier The folder's name
+	 * @return	An unique id of the folder created by Drive
+	 */
+	public String createFolder(String identifier);
 	
 	/**
 	 * Provide a callback method for handling list items.

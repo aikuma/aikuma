@@ -20,7 +20,9 @@ public class UploadFile {
 		
 		GoogleDriveStorage gd = new GoogleDriveStorage(args[1]);
 		
-		String download_url = gd.store(file.getName(), data);
+		String folderId = gd.createFolder("aikuma");
+		
+		String download_url = gd.store(file.getName(), data, folderId);
 		if (download_url != null) {
 			System.out.println("OK");
 			System.out.println("File can be downloaded from " + download_url);
