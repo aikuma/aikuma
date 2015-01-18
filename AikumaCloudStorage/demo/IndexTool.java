@@ -20,6 +20,7 @@ public class IndexTool {
 
     String tableId;
     String accessToken;
+    String baseUrl;
 
     Map<String,String> metadata;
     String identifier;
@@ -27,7 +28,7 @@ public class IndexTool {
 
 
     public static void usage() {
-        System.err.println("Usage: IndexTool <action> [<identifier>] [data.json]");
+        System.err.println("Usage: IndexTool [-2 <url>] <action> [<identifier>] [data.json]");
 
     }
     public static void main(String[] args) {
@@ -53,7 +54,10 @@ public class IndexTool {
             if (!auth.validateAccessToken(accessToken)) {
                 auth.refreshAccessToken(refreshToken);
                 accessToken = auth.getAccessToken();
-                //config.setProperty("access_token", accessToken);
+                if (accessToken == null) {
+                    System.err.println("Can't get access token. Update ~/.aikuma manually.");
+                    System.exit(1);
+                }
                 config.put("access_token", accessToken);
                 config.store(new FileOutputStream(new File(System.getProperty("user.home") + "/.aikuma")), "Automatically updated with new access_token");
             }
@@ -66,6 +70,21 @@ public class IndexTool {
         }
 
         String identifier = null;
+        String baseUrl = null;
+
+        if (args.length > 0) {
+            if (args[0].equals("-2")) {
+                if (args.length < 3) {
+                    usage();
+                    System.exit(1);
+                }
+                System.err.println("Using FusionIndex2");
+                baseUrl = args[1];
+                String[] temp = new String[args.length - 2];
+                System.arraycopy(args, 2, temp, 0, args.length - 2);
+                args = temp;
+            }
+        }
 
         try {
             action = args[0];
@@ -77,7 +96,7 @@ public class IndexTool {
 
         // TODO this should take a json file from the command line
 
-        IndexTool index = new IndexTool(accessToken);
+        IndexTool index = new IndexTool(accessToken, baseUrl);
         index.tableId = tableId;
         try {
             if ("add".equals(action)) {
@@ -160,8 +179,9 @@ public class IndexTool {
     }
 
 
-    private IndexTool(String accessToken) {
+    private IndexTool(String accessToken, String baseUrl) {
         this.accessToken = accessToken;
+        this.baseUrl = baseUrl;
     }
     private void addItem(String identifier, Map<String,String> metadata) {
         FusionIndex fi = getFusionIndex();
@@ -169,7 +189,11 @@ public class IndexTool {
     }
 
     private FusionIndex getFusionIndex(String tableId) {
-        FusionIndex fi = new FusionIndex(accessToken);
+        FusionIndex fi;
+        if (baseUrl != null)
+            fi = new FusionIndex2(baseUrl, accessToken);
+        else
+            fi = new FusionIndex(accessToken);
         fi.setTableId(tableId);
         return fi;
     }
@@ -181,9 +205,9 @@ public class IndexTool {
     private void getItem(String identifier) {
         FusionIndex fi = getFusionIndex();
         Map<String,String> md = fi.getItemMetadata(identifier);
+        System.out.println("JSON: " + JSONValue.toJSONString(md));
         for (String k : md.keySet()) {
             System.out.println(String.format("%s: %s", k, md.get(k)));
-
         }
     }
     private void modify(String schema) {
@@ -292,7 +316,11 @@ public class IndexTool {
             fi.search(params, new Index.SearchResultProcessor() {
                 @Override
                 public boolean process(Map<String, String> result) {
-                    System.out.println(result);
+                    System.out.println("JSON: " + JSONValue.toJSONString(result));
+                    for (String key: result.keySet()) {
+                        System.out.println(key + ": " + result.get(key));
+                    }
+                    System.out.println();
                     return true;
                 }
             });
