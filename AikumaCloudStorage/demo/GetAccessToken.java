@@ -4,13 +4,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Properties;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import org.lp20.aikuma.storage.*;
 
 public class GetAccessToken {
+	private static final Logger log = Logger.getLogger(GetAccessToken.class.getName());
+
 	public static void main(String[] args) {
-		String client_id = "119115083785-cqbtnha90hobui893c0lc33olghb4uuv.apps.googleusercontent.com";
-		String client_secret = "4Yz3JDpqbyf6q-uw0rP2BSnN";
+		Properties config = DemoUtils.readProps();
+		String client_id = config.getProperty("client_id");
+		String client_secret = config.getProperty("client_secret");
+		log.log(Level.INFO, "client id: " + client_id);
+		log.log(Level.INFO, "client secret: " + client_secret);
 		GoogleAuth auth = new GoogleAuth(client_id, client_secret);
 		Desktop desktop = Desktop.getDesktop();
 		ArrayList<String> apis = new ArrayList<String>();
@@ -54,8 +62,10 @@ public class GetAccessToken {
 		
 		if (auth.requestAccessToken(code)) {
 			System.out.println("Access token: " + auth.getAccessToken());
-            System.out.println("Refresh token: " + auth.getRefreshToken());
-
+			System.out.println("Refresh token: " + auth.getRefreshToken());
+			config.put("access_token", auth.getAccessToken());
+			config.put("refresh_token", auth.getRefreshToken());
+			DemoUtils.writeProps(config);
 		}
 		else {
 			System.err.println("Failed to get access token.");
