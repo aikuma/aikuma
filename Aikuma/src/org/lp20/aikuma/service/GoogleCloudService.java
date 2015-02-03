@@ -27,7 +27,7 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.storage.Data;
 import org.lp20.aikuma.storage.DataStore;
-import org.lp20.aikuma.storage.FusionIndex;
+import org.lp20.aikuma.storage.FusionIndex2;
 import org.lp20.aikuma.storage.GoogleAuth;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
 import org.lp20.aikuma.storage.Index;
@@ -106,6 +106,7 @@ public class GoogleCloudService extends IntentService{
 	
 	private String googleEmailAccount;
 	private String googleAuthToken;
+	private String googleIdToken;
 	
 	/**
 	 * Constructor for IntentService subclasses
@@ -173,7 +174,8 @@ public class GoogleCloudService extends IntentService{
 					archive(id, 0);
 				else
 					archive(id, 1);
-				
+
+				validateToken();
 				retryBackup();
 			}
 			
@@ -381,7 +383,7 @@ public class GoogleCloudService extends IntentService{
 		if(googleAuthToken == null || !Aikuma.isDeviceOnline())
 			return;
 		DataStore gd = new GoogleDriveStorage(googleAuthToken);
-		Index fi = new FusionIndex(googleAuthToken);
+		Index fi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), googleIdToken, googleAuthToken);
 		
 		// Others
 		retryBackup(gd, fi, approvalOtherKey, approvedOtherSet, 
@@ -760,16 +762,10 @@ public class GoogleCloudService extends IntentService{
 
 	private void validateToken() {
 		try {
-        	// If the token is invalid, refresh token
-        	if(googleAuthToken != null && Aikuma.isDeviceOnline() &&
-    				!GoogleAuth.validateAccessToken(googleAuthToken)) {
-    			GoogleAuthUtil.clearToken(getApplicationContext(), googleAuthToken);
-    			googleAuthToken = GoogleAuthUtil.getToken(getApplicationContext(), 
-    					googleEmailAccount, AikumaSettings.getScope());
-    		}
-        } catch (Exception e) {
-            Log.e(TAG, "Unrecoverable error " + e.getMessage());
-        }
+			googleAuthToken = GoogleAuthUtil.getToken(getApplicationContext(), googleEmailAccount, AikumaSettings.getScope());
+			googleIdToken = GoogleAuthUtil.getToken(getApplicationContext(), googleEmailAccount, AikumaSettings.getIdTokenScope());
+	        } catch (Exception e) {
+			Log.e(TAG, "Unrecoverable error " + e.getMessage());
+		}
 	}
-	
 }
