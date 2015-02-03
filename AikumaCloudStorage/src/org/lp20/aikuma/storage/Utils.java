@@ -170,7 +170,7 @@ public class Utils {
 		for (String key: map.keySet()) {
 			try {
 				s += joiner + key + "=" + URLEncoder.encode(map.get(key), "UTF-8");
-				joiner += "&";
+				joiner = "&";
 			}
 			catch (UnsupportedEncodingException e) {
 				return null;
