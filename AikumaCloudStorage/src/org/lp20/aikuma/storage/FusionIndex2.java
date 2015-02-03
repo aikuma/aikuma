@@ -9,20 +9,30 @@ import java.net.URL;
 import java.util.Map;
 
 /**
- * FusionIndex2 rewrites "write" methods so that table-changing requests are
- * serviced by the private index server.
+ * FusionIndex2 rewrites "write" methods of FusionIndex so that table-changing
+ * requests are serviced by the private index server.
+ *
+ * The constructor requires base URL of the server and an ID token of the
+ * client Android app. The token is passed to the server which verifies that
+ * the request is coming from the registered app.
+ *
+ * Other requests are handled as usual -- the client passes an access token
+ * which is used to access the FusionTables table.
  */
 public class FusionIndex2 extends FusionIndex {
     String baseUrl;
     String accessToken;
+    String idToken;
 
     /**
-     * @param accessToken Token for accessing FusionTables.
      * @param baseUrl Base URL for the index REST API.
+     * @param idToken ID token obtained by the client Android app.
+     * @param accessToken Token for accessing FusionTables.
      */
-    public FusionIndex2(String baseUrl, String accessToken) {
+    public FusionIndex2(String baseUrl, String idToken, String accessToken) {
         super(accessToken);
         this.baseUrl = baseUrl;
+        this.idToken = idToken;
     }
 
     @Override
@@ -42,10 +52,7 @@ public class FusionIndex2 extends FusionIndex {
         try {
             HttpURLConnection con = mkCon(method, baseUrl + "/" + identifier);
             writePostData(con, Utils.map2query(metadata));
-            System.out.println("aaa");
-            int x = con.getResponseCode();
-            System.out.println(x);
-            switch (x) {
+            switch (con.getResponseCode()) {
             case 202:
                 return true;
             case 404:
@@ -67,17 +74,15 @@ public class FusionIndex2 extends FusionIndex {
         con.setInstanceFollowRedirects(true);
         con.setDoOutput(method.equals("POST") || method.equals("PUT"));
         con.setRequestMethod(method);
-        con.addRequestProperty("X-Aikuma-Auth-Token", accessToken);
+        con.addRequestProperty("X-Aikuma-Auth-Token", idToken);
         return con;
     }
 
     private void writePostData(HttpURLConnection con, String data)
         throws IOException {
-        try {
-        new OutputStreamWriter(con.getOutputStream()).write(data);
-        } catch (Exception e) {
-            System.out.println(e);
-            e.printStackTrace();
-        }
+        OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
+        out.write(data);
+        out.flush();
+        out.close();
     }
 }

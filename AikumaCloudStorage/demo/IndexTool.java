@@ -191,7 +191,7 @@ public class IndexTool {
     private FusionIndex getFusionIndex(String tableId) {
         FusionIndex fi;
         if (baseUrl != null)
-            fi = new FusionIndex2(baseUrl, accessToken);
+            fi = new FusionIndex2(baseUrl, "", accessToken);
         else
             fi = new FusionIndex(accessToken);
         fi.setTableId(tableId);
