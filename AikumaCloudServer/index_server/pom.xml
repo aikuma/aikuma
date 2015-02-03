@@ -6,7 +6,7 @@
     <groupId>org.lp20.aikuma</groupId>
     <artifactId>index-server</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <name>index-server</name>
 
     <dependencyManagement>
