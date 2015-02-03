@@ -52,4 +52,6 @@
 	<string name="http_ui_start">START</string>
 	<string name="http_ui_stop">STOP</string>
 	<string name="http_ui_default_port">8080</string>
+	<string name="title_activity_debug_info">DebugInfo</string>
+	<string name="action_settings">Settings</string>
 </resources>

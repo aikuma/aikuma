@@ -144,6 +144,10 @@ public class MenuBehaviour {
 				intent = new Intent(activity, SyncSettingsActivity.class);
 				activity.startActivity(intent);
 				return true;
+            case R.id.debugInfo:
+                intent = new Intent(activity, DebugInfo.class);
+                activity.startActivity(intent);
+                return true;
 			default:
 				return true;
 		}
