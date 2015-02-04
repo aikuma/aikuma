@@ -77,7 +77,7 @@ public class IndexResource {
     }
 
     @GET
-    @Path("{identifier}")
+    @Path("{identifier: .+}")
     @Consumes(MediaType.WILDCARD)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"authenticatedUser"})
@@ -109,7 +109,7 @@ public class IndexResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{identifier}")
+    @Path("{identifier: .+}")
     @RolesAllowed({"authenticatedUser"})
     public Response addItem(@PathParam("identifier") String identifier, MultivaluedMap<String, String> formParams) {
         try {
@@ -143,7 +143,7 @@ public class IndexResource {
     }
 
     @PUT
-    @Path("{identifier}")
+    @Path("{identifier: .+}")
     @RolesAllowed({"authenticatedUser"})
     public Response updateItem(@PathParam("identifier") String identifier, MultivaluedMap<String, String> formParams) {
         try {

@@ -4,6 +4,8 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
 
+    group = 'org.lp20'
+
     sourceCompatibility = '1.6'
 
     repositories {
@@ -29,9 +31,7 @@ project(':api') {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
-                groupId = 'org.lp20'
                 artifactId = jar.baseName
-                version = '0.2.1'
             }
         }
     }

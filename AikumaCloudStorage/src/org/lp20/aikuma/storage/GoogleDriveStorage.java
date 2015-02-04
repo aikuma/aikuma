@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -21,6 +23,8 @@ import static org.lp20.aikuma.storage.Utils.gapi_connect;
  * @author haejoong
  */
 public class GoogleDriveStorage implements DataStore {
+	private static final Logger log = Logger.getLogger(GoogleDriveStorage.class.getName());
+
 	String accessToken_;
 	
 	/**
@@ -58,8 +62,10 @@ public class GoogleDriveStorage implements DataStore {
 	public String store(String identifier, Data data) {
 		// identifier - aikuma file path
 		JSONObject obj = gapi_insert(data);
-		if (obj == null)
+		if (obj == null) {
+			log.log(Level.INFO, "gapi_intert returned null");
 			return null;
+                }
 		
 		JSONObject meta = new JSONObject();
 		meta.put("title", identifier);
@@ -103,6 +109,7 @@ public class GoogleDriveStorage implements DataStore {
 	public void list(ListItemHandler listItemHandler) {
 		JSONObject obj = gapi_list_files("trashed = false", null);
 		while (obj != null) {
+			log.log(Level.INFO, "processing list");
 			JSONArray arr = (JSONArray) obj.get("items");
 			for (Object item: arr) {
 				JSONObject o = (JSONObject) item;
@@ -117,15 +124,20 @@ public class GoogleDriveStorage implements DataStore {
 					date = null;
 				}
 				boolean cont = listItemHandler.processItem(identifier, date);
-				if (cont == false)
+				if (cont == false) {
+					log.log(Level.INFO, "handler stopped iteration");
 					return;
+				}
 			}
 			String nextPageToken = (String) obj.get("nextPageToken");
-			if (nextPageToken != null)
+			if (nextPageToken != null) {
 				obj = gapi_list_files(null, nextPageToken);
-			else
+			} else {
 				obj = null;
+				log.log(Level.INFO, "no more data to download");
+			}
 		}
+		log.log(Level.INFO, "gapi_list_files returned null");
 	}
 	
 	/**
@@ -154,13 +166,17 @@ public class GoogleDriveStorage implements DataStore {
 			con.setChunkedStreamingMode(8192);
 			Utils.copyStream(data.getInputStream(), con.getOutputStream(), false);
 
-			if (con.getResponseCode() != HttpURLConnection.HTTP_OK)
+			if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				log.log(Level.INFO, "upload request http respose: " + con.getResponseCode());
+				log.log(Level.INFO, "response message: " + con.getResponseMessage());
 				return null;
+			}
 			
 			String json = Utils.readStream(con.getInputStream());
 			return (JSONObject) JSONValue.parse(json);
 		}
 		catch (IOException e) {
+			log.log(Level.INFO, "IO exception: " + e.getMessage());
 			return null;
 		}
 	}
@@ -208,12 +224,16 @@ public class GoogleDriveStorage implements DataStore {
 			else if (searchQuery != null && !searchQuery.isEmpty())
 				ub.addQuery("q", searchQuery);
 			HttpURLConnection con = gapi_connect(ub.toUrl(), "GET", accessToken_);
-			if (con.getResponseCode() != HttpURLConnection.HTTP_OK)
-				return null;			
+			if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				log.log(Level.INFO, "gapi_list_files http response: " + con.getResponseCode());
+				log.log(Level.INFO, "response messaage: " + con.getResponseMessage());
+				return null;
+			}
 			String json = Utils.readStream(con.getInputStream());
 			return (JSONObject) JSONValue.parse(json);
 		}
 		catch (IOException e) {
+			log.log(Level.INFO, "IO error: " + e.getMessage());
 			return null;
 		}
 	}
