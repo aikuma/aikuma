@@ -42,6 +42,8 @@ public class CloudSearchActivity extends AikumaListActivity {
 	
 	private EditText searchQueryView;
 	
+	private QuickActionMenu quickMenu;
+	
 	private List<Recording> recordings;
 	private RecordingArrayAdapter adapter;
 	private Parcelable listViewState;
@@ -52,8 +54,9 @@ public class CloudSearchActivity extends AikumaListActivity {
 		setContentView(R.layout.cloud_search);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		
+		setUpQuickMenu();
 		recordings = new ArrayList<Recording>();
-		adapter = new RecordingArrayAdapter(this, recordings);
+		adapter = new RecordingArrayAdapter(this, recordings, quickMenu);
 		setListAdapter(adapter);
 		
 		searchQueryView = (EditText) findViewById(R.id.searchQuery);
@@ -100,7 +103,7 @@ public class CloudSearchActivity extends AikumaListActivity {
 			Aikuma.showAlertDialog(this, "Network is disconnected");
 		
 		recordings.clear();
-		String langQuery = searchQueryView.getText().toString();
+		String langQuery = searchQueryView.getText().toString().toLowerCase();
 		String emailAccount = AikumaSettings.getCurrentUserId();
 		String accessToken = AikumaSettings.getCurrentUserToken();
 		
@@ -112,6 +115,38 @@ public class CloudSearchActivity extends AikumaListActivity {
 			return;
 			
 		adapter.notifyDataSetChanged();
+	}
+	
+	// Creates the quickMenu for the original recording 
+	//(quickMenu: download)
+	private void setUpQuickMenu() {
+		quickMenu = new QuickActionMenu(this);
+		
+		//QuickActionItem starAct = new QuickActionItem("star", R.drawable.star);
+		//QuickActionItem flagAct = new QuickActionItem("flag", R.drawable.flag);
+		//QuickActionItem shareAct = 
+				//new QuickActionItem("share", R.drawable.share);
+		
+		
+		//quickMenu.addActionItem(starAct);
+		//quickMenu.addActionItem(flagAct);
+		//quickMenu.addActionItem(shareAct);
+
+		
+		if(AikumaSettings.getCurrentUserToken() != null) {
+			QuickActionItem downloadAct = 
+					new QuickActionItem("down", R.drawable.download_32);
+			quickMenu.addActionItem(downloadAct);
+		}
+		
+		
+		//setup the action item click listener
+		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener() {			
+			@Override
+			public void onItemClick(int pos) {
+				Aikuma.showAlertDialog(CloudSearchActivity.this, "download");
+			}
+		});
 	}
 	
 	/**

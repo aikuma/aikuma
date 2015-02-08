@@ -108,6 +108,9 @@ public class GoogleCloudService extends IntentService{
 	private String googleAuthToken;
 	private String googleIdToken;
 	
+	private int numOfItemsToDownload = 0;
+	private boolean isNewRecording = false;
+	
 	/**
 	 * Constructor for IntentService subclasses
 	 */
@@ -182,6 +185,15 @@ public class GoogleCloudService extends IntentService{
 			googleAuthToken = null;
 		}
 		
+		// Create an index file after cloud-activity is finished
+		if(isNewRecording) {
+			try {
+				Recording.indexAll();
+			} catch (IOException e) {
+				Log.e(TAG, e.getMessage());
+			}	
+		}
+		
 		broadcastStatus("end");
 	}
 	
@@ -242,6 +254,7 @@ public class GoogleCloudService extends IntentService{
 		GoogleDriveStorage gd = new GoogleDriveStorage(googleAuthToken);
 
 		// Collect archived file-cloudIDs in GoogleCloud
+		// TODO: For the case when there are too many files in GoogleDrive, it might need to use FusionIndex
         gd.list(new GoogleDriveStorage.ListItemHandler() {
 			@Override
 			public boolean processItem(String identifier, Date date) {
@@ -303,6 +316,8 @@ public class GoogleCloudService extends IntentService{
         logFileInDownloadSet(archivedSpeakerSet, false, downloadSpKey, downloadSpeakerSet, speakers);
         logFileInDownloadSet(archivedOtherSet, true, downloadOtherKey, downloadOtherSet, others);
         
+        numOfItemsToDownload = downloadRecordingSet.size();
+        
         prefsEditor.commit();
 	}
 	
@@ -315,6 +330,10 @@ public class GoogleCloudService extends IntentService{
 		retryDownload(gd, 1, downloadOtherKey, downloadOtherSet);
         retryDownload(gd, 0, downloadSpKey, downloadSpeakerSet);
         retryDownload(gd, 0, downloadKey, downloadRecordingSet);
+        
+        if(numOfItemsToDownload - downloadRecordingSet.size() > 0) {
+        	isNewRecording = true;
+        }
 	}
 	
 	private void retryDownload(DataStore gd, int state, String dlKey, Set<String> downloadSet) {
@@ -455,14 +474,16 @@ public class GoogleCloudService extends IntentService{
 				oneRecording.add(recording);
 				List<FileModel> recordingSpeakers = recording.getSpeakers();
 				List<FileModel> other = new ArrayList<FileModel>();
-				if(recording.isOriginal() && recording.getTranscriptFile() != null) {
-					other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
-							recording.getTranscriptId(), "other", "txt"));
+				if(recording.isOriginal()) {
+					if (recording.getTranscriptFile() != null) {
+						other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
+								recording.getTranscriptId(), "other", "txt"));
+					}
 				} else {
 					other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 							recording.getMapId(), "other", "txt"));
 				}
-				
+			
 				logFileInApprovalSet(oneRecording, false, 
 						approvalKey, approvedRecordingSet, archivedRecordingSet);
 				logFileInApprovalSet(recordingSpeakers, false, 

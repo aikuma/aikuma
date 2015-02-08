@@ -216,6 +216,7 @@ public class Microphone {
 		this.buffer = new short[getBufferSize()];
 	}
 	private int getBufferSize() {
+		// 10/441 ~ 22.6msec
 		return Math.round(1000f*physicalMicrophone.getSampleRate()/44100);
 	}
 

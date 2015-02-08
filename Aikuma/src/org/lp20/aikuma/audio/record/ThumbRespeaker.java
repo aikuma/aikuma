@@ -41,7 +41,7 @@ public class ThumbRespeaker {
 	 */
 	public ThumbRespeaker(Recording original, UUID respeakingUUID, 
 			int rewindAmount) throws MicException, IOException {
-		recorder = new Recorder(new File(Recording.getNoSyncRecordingsPath(),
+		recorder = new Recorder(1, new File(Recording.getNoSyncRecordingsPath(),
 				respeakingUUID + ".wav"), original.getSampleRate());
 		player = new SimplePlayer(original, true);
 		mapper = new Mapper(respeakingUUID);

@@ -71,7 +71,7 @@ public class RecordActivity extends AikumaActivity {
 		try {
 			File f = new File(Recording.getNoSyncRecordingsPath(),
 					soundUUID.toString() + ".wav");
-			recorder = new Recorder(f, sampleRate);
+			recorder = new Recorder(0, f, sampleRate);
 		} catch (MicException e) {
 			this.finish();
 			Toast.makeText(getApplicationContext(),

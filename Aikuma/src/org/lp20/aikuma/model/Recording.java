@@ -42,6 +42,9 @@ public class Recording extends FileModel {
 	// String tag for debugging
 	private static final String TAG = "Recording";
 	
+	/** sample file duration in sec */
+	public static final long SAMPLE_SEC = 15;
+	
 	/**
 	 * The constructor used when first creating a Recording.
 	 *
@@ -54,6 +57,7 @@ public class Recording extends FileModel {
 	 * @param	languages	The languages associated with the recording
 	 * @param	speakersIds	The IDs of the speakers associated with the
 	 * recording
+	 * @param	deviceName	The model name of the device
 	 * @param	androidID	The android ID of the device that created the
 	 * recording
 	 * @param	groupId	The ID of the group of recordings this recording
@@ -70,8 +74,8 @@ public class Recording extends FileModel {
 	public Recording(UUID recordingUUID, String name, Date date,
 			String versionName, String ownerId,
 			List<Language> languages, List<String> speakersIds,
-			String androidID, String groupId, String sourceVerId, long sampleRate,
-			int durationMsec, String format, int numChannels, 
+			String deviceName, String androidID, String groupId, String sourceVerId,
+			long sampleRate, int durationMsec, String format, int numChannels, 
 			int bitsPerSample, Double latitude, Double longitude) {
 		super(versionName, ownerId, null, null, format);
 		this.recordingUUID = recordingUUID;
@@ -79,6 +83,7 @@ public class Recording extends FileModel {
 		setDate(date);
 		setLanguages(languages);
 		setSpeakersIds(speakersIds);
+		setDeviceName(deviceName);
 		setAndroidID(androidID);
 		setSampleRate(sampleRate);
 		setDurationMsec(durationMsec);
@@ -170,12 +175,16 @@ public class Recording extends FileModel {
 	// Moves a WAV file with a temporary UUID from a no-sync directory to
 	// its rightful place in the connected world of Aikuma, with a proper name
 	// and where it will find it's best friend - a JSON metadata file.
-	private void importWav(UUID wavUUID, String id)
+	private void importWav(UUID wavUUID, String id) throws IOException {
+		importWav(wavUUID + ".wav", id + ".wav");
+	}
+	
+	private void importWav(String wavUUIDExt, String idExt)
 			throws IOException {
-		File wavFile = new File(getNoSyncRecordingsPath(), wavUUID + ".wav");
-		Log.i(TAG, "importwav: " + this.getFile().getAbsolutePath());
-		FileUtils.moveFile(wavFile, this.getFile());
-		Log.i("Recording", wavFile.getAbsolutePath() + " move to " + this.getFile().getAbsolutePath());
+		File wavFile = new File(getNoSyncRecordingsPath(), wavUUIDExt);
+		Log.i(TAG, "importwav: " + wavFile.length());
+		FileUtils.moveFile(wavFile, this.getFile(idExt));
+		Log.i("Recording", wavFile.getAbsolutePath() + " move to " + this.getFile(idExt).getAbsolutePath());
 	}
 	
 	// Moves a video File from a no-sync directory to its rightful place
@@ -205,8 +214,12 @@ public class Recording extends FileModel {
 	 */
 	public File getFile() {
 		String extension = (this.isMovie())? ".mp4" : ".wav";
+		return getFile(id + extension);
+	}
+	
+	private File getFile(String idExt) {
 		return new File(getRecordingsPath(), getGroupId() + "/"
-				+ id + extension);
+				+ idExt);
 	}
 	
 	/**
@@ -408,6 +421,7 @@ public class Recording extends FileModel {
 			speakersIdsArray.add(id.toString());
 		}
 		encodedRecording.put("speakers", speakersIdsArray);
+		encodedRecording.put("device", deviceName);
 		encodedRecording.put("androidID", this.androidID);
 		encodedRecording.put("sampleRate", getSampleRate());
 		encodedRecording.put("durationMsec", getDurationMsec());
@@ -509,10 +523,14 @@ public class Recording extends FileModel {
 			importMov(recordingUUID, getId());
 		} else {
 			importWav(recordingUUID, getId());
+			
 		}
 
-		// if the recording is a respeaking.
-		if (!isOriginal()) {
+		// if the recording is original
+		if (isOriginal()) {
+			// Import the sample wave file into the new recording directory
+			importWav(recordingUUID + SAMPLE_SUFFIX, getId() + SAMPLE_SUFFIX);
+		} else {
 			// Try and import the mapping file
 			importMapping(recordingUUID, getId());
 			
@@ -850,6 +868,80 @@ public class Recording extends FileModel {
 	}
 	
 	/**
+	 * Index all recordings and create a index file
+	 * 
+	 * @throws IOException	while writing a index file
+	 */
+	public static void indexAll() throws IOException {
+		File indexFile = new File(FileIO.getAppRootPath(), "index.json");
+		
+		JSONObject indices = new JSONObject();
+		List<String> originals = new ArrayList<String>();
+		JSONObject itemDirPaths = new JSONObject();
+
+		// Get a list of version directories
+		File[] versionDirs = 
+				FileIO.getAppRootPath().listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String filename) {
+				return filename.startsWith("v") && filename.substring(1).matches("\\d+");
+			}	
+		});
+
+		for(File f1 : versionDirs) {
+			File[] firstHashDirs = f1.listFiles();
+			for(File f2 : firstHashDirs) {
+				File[] secondHashDirs = f2.listFiles();
+				for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f3.listFiles();
+					for(File f4 : ownerIdDirs) {						
+						Log.i(TAG, "indexAll: " + f4.getPath());
+						File[] itemDirs = getRecordingsPath(f4).listFiles();
+						for(File f5 : itemDirs) {
+							
+							if (f5.isDirectory()) {
+								// Record the path to this item folder
+								String itemName = f5.getName();
+								
+								JSONArray values = (JSONArray) itemDirPaths.get(itemName);
+								String val = f1.getName() + "-" + itemName + "-" + f4.getName();
+								if(values == null) {
+									values = new JSONArray();
+								}
+								if(!values.contains(val)) {
+									values.add(val);
+									itemDirPaths.put(f5.getName(), values);
+								}
+																					
+								// Record the original
+								File[] files = f5.listFiles();
+								for(File f : files) {
+									String fileName = f.getName();
+									String srcId = fileName.substring(0, fileName.lastIndexOf('.'));
+									if(srcId.endsWith("source")) {
+										// At most one source file can exist in one item folder
+										if(!originals.contains(srcId))
+											originals.add(srcId);
+										break;
+									}	
+								}
+								
+								
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		for(String srcId : originals) {
+			String itemId = srcId.split("-")[0];
+			indices.put(srcId, itemDirPaths.get(itemId));
+		}
+		FileIO.writeJSONObject(indexFile, indices);
+	}
+	
+	/**
 	 * Updates all recording metadata files of versionNum
 	 * 1. Update or create fields existing in newJSONFields
 	 * 2. After 1, Change field keys existing in newJSONKeys(oldkey -> newkey)
@@ -1041,6 +1133,14 @@ public class Recording extends FileModel {
 		this.speakersIds.add(speaker.getId());
 	}
 
+	private void setDeviceName(String deviceName) {
+		if (deviceName == null) {
+			throw new IllegalArgumentException(
+					"The model name cannot be null");
+		}
+		this.deviceName = deviceName.toUpperCase();
+	}
+	
 	// Sets the android ID but won't accept a null string.
 	private void setAndroidID(String androidID) {
 		if (androidID == null) {
@@ -1369,6 +1469,11 @@ public class Recording extends FileModel {
 	 */
 	private List<String> speakersIds;
 
+	/**
+	 * The device model name
+	 */
+	private String deviceName;
+	
 	/**
 	 * The Android ID of the device that the recording was made on.
 	 */

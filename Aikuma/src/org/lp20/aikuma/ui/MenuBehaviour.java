@@ -4,6 +4,8 @@
 */
 package org.lp20.aikuma.ui;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.SearchManager;
@@ -20,6 +22,7 @@ import android.widget.SearchView;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma2.R;
+import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.util.AikumaSettings;
 
 /**
@@ -74,9 +77,9 @@ public class MenuBehaviour {
 				goToMainActivity();
 				return true;
 			case R.id.search:
-				if(AikumaSettings.getCurrentUserId() == null) {
+				if(AikumaSettings.getCurrentUserToken() == null) {
 					Aikuma.showAlertDialog(activity,
-							"You need to select your account");
+							"You need to be online using your account");
 					return true;
 				}
 				intent = new Intent(activity, CloudSearchActivity.class);
@@ -143,6 +146,13 @@ public class MenuBehaviour {
 			case R.id.ftp_sync_setting_menu:
 				intent = new Intent(activity, SyncSettingsActivity.class);
 				activity.startActivity(intent);
+				return true;
+			case R.id.indexing_menu:
+				try {
+					Recording.indexAll();
+				} catch (IOException e) {
+					Aikuma.showAlertDialog(activity, e.getMessage());
+				}
 				return true;
 			default:
 				return true;
