@@ -25,11 +25,13 @@ public class FileModel implements Parcelable {
 	/**
 	 *  Suffix of metadata, maaping and transcript
 	 */
-	protected static final String METADATA_SUFFIX = "-metadata.json";
+	public static final String METADATA_SUFFIX = "-metadata.json";
 	/** */
-	protected static final String MAPPING_SUFFIX = "-mapping.txt";
+	public static final String MAPPING_SUFFIX = "-mapping.txt";
 	/** */
-	protected static final String TRANSCRIPT_SUFFIX = "-transcript.txt";
+	public static final String TRANSCRIPT_SUFFIX = "-transcript.txt";
+	/** */
+	public static final String SAMPLE_SUFFIX = "-preview.wav";
 	
 	/**
 	 * Constructor of FileModel

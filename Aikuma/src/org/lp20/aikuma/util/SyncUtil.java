@@ -111,6 +111,9 @@ public class SyncUtil {
 							updateMainView(1);
 						} else {
 							Log.i(TAG, "sync complete.");
+							// Create an index file after ftp-sync is finished
+							Recording.indexAll();
+							
 							// Log the success-date in credential file
 							serverCredentials.setLastSyncDate(
 									new StandardDateFormat().format(new Date()));

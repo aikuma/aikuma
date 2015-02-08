@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 
@@ -55,6 +56,15 @@ public class Aikuma extends android.app.Application {
 		return instance;
 	}
 
+	/**
+	 * Gets the phone model name
+	 * 
+	 * @return	The device name (manufacturer + model)
+	 */
+	public static String getDeviceName() {
+		return Build.MANUFACTURER + "-" + Build.MODEL;
+	}
+	
 	/**
 	 * Gets the android ID of the phone.
 	 *

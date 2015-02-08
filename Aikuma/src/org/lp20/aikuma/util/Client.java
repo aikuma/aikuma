@@ -270,40 +270,12 @@ public class Client {
 			for (String filename : clientFilenames) {
 				Log.i("sync", "name: " + filename);
 				file = new File(clientDir.getPath() + "/" + filename);
-				if (!filename.endsWith(".inprogress") && !filename.startsWith("default_languages")) {
+				if (!filename.endsWith(".inprogress") && !filename.startsWith("default_languages") && !filename.startsWith("index")) {
 					// If file doesn't end with '.inprogress', 
-					// it is not the one Aikuma previously made. Then check the file.
+					// If it is not the one Aikuma previously made(index, language-setting file). Then check the file.
 					if (!file.isDirectory()) { // If it is not a directory
-						// In case of index, update the index file (Only one device can update it)
-						// Currently it takes an optimistic approach (lost update can occur)
-						if(filename.startsWith("index")) {
-							File tempIndexFile = new File(clientDir.getPath() + "/" + "temp");
-							if(pullFile(directoryPath, file, tempIndexFile)) {
-								JSONObject clientIndices = FileIO.readJSONObject(file);
-								JSONObject serverIndices = FileIO.readJSONObject(tempIndexFile);
-								for(Object key : serverIndices.keySet()) {
-									String srcId = (String) key;
-									JSONArray clientValues = (JSONArray) clientIndices.get(srcId);
-									JSONArray serverValues = (JSONArray) serverIndices.get(srcId);
-									if(clientValues == null) {
-										clientIndices.put(srcId, serverValues);
-									} else {
-										for(Object val : serverValues) {
-											String mappedRspkId = (String) val;
-											if(!clientValues.contains(mappedRspkId)) {
-												clientValues.add(mappedRspkId);
-											}
-										}
-										clientIndices.put(srcId, serverValues);
-									}
-								}
-								FileIO.writeJSONObject(file, clientIndices);
-								boolean st = tempIndexFile.delete();
-								Log.i("sync", "delete: " + st);
-							}
-						}
-						
-						if (!serverFilenames.contains(filename) || filename.startsWith("index") ) { 
+
+						if (!serverFilenames.contains(filename)) { 
 							// and if Server doesn't have the file, upload/count.
 							if(mode == 0) {
 								if(pushFile(directoryPath, file)) {
@@ -314,6 +286,7 @@ public class Client {
 							} else {	//Count-mode
 								result++;
 							}
+							
 						}
 					} else { // If it is a directory, search the folder(DFS by pushDirecctory)
 						apacheClient.makeDirectory(filename);
