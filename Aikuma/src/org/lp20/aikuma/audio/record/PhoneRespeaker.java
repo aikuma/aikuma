@@ -244,6 +244,7 @@ public class PhoneRespeaker implements
 	private Microphone microphone;
 	/** The file to write to */
 	private PCMWriter file;
+	private PCMWriter sampleFile;
 	/** Player to play the original with. */
 	private SimplePlayer player;
 	/** Indicates whether the recording has finished playing. */

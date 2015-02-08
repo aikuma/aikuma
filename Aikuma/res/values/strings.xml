@@ -42,6 +42,7 @@
 	<string name="cloud_sync_setting_label">GoogleCloud Settings</string>
 	<string name="ftp_sync_setting_label">FTP Sync Settings</string>
 	<string name="language_setting_label">Language Settings</string>
+	<string name="indexing_label">Item Re-indexing</string>
 	<string name="http_dialog_success">Server started at port %1$d</string>
 	<string name="http_dialog_failure">Failed to start server</string>
 	<string name="http_server_activity_title">HTTP Server</string>

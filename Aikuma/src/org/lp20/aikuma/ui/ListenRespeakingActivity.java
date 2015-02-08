@@ -49,13 +49,6 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		originalListenFragment.setOtherPlayer(respeakingListenFragment);
 		respeakingListenFragment.setOtherPlayer(originalListenFragment);
 		
-		googleAuthToken = AikumaSettings.getCurrentUserToken();
-	}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
-		
 		FragmentManager fm = getFragmentManager();
 		addNewFragment(fm, R.id.recordingPlayerInterface, 
 				originalListenFragment, "original");
@@ -63,6 +56,12 @@ public class ListenRespeakingActivity extends AikumaActivity{
 				respeakingListenFragment, "respeak");
 		fm.executePendingTransactions();
 		
+		googleAuthToken = AikumaSettings.getCurrentUserToken();
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
 		setUp();
 	}
 	

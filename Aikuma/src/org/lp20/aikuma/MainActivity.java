@@ -164,7 +164,12 @@ public class MainActivity extends ListActivity {
 		};
 		
 		checkDate();
-		
+		// Create an index file when app starts
+		try {
+			Recording.indexAll();
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage());
+		}		
 		
 		//TODO: Update existing files
 		/*
@@ -196,9 +201,10 @@ public class MainActivity extends ListActivity {
 	@Override
 	public void onResume() {
 		super.onResume();	
-		
+
 		List<Recording> recordings = Recording.readAll();
 		Log.i(TAG, "num: " +recordings.size());
+		
 		// Filter the recordings for originals
 		originals = new ArrayList<Recording>();
 		for (Recording recording : recordings) {

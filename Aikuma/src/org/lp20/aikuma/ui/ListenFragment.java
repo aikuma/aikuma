@@ -55,18 +55,32 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		View v = inflater.inflate(R.layout.listen_fragment, container, false);
 		playPauseButton = (ImageButton) v.findViewById(R.id.PlayPauseButton);
 		playPauseButton.setOnClickListener(this);
+		
 		seekBar = (InterleavedSeekBar) v.findViewById(R.id.InterleavedSeekBar);
 		seekBar.setOnSeekBarChangeListener(
 				new SeekBar.OnSeekBarChangeListener() {
+					int prog;
+					boolean isPlayed = false;
 					public void onProgressChanged(SeekBar seekBar,
 							int progress, boolean fromUser) {
 						if (fromUser) {
-							player.seekToMsec((int)Math.round(
-									(((float)progress)/100)*
-									player.getDurationMsec()));
+							if (player.isPlaying()) {
+								pause ();
+								isPlayed = true;
+							}
+							prog = progress;		
 						}
 					}
-					public void onStopTrackingTouch(SeekBar _seekBar) {};
+					public void onStopTrackingTouch(SeekBar _seekBar) {
+						player.seekToMsec((int)Math.round(
+								(((float)prog)/100)*
+								player.getDurationMsec()));
+						
+						if (isPlayed) {
+							isPlayed = false;
+							play ();
+						}
+					};
 					public void onStartTrackingTouch(SeekBar _seekBar) {};
 				});
 		seekBar.invalidate();

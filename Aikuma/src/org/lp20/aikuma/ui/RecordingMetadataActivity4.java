@@ -176,6 +176,7 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 						Date date = new Date();
+						String deviceName = Aikuma.getDeviceName();
 						String androidID = Aikuma.getAndroidID();
 						Log.i("duration", "when recording created: " + durationMsec);
 
@@ -183,8 +184,8 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 								uuid, description, date, 
 								AikumaSettings.getLatestVersion(), 
 								AikumaSettings.getCurrentUserId(),
-								selectedLanguages, 
-								speakersIds, androidID, groupId, sourceVerId,
+								selectedLanguages, speakersIds, 
+								deviceName, androidID, groupId, sourceVerId,
 								sampleRate, durationMsec, format, numChannels,
 								bitsPerSample, latitude, longitude);
 						try {

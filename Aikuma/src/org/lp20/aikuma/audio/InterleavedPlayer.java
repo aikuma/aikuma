@@ -271,7 +271,15 @@ public class InterleavedPlayer extends Player {
 	 * @param	msec	The point in the recording to seek to in milliseconds.
 	 */
 	public void seekToMsec(int msec) {
-		original.seekToMsec(msec);
+		reset();
+		while (getOriginalSegmentIterator().hasNext()) {
+			currentOriginalSegment = getOriginalSegmentIterator().next();
+			int start = sampleToMsec(currentOriginalSegment.getStartSample());
+			int end = sampleToMsec(currentOriginalSegment.getEndSample());
+			//Log.i("interleaved", msec + " / " + this.getDurationMsec() + ": (" + start + ", " + end + ")");
+			if (msec >= start && msec <= end)
+				break;			
+		}
 	}
 
 	/**
