@@ -33,7 +33,10 @@ public class AikumaSettings {
 	private static String DEFAULT_USER_ID = null;
 	// Current default owner_auth_token(== default Google API access_token)
 	private static String DEFAULT_USER_AUTH_TOKEN = null;
-	
+	private static String DEFAULT_USER_ID_TOKEN = null;
+	private static String DEFAULT_INDEX_SERVER = "https://aikuma.info:445/index";
+	private static String DEFAULT_INDEX_SERVER_CLIENT_ID = "530026557211-46brcqr1p4ltlru6j6duc0am14oh83ei.apps.googleusercontent.com";
+
 	private static int numOfUsers;
 	private static int numOfSpeakers;
 	private static int numOfItems;
@@ -55,6 +58,10 @@ public class AikumaSettings {
 	 */
 	public static final String SETTING_AUTH_TOKEN_KEY = "userToken";
 	/**
+	 * Key for current user ID's google ID token in default SharedPreferences
+	 */
+	public static final String SETTING_ID_TOKEN_KEY = "userIdToken";
+	/**
 	 * Key for a ratio of backup to Google Drive in default SharedPreferences
 	 */
 	public static final String SETTING_CLOUD_RATIO_KEY = "cloudSyncRatio";
@@ -62,6 +69,10 @@ public class AikumaSettings {
 	 * Key for a ratio of central-archive in default SharedPreferences
 	 */
 	public static final String SETTING_CENTRAL_RATIO_KEY = "centralSyncRatio";
+	/**
+	 * Key for index server url
+	 */
+	public static final String SETTING_INDEX_SERVER_URL = "indexServerUrl";
 	
 	/**
 	 * Sync time interval (30min)
@@ -168,6 +179,22 @@ public class AikumaSettings {
 	}
 	
 	/**
+	 * Return current default owner account's ID token.
+	 * @return	String of default owner account's ID token.
+	 */
+	public static String getCurrentUserIdToken() {
+		return DEFAULT_USER_ID_TOKEN;
+	}
+
+	/**
+	 * Set the default owner account's ID token.
+	 * @param token	String of default owner account's ID token.
+	 */
+	public static void setUserIdToken(String token) {
+		DEFAULT_USER_ID_TOKEN = token;
+	}
+
+	/**
 	 * Return current number of users
 	 * @return	the number of users
 	 */
@@ -257,7 +284,22 @@ public class AikumaSettings {
 	public static void setCentralRatio(float ratio) {
 		ratioOfCentralSync = ratio;
 	}
-	
+
+	/**
+	 * Return the URL of the index server.
+	 * @return  the URL of the index server.
+	 */
+	public static String getIndexServerUrl() {
+	    return DEFAULT_INDEX_SERVER;
+	}
+
+	/**
+	 * Set the URL of the index server.
+	 */
+	public static void setIndexServerUrl(String url) {
+	    DEFAULT_INDEX_SERVER = url;
+	}
+
 	/**
      * Return an scope for google-API scope
      * @return the scope of Google-Cloud
@@ -276,5 +318,9 @@ public class AikumaSettings {
 		}
 		return scope;
     }
+
+	public static String getIdTokenScope() {
+	    return "audience:server:client_id:" + DEFAULT_INDEX_SERVER_CLIENT_ID;
+	}
 }
 
