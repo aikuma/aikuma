@@ -4,19 +4,34 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Properties;
 
 import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.DataStore;
 import org.lp20.aikuma.storage.Utils;
 
 
 public class DownloadFile {
 	public static void main(String argv[]) {
-		if (argv.length != 2) {
-			System.out.println("Usage: DownloadFile <identifier> <access_token>");
+		if (argv.length != 1) {
+			System.out.println("Usage: DownloadFile <identifier>");
 			System.exit(1);
 		}
 		
-		GoogleDriveStorage gd = new GoogleDriveStorage(argv[1]);
+
+		Properties config = DemoUtils.readProps();
+		String accessToken = config.getProperty("access_token");
+		String rootId = config.getProperty("aikuma_root_id");
+		String email = config.getProperty("central_drive_email");
+
+		GoogleDriveStorage gd;
+		try {
+			gd = new GoogleDriveStorage(accessToken, rootId, email);
+		} catch (DataStore.StorageException e) {
+			System.out.println("Failed to initialize GD");
+			System.exit(1);
+			return;
+		}
 		
 		InputStream is = gd.load(argv[0]);
 		if (is == null) {
