@@ -82,7 +82,7 @@ public class DebugInfo extends Activity {
                 String[] toks = getTokens();
                 if (toks != null) {
                     mPref.edit()
-                            .putString("access_token", toks[0])
+                            .putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, toks[0])
                             .putString("id_token", toks[1])
                             .commit();
                     displayTokens();
@@ -144,7 +144,7 @@ public class DebugInfo extends Activity {
                     Log.i(TAG, "failed");
                 else {
                     mPref.edit()
-                            .putString("access_token", tokens[0])
+                            .putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, tokens[0])
                             .putString("id_token", tokens[1])
                             .commit();
                     mGd = new GoogleDriveStorage(tokens[0]);
@@ -231,7 +231,7 @@ public class DebugInfo extends Activity {
     }
 
     private void displayTokens() {
-        String accessToken = mPref.getString("access_token", null);
+        String accessToken = mPref.getString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, null);
         String idToken = mPref.getString("id_token", null);
         if (accessToken != null)
             ((TextView) findViewById(R.id.txtAccessToken)).setText(accessToken);
