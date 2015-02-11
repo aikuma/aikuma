@@ -168,6 +168,12 @@
 				<meta-data android:name="android.support.PARENT_ACTIVITY"
 					android:value="org.lp20.aikuma.MainActivity" />
 		</activity>
+		<activity android:name="org.lp20.aikuma.ui.DebugInfo"
+				android:label="@string/title_activity_debug_info"
+				android:parentActivityName=".AikumaActivity" >
+				<meta-data android:name="android.support.PARENT_ACTIVITY"
+					android:value="AikumaActivity" />
+		</activity>
 
 		<service android:name="org.lp20.aikuma.service.GoogleCloudService" />
     </application>
