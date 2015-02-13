@@ -154,6 +154,10 @@ public class MenuBehaviour {
 					Aikuma.showAlertDialog(activity, e.getMessage());
 				}
 				return true;
+			case R.id.debugInfo:
+				intent = new Intent(activity, DebugInfo.class);
+				activity.startActivity(intent);
+				return true;
 			default:
 				return true;
 		}
