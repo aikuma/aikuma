@@ -6,8 +6,8 @@ import org.lp20.aikuma.storage.*;
 
 public class UploadFile {
 	public static void main(String args[]) {
-		if (args.length != 1) {
-			System.out.println("Usage: UploadFile <path>");
+		if (args.length != 2) {
+			System.out.println("Usage: UploadFile <path> <identifier>");
 			System.exit(1);
 		}
 		Properties config = DemoUtils.readProps();
@@ -31,7 +31,7 @@ public class UploadFile {
 			return;
 		}
 		
-		String download_url = gd.store(file.getName(), data);
+		String download_url = gd.store(args[1], data);
 		if (download_url != null) {
 			System.out.println("OK");
 			System.out.println("File can be downloaded from " + download_url);
