@@ -24,8 +24,10 @@ public class ListFiles {
 		gd.list(new GoogleDriveStorage.ListItemHandler() {
 			@Override
 			public boolean processItem(String identifier, Date date) {
-				String datestr = date == null ? "?" : date.toString();
-				System.out.format("%s [%s]\n", identifier, datestr);
+				if (date == null)
+					System.out.format("[????-??-?? ??:??:?? ????] %s\n", identifier);
+				else
+					System.out.format("[%2$tF %2$tT%2$tz] %1s\n", identifier, date);
 				return true;
 			}
 		});
