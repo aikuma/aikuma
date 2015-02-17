@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.lp20.aikuma.storage.DataStore;
-import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.FusionIndex2;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
 import org.lp20.aikuma.storage.Index;
@@ -101,7 +100,7 @@ public class DebugInfo extends Activity {
             scopeBuilder.append(s);
             joiner = " ";
         }
-        for (String s: FusionIndex.getScopes()) {
+        for (String s: FusionIndex2.getScopes()) {
             scopeBuilder.append(joiner);
             scopeBuilder.append(s);
         }
@@ -147,15 +146,26 @@ public class DebugInfo extends Activity {
                             .putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, tokens[0])
                             .putString("id_token", tokens[1])
                             .commit();
-            		try {
-            			mGd = new GoogleDriveStorage(AikumaSettings.SETTING_AUTH_TOKEN_KEY, 
-            					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID);
-            		} catch (DataStore.StorageException e) {
+                    new AsyncTack<Void,Void,Void>() {
+                        @Override
+                        protected Void doInBackground(final Void ... params) {
+                            try {
+                                mGd = new GoogleDriveStorage(
+                                        AikumaSettings.getCurrentUserToken(),
+                                        AikumaSettings.ROOT_FOLDER_ID,
+                                        AikumaSettings.CENTRAL_USER_ID);
+                            } catch (DataStore.StorageException e) {
             			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
             			return;
-            		}
-                    mFi = new FusionIndex2("", tokens[1], tokens[0]);
-                    displayTokens();
+                            }
+                        }
+
+                        @Override
+                        protected void onPostExecute(final Void result) {
+                            mFi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), tokens[1], tokens[0]);
+                            displayTokens();
+                        }
+                    }.execute();
                 }
             }
         }.execute(null, null, null);
@@ -241,8 +251,12 @@ public class DebugInfo extends Activity {
         String idToken = mPref.getString("id_token", null);
         if (accessToken != null)
             ((TextView) findViewById(R.id.txtAccessToken)).setText(accessToken);
+        else
+            ((TextView) findViewById(R.id.txtAccessToken)).setText("null");
         if (idToken != null)
             ((TextView) findViewById(R.id.txtIdToken)).setText(idToken);
+        else
+            ((TextView) findViewById(R.id.txtIdToken)).setText("null");
     }
 
     private String appFingerprint() {
