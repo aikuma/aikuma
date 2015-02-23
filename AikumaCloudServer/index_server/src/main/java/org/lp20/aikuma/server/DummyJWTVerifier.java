@@ -1,4 +1,4 @@
-package org.lp20.aikuma.servers.index_server;
+package org.lp20.aikuma.server;
 
 /**
  * Created by bob on 11/12/14.

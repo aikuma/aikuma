@@ -1,4 +1,4 @@
-package org.lp20.aikuma.servers.index_server;
+package org.lp20.aikuma.server;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
@@ -29,15 +29,16 @@ public class Main {
             in.close();
             Map<String,Object> localProps = new HashMap<String, Object>(5);
             localProps.put("table_id", props.getProperty("table_id"));
+	    localProps.put("aikuma_root_id", props.getProperty("aikuma_root_id"));
             localProps.put("base_uri", props.getProperty("base_uri"));
             localProps.put("use_ssl", props.getProperty("use_ssl"));
             localProps.put("keystore_file", props.getProperty("keystore_file"));
             localProps.put("keystore_password", props.getProperty("keystore_password"));
 
-            app.tokenManager = new TokenManager(props.getProperty("service_email"),
-                                                props.getProperty("scopes"),
-                                                props.getProperty("private_key_path"),
-                                                props.getProperty("private_key_password"));
+            app.tokenManager = new TokenManagerForNativeApp(
+			    props.getProperty("client_id"),
+                            props.getProperty("client_secret"),
+                            props.getProperty("refresh_token"));
 
 
             if ("yes".equals(props.getProperty("require_auth"))) {
@@ -85,7 +86,7 @@ public class Main {
         //final IndexServerApplication rc = new IndexServerApplication().packages("org.lp20.aikuma");
         final IndexServerApplication app = new IndexServerApplication();
         app.property("config_file", configLoc);
-        app.packages("org.lp20.aikuma.servers.index_server");
+        app.packages("org.lp20.aikuma.server.services");
 
         if (!setup(app)) {
             System.err.println("Fatal configuration error");

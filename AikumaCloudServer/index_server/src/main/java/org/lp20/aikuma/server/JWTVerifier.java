@@ -1,4 +1,4 @@
-package org.lp20.aikuma.servers.index_server;
+package org.lp20.aikuma.server;
 
 /**
  * JWTVerifiers check JSON Web Tokens for validity
