@@ -50,4 +50,6 @@ public interface DataStore {
 	 * @param handler
 	 */
 	public void list(ListItemHandler handler);
+
+	public class StorageException extends Exception {};
 }
