@@ -36,7 +36,9 @@ public class AikumaSettings {
 	private static String DEFAULT_USER_ID_TOKEN = null;
 	private static String DEFAULT_INDEX_SERVER = "https://aikuma.info:445/index";
 	private static String DEFAULT_INDEX_SERVER_CLIENT_ID = "530026557211-46brcqr1p4ltlru6j6duc0am14oh83ei.apps.googleusercontent.com";
-
+	public static String CENTRAL_USER_ID = "lp20.org@gmail.com";
+	public static String ROOT_FOLDER_ID = "asdf";
+	
 	private static int numOfUsers;
 	private static int numOfSpeakers;
 	private static int numOfItems;
@@ -78,6 +80,12 @@ public class AikumaSettings {
 	 * Sync time interval (30min)
 	 */
 	public static final long SYNC_INTERVAL = 30 * 60 * 1000;
+	
+	/**
+	 * Extra audio recording duration after a thumb is lifted or head becomes far away
+	 */
+	public static final int EXTRA_AUDIO_DURATION = 250;
+	
 	
 	/**
 	 * 	List of keys in default setting (application default SharedPreferences)

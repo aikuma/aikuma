@@ -177,8 +177,9 @@ public class GoogleCloudService extends IntentService{
 					archive(id, 0);
 				else
 					archive(id, 1);
-
+				
 				validateToken();
+				
 				retryBackup();
 			}
 			
@@ -251,20 +252,28 @@ public class GoogleCloudService extends IntentService{
 	}
 	
 	private void prepareArchiveSet() {
-		GoogleDriveStorage gd = new GoogleDriveStorage(googleAuthToken);
+		DataStore gd;
+		try {
+			gd = new GoogleDriveStorage(googleAuthToken, 
+					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID);
+		} catch (DataStore.StorageException e) {
+			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
+			return;
+		}
 
+		Log.i(TAG, "Start investigating");
 		// Collect archived file-cloudIDs in GoogleCloud
 		// TODO: For the case when there are too many files in GoogleDrive, it might need to use FusionIndex
         gd.list(new GoogleDriveStorage.ListItemHandler() {
 			@Override
 			public boolean processItem(String identifier, Date date) {
-				
+				identifier = identifier.substring(1);	// TODO???
 				// Classify identifiers and store them in different lists 
 				if(identifier.matches(cloudIdFormat)) {
 					String relPath = identifier.substring(0, identifier.lastIndexOf('/')-12);
 					if(!identifier.endsWith("json")) {
 						if(relPath.endsWith(Recording.PATH)) {
-							if(identifier.endsWith("txt")) {
+							if(identifier.endsWith("txt") || identifier.endsWith(FileModel.SAMPLE_SUFFIX)) {
 								archivedOtherSet.add(identifier);
 							} else {
 								archivedRecordingSet.add(identifier);
@@ -299,6 +308,10 @@ public class GoogleCloudService extends IntentService{
 					others.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 							recording.getTranscriptId(), "other", "txt"));
 				}
+				if(recording.getPreviewFile() != null) {
+					others.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
+							recording.getPreviewId(), "preview", "wav"));
+				}
 			} else {
 				others.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 						recording.getMapId(), "other", "txt"));
@@ -325,7 +338,14 @@ public class GoogleCloudService extends IntentService{
 		if(googleAuthToken == null || !Aikuma.isDeviceOnline())
 			return;
         
-		DataStore gd = new GoogleDriveStorage(googleAuthToken);
+		DataStore gd;
+		try {
+			gd = new GoogleDriveStorage(googleAuthToken, 
+					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID);
+		} catch (DataStore.StorageException e) {
+			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
+			return;
+		}
 		
 		retryDownload(gd, 1, downloadOtherKey, downloadOtherSet);
         retryDownload(gd, 0, downloadSpKey, downloadSpeakerSet);
@@ -347,7 +367,7 @@ public class GoogleCloudService extends IntentService{
 			String relPath = itemIdentifier.substring(0, itemIdentifier.lastIndexOf('/'));
 			File dir = new File(FileIO.getAppRootPath(), relPath);
 			dir.mkdirs();
-			
+			Log.i(TAG, dir.getAbsolutePath() + ", " + item.getMetadataIdExt());
 			try {
 				switch(state) {
 				case 0:
@@ -401,7 +421,15 @@ public class GoogleCloudService extends IntentService{
 	private void retryBackup() {
 		if(googleAuthToken == null || !Aikuma.isDeviceOnline())
 			return;
-		DataStore gd = new GoogleDriveStorage(googleAuthToken);
+		DataStore gd;
+		try {
+			gd = new GoogleDriveStorage(googleAuthToken, 
+					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID);
+		} catch (DataStore.StorageException e) {
+			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
+			return;
+		}
+		
 		Index fi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), googleIdToken, googleAuthToken);
 		
 		// Others
@@ -479,6 +507,10 @@ public class GoogleCloudService extends IntentService{
 						other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 								recording.getTranscriptId(), "other", "txt"));
 					}
+					if (recording.getPreviewFile() != null) {
+						other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
+								recording.getPreviewId(), "preview", "wav"));
+					}
 				} else {
 					other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 							recording.getMapId(), "other", "txt"));
@@ -533,10 +565,10 @@ public class GoogleCloudService extends IntentService{
 	
 	/**
 	 *  Log the file approved to be uploaded
-	 *  MyFile				(Recording, Speaker) : 0(file-upload) -> 1(metadata upload) -> 2(indexing in FusionTable)
-	 *  MyFile		(Others:mapping, transcript) : 3(file-upload)                       -> 2(indexing in FusionTable)
-	 *  Other-owner's file	(Recording, Speaker) : 4(file-upload) -> 5(metadata upload)
-	 *  Other-owner's file (mapping, transcript) : 6(file-upload)
+	 *  MyFile						(Recording, Speaker) : 0(file-upload) -> 1(metadata upload) -> 2(indexing in FusionTable)
+	 *  MyFile(others)	  (mapping, transcript, preview) : 3(file-upload)                       -> 2(indexing in FusionTable)
+	 *  Other-owner's file			(Recording, Speaker) : 4(file-upload) -> 5(metadata upload)
+	 *  Other-owner's file(mapping, transcript, preview) : 6(file-upload)
 	 */
 	private void logFileInApprovalSet(List<? extends FileModel> items, boolean isOtherType,
 			String apKey, Set<String> approvedSet, Set<String> archivedSet) {
@@ -783,10 +815,17 @@ public class GoogleCloudService extends IntentService{
 
 	private void validateToken() {
 		try {
+			Log.i(TAG, "tokens");
 			googleAuthToken = GoogleAuthUtil.getToken(getApplicationContext(), googleEmailAccount, AikumaSettings.getScope());
+			Log.i(TAG, AikumaSettings.getScope() +" : " );
+			Log.i(TAG, googleAuthToken);
+			
 			googleIdToken = GoogleAuthUtil.getToken(getApplicationContext(), googleEmailAccount, AikumaSettings.getIdTokenScope());
-	        } catch (Exception e) {
+			Log.i(TAG, AikumaSettings.getIdTokenScope() + " : ");
+			Log.i(TAG, googleIdToken);
+		} catch (Exception e) {
 			Log.e(TAG, "Unrecoverable error " + e.getMessage());
 		}
 	}
+	
 }

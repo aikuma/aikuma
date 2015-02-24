@@ -147,7 +147,13 @@ public class DebugInfo extends Activity {
                             .putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, tokens[0])
                             .putString("id_token", tokens[1])
                             .commit();
-                    mGd = new GoogleDriveStorage(tokens[0]);
+            		try {
+            			mGd = new GoogleDriveStorage(AikumaSettings.SETTING_AUTH_TOKEN_KEY, 
+            					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID);
+            		} catch (DataStore.StorageException e) {
+            			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
+            			return;
+            		}
                     mFi = new FusionIndex2("", tokens[1], tokens[0]);
                     displayTokens();
                 }

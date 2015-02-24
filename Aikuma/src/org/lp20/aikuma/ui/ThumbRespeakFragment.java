@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
@@ -156,6 +157,15 @@ public class ThumbRespeakFragment extends Fragment {
 					count++;
 				}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
+					Log.i("ThumbRespeak", "sleep: " + System.currentTimeMillis());
+					try {
+						Thread.sleep(AikumaSettings.EXTRA_AUDIO_DURATION);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						Log.e("ThumbRespeak", "sleep");
+					}
+					Log.i("ThumbRespeak", "sleep: " + System.currentTimeMillis());
+					
 					if(!okButton.isEnabled()) {
 						okButton.setImageResource(R.drawable.ok_48);
 						okButton.setEnabled(true);
