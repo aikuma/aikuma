@@ -92,8 +92,10 @@ public class AboutActivity extends AikumaActivity {
 			Set<String> archivedRecordingSet = (HashSet<String>)
 					preferences.getStringSet(AikumaSettings.ARCHIVED_RECORDING_KEY, new HashSet<String>());
 			
-			cloudRatio = 100 * (approvedRecordingSet.size() + archivedRecordingSet.size()) / recordings.size();
-			centralRatio = 100 * archivedRecordingSet.size() / recordings.size();
+			if (recordings.size() > 0) {
+				cloudRatio = 100 * (approvedRecordingSet.size() + archivedRecordingSet.size()) / recordings.size();
+				centralRatio = 100 * archivedRecordingSet.size() / recordings.size();
+			}
 		}		
 		
 		

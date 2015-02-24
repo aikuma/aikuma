@@ -63,16 +63,20 @@ public class FileModel implements Parcelable {
 		String fileName = splitCloudId[6].substring(0, index);
 		String ext = splitCloudId[6].substring(index+1);
 		
-		if(ext.equals("json"))
+		if(ext.equals("json"))			//metadata
 			return null;
-		else if(ext.equals("jpg")) {
+		else if(ext.equals("jpg")) {	//speaker small image
 			return new FileModel(splitCloudId[0], splitCloudId[3], splitCloudId[5], "speaker", ext);
-		} else if(ext.equals("txt")) {
+		} else if(ext.equals("txt")) {	//mapping, transcript
 			String[] splitName = fileName.split("-");
 			return new FileModel(splitCloudId[0], splitCloudId[3], fileName, splitName[splitName.length-1], ext);
-		} else {
+		} else {						//source, comment, preview
 			String[] splitName = fileName.split("-");
-			return new FileModel(splitCloudId[0], splitCloudId[3], fileName, splitName[2], ext);
+			if(splitName[splitName.length-1].equals("preview")) {
+				return new FileModel(splitCloudId[0], splitCloudId[3], fileName, "preview", ext);
+			} else {
+				return new FileModel(splitCloudId[0], splitCloudId[3], fileName, splitName[2], ext);
+			}
 		}
 	}
 	
@@ -114,7 +118,9 @@ public class FileModel implements Parcelable {
 	 * @return	The metadata ID + extension of the file-model
 	 */
 	public String getMetadataIdExt() {
-		return (id + METADATA_SUFFIX);
+		if(format.equals("jpg") || (format.equals("wav") && !fileType.equals("preview")))
+			return (id + METADATA_SUFFIX);
+		return null;
 	}
 	
 	/**
@@ -142,7 +148,7 @@ public class FileModel implements Parcelable {
 		} else {
 			if(option == 0)
 				suffix = getExtension();
-			else if(format.equals("txt"))	// No metadata for transcript/mapping
+			else if(format.equals("txt") || fileType.equals("preview"))	// No metadata for transcript/mapping/preview
 				return null;
 			else
 				suffix = METADATA_SUFFIX;
@@ -182,7 +188,7 @@ public class FileModel implements Parcelable {
 			
 			if(option == 0)
 				suffix = getExtension();
-			else if(format.equals("txt"))	// No metadata for transcript/mapping
+			else if(format.equals("txt") || fileType.equals("preview"))	// No metadata for transcript/mapping/preview
 				return null;
 			else
 				suffix = METADATA_SUFFIX;
