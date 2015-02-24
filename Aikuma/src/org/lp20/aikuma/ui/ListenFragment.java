@@ -121,8 +121,13 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		if (v == playPauseButton) {
 			if (player.isPlaying()) {
 				pause();
-				if(otherPlayer != null)
+				if(otherPlayer != null) {
 					otherPlayer.setEnabled(true);
+					
+					int currentPosition = player.getCurrentMsec();
+					otherPlayer.setProgress(currentPosition);
+				}
+					
 			} else {
 				if(otherPlayer != null)
 					otherPlayer.setEnabled(false);
@@ -175,6 +180,12 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		});
 		seekBarThread.start();
 		playPauseButton.setImageResource(R.drawable.pause_g);
+	}
+	
+	public void setProgress(int msec) {
+		player.seekToMsec(msec);
+		seekBar.setProgress(
+				(int)(((float)msec / (float)player.getDurationMsec())*100));
 	}
 
 	/**
