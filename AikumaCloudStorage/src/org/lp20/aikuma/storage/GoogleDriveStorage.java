@@ -337,6 +337,11 @@ public class GoogleDriveStorage implements DataStore {
 					o = e.nextElement();
 				} catch (Search.Error err) {
 					log.log(Level.FINE, "search exception");
+                                        try {
+						mCache.finishTable();
+					} catch (Exception err2) {
+						// ignore
+					}
 					throw new DataStore.StorageException();
 				}
 				String fid = (String) o.get("id");
