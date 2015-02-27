@@ -5,21 +5,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Stack;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
-import static org.lp20.aikuma.storage.Utils.gapi_connect;
+import org.json.simple.*;
 
 /**
  * Implementation of DataStore backed by Google Drive.
@@ -32,11 +22,13 @@ public class GoogleDriveStorage implements DataStore {
 	static final String DSVER_FIELD = "aikuma_ds_version";
 	static final String DSVER = "v01";
 	static final String ROOT_FIELD = "aikuma_root_id";
-	static final String PREFIX_FIELD = "aikuma_prefix";
 	static final String ROOT_FILE = "aikuma_root_id.txt";
+        static final String PREFIX_FIELD = "aikuma_prefix";
 	static final String FOLDER_MIME = "application/vnd.google-apps.folder";
 
-	Map<String,String> mDirs;
+	GoogleDriveFolderCache mCache;
+	static boolean mCacheInitialized = false;
+
 	String mAccessToken;
 	String mRootId;
 	String mCentralEmail;
@@ -68,21 +60,31 @@ public class GoogleDriveStorage implements DataStore {
 		mAccessToken = accessToken;
 		mRootId = rootId;
 		mCentralEmail = centralEmail;
-		mDirs = new HashMap<String,String>();
 
-		initialize_aikuma_folder();
+		mCache = GoogleDriveFolderCache.getInstance();
+		if (mCacheInitialized == false) {
+			initialize_aikuma_folder();
+			mCacheInitialized = true;
+		}
 	}
 	
 	@Override
 	public InputStream load(String identifier) {
+		String prefix = dirname(identifier);
+		String pid = mCache.getFid(prefix);
+		if (pid == null) {
+			log.log(Level.FINE, "containing folder doesn't exist: " + prefix);
+			return null;
+		}
+
 		String query = String.format(
 				"trashed = false" +
 				" and title = '%s'" +
 				" and properties has {key='%s' and value='%s' and visibility='PUBLIC'}" +
-				" and properties has {key='%s' and value='%s' and visibility='PUBLIC'}",
+				" and '%s' in parents",
 				escape_quote(basename(identifier)),
 				ROOT_FIELD, escape_quote(mRootId),
-				PREFIX_FIELD, escape_quote(dirname(identifier)));
+				pid);
 
 		JSONObject obj = gapi_list_files(query, null);
 
@@ -108,7 +110,7 @@ public class GoogleDriveStorage implements DataStore {
 		parent.put("id", parentId);
 		parents.add(parent);
 		meta.put("parents", parents);
-		meta.put("properties", getProp(mRootId, f.getPath()));
+		meta.put("properties", getProp(f.getParent()));
 
 		JSONObject obj = gapi_insert2(data, meta);
 		if (obj == null) return null;
@@ -118,14 +120,21 @@ public class GoogleDriveStorage implements DataStore {
 
 	@Override
 	public boolean share(String identifier) {
+		String prefix = dirname(identifier);
+		String pid = mCache.getFid(prefix);
+		if (pid == null) {
+			log.log(Level.FINE, "containing folder doesn't exist: " + prefix);
+			return false;
+		}
+
 		String query = String.format(
 				"trashed = false" +
 				" and title = '%s'" +
 				" and properties has {key='%s' and value='%s' and visibility='PUBLIC'}" +
-				" and properties has {key='%s' and value='%s' and visibility='PUBLIC'}",
+				" and '%s' in parents",
 				escape_quote(basename(identifier)),
 				ROOT_FIELD, escape_quote(mRootId),
-				PREFIX_FIELD, escape_quote(dirname(identifier)));
+				pid);
 
 		JSONObject obj = gapi_list_files(query, null);
 		
@@ -163,12 +172,16 @@ public class GoogleDriveStorage implements DataStore {
 				log.log(Level.FINE, "search failed");
 				return;
 			}
-			String identifier;
-			Map<String,String> props = props_to_map(o.get("properties"));
-			if (props.containsKey(PREFIX_FIELD))
-				identifier = joinpath(props.get(PREFIX_FIELD), (String) o.get("title"));
-			else
-				identifier = "UNKNOWN";
+			String identifier = "UNKNOWN";
+			for (Object pidObj: (JSONArray) o.get("parents")) {
+				JSONObject parent = (JSONObject) pidObj;
+				String pid = (String) parent.get("id");
+				String prefix = mCache.getPath(pid);
+				if (prefix != null) {
+					identifier = joinpath(prefix, (String) o.get("title")).replaceAll("^/*","");
+					break;
+				}
+			}
 			String datestr = (String) o.get("modifiedDate");
 			SimpleDateFormat datefmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 			Date date;
@@ -227,11 +240,11 @@ public class GoogleDriveStorage implements DataStore {
 		}
 	}
 
-	private Properties getProp(String rootid, String path) {
+	private Properties getProp(String prefix) {
 		Properties props = new GoogleDriveStorage.Properties();
 		props.put(DSVER_FIELD, DSVER);
-		props.put(ROOT_FIELD, rootid);
-		props.put(PREFIX_FIELD, dirname(path));
+		props.put(ROOT_FIELD, mRootId);
+                props.put(PREFIX_FIELD, prefix);
 		return props;
 	}
 
@@ -317,38 +330,37 @@ public class GoogleDriveStorage implements DataStore {
 		Search e = search(query);
 		if (e.hasMoreElements()) {
 			log.log(Level.FINE, "found aikumafied folders");
+			mCache.beginTable();
 			for (; e.hasMoreElements();) {
 				JSONObject o;
 				try {
 					o = e.nextElement();
 				} catch (Search.Error err) {
 					log.log(Level.FINE, "search exception");
+                                        try {
+						mCache.finishTable();
+					} catch (Exception err2) {
+						// ignore
+					}
 					throw new DataStore.StorageException();
 				}
-				Map<String,String> props = props_to_map(o.get("properties"));
-				String path;
-				String prefix = props.get(PREFIX_FIELD);
-				if ("".equals(prefix))
-					path = "/";
-				else
-					path = joinpath(prefix, (String) o.get("title"));
-				String fileid = (String) o.get("id");
-                                log.log(Level.FINE, "folder: " + fileid + " " + path);
-				if (path == null) {
-					log.log(Level.WARNING, "non-aikumafied directory found: " + (String) o.get("title"));
-				} else if (mDirs.containsKey(path)) {
-					log.log(Level.SEVERE, "multiple folders with same path found: " + path);
-					throw new DataStore.StorageException();
-				} else {
-					mDirs.put(path, fileid);
+				String fid = (String) o.get("id");
+				String title = (String) o.get("title");
+				for (Object pidObj: (JSONArray) o.get("parents")) {
+					JSONObject parent = (JSONObject) pidObj;
+					mCache.addToTable(fid, title, (String) parent.get("id"));
 				}
 			}
-			if (!mDirs.containsKey("/")) {
+			try {
+				mCache.finishTable();
+			} catch (GoogleDriveFolderCache.Error err) {
+				throw new DataStore.StorageException();
+			}
+			if (mCache.getFid("/") == null) {
 				log.log(Level.FINE, "no aikumafied root found -- falling back");
-				mDirs.clear();
+				mCache.clear();
 				initialize_aikuma_folder2();
 			}
-
 		} else {
 			log.log(Level.FINE, "didn't find aikumafied dir structure, falling back");
 			initialize_aikuma_folder2();
@@ -387,6 +399,7 @@ public class GoogleDriveStorage implements DataStore {
 					log.log(Level.FINE, "error: " + err.getMessage());
 					throw new DataStore.StorageException();
 				}
+				log.log(Level.FINE, "downloaded root id: " + id + " vs " + mRootId);
 				if (id.equals(mRootId)) {
 					for (Object p: (JSONArray) o.get("parents")) {
 						String pid = (String) ((JSONObject) p).get("id");
@@ -412,14 +425,14 @@ public class GoogleDriveStorage implements DataStore {
 	private void initialize_aikuma_folder3() throws DataStore.StorageException {
 		log.log(Level.FINE, "creating a new root");
 		JSONObject meta = new JSONObject();
-		meta.put("properties", getProp(mRootId, "/"));
+		meta.put("properties", getProp("/"));
 		meta.put("title", "aikuma");
                 meta.put("mimeType", FOLDER_MIME);
 		JSONObject res = gapi_make_file(meta);
                 if (res == null)
                     throw new DataStore.StorageException();
 		String fid = (String) res.get("id");
-		mDirs.put("/", fid);
+		mCache.add(fid, "/");
 	}
 
 	private void aikumafy(String fileid) throws DataStore.StorageException {
@@ -432,7 +445,7 @@ public class GoogleDriveStorage implements DataStore {
 		while (!stack.empty()) {
 			String base = stack.pop();
 			String pid = stack.pop();
-			mDirs.put(base, pid);
+			mCache.add(pid, base);
 			aikumafy_update_properties(pid, base);
 			for (Search e = search(String.format(q,pid)); e.hasMoreElements();) {
 				JSONObject c;
@@ -450,9 +463,8 @@ public class GoogleDriveStorage implements DataStore {
 		}
 
 		q = "trashed=false and '%s' in parents and mimeType!='" + FOLDER_MIME + "'";
-		for (Object obj:  mDirs.keySet().toArray()) {
-			String path = (String) obj;
-			String pid = mDirs.get(path);
+		for (String path:  mCache.listPaths()) {
+			String pid = mCache.getFid(path);
 			for (Search e = search(String.format(q,pid)); e.hasMoreElements();)
 				try {
 					aikumafy_update_properties(e.nextElement(), path);
@@ -483,7 +495,7 @@ public class GoogleDriveStorage implements DataStore {
 			meta.put("parents", parents);
 			meta.put("title", f.getName());
 		}
-		meta.put("properties", getProp(mRootId, path));
+		meta.put("properties", getProp(dirname(path)));
                 log.log(Level.FINE, "setting properties for " + fileid + ": " + meta.toString());
 		gapi_update_metadata(fileid, meta);
 	}
@@ -499,12 +511,12 @@ public class GoogleDriveStorage implements DataStore {
 
 	private String mkdir(String path) {
 		File f = new File(path==null ? "/" : path);
-		String fid = mDirs.get(f.getPath());
+		String fid = mCache.getFid(f.getPath());
 		if (fid == null) {
 			String parentFid = mkdir(f.getParent());
 
 			JSONObject meta = new JSONObject();
-			meta.put("properties", getProp(mRootId, f.getPath()));
+			meta.put("properties", getProp(f.getParent()));
 			meta.put("title", f.getName());
 			meta.put("mimeType", FOLDER_MIME);
 
@@ -516,7 +528,7 @@ public class GoogleDriveStorage implements DataStore {
 
 			JSONObject res = gapi_make_file(meta);
 			fid = (String) res.get("id");
-			mDirs.put(f.getPath(), fid);
+			mCache.add(fid, f.getPath());
 		}
 		return fid;
 	}
@@ -530,7 +542,7 @@ public class GoogleDriveStorage implements DataStore {
 		try {
 			String metajson = meta.toString();
 			URL url = new URL("https://www.googleapis.com/drive/v2/files");
-			HttpURLConnection con = gapi_connect(url, "POST", mAccessToken);
+			HttpURLConnection con = Utils.gapi_connect(url, "POST", mAccessToken);
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Content-Length", String.valueOf(metajson.length()));
 			OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
@@ -562,7 +574,7 @@ public class GoogleDriveStorage implements DataStore {
 		log.log(Level.FINE, "metadata: " + meta.toString());
 		try {
 			URL url = new URL("https://www.googleapis.com/upload/drive/v2/files?uploadType=multipart");
-			HttpURLConnection con = gapi_connect(url, "POST", mAccessToken);
+			HttpURLConnection con = Utils.gapi_connect(url, "POST", mAccessToken);
 			String bd = "bdbdbdbdbdbdbdbdbdbd";
 			con.setRequestProperty("Content-Type", "multipart/related; boundary=\"" + bd + "\"");
 			con.setChunkedStreamingMode(8192);
@@ -606,7 +618,7 @@ public class GoogleDriveStorage implements DataStore {
 	private JSONObject gapi_insert(Data data) {		
 		try {
 			URL url = new URL("https://www.googleapis.com/upload/drive/v2/files?uploadType=media");
-			HttpURLConnection con = gapi_connect(url, "POST", mAccessToken);
+			HttpURLConnection con = Utils.gapi_connect(url, "POST", mAccessToken);
 			con.setRequestProperty("Content-Type", data.getMimeType());
 			con.setChunkedStreamingMode(8192);
 			Utils.copyStream(data.getInputStream(), con.getOutputStream(), false);
@@ -635,7 +647,7 @@ public class GoogleDriveStorage implements DataStore {
 		try {
 			String metajson = obj.toJSONString();
 			URL url = new URL("https://www.googleapis.com/drive/v2/files/" + fileid);
-			HttpURLConnection con = gapi_connect(url, "PUT", mAccessToken);
+			HttpURLConnection con = Utils.gapi_connect(url, "PUT", mAccessToken);
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Content-Length", String.valueOf(metajson.length()));
 			OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
@@ -670,10 +682,9 @@ public class GoogleDriveStorage implements DataStore {
 				ub.addQuery("pageToken",  pageToken);
 			else if (searchQuery != null && !searchQuery.isEmpty())
 				ub.addQuery("q", searchQuery);
-			HttpURLConnection con = gapi_connect(ub.toUrl(), "GET", mAccessToken);
+			HttpURLConnection con = Utils.gapi_connect(ub.toUrl(), "GET", mAccessToken);
 			if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				log.log(Level.FINE, "gapi_list_files http response: " + con.getResponseCode());
-				log.log(Level.FINE, "response messaage: " + con.getResponseMessage());
+				log.log(Level.FINE, "gapi_list_files http response: " + con.getResponseCode() + " " + con.getResponseMessage() + "; " + searchQuery);
 				return null;
 			}
 			String json = Utils.readStream(con.getInputStream());
@@ -701,7 +712,7 @@ public class GoogleDriveStorage implements DataStore {
 	private InputStream gapi_download(String url) {
 		log.log(Level.FINE, "downloading from: " + url);
 		try {
-			HttpURLConnection con = gapi_connect(new URL(url), "GET", mAccessToken);
+			HttpURLConnection con = Utils.gapi_connect(new URL(url), "GET", mAccessToken);
 			if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				log.log(Level.FINE, String.format(
 					"download failed: %d %s",
@@ -731,7 +742,7 @@ public class GoogleDriveStorage implements DataStore {
 			String metajson = meta.toJSONString();
 			
 			URL url = new URL("https://www.googleapis.com/drive/v2/files/" + fileid + "/permissions");
-			HttpURLConnection con = gapi_connect(url, "POST", mAccessToken);
+			HttpURLConnection con = Utils.gapi_connect(url, "POST", mAccessToken);
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Content-Length", String.valueOf(metajson.length()));
 
