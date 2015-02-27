@@ -30,15 +30,6 @@
             android:id="@+id/button3"
             android:onClick="clearLog" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/buttonBox"
-        android:layout_below="@+id/linearLayout">
-
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
@@ -54,6 +45,24 @@
             android:text="List ids"
             android:id="@+id/button"
             android:onClick="listIDs" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonBox"
+        android:layout_below="@+id/linearLayout">
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DL share"
+            android:id="@+id/button4"
+            android:onClick="requestShare" />
+
     </LinearLayout>
 
     <TableLayout
@@ -61,6 +70,29 @@
         android:layout_height="wrap_content"
         android:id="@+id/tableLayout"
         android:layout_below="@+id/buttonBox">
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="identifier:"
+                android:id="@+id/textView7"
+                android:layout_column="0" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/identifier"
+                android:editable="false"
+                android:enabled="true"
+                android:text="enter text"
+                android:focusable="true"
+                android:inputType="text" />
+        </TableRow>
 
         <TableRow
             android:layout_width="fill_parent"

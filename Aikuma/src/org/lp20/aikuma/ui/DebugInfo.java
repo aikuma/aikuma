@@ -25,7 +25,12 @@ import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
@@ -142,11 +147,12 @@ public class DebugInfo extends Activity {
                 if (tokens == null)
                     Log.i(TAG, "failed");
                 else {
+                    final String[] toks = tokens;
                     mPref.edit()
                             .putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, tokens[0])
                             .putString("id_token", tokens[1])
                             .commit();
-                    new AsyncTack<Void,Void,Void>() {
+                    new AsyncTask<Void,Void,Void>() {
                         @Override
                         protected Void doInBackground(final Void ... params) {
                             try {
@@ -156,13 +162,13 @@ public class DebugInfo extends Activity {
                                         AikumaSettings.CENTRAL_USER_ID);
                             } catch (DataStore.StorageException e) {
             			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
-            			return;
                             }
+                            return null;
                         }
 
                         @Override
                         protected void onPostExecute(final Void result) {
-                            mFi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), tokens[1], tokens[0]);
+                            mFi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), toks[1], toks[0]);
                             displayTokens();
                         }
                     }.execute();
@@ -212,6 +218,50 @@ public class DebugInfo extends Activity {
                     }
                 });
                 return null;
+            }
+        }.execute();
+    }
+
+    public void requestShare(View view) {
+        new AsyncTask<Void,Void,Boolean>() {
+            final String identifier = ((TextView) findViewById(R.id.identifier)).getText().toString();
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                String email = AikumaSettings.getCurrentUserId();
+                try {
+                    URL base = new URL(AikumaSettings.getIndexServerUrl());
+                    String path = String.format("/file/%s/share/%s", identifier, email);
+                    URL url = new URL(base, path);
+                    Log.i(TAG, "share url: " + url.toString());
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    con.setRequestMethod("PUT");
+                    con.setDoOutput(false);
+                    con.addRequestProperty("X-Aikuma-Auth-Token", AikumaSettings.getCurrentUserIdToken());
+                    switch (con.getResponseCode()) {
+                        case 200:
+                            return true;
+                        case 404:
+                            return false;
+                        default:
+                            return false;
+                    }
+                } catch (MalformedURLException e) {
+                    Log.e(TAG, "malformed URL: " + e.getMessage());
+                    return false;
+                } catch (ProtocolException e) {
+                    Log.e(TAG, "protocol error: " + e.getMessage());
+                    return false;
+                } catch (IOException e) {
+                    Log.e(TAG, "io exception: " + e.getMessage());
+                    return false;
+                }
+            }
+            @Override
+            protected void onPostExecute(final Boolean result) {
+                if (result.booleanValue())
+                    appendText("ok\n");
+                else
+                    appendText("error\n");
             }
         }.execute();
     }
