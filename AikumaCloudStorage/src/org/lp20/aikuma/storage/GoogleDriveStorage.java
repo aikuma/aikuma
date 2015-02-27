@@ -28,6 +28,7 @@ public class GoogleDriveStorage implements DataStore {
 
 	GoogleDriveFolderCache mCache;
 	static boolean mCacheInitialized = false;
+	static String mPermissionId = "";
 
 	String mAccessToken;
 	String mRootId;
@@ -65,7 +66,10 @@ public class GoogleDriveStorage implements DataStore {
 		if (mCacheInitialized == false) {
 			initialize_aikuma_folder();
 			mCacheInitialized = true;
+			mPermissionId = gapi_about_permission_id();
 		}
+
+		import_shared_files();
 	}
 	
 	@Override
@@ -320,7 +324,8 @@ public class GoogleDriveStorage implements DataStore {
 	
 	private void initialize_aikuma_folder() throws DataStore.StorageException {
 		String query = String.format(
-				"trashed = false " +
+				"trashed = false" +
+				" and 'me' in owners" +
 				" and mimeType='%s'" +
 				" and properties has {key='%s' and value='%s' and visibility='PUBLIC'}",
 				FOLDER_MIME,
@@ -369,7 +374,9 @@ public class GoogleDriveStorage implements DataStore {
 
 	private void initialize_aikuma_folder2() throws DataStore.StorageException {
 		String query = String.format(
-				"trashed = false and title = '%s'" +
+				"trashed = false " +
+				" and 'me' in owners" +
+				" and title = '%s'" +
 				" and mimeType != '%s'",
 				ROOT_FILE,
 				FOLDER_MIME);
@@ -441,7 +448,7 @@ public class GoogleDriveStorage implements DataStore {
 		stack.push(fileid);
 		stack.push("/");
 
-		String q = "trashed = false and '%s' in parents and mimeType='" + FOLDER_MIME + "'";
+		String q = "trashed = false and 'me' in owners and '%s' in parents and mimeType='" + FOLDER_MIME + "'";
 		while (!stack.empty()) {
 			String base = stack.pop();
 			String pid = stack.pop();
@@ -462,7 +469,7 @@ public class GoogleDriveStorage implements DataStore {
 			}
 		}
 
-		q = "trashed=false and '%s' in parents and mimeType!='" + FOLDER_MIME + "'";
+		q = "trashed=false and 'me' in owners and '%s' in parents and mimeType!='" + FOLDER_MIME + "'";
 		for (String path:  mCache.listPaths()) {
 			String pid = mCache.getFid(path);
 			for (Search e = search(String.format(q,pid)); e.hasMoreElements();)
@@ -498,6 +505,49 @@ public class GoogleDriveStorage implements DataStore {
 		meta.put("properties", getProp(dirname(path)));
                 log.log(Level.FINE, "setting properties for " + fileid + ": " + meta.toString());
 		gapi_update_metadata(fileid, meta);
+	}
+
+	/**
+	 * Search files shared by other accounts, make a copy of the shared file,
+	 * and remove the shared file.
+	 */
+	private void import_shared_files() {
+		String query = String.format(
+				"trashed = false" +
+				" and sharedWithMe" +
+				" and properties has {key='%s' and value='%s' and visibility='PUBLIC'}" +
+				" and not ('%s' in parents)",
+				DSVER_FIELD,
+				DSVER,
+				mkdir("/trash"));
+
+		for (Search e = search(query); e.hasMoreElements();) {
+			JSONObject obj;
+			try {
+				obj = e.nextElement();
+			} catch (Search.Error err) {
+				log.log(Level.FINE, "search error");
+				break;
+			}
+			String fid = (String) obj.get("id");
+			String prefix = props_to_map(obj.get("properties")).get(PREFIX_FIELD);
+			if (prefix == null) {
+				log.log(Level.FINE, "file has no prefix: " + fid);
+				continue;
+			}
+			String pid = mkdir(prefix);
+			JSONObject meta = new JSONObject();
+			meta.put("properties", getProp(prefix));
+			JSONArray parents = new JSONArray();
+			JSONObject parent = new JSONObject();
+			parent.put("id", pid);
+			parents.add(parent);
+			meta.put("parents", parents);
+			if (gapi_copy_file(fid, meta) == null)
+				log.log(Level.FINE, "failed to copy: " + fid);
+			if (gapi_trash_file2(fid) == null)
+				log.log(Level.FINE, "failed to trash file: " + fid);
+		}
 	}
 
 	private Map<String,String> props_to_map(Object props) {
@@ -761,4 +811,144 @@ public class GoogleDriveStorage implements DataStore {
 			return null;
 		}
 	}
+
+	/**
+	 * Make copy of the give file.
+	 *
+	 * @param fileid The source file ID.
+	 * @param meta The metadata to insert into the new file.
+	 * @return JSONObject returned by google drive copy method.
+	 */
+	private JSONObject gapi_copy_file(String fileid, JSONObject meta) {
+		try {
+			String metajson = meta.toJSONString();
+			URL url = new URL("https://www.googleapis.com/drive/v2/files/" + fileid + "/copy");
+			HttpURLConnection con = Utils.gapi_connect(url, "POST", mAccessToken);
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Content-Length", String.valueOf(metajson.length()));
+			OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+			writer.write(metajson);
+			writer.flush();
+			writer.close();
+			if (con.getResponseCode() != HttpURLConnection.HTTP_OK)
+				return null;
+			String json = Utils.readStream(con.getInputStream());
+			return (JSONObject) JSONValue.parse(json);
+		} catch (IOException e) {
+			log.log(Level.FINE, "exception: " + e.getMessage());
+			return null;
+		}
+	}
+
+	/**
+	 * Delete given file.
+	 *
+	 * @param fileid Google file ID.
+	 * @return true on success, false otherwise.
+	 */
+	private boolean gapi_delete_file(String fileid) {
+		try {
+			URL url = new URL("https://www.googleapis.com/drive/v2/files/" + fileid);
+			HttpURLConnection con = Utils.gapi_connect(url, "DELETE", mAccessToken);
+			return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+		} catch (IOException e) {
+			log.log(Level.FINE, "exception: " + e.getMessage());
+			return false;
+		}
+	}
+
+	/**
+	 * Trash given file.
+	 *
+	 * @param fileid Google file ID.
+	 * @return JSONObject on success, null otherwise.
+	 */
+	private JSONObject gapi_trash_file(String fileid) {
+		try {
+			URL url = new URL("https://www.googleapis.com/drive/v2/files/" + fileid + "/trash");
+			HttpURLConnection con = Utils.gapi_connect(url, "POST", mAccessToken);
+			if (con.getResponseCode() != HttpURLConnection.HTTP_OK)
+				return null;
+			String json = Utils.readStream(con.getInputStream());
+			return (JSONObject) JSONValue.parse(json);
+		} catch (IOException e) {
+			log.log(Level.FINE, "exception: " + e.getMessage());
+			return null;
+		}
+	}
+
+	/**
+	 * Trash given file into Aikuma trash dir.
+	 *
+	 * @param fileid Google file ID.
+	 * @return JSONObject on success, null otherwise.
+	 */
+	private JSONObject gapi_trash_file2(String fileid) {
+		String pid = mkdir("/trash");
+		JSONObject meta = new JSONObject();
+		JSONArray parents = new JSONArray();
+		JSONObject parent = new JSONObject();
+		parent.put("id", pid);
+		parents.add(parent);
+		meta.put("parents", parents);
+		JSONObject res = gapi_update_metadata(fileid, meta);
+		if (res == null) {
+			log.log(Level.FINE, "failed trash into aikuma/trash: " + fileid);
+			return null;
+		}
+		return res;
+	}
+
+	/**
+	 * Empty trash.
+	 *
+	 * @return true on success, false otherwise.
+	 */
+	private boolean gapi_empty_trash() {
+		try {
+			URL url = new URL("https://www.googleapis.com/drive/v2/files/trash");
+			HttpURLConnection con = Utils.gapi_connect(url, "DELETE", mAccessToken);
+			return (con.getResponseCode() == 204);
+		} catch (IOException e) {
+			log.log(Level.FINE, "exception: " + e.getMessage());
+			return false;
+		}
+	}
+
+	/**
+	 * Get permission ID for the user.
+	 *
+	 * @return String permission ID, or null if call fails.
+	 */
+	private String gapi_about_permission_id() {
+		try {
+			URL url = new URL("https://www.googleapis.com/drive/v2/about?fields=permissionId");
+			HttpURLConnection con = Utils.gapi_connect(url, "GET", mAccessToken);
+			if (con.getResponseCode() != HttpURLConnection.HTTP_OK)
+				return null;
+			String json = Utils.readStream(con.getInputStream());
+			JSONObject obj = (JSONObject) JSONValue.parse(json);
+			return (String) obj.get("permissionId");
+		} catch (IOException e) {
+			log.log(Level.FINE, "exception: " + e.getMessage());
+			return null;
+		}
+	}
+
+	/**
+	 * Delete permission from a file.
+	 *
+	 * @param fileId
+	 * @return true on success, false on failure.
+	 */
+	private boolean gapi_permission_delete(String fileId) {
+		try {
+			URL url = new URL("https://www.googleapis.com/drive/v2/files/" + fileId + "/permissions/" + mPermissionId);
+			HttpURLConnection con = Utils.gapi_connect(url, "DELETE", mAccessToken);
+			return (con.getResponseCode() == 204);
+		} catch (IOException e) {
+			log.log(Level.FINE, "exception: " + e.getMessage());
+			return false;
+		}
+	}	
 }
