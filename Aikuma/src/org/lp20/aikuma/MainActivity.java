@@ -106,6 +106,7 @@ public class MainActivity extends ListActivity {
 		
 		emailAccount = settings.getString(AikumaSettings.SETTING_OWNER_ID_KEY, null);
 		googleAuthToken = settings.getString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, null);
+                googleIdToken = settings.getString(AikumaSettings.SETTING_ID_TOKEN_KEY, null);
 		googleAPIScope = AikumaSettings.getScope();
     	Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
     	
@@ -487,13 +488,15 @@ public class MainActivity extends ListActivity {
      * Clear the account and token
      */
     public void clearAccountToken() {
-    	emailAccount = null;
-    	AikumaSettings.setUserId(null);
-    	googleAuthToken = null;
-    	AikumaSettings.setUserToken(null);
-    	showUserAccount(emailAccount, null);
-    	
-    	menuBehaviour.setSignInState(false);
+        emailAccount = null;
+        googleAuthToken = null;
+        googleIdToken = null;
+        AikumaSettings.setUserId(null);
+        AikumaSettings.setUserToken(null);
+        AikumaSettings.setUserIdToken(null);
+        showUserAccount(emailAccount, null);
+        
+        menuBehaviour.setSignInState(false);
     }
 	
     /**
@@ -629,21 +632,24 @@ public class MainActivity extends ListActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-        	try {
-        		googleAuthToken = getToken();
-        		
-				// Store the access-token for next use
-				SharedPreferences.Editor prefsEditor = preferences.edit();
-				prefsEditor.putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, googleAuthToken);
-				prefsEditor.commit();
-				AikumaSettings.setUserToken(googleAuthToken);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				Log.e(TAG, e.getMessage());
-				return false;
-			}
-    		Log.i(TAG, "token: " + googleAuthToken);
-        	return true;
+		try {
+			getToken();
+			
+			// Store the access-token for next use
+			preferences.edit()
+				.putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, googleAuthToken)
+				.putString(AikumaSettings.SETTING_ID_TOKEN_KEY, googleIdToken)
+				.commit();
+			AikumaSettings.setUserToken(googleAuthToken);
+			AikumaSettings.setUserIdToken(googleIdToken);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Log.e(TAG, e.getMessage());
+			return false;
+		}
+		Log.i(TAG, "access token: " + googleAuthToken);
+		Log.i(TAG, "identity token: " + googleIdToken);
+		return true;
         }
 
         @Override
@@ -667,16 +673,10 @@ public class MainActivity extends ListActivity {
          * @return	authToken	for google-api services
          * @throws IOException
          */
-        private String getToken() throws IOException {
+        private void getToken() throws IOException {
             try {
-            	// If the previous token is invalid, refresh token
-            	// Otherwise, get new token.
-            	if(googleAuthToken != null && 
-        				!GoogleAuth.validateAccessToken(googleAuthToken)) {
-        			GoogleAuthUtil.clearToken(MainActivity.this, googleAuthToken);
-        		}
-                return GoogleAuthUtil
-                		.getToken(MainActivity.this, mEmailAccount, mScope);
+                googleAuthToken = GoogleAuthUtil.getToken(MainActivity.this, mEmailAccount, mScope);
+                googleIdToken = GoogleAuthUtil.getToken(MainActivity.this, mEmailAccount, AikumaSettings.getIdTokenScope());
             } catch (UserRecoverableAuthException userRecoverableException) {
                 // Error which can be recovered by a user occurs
                 // Show the user some UI through the activity.
@@ -684,7 +684,6 @@ public class MainActivity extends ListActivity {
             } catch (GoogleAuthException fatalException) {
                 Log.e(TAG, "Unrecoverable error " + fatalException.getMessage());
             } 
-            return null;
         }
     }
     
@@ -695,6 +694,7 @@ public class MainActivity extends ListActivity {
     
     private String emailAccount;
     private String googleAuthToken;
+    private String googleIdToken;
     private String googleAPIScope;
     
     
