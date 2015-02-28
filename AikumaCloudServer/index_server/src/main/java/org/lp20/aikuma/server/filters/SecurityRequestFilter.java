@@ -1,4 +1,4 @@
-package org.lp20.aikuma.server;
+package org.lp20.aikuma.server.filters;
 
 import org.glassfish.jersey.server.ApplicationHandler;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -15,6 +15,8 @@ import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.logging.Logger;
+
+import org.lp20.aikuma.server.*;
 
 /**
  * Created by bob on 11/12/14.
