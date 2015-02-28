@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.lp20.aikuma.storage.DataStore;
-import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.FusionIndex2;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
 import org.lp20.aikuma.storage.Index;
@@ -101,7 +100,7 @@ public class DebugInfo extends Activity {
             scopeBuilder.append(s);
             joiner = " ";
         }
-        for (String s: FusionIndex.getScopes()) {
+        for (String s: FusionIndex2.getScopes()) {
             scopeBuilder.append(joiner);
             scopeBuilder.append(s);
         }
@@ -148,7 +147,7 @@ public class DebugInfo extends Activity {
                             .putString("id_token", tokens[1])
                             .commit();
                     mGd = new GoogleDriveStorage(tokens[0]);
-                    mFi = new FusionIndex2("", tokens[1], tokens[0]);
+                    mFi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), tokens[1], tokens[0]);
                     displayTokens();
                 }
             }
@@ -235,8 +234,12 @@ public class DebugInfo extends Activity {
         String idToken = mPref.getString("id_token", null);
         if (accessToken != null)
             ((TextView) findViewById(R.id.txtAccessToken)).setText(accessToken);
+        else
+            ((TextView) findViewById(R.id.txtAccessToken)).setText("null");
         if (idToken != null)
             ((TextView) findViewById(R.id.txtIdToken)).setText(idToken);
+        else
+            ((TextView) findViewById(R.id.txtIdToken)).setText("null");
     }
 
     private String appFingerprint() {
