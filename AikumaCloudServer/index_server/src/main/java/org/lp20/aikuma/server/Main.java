@@ -86,7 +86,7 @@ public class Main {
         //final IndexServerApplication rc = new IndexServerApplication().packages("org.lp20.aikuma");
         final IndexServerApplication app = new IndexServerApplication();
         app.property("config_file", configLoc);
-        app.packages("org.lp20.aikuma.server.services");
+        app.packages("org.lp20.aikuma.server.services", "org.lp20.aikuma.server.filters");
 
         if (!setup(app)) {
             System.err.println("Fatal configuration error");
