@@ -42,7 +42,7 @@ import java.util.List;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.service.GoogleCloudService;
-import org.lp20.aikuma.storage.GoogleAuth;
+import org.lp20.aikuma.storage.google.GoogleAuth;
 import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.MenuBehaviour;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;

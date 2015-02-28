@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import org.lp20.aikuma.storage.DataStore;
 import org.lp20.aikuma.storage.FusionIndex2;
-import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
 import org.lp20.aikuma.storage.Index;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
