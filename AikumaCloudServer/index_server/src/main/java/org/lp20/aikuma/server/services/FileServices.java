@@ -35,7 +35,7 @@ public class FileServices {
 
     @PUT
     @Path("{identifier: .+}/share/{email: [^/]+}")
-    //@RolesAllowed({"authenticatedUser"})
+    @RolesAllowed({"authenticatedUser"})
     public Response shareFile(
             @PathParam("identifier") String identifier,
             @PathParam("email") String email
