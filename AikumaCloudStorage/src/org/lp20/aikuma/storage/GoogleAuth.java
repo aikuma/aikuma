@@ -5,6 +5,8 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.util.List;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import org.json.simple.*;
 
@@ -14,52 +16,49 @@ import org.json.simple.*;
  * @author haejoong
  */
 public class GoogleAuth {
-	private String clientId_;
-	private String clientSecret_;
-	private String lastError_;
-	private String accessToken_;
-
-    public String getRefreshToken() {
-        return refreshToken;
+    private String clientId_;
+    private String clientSecret_;
+    private String lastError_;
+    private String accessToken_;
+    private String refreshToken_;
+    private long timeExpired_;
+	
+    /**
+     * Construct an authentication/authorization object. Example,
+     * 
+     * - Call getAuthUrl(), and open an authentication/authorization page
+     *   pointed by the returned URL.
+     * - When submitted the form on the page, the browser displays a string
+     *   called authorization code.
+     * - Call requestAccessToken() method with the authorization code.
+     * - Call getAccessToken() method to get the access token.
+     * 
+     * @param clientId
+     * @param clientSecret
+     */
+    public GoogleAuth(String clientId, String clientSecret) {
+        clientId_ = clientId;
+        clientSecret_ = clientSecret;
+        timeExpired_ = 0;
     }
 
-    private String refreshToken;
-	
-	/**
-	 * Construct an authentication/authorization object. Example,
-	 * 
-	 * - Call getAuthUrl(), and open an authentication/authorization page
-	 *   pointed by the returned URL.
-	 * - When submitted the form on the page, the browser displays a string
-	 *   called authorization code.
-	 * - Call requestAccessToken() method with the authorization code.
-	 * - Call getAccessToken() method to get the access token.
-	 * 
-	 * @param clientId
-	 * @param clientSecret
-	 */
-	public GoogleAuth(String clientId, String clientSecret) {
-		clientId_ = clientId;
-		clientSecret_ = clientSecret;
-	}
-	
-	/**
-	 * Returns a URL that the end user needs to visit to authenticate and authorize.
-	 * In the page, user logs in to google and authorize APIs. Then, the page
-	 * returns an authorization code.
-	 * 
-	 * @return A URL in string.
-	 */
-	public String getAuthUrl(List<String> apis) {
-		String url = "https://accounts.google.com/o/oauth2/auth?"
-				+ "response_type=code&"
-				+ "redirect_uri=urn:ietf:wg:oauth:2.0:oob&"
-				+ "client_id=" + clientId_;
+    /**
+     * Returns a URL that the end user needs to visit to authenticate and authorize.
+     * In the page, user logs in to google and authorize APIs. Then, the page
+     * returns an authorization code.
+     * 
+     * @return A URL in string.
+     */
+    public String getAuthUrl(List<String> apis) {
+            String url = "https://accounts.google.com/o/oauth2/auth?"
+                            + "response_type=code&"
+                            + "redirect_uri=urn:ietf:wg:oauth:2.0:oob&"
+                            + "client_id=" + clientId_;
 
-		if (apis.size() > 0) {
-			url += "&scope=";
+        if (apis.size() > 0) {
+            url += "&scope=";
             String tmp = "";
-			for (String api: apis) {
+            for (String api: apis) {
                 tmp += api + " ";
             }
             try {
@@ -67,10 +66,10 @@ public class GoogleAuth {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-		}
-		
-		return url;
-	}
+        }
+            
+        return url;
+    }
 
     /**
      * Check to see if an access_token is valid
@@ -111,6 +110,7 @@ public class GoogleAuth {
      * @return true if successful, false, otherwise
      */
     public boolean refreshAccessToken(String refreshToken) {
+        refreshToken_ = refreshToken;
         return handleTokenRequest("grant_type=refresh_token" +
                 "&refresh_token=" + refreshToken +
                 "&client_id=" + clientId_ +
@@ -163,29 +163,40 @@ public class GoogleAuth {
 
     private void parseTokenResponse(String resp) {
         JSONObject obj = (JSONObject) JSONValue.parse(resp);
+        long n = ((Long) obj.get("expires_in")).longValue();
+        timeExpired_ = new Date().getTime() + n - 60000;
         accessToken_ = (String) obj.get("access_token");
         if (obj.containsKey("refresh_token"))
-            refreshToken = (String) obj.get("refresh_token");
+            refreshToken_ = (String) obj.get("refresh_token");
+
     }
 
 
-	/**
-	 * Return the access token obtained by requestAccessToken().
-	 * Return null if there is nothing to return.
-	 * 
-	 * @return String token if token exists, null otherwise.
-	 */
-	public String getAccessToken() {
+    /**
+     * Return the access token obtained by requestAccessToken().
+     * Return null if there is nothing to return.
+     * 
+     * @return String token if token exists, null otherwise.
+     */
+    public String getAccessToken() {
+        if (timeExpired_ < new Date().getTime()) {
+            if (refreshToken_ == null || !refreshAccessToken(refreshToken_))
+                return null;
+        }
         return accessToken_;
-	}
-	
-	/**
-	 * Returns an error message produced by a previous method call that
-	 * is involved in communication with google auth servers.
-	 * 
-	 * @return Error message.
-	 */
-	public String getLastError() {
-		return lastError_;
-	}
+    }
+    
+    public String getRefreshToken() {
+        return refreshToken_;
+    }
+
+    /**
+     * Returns an error message produced by a previous method call that
+     * is involved in communication with google auth servers.
+     * 
+     * @return Error message.
+     */
+    public String getLastError() {
+            return lastError_;
+    }
 }
