@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.lp20</groupId>
             <artifactId>aikuma-cloud-storage</artifactId>
-            <version>0.7.0</version>
+            <version>0.7.1</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

@@ -7,31 +7,19 @@ public class TokenManagerForNativeApp implements TokenManager {
     private static Logger log = Logger.getLogger(TokenManagerForNativeApp.class.getName());
 
     private GoogleAuth mAuth;
-    private String mAccessToken;
-
 
     public TokenManagerForNativeApp(String clientId, String clientSecret, String refreshToken) {
         mAuth = new GoogleAuth(clientId, clientSecret);
-        if (mAuth.refreshAccessToken(refreshToken)) {
-            mAccessToken = mAuth.getAccessToken();
-        } else {
-            mAccessToken = null;
-        }
+        mAuth.refreshAccessToken(refreshToken);
     }
 
     @Override
     public String getAccessToken() {
-        return mAccessToken;
+        return mAuth.getAccessToken();
     }
 
     @Override
     public String refreshAccessToken() {
-        if (mAuth.refreshAccessToken(mAuth.getRefreshToken())) {
-            mAccessToken = mAuth.getAccessToken();
-        } else {
-            mAccessToken = null;
-        }
-        return mAccessToken;
+        return getAccessToken();
     }
-
 }
