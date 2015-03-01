@@ -1,0 +1,15 @@
+#
+# Example index_server.properties file. Use real values for production!
+#
+service_email=[The email of the service account; see the developer console]
+scopes=[A space delimited list of OAUTH2 scopes for which to request a token] 
+private_key_path=[Path to a PKCS12 file with the private key to use for signing JWT requests]
+private_key_password=[The password for the key file and key; Google's generated files make these the same]
+table_id=[Google FusionTables table ID for the metadata table]
+aikuma_root_id=[Globally unique ID for the aikuma root folder]
+base_uri=[base uri on which to listen e.g., https://0.0.0.0:8080]
+use_ssl=[if "yes", use ssl; else, don't]
+keystore_file=[a file url that points to a java keystore with your ssl cert in it]
+keystore_password=[the password for the keystore above]
+require_auth=["yes" if you want to require Google JWT auth]
+valid_app_client_ids=[comma separated list of client_ids for apps that can access the service]
