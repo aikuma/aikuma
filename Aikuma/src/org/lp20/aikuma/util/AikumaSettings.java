@@ -34,9 +34,15 @@ public class AikumaSettings {
 	// Current default owner_auth_token(== default Google API access_token)
 	private static String DEFAULT_USER_AUTH_TOKEN = null;
 	private static String DEFAULT_USER_ID_TOKEN = null;
-	private static String DEFAULT_INDEX_SERVER = "https://aikuma.info:445/index";
+	private static String DEFAULT_INDEX_SERVER = "https://aikuma.info:443/index";
 	private static String DEFAULT_INDEX_SERVER_CLIENT_ID = "530026557211-46brcqr1p4ltlru6j6duc0am14oh83ei.apps.googleusercontent.com";
+	/**
+	 * Account of central fusion table
+	 */
 	public static String CENTRAL_USER_ID = "lp20.org@gmail.com";
+	/**
+	 * Temporary ID for all root-folder (TODO: might be changed depending on project folder structures)
+	 */
 	public static String ROOT_FOLDER_ID = "asdf";
 	
 	private static int numOfUsers;
@@ -303,6 +309,7 @@ public class AikumaSettings {
 
 	/**
 	 * Set the URL of the index server.
+	 * @param url	URL of central index-server
 	 */
 	public static void setIndexServerUrl(String url) {
 	    DEFAULT_INDEX_SERVER = url;
@@ -327,6 +334,10 @@ public class AikumaSettings {
 		return scope;
     }
 
+    /**
+     * Return a scope for a client ID of web-application
+     * @return	The scope for the web-application(central index-server)
+     */
 	public static String getIdTokenScope() {
 	    return "audience:server:client_id:" + DEFAULT_INDEX_SERVER_CLIENT_ID;
 	}

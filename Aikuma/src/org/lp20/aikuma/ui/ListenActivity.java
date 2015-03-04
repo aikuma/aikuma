@@ -26,7 +26,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +52,6 @@ public class ListenActivity extends AikumaActivity {
 		setContentView(R.layout.listen);
 		menuBehaviour = new MenuBehaviour(this);
 		videoView = (VideoView) findViewById(R.id.videoView);
-		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		googleAuthToken = AikumaSettings.getCurrentUserToken();
 
@@ -180,7 +178,7 @@ public class ListenActivity extends AikumaActivity {
 	// Creates the quickMenu for the original recording 
 	//(quickMenu: star/flag/share/archive)
 	private void setUpQuickMenu() {
-		quickMenu = new QuickActionMenu(this);
+		quickMenu = new QuickActionMenu<Recording>(this);
 		
 		QuickActionItem starAct = new QuickActionItem("star", R.drawable.star);
 		QuickActionItem flagAct = new QuickActionItem("flag", R.drawable.flag);
@@ -199,9 +197,9 @@ public class ListenActivity extends AikumaActivity {
 		
 		
 		//setup the action item click listener
-		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener() {			
+		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener<Recording>() {			
 			@Override
-			public void onItemClick(int pos) {
+			public void onItemClick(int pos, Recording recording) {
 				
 				if (pos == 0) { //Add item selected
 					onStarButtonPressed(null);
@@ -457,10 +455,9 @@ public class ListenActivity extends AikumaActivity {
 	private String ownerId;
 	private String versionName;
 	private MenuBehaviour menuBehaviour;
-	private SimpleDateFormat simpleDateFormat;
 	private ProximityDetector proximityDetector;
 	
-	private QuickActionMenu quickMenu;
+	private QuickActionMenu<Recording> quickMenu;
 	
 	private String googleAuthToken;
 	

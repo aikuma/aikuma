@@ -75,7 +75,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	 * @param	quickMenu	QuickActionMenu for each liste item
 	 */
 	public RecordingArrayAdapter(Context context, List<Recording> recordings, 
-			QuickActionMenu quickMenu) {
+			QuickActionMenu<Recording> quickMenu) {
 		this(context, recordings);
 		this.quickMenu = quickMenu;
 	}
@@ -84,7 +84,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	public View getView(int position, View _, ViewGroup parent) {
 		LinearLayout recordingView =
 				(LinearLayout) inflater.inflate(LIST_ITEM_LAYOUT, parent, false);
-		Recording recording = getItem(position);
+		final Recording recording = getItem(position);
 
 		// Set the view to have recording name, date, duration, speakerImage
 		TextView recordingNameView = 
@@ -166,7 +166,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				@Override
 				public boolean onLongClick(View v) {
 					// TODO Auto-generated method stub
-					quickMenu.show(v);
+					quickMenu.show(v, recording);
 					return false;
 				}
 				
@@ -266,6 +266,6 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	private Context context;
 	private List<Recording> recordings;
 	private SimpleDateFormat simpleDateFormat;
-	private QuickActionMenu quickMenu = null;
+	private QuickActionMenu<Recording> quickMenu = null;
 
 }

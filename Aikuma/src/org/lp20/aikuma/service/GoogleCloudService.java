@@ -27,6 +27,7 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.storage.Data;
 import org.lp20.aikuma.storage.DataStore;
+import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.FusionIndex2;
 import org.lp20.aikuma.storage.GoogleAuth;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
@@ -168,6 +169,13 @@ public class GoogleCloudService extends IntentService{
 			} else if(id.equals("autoDownload")) {
 				autoDownloadFiles();
 				validateToken();
+				// TODO: In the current state, metadata will not exist in GoogleDrive (needs to be changed later)
+				List<String> itemCloudIdsToDownload = intent.getStringArrayListExtra("downloadItems");
+				if(itemCloudIdsToDownload != null) {
+					for(String itemId : itemCloudIdsToDownload) {
+						downloadOtherSet.add(itemId);
+					}
+				}
 				retryDownload();
 			} else {					// Called when archive button is pressed (and token was already validated)
 				String itemType = (String)
@@ -267,7 +275,6 @@ public class GoogleCloudService extends IntentService{
         gd.list(new GoogleDriveStorage.ListItemHandler() {
 			@Override
 			public boolean processItem(String identifier, Date date) {
-				identifier = identifier.substring(1);	// TODO???
 				// Classify identifiers and store them in different lists 
 				if(identifier.matches(cloudIdFormat)) {
 					String relPath = identifier.substring(0, identifier.lastIndexOf('/')-12);
@@ -431,11 +438,12 @@ public class GoogleCloudService extends IntentService{
 		}
 		
 		Index fi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), googleIdToken, googleAuthToken);
+		//Index fi = new FusionIndex(googleAuthToken);
 		
 		// Others
 		retryBackup(gd, fi, approvalOtherKey, approvedOtherSet, 
 				archiveOtherKey, archivedOtherSet);
-		
+
 		// Speakers
 		retryBackup(gd, fi, approvalSpKey, approvedSpeakerSet,
 				archiveSpKey, archivedSpeakerSet);
@@ -815,14 +823,9 @@ public class GoogleCloudService extends IntentService{
 
 	private void validateToken() {
 		try {
-			Log.i(TAG, "tokens");
 			googleAuthToken = GoogleAuthUtil.getToken(getApplicationContext(), googleEmailAccount, AikumaSettings.getScope());
-			Log.i(TAG, AikumaSettings.getScope() +" : " );
-			Log.i(TAG, googleAuthToken);
 			
 			googleIdToken = GoogleAuthUtil.getToken(getApplicationContext(), googleEmailAccount, AikumaSettings.getIdTokenScope());
-			Log.i(TAG, AikumaSettings.getIdTokenScope() + " : ");
-			Log.i(TAG, googleIdToken);
 		} catch (Exception e) {
 			Log.e(TAG, "Unrecoverable error " + e.getMessage());
 		}

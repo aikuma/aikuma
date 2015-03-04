@@ -27,10 +27,12 @@ import android.widget.TextView;
 
 /**
  * QuickAction Menu class(used for star,flag,share,archive)
+ * 
  * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
  *
+ * @param <T>	The Item type which QuickActionMenu will handle
  */
-public class QuickActionMenu {
+public class QuickActionMenu<T> {
 	private Context context;
 	private LayoutInflater inflater;
 	private WindowManager windowManager;
@@ -40,11 +42,13 @@ public class QuickActionMenu {
 	private ImageView mArrowDown;
 	private ViewGroup mRootView;
 	private ViewGroup mItemGroupView;
-	private OnActionItemClickListener mListener;
+	private OnActionItemClickListener<T> mListener;
 	
 	private int notificationHeight;
 	
-	private int mItemPos;
+	private T mItem;
+	
+	private int mActionItemPos;
 	
 	/**
 	 * Constructor for the quick-menu
@@ -76,7 +80,7 @@ public class QuickActionMenu {
 	    setContentView(R.layout.quickaction_menu);    
 		
 		//setRootViewId(R.layout.quickaction);
-	    mItemPos = 0;
+	    mActionItemPos = 0;
 	}
 	
 	private void setContentView(int id) {
@@ -114,11 +118,11 @@ public class QuickActionMenu {
 			text.setVisibility(View.GONE);
 		}
 		
-		final int pos =  mItemPos;
+		final int pos =  mActionItemPos;
 		itemView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (mListener != null) mListener.onItemClick(pos);
+				if (mListener != null && mItem != null) mListener.onItemClick(pos, mItem);
 				mWindow.dismiss();
 			}
 		});
@@ -126,9 +130,9 @@ public class QuickActionMenu {
 		itemView.setFocusable(true);
 		itemView.setClickable(true);
 			 
-		mItemGroupView.addView(itemView, mItemPos+1);
+		mItemGroupView.addView(itemView, mActionItemPos+1);
 		
-		mItemPos++;
+		mActionItemPos++;
 	}
 	
 	/**
@@ -137,7 +141,7 @@ public class QuickActionMenu {
 	 * @param isEnable	treu:enable/false:disable
 	 */
 	public void setItemEnabledAt(int pos, boolean isEnable) {
-		if(pos < 0 || pos >= mItemPos)
+		if(pos < 0 || pos >= mActionItemPos)
 			throw new IllegalArgumentException(
 					"There is no item at position" + "pos");
 		
@@ -151,7 +155,7 @@ public class QuickActionMenu {
 	 * @param resourceId	icon resource ID
 	 */
 	public void setItemImageResourceAt(int pos, int resourceId) {
-		if(pos < 0 || pos >= mItemPos)
+		if(pos < 0 || pos >= mActionItemPos)
 			throw new IllegalArgumentException(
 					"There is no item at position" + "pos");
 		
@@ -161,11 +165,11 @@ public class QuickActionMenu {
 	}
 	
 	/**
-	 * Set the listener for the item click events
+	 * Set the listener for the item click eventss
 	 * @param listener	listener-object
 	 */
 	public void setOnActionItemClickListener(
-			OnActionItemClickListener listener) {
+			OnActionItemClickListener<T> listener) {
 		mListener = listener;
 	}
 	
@@ -173,8 +177,9 @@ public class QuickActionMenu {
 	 * Show the QuickMenu in the device
 	 * @param anchor	the view from which Quick-menu is called
 	 * @param position	The click-position in the anchor
+	 * @param item		The item shown in the anchor
 	 */
-	public void show(View anchor, int[] position) {
+	public void show(View anchor, int[] position, T item) {
 		if(notificationHeight == 0) {
 			int[] location = new int[2];
 			anchor.getLocationOnScreen(location);
@@ -183,6 +188,7 @@ public class QuickActionMenu {
 		
 		int xPos = position[0];
 		int yPos = position[1];
+		mItem = item;
 		
 		Log.i("hi", "show: " + xPos + " " + yPos + " " + anchor.getTop());
 		int screenWidth = windowManager.getDefaultDisplay().getWidth();
@@ -225,8 +231,10 @@ public class QuickActionMenu {
 	 * Show the QuickMenu in the device
 	 * (the arrow of quick-menu is shown at the center)
 	 * @param anchor	the view from which Quick-menu is called
+	 * @param item		The item shown in the anchor
 	 */
-	public void show (View anchor) {
+	public void show (View anchor, T item) {
+		mItem = item;
 		preShow();
 		
 		int screenWidth = windowManager.getDefaultDisplay().getWidth();
@@ -243,7 +251,7 @@ public class QuickActionMenu {
 
 		if(anchor.getTop() - menuHeight < 0) {
 			yPos = anchorLocationOnScreen[1]+anchor.getHeight();
-			Log.i("hi", yPos+"");
+			Log.i("QuickActionMenu", "yPos: " + yPos);
 			showArrow(R.id.arrowUp, (anchorLeft+anchorRight)/2);
 		} else {
 			showArrow(R.id.arrowDown, (anchorLeft+anchorRight/2));
@@ -291,12 +299,14 @@ public class QuickActionMenu {
 	 * Listener interface for Quick-menu
 	 * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
 	 *
+	 * @param <T>	The item type which Click action will handle
 	 */
-	public interface OnActionItemClickListener {
+	public interface OnActionItemClickListener<T> {
 		/**
 		 * Click listener
 		 * @param pos	Action-item position in the menu
+		 * @param item	The item which Click action will handle
 		 */
-		public abstract void onItemClick(int pos);
+		public abstract void onItemClick(int pos, T item);
 	}
 }

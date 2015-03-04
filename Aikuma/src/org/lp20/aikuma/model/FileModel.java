@@ -70,7 +70,7 @@ public class FileModel implements Parcelable {
 		} else if(ext.equals("txt")) {	//mapping, transcript
 			String[] splitName = fileName.split("-");
 			return new FileModel(splitCloudId[0], splitCloudId[3], fileName, splitName[splitName.length-1], ext);
-		} else {						//source, comment, preview
+		} else {						//source, respeaking, preview
 			String[] splitName = fileName.split("-");
 			if(splitName[splitName.length-1].equals("preview")) {
 				return new FileModel(splitCloudId[0], splitCloudId[3], fileName, "preview", ext);
