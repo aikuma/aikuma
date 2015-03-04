@@ -6,6 +6,7 @@ package org.lp20.aikuma.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -163,60 +164,57 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 	 * @param	view	the OK button.
 	 */
 	public void onOkButtonPressed(View view) {
-		new AlertDialog.Builder(this)
-				.setMessage(R.string.share_dialog)
-				.setPositiveButton(R.string.share, new
-				DialogInterface.OnClickListener() {
-				
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Intent intent =
-								new Intent(RecordingMetadataActivity4.this,
-										MainActivity.class);
-						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		Intent intent =
+				new Intent(RecordingMetadataActivity4.this,
+						MainActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-						Date date = new Date();
-						String deviceName = Aikuma.getDeviceName();
-						String androidID = Aikuma.getAndroidID();
-						Log.i("duration", "when recording created: " + durationMsec);
+		Date date = new Date();
+		String deviceName = Aikuma.getDeviceName();
+		String androidID = Aikuma.getAndroidID();
+		Log.i("duration", "when recording created: " + durationMsec);
 
-						Recording recording = new Recording(
-								uuid, description, date, 
-								AikumaSettings.getLatestVersion(), 
-								AikumaSettings.getCurrentUserId(),
-								selectedLanguages, speakersIds, 
-								deviceName, androidID, groupId, sourceVerId,
-								sampleRate, durationMsec, format, numChannels,
-								bitsPerSample, latitude, longitude);
-						try {
-							// Move the wave file from the nosync directory to
-							// the synced directory and write the metadata
-							recording.write();
-						} catch (IOException e) {
-							Toast.makeText(RecordingMetadataActivity4.this,
-								"Failed to write the Recording metadata:\t" +
-								e.getMessage(), Toast.LENGTH_LONG).show();
-						}
-						// If automatic-backup is enabled, archive this file
-						if(AikumaSettings.isBackupEnabled) {
-							Intent serviceIntent = new Intent(RecordingMetadataActivity4.this, 
-									GoogleCloudService.class);
-							serviceIntent.putExtra(GoogleCloudService.ACTION_KEY, 
-									recording.getVersionName() + "-" + recording.getId());
-							serviceIntent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "recording");
-							serviceIntent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
-									AikumaSettings.getCurrentUserId());
-							serviceIntent.putExtra(GoogleCloudService.TOKEN_KEY, 
-									AikumaSettings.getCurrentUserToken());
-							
-							startService(serviceIntent);
-						}
-						
-						startActivity(intent);
-					}
-				})
-				.setNegativeButton(R.string.cancel, null)
-				.show();
+		Recording recording = new Recording(
+				uuid, description, date, 
+				AikumaSettings.getLatestVersion(), 
+				AikumaSettings.getCurrentUserId(),
+				selectedLanguages, speakersIds, 
+				deviceName, androidID, groupId, sourceVerId,
+				sampleRate, durationMsec, format, numChannels,
+				bitsPerSample, latitude, longitude);
+		try {
+			// Move the wave file from the nosync directory to
+			// the synced directory and write the metadata
+			recording.write();
+		} catch (IOException e) {
+			Toast.makeText(RecordingMetadataActivity4.this,
+				"Failed to write the Recording metadata:\t" +
+				e.getMessage(), Toast.LENGTH_LONG).show();
+			startActivity(intent);
+			return;
+		}
+		Toast.makeText(RecordingMetadataActivity4.this, String.format("%s       %s (%s)", 
+						recording.getNameAndLang(), 
+						new SimpleDateFormat("yyyy-MM-dd").format(recording.getDate()),
+						(durationMsec / 1000) + ""), Toast.LENGTH_LONG).show();
+		
+
+		// If automatic-backup is enabled, archive this file
+		if(AikumaSettings.isBackupEnabled) {
+			Intent serviceIntent = new Intent(RecordingMetadataActivity4.this, 
+					GoogleCloudService.class);
+			serviceIntent.putExtra(GoogleCloudService.ACTION_KEY, 
+					recording.getVersionName() + "-" + recording.getId());
+			serviceIntent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "recording");
+			serviceIntent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
+					AikumaSettings.getCurrentUserId());
+			serviceIntent.putExtra(GoogleCloudService.TOKEN_KEY, 
+					AikumaSettings.getCurrentUserToken());
+			
+			startService(serviceIntent);
+		}
+		
+		startActivity(intent);
 	}
 
 	
