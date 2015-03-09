@@ -63,6 +63,14 @@
             android:id="@+id/button4"
             android:onClick="requestShare" />
 
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Index"
+            android:id="@+id/button5"
+            android:onClick="indexSample" />
+
     </LinearLayout>
 
     <TableLayout
@@ -208,7 +216,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/scrollView"
-        android:layout_below="@+id/tableLayout">
+        android:layout_below="@+id/tableLayout"
+        android:fillViewport="false">
 
         <TextView
             android:layout_width="match_parent"

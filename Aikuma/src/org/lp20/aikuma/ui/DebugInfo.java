@@ -144,8 +144,9 @@ public class DebugInfo extends Activity {
     }
 
     /**
-     * asdf
-     * @param view asdf
+     * Obtain access token and id token.
+     *
+     * @param view
      */
     public void runAuth(View view) {
         new AsyncTask<Void, Void, String[]>() {
@@ -188,8 +189,9 @@ public class DebugInfo extends Activity {
     }
 
     /**
-     * asdf
-     * @param view	asdf
+     * Test GD.list() method.
+     *
+     * @param view
      */
     public void listDocs(View view) {
         new AsyncTask<Void, Void, Void>() {
@@ -214,8 +216,9 @@ public class DebugInfo extends Activity {
     }
 
     /**
-     * asdf
-     * @param view	asdf
+     * Test FI2.search() method.
+     *
+     * @param view
      */
     public void listIDs(View view) {
         new AsyncTask<Void,Void,Void>() {
@@ -241,8 +244,9 @@ public class DebugInfo extends Activity {
     }
 
     /**
-     * asdf
-     * @param view	asdf
+     * Test share API of the server.
+     *
+     * @param view
      */
     public void requestShare(View view) {
         new AsyncTask<Void,Void,Boolean>() {
@@ -289,10 +293,33 @@ public class DebugInfo extends Activity {
     }
 
     /**
-     * asdf
-     * @param view	asdf
+     * Test index API of the server.
+     *
+     * @param view
      */
-    public void clearLog(View view) {
+    public void indexSample(View view) {
+        new AsyncTask<Void, Void, Boolean>() {
+            protected Boolean doInBackground(Void... params) {
+                String identifier = "test-identifier-remove-please";
+                Map<String,String> meta = new HashMap<String,String>();
+                meta.put("data_store_uri","n/a");
+                meta.put("item_id","n/a");
+                meta.put("file_type","n/a");
+                meta.put("languages", "eng");
+                meta.put("speakers", "n/a");
+                meta.put("user_id", "n/a");
+                return mFi.index(identifier, meta);
+            }
+            protected void onPostExecute(Boolean result) {
+                if (result == true)
+                    appendText("index ok\n");
+                else
+                    appendText("index failed\n");
+            }
+        }.execute(null, null, null);
+    }
+
+    private void clearLog(View view) {
         ((TextView) findViewById(R.id.txtGd)).setText("");
     }
 
