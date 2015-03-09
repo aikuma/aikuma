@@ -1,4 +1,4 @@
-package org.lp20.aikuma.servers.index_server;
+package org.lp20.aikuma.server;
 
 import org.glassfish.jersey.server.ResourceConfig;
 

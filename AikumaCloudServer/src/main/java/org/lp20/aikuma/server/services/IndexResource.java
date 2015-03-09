@@ -1,11 +1,10 @@
-package org.lp20.aikuma.servers.index_server;
+package org.lp20.aikuma.server.services;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 import org.json.simple.JSONArray;
-import org.lp20.aikuma.storage.FusionIndex;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +12,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.json.simple.JSONValue;
 import org.lp20.aikuma.storage.Index;
+import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.InvalidAccessTokenException;
 import static org.lp20.aikuma.storage.Utils.validateIndexMetadata;
+import org.lp20.aikuma.server.*;
 
 
 /**
@@ -47,7 +48,7 @@ public class IndexResource {
         try {
             return doSearch(formParams, detail);
         } catch (InvalidAccessTokenException e1) {
-            idx.setAccessToken(tokenManager.updateAccessToken());
+            idx.setAccessToken(tokenManager.refreshAccessToken());
             try {
                 return doSearch(formParams, detail);
             } catch (InvalidAccessTokenException e2) {
@@ -85,7 +86,7 @@ public class IndexResource {
         try {
             return doGetItem(identifier);
         } catch (InvalidAccessTokenException e) {
-            idx.setAccessToken(tokenManager.updateAccessToken());
+            idx.setAccessToken(tokenManager.refreshAccessToken());
             try {
                 return doGetItem(identifier);
             } catch (InvalidAccessTokenException ex) {
@@ -115,7 +116,7 @@ public class IndexResource {
         try {
             return doAddItem(identifier, formParams);
         } catch (InvalidAccessTokenException e) {
-            idx.setAccessToken(tokenManager.updateAccessToken());
+            idx.setAccessToken(tokenManager.refreshAccessToken());
             try {
                 return doAddItem(identifier, formParams);
             } catch (InvalidAccessTokenException e1) {
@@ -149,7 +150,7 @@ public class IndexResource {
         try {
             return doUpdateItem(identifier, formParams);
         } catch (InvalidAccessTokenException e) {
-            idx.setAccessToken(tokenManager.updateAccessToken());
+            idx.setAccessToken(tokenManager.refreshAccessToken());
             try {
                 return doUpdateItem(identifier, formParams);
             } catch (InvalidAccessTokenException e1) {

@@ -1,4 +1,4 @@
-package org.lp20.aikuma.servers.index_server;
+package org.lp20.aikuma.server;
 
 
 import org.lp20.aikuma.storage.GoogleAuth;
@@ -11,26 +11,27 @@ import java.util.logging.Logger;
  * Manages updating Google OAUTH Tokens
  *
  */
-public class TokenManager {
+public class TokenManagerForServiceAcc implements TokenManager {
     private GoogleServiceAuth auth;
 
     private String access_token;
     private String scopes;
-    private static Logger log = Logger.getLogger(TokenManager.class.getName());
+    private static Logger log = Logger.getLogger(TokenManagerForServiceAcc.class.getName());
 
 
-    public TokenManager(String service_email, String scopes, String privateKeyPath, String password) {
+    public TokenManagerForServiceAcc(String service_email, String scopes, String privateKeyPath, String password) {
         this.scopes = scopes;
         auth = new GoogleServiceAuth(service_email, privateKeyPath, password);
         this.access_token = auth.getAccessToken(scopes);
     }
 
-
+    @Override
     public String getAccessToken() {
         return access_token;
     }
 
-    public String updateAccessToken() {
+    @Override
+    public String refreshAccessToken() {
         String token = auth.getAccessToken(scopes);
         if (token == null) {
             log.severe("Unable to refresh access token");
