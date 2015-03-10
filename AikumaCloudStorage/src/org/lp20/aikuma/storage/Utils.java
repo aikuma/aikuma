@@ -1,20 +1,11 @@
 package org.lp20.aikuma.storage;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.io.*;
+import java.net.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-
+import java.util.*;
+import org.lp20.aikuma.net.Http;
 /**
  * A collection of utility methods.
  * 
@@ -108,7 +99,7 @@ public class Utils {
 	 * 
 	 * @author haejoong
 	 */
-	static class UrlBuilder {
+	public static class UrlBuilder {
 		String query_;
 		String joiner_;
 		URL context_;

@@ -1,7 +1,7 @@
 apply plugin: 'eclipse'
 
 subprojects {
-    apply plugin: 'java'
+    apply plugin: 'scala'
     apply plugin: 'maven-publish'
 
     group = 'org.lp20'
@@ -13,13 +13,19 @@ subprojects {
     }
 
     dependencies {
+        compile 'org.scala-lang:scala-library:2.11.1'
         compile('com.googlecode.json-simple:json-simple:1.1.1') {
             exclude module: 'junit'
         }
     }
 
-    sourceSets.main.java {
+    sourceSets.main.scala {
         srcDir project.projectDir
+    }
+
+    compileScala {
+        scalaCompileOptions.fork = true
+        scalaCompileOptions.useAnt = false
     }
 }
 
