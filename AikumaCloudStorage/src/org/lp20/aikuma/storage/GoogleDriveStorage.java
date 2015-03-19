@@ -56,13 +56,19 @@ public class GoogleDriveStorage implements DataStore {
 	public GoogleDriveStorage(
 			String accessToken,
 			String rootId,
-			String centralEmail)
-		throws DataStore.StorageException {
+			String centralEmail,
+			boolean initialize)
+		throws DataStore.StorageException
+	{
 		mAccessToken = accessToken;
 		mRootId = rootId;
 		mCentralEmail = centralEmail;
 
 		mCache = GoogleDriveFolderCache.getInstance();
+                if (initialize == true) {
+                    mCacheInitialized = false;
+                    mCache.clear();
+                }
 		if (mCacheInitialized == false) {
 			initialize_aikuma_folder();
 			mCacheInitialized = true;
@@ -72,6 +78,15 @@ public class GoogleDriveStorage implements DataStore {
 		import_shared_files();
 	}
 	
+	public GoogleDriveStorage(
+			String accessToken,
+			String rootId,
+			String centralEmail)
+		throws DataStore.StorageException
+	{
+		this(accessToken, rootId, centralEmail, false);
+	}
+
 	@Override
 	public InputStream load(String identifier) {
 		String prefix = dirname(identifier);
