@@ -42,5 +42,11 @@ project(':demo') {
     dependencies {
         compile project(':api')
     }
+
+    task fatJar(type: Jar) {
+        baseName = jar.baseName + '-all'
+        from { configurations.compile.collect {it.isDirectory() ? it : zipTree(it) } }
+        with jar
+    }
 }
 
