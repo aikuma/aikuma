@@ -163,6 +163,7 @@ public class DebugInfo extends Activity {
                             .putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, tokens[0])
                             .putString("id_token", tokens[1])
                             .commit();
+
                     new AsyncTask<Void,Void,Void>() {
                         @Override
                         protected Void doInBackground(final Void ... params) {
@@ -183,6 +184,7 @@ public class DebugInfo extends Activity {
                             displayTokens();
                         }
                     }.execute();
+
                 }
             }
         }.execute(null, null, null);
