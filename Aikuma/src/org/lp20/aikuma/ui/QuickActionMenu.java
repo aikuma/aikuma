@@ -42,6 +42,7 @@ public class QuickActionMenu<T> {
 	private ImageView mArrowDown;
 	private ViewGroup mRootView;
 	private ViewGroup mItemGroupView;
+	private OnQuickMenuPopupListener<T> mPopupListener;
 	private OnActionItemClickListener<T> mListener;
 	
 	private int notificationHeight;
@@ -92,6 +93,7 @@ public class QuickActionMenu<T> {
 		
 		mWindow.setContentView(mRootView);	
 	}
+	
 	
 	/**
 	 * add an action-item to the menu
@@ -164,6 +166,11 @@ public class QuickActionMenu<T> {
 		iconImg.setImageResource(resourceId);
 	}
 	
+	public void setOnQuickMenuPopupListener(
+			OnQuickMenuPopupListener<T> listener) {
+		mPopupListener = listener;
+	}
+	
 	/**
 	 * Set the listener for the item click eventss
 	 * @param listener	listener-object
@@ -216,6 +223,9 @@ public class QuickActionMenu<T> {
 			menuXPos = xPos - arrowWidth/2;
 			menuXPos = (menuXPos < 0)? 0 : menuXPos;
 		}
+		
+		if (mPopupListener != null && mItem != null) mPopupListener.onPopup(mItem);	
+		
 		if(menuYPos - notificationHeight < 0) {
 			menuYPos = yPos;
 			showArrow(R.id.arrowUp, xPos - arrowWidth/2);
@@ -249,6 +259,8 @@ public class QuickActionMenu<T> {
 		int xPos = (screenWidth - menuWidth) / 2;
 		int yPos = (anchorLocationOnScreen[1] - menuHeight);
 
+		if (mPopupListener != null && mItem != null) mPopupListener.onPopup(mItem);	
+		
 		if(anchor.getTop() - menuHeight < 0) {
 			yPos = anchorLocationOnScreen[1]+anchor.getHeight();
 			Log.i("QuickActionMenu", "yPos: " + yPos);
@@ -296,7 +308,7 @@ public class QuickActionMenu<T> {
     }
 	
 	/**
-	 * Listener interface for Quick-menu
+	 * Listener interface for Quick-menu action items
 	 * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
 	 *
 	 * @param <T>	The item type which Click action will handle
@@ -308,5 +320,19 @@ public class QuickActionMenu<T> {
 		 * @param item	The item which Click action will handle
 		 */
 		public abstract void onItemClick(int pos, T item);
+	}
+	
+	/**
+	 * Listener interface for Quick-menu
+	 * @author Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+	 *
+	 * @param <T>	The item type which will be handled
+	 */
+	public interface OnQuickMenuPopupListener<T> {
+		/**
+		 * Quick-menu popup event listener
+		 * @param item	The item which Pop-up action will handle
+		 */
+		public abstract void onPopup(T item);
 	}
 }

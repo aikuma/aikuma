@@ -185,13 +185,36 @@ public class CloudSearchActivity extends AikumaListActivity {
 		quickMenu = new QuickActionMenu<Recording>(this);
 		
 		if(AikumaSettings.getCurrentUserToken() != null) {
+			QuickActionItem sampleDownloadAct = 
+					new QuickActionItem("Sample", R.drawable.download_32);
 			QuickActionItem samplePlayAct =
 					new QuickActionItem("Sample", R.drawable.play_32);
-			QuickActionItem downloadAct = 
-					new QuickActionItem("Down", R.drawable.download_32);
+			QuickActionItem itemDownloadAct = 
+					new QuickActionItem("Item", R.drawable.download_32);
 			
+			quickMenu.addActionItem(sampleDownloadAct);
 			quickMenu.addActionItem(samplePlayAct);
-			quickMenu.addActionItem(downloadAct);
+			quickMenu.addActionItem(itemDownloadAct);
+			
+			//setup the popup event listener
+			quickMenu.setOnQuickMenuPopupListener(
+					new QuickActionMenu.OnQuickMenuPopupListener<Recording>() {
+						@Override
+						public void onPopup(Recording item) {
+							// Initialize the action buttons
+							if(item.getPreviewFile() != null) {
+								quickMenu.setItemEnabledAt(0, false);
+								quickMenu.setItemImageResourceAt(0, R.drawable.download_32_grey);
+								quickMenu.setItemEnabledAt(1, true);
+								quickMenu.setItemImageResourceAt(1, R.drawable.play_32);
+							} else {
+								quickMenu.setItemEnabledAt(0, true);
+								quickMenu.setItemImageResourceAt(0, R.drawable.download_32);
+								quickMenu.setItemEnabledAt(1, false);
+								quickMenu.setItemImageResourceAt(1, R.drawable.play_32_grey);
+							}	
+						}
+					});
 			
 			//setup the action item click listener
 			quickMenu.setOnActionItemClickListener(
@@ -203,23 +226,24 @@ public class CloudSearchActivity extends AikumaListActivity {
 		        		return;
 		        	}
 					
-					if (pos == 0) { //Download and Play Sample
+					if (pos == 0) {			//Download Sample
 						Log.i(TAG, recording.getCloudIdentifier());
 						
 						//If preview file doesn't exist, Download the sample(preview)
+						String sampleCloudId = new FileModel(recording.getVersionName(), 
+								recording.getOwnerId(), recording.getPreviewId(), "preview", "wav").
+								getCloudIdentifier(0);
+						List<String> cloudId = new ArrayList<String>();
+						cloudId.add(sampleCloudId);
+						new RequestShareFileTask(cloudId, googleEmailAccount, googleAuthToken).execute();
+						
+					} else if (pos == 1) {	// Play Sample
 						File sampleFile = recording.getPreviewFile();
 						if(sampleFile != null) {
 							// Play sample
 							setUpPlayer(sampleFile);
-							mediaPlayer.start();	
-						} else {
-							String sampleCloudId = new FileModel(recording.getVersionName(), 
-									recording.getOwnerId(), recording.getPreviewId(), "preview", "wav").
-									getCloudIdentifier(0);
-							List<String> cloudId = new ArrayList<String>();
-							cloudId.add(sampleCloudId);
-							new RequestShareFileTask(cloudId, googleEmailAccount, googleAuthToken).execute();
-						}	
+							mediaPlayer.start();
+						}
 		
 					} else if (pos == 1) { //Add the item to the download list (which will be downloaded onPause)
 						Log.i(TAG, recording.getGroupId());
@@ -583,10 +607,14 @@ public class CloudSearchActivity extends AikumaListActivity {
 		@Override
 		protected void onPostExecute(final Boolean result) {
 			if (result) {
+				Toast.makeText(CloudSearchActivity.this, 
+						"Sample is downloaded", 
+						Toast.LENGTH_LONG).show();
+				/*
 				if(!isMediaPlayerReleased) {
 					setUpPlayer(mFile);
 					mediaPlayer.start();
-				}
+				}*/
 			} else {
 				//Aikuma.showAlertDialog(getApplicationContext(), "Error in downloading a file");
 			}
