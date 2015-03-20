@@ -146,7 +146,7 @@ public class DebugInfo extends Activity {
     /**
      * Obtain access token and id token.
      *
-     * @param view
+     * @param view	The calling view
      */
     public void runAuth(View view) {
         new AsyncTask<Void, Void, String[]>() {
@@ -191,7 +191,7 @@ public class DebugInfo extends Activity {
     /**
      * Test GD.list() method.
      *
-     * @param view
+     * @param view The calling view
      */
     public void listDocs(View view) {
         new AsyncTask<Void, Void, Void>() {
@@ -218,7 +218,7 @@ public class DebugInfo extends Activity {
     /**
      * Test FI2.search() method.
      *
-     * @param view
+     * @param view The calling view
      */
     public void listIDs(View view) {
         new AsyncTask<Void,Void,Void>() {
@@ -246,7 +246,7 @@ public class DebugInfo extends Activity {
     /**
      * Test share API of the server.
      *
-     * @param view
+     * @param view	The calling view
      */
     public void requestShare(View view) {
         new AsyncTask<Void,Void,Boolean>() {
@@ -295,7 +295,7 @@ public class DebugInfo extends Activity {
     /**
      * Test index API of the server.
      *
-     * @param view
+     * @param view	The calling view
      */
     public void indexSample(View view) {
         new AsyncTask<Void, Void, Boolean>() {

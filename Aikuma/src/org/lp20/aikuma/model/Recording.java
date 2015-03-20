@@ -1436,6 +1436,9 @@ public class Recording extends FileModel {
 			}
 		});
 
+		if(transcriptFiles == null)
+			return null;
+		
 		// Take the first one
 		for (File transcriptFile : transcriptFiles) {
 			Log.i(TAG, "transcriptFile: " + transcriptFile);

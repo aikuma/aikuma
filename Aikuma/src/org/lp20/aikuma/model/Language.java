@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
+import org.lp20.aikuma.Aikuma;
 
 /**
  * Representation of an ISO 639-3 language
@@ -135,7 +136,8 @@ public class Language implements Parcelable, Comparable<Language> {
 	public static JSONArray encodeList(List<Language> languages) {
 		JSONArray languageArray = new JSONArray();
 		for (Language language : languages) {
-			languageArray.add(language.encode());
+			//languageArray.add(language.encode());
+			languageArray.add(language.getCode());
 		}
 		return languageArray;
 	}
@@ -150,11 +152,20 @@ public class Language implements Parcelable, Comparable<Language> {
 		List<Language> languages = new ArrayList<Language>();
 		if (languageArray != null) {
 			for (Object langObj : languageArray) {
-				JSONObject jsonLangObj = (JSONObject) langObj;
-				Language lang = new Language(
-						jsonLangObj.get("name").toString(),
-						jsonLangObj.get("code").toString());
-				languages.add(lang);
+				if (langObj instanceof JSONObject) {
+					JSONObject jsonLangObj = (JSONObject) langObj;
+					Language lang = new Language(
+							jsonLangObj.get("name").toString(),
+							jsonLangObj.get("code").toString());
+					languages.add(lang);
+				} else {
+					String langCode = (String) langObj;
+					Language lang = new Language(
+							Aikuma.getLanguageCodeMap().get(langCode),
+							langCode);
+					languages.add(lang);
+				}
+				
 			}
 		}
 		return languages;

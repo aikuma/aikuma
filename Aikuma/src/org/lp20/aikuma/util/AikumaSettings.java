@@ -114,20 +114,23 @@ public class AikumaSettings {
 	 *  List of keys in each user's setting (SharedPreferences of emailAccount)
 	 *  
 	 *  APPROVED_RECORDING_KEY	: A set of recording's cloudID approved to be archived
-	 *  [archive-approved recording-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
+	 *  [upload/archive-approved recording-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
 	 *  DOWNLOAD_RECORDING_KEY	: A set of recording's cloudID to be downloaded from cloud
+	 *  UPLOAD_RECORDING_KEY	: A set of recording's cloudID to be uploaded
 	 *  [download-approved recording-cloudID] : <archive-state>
 	 *  ARCHIVED_RECORDING_KEY	: A set of recording IDs archived
 	 *  
 	 *  APPROVED_SPEAKERS_KEY	: A set of speaker's cloudID approved to be archived
-	 *  [archive-approved Speaker-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
+	 *  [upload/archive-approved Speaker-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
 	 *  DOWNLOAD_SPEAKERS_KEY	: A set of speaker's cloudID to be downloaded from cloud
+	 *  UPLOAD_SPEAKERS_KEY		: A set of speaker's cloudID to be uploaded
 	 *  [download-approved Speaker-cloudID] : <archive-state>
 	 *  ARCHIVED_SPEAKERS_KEY	: A set of speaker IDs archived
 	 *  
 	 *  APPROVED_OTHERS_KEY	: A set of other file's cloudID approved to be archived
-	 *  [archive-approved other-file-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
+	 *  [upload/archive-approved other-file-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
 	 *  DOWNLOAD_OTHERS_KEY : A set of other file's cloudID to be downloaded from cloud
+	 *  UPLOAD_OTHERS_KEY	: A set of other file's cloudID to be uploaded
 	 *  [download-approved other-file-cloudID]  : <archive-state>
 	 *  ARCHIVED_OTHERS_KEY	: A set of other files' IDs archived (transcript, mapping files)
 	 */
@@ -135,17 +138,23 @@ public class AikumaSettings {
 	/** */
 	public static final String DOWNLOAD_RECORDING_KEY = "downloadRecordings";
 	/** */
+	public static final String UPLOAD_RECORDING_KEY = "uploadRecordings";
+	/** */
 	public static final String ARCHIVED_RECORDING_KEY = "archivedRecordings";
 	/** */
 	public static final String APPROVED_SPEAKERS_KEY = "approvedSpeakers";
 	/** */
 	public static final String DOWNLOAD_SPEAKERS_KEY = "downloadSpeakers";
 	/** */
+	public static final String UPLOAD_SPEAKERS_KEY = "uploadSpeakers";
+	/** */
 	public static final String ARCHIVED_SPEAKERS_KEY = "archivedSpeakers";
 	/** */
 	public static final String APPROVED_OTHERS_KEY = "approvedOthers";
 	/** */
 	public static final String DOWNLOAD_OTHERS_KEY = "downloadOthers";
+	/** */
+	public static final String UPLOAD_OTHERS_KEY = "uploadOthers";
 	/** */
 	public static final String ARCHIVED_OTHERS_KEY = "archivedOthers";
 	

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lp20.aikuma2.R;
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
@@ -329,13 +330,22 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		Intent intent = new Intent(this, GoogleCloudService.class);
 		intent.putExtra(GoogleCloudService.ACTION_KEY, 
 				recording.getVersionName() + "-" + recording.getId());
-		intent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "recording");
+		intent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "archive");
 		intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
 				AikumaSettings.getCurrentUserId());
 		intent.putExtra(GoogleCloudService.TOKEN_KEY, 
 				AikumaSettings.getCurrentUserToken());
 		
 		startService(intent);
+		
+		// Disable the button instantly because it can take a while until archive is finished
+		if(recording.isOriginal()) {
+			originalQuickMenu.setItemEnabledAt(3, false);
+			originalQuickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
+		} else {
+			respeakingQuickMenu.setItemEnabledAt(3, false);
+			respeakingQuickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
+		}
 	}
 
 	private void updateStarButtons() {
@@ -379,7 +389,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 
 	private void updateArchiveButton(QuickActionMenu<Recording> quickMenu, 
 			Recording recording) {
-		if(recording.isArchived() || 
+		if(Aikuma.isArchived(AikumaSettings.getCurrentUserId(), recording) || 
 				!recording.getOwnerId().equals(AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(3, false);
 			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);

@@ -125,8 +125,9 @@ public class FileModel implements Parcelable {
 	
 	/**
 	 * Returns an identifier used in cloud-storage
-	 * @param option	0: file(small-image/recording), 1: metadata
-	 * @return	a relative-path of recording to 'aikuma/'
+	 * @param option	0: file(small-image/recording), 
+	 * 					1: metadata (return null if metadata doesn't exist)
+	 * @return	File's cloudId (a relative-path of recording to 'aikuma/')
 	 */
 	public String getCloudIdentifier(int option) {
 		if(option != 0 && option != 1)
@@ -199,10 +200,19 @@ public class FileModel implements Parcelable {
 		
 	}
 
+	/**
+	 * Get the file's type
+	 * TODO: 'respeaking' needs to be changed later to 'respeak'. 'comment','interpret' can be added later
+	 * @return	the File-type (source, respeaking, preview, speaker, mapping, transcript)
+	 */
 	public String getFileType() {
 		return fileType;
 	}
 	
+	/**
+	 * Get the file's format
+	 * @return	the File-format (wav, mp4, jpg, json, txt)
+	 */
 	public String getFormat() {
 		return format;
 	}

@@ -27,9 +27,7 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.storage.Data;
 import org.lp20.aikuma.storage.DataStore;
-import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.FusionIndex2;
-import org.lp20.aikuma.storage.GoogleAuth;
 import org.lp20.aikuma.storage.GoogleDriveStorage;
 import org.lp20.aikuma.storage.Index;
 import org.lp20.aikuma.storage.Utils;
@@ -78,26 +76,37 @@ public class GoogleCloudService extends IntentService{
 	
 	private final String approvalKey = AikumaSettings.APPROVED_RECORDING_KEY;
 	private final String downloadKey = AikumaSettings.DOWNLOAD_RECORDING_KEY;
+	private final String uploadKey = AikumaSettings.UPLOAD_RECORDING_KEY;
 	private final String archiveKey = AikumaSettings.ARCHIVED_RECORDING_KEY;
 	private final String approvalSpKey = AikumaSettings.APPROVED_SPEAKERS_KEY;
 	private final String downloadSpKey = AikumaSettings.DOWNLOAD_SPEAKERS_KEY;
+	private final String uploadSpKey = AikumaSettings.UPLOAD_SPEAKERS_KEY;
 	private final String archiveSpKey = AikumaSettings.ARCHIVED_SPEAKERS_KEY;
 	private final String approvalOtherKey = AikumaSettings.APPROVED_OTHERS_KEY;
 	private final String downloadOtherKey = AikumaSettings.DOWNLOAD_OTHERS_KEY;
+	private final String uploadOtherKey = AikumaSettings.UPLOAD_OTHERS_KEY;
 	private final String archiveOtherKey = AikumaSettings.ARCHIVED_OTHERS_KEY;
 	
 	private final String cloudIdFormat = "^v\\d{2}\\/\\S\\/\\S{2}\\/.+\\/.+\\/.+\\/.+$";
 	
+	// ApprovedSet: CloudIds of Files which will be uploaded 
+	// DownloadSet: CloudIds of Files which will be downloaded
+	// UploadedSet: CloudIds of Files which is uploaded to private GoogleDrive
+	// ArchivedSet:	CloudIds of Files which is archived to central GoogleDrive 
+	//									and belongs to the owner(googleEmailAccount)
 	private SharedPreferences preferences;
 	private Editor prefsEditor;
-	private Set<String> approvedRecordingSet;
+	private Set<String> approvedRecordingSet;	// Recording which has metadata file
 	private Set<String> downloadRecordingSet;
+	private Set<String> uploadedRecordingSet;
 	private Set<String> archivedRecordingSet;
 	private Set<String> approvedSpeakerSet;
 	private Set<String> downloadSpeakerSet;
+	private Set<String> uploadedSpeakerSet;
 	private Set<String> archivedSpeakerSet;
-	private Set<String> approvedOtherSet;	// Other items to be uploaded(transcript, mapping)
-	private Set<String> downloadOtherSet;	// Other items to be downloaded(transcript, mapping)
+	private Set<String> approvedOtherSet;	// Other items to be uploaded(transcript, preview, mapping)
+	private Set<String> downloadOtherSet;	// Other items to be downloaded(transcript, preview, mapping)
+	private Set<String> uploadedOtherSet;
 	private Set<String> archivedOtherSet;
 	
 	private boolean forceSync;
@@ -105,9 +114,10 @@ public class GoogleCloudService extends IntentService{
     private List<Speaker> speakers;
     private List<FileModel> others;
 	
-	private String googleEmailAccount;
+	private static String googleEmailAccount = "";
 	private String googleAuthToken;
 	private String googleIdToken;
+	private boolean initializeCache;
 	
 	private int numOfItemsToDownload = 0;
 	private boolean isNewRecording = false;
@@ -142,13 +152,16 @@ public class GoogleCloudService extends IntentService{
 		
 		forceSync = intent.getBooleanExtra("forceSync", false);
 		
-		Log.i(TAG, "device-connectivit: " + Aikuma.isDeviceOnline());
+		Log.i(TAG, "device-connectivity: " + Aikuma.isDeviceOnline());
 		// If this is triggered by (CloudSettingsActivity or BootReceiver),
 		// sync happens across all accounts.
 		for(String googleAccount : googleAccountList) {
 			Log.i(TAG, "intent-action: " + id + " using " + googleAccount);
 			
-			googleEmailAccount = googleAccount;
+			if(!googleEmailAccount.equals(googleAccount)) {
+				googleEmailAccount = googleAccount;
+				initializeCache = true;
+			}
 			
 			prepareSettings(googleEmailAccount);
 			
@@ -169,22 +182,25 @@ public class GoogleCloudService extends IntentService{
 			} else if(id.equals("autoDownload")) {
 				autoDownloadFiles();
 				validateToken();
-				// TODO: In the current state, metadata will not exist in GoogleDrive (needs to be changed later)
+				
 				List<String> itemCloudIdsToDownload = intent.getStringArrayListExtra("downloadItems");
 				if(itemCloudIdsToDownload != null) {
-					for(String itemId : itemCloudIdsToDownload) {
-						downloadOtherSet.add(itemId);
-					}
+					//downloadOtherSet.addAll(itemCloudIdsToDownload);
+					prepareUploadSet();
 				}
+				
 				retryDownload();
-			} else {					// Called when archive button is pressed (and token was already validated)
+			} else {			// Called when archive button is pressed or new-file is created
+								// (token was already validated)
 				String itemType = (String)
 						intent.getExtras().get("type");
 				// id : (version)-(file's ID)
-				if(itemType.equals("recording"))
-					archive(id, 0);
+				if(itemType.equals("archive"))
+					archive(id, 0, true);
+				else if(itemType.equals("recording"))
+					archive(id, 0, false);
 				else
-					archive(id, 1);
+					archive(id, 1, false);
 				
 				validateToken();
 				
@@ -214,6 +230,8 @@ public class GoogleCloudService extends IntentService{
 				preferences.getStringSet(approvalKey, new HashSet<String>());
 		downloadRecordingSet = (HashSet<String>)
 				preferences.getStringSet(downloadKey, new HashSet<String>());
+		uploadedRecordingSet = (HashSet<String>)
+				preferences.getStringSet(uploadKey, new HashSet<String>());
 		archivedRecordingSet = (HashSet<String>)
 				preferences.getStringSet(archiveKey, new HashSet<String>());
 		
@@ -221,6 +239,8 @@ public class GoogleCloudService extends IntentService{
 				preferences.getStringSet(approvalSpKey, new HashSet<String>());
 		downloadSpeakerSet = (HashSet<String>)
 				preferences.getStringSet(downloadSpKey, new HashSet<String>());
+		uploadedSpeakerSet = (HashSet<String>)
+				preferences.getStringSet(uploadSpKey, new HashSet<String>());
 		archivedSpeakerSet = (HashSet<String>)
 				preferences.getStringSet(archiveSpKey, new HashSet<String>());
 		
@@ -228,6 +248,8 @@ public class GoogleCloudService extends IntentService{
 				preferences.getStringSet(approvalOtherKey, new HashSet<String>());
 		downloadOtherSet = (HashSet<String>)
 				preferences.getStringSet(downloadOtherKey, new HashSet<String>());
+		uploadedOtherSet = (HashSet<String>)
+				preferences.getStringSet(uploadOtherKey, new HashSet<String>());
 		archivedOtherSet = (HashSet<String>)
 				preferences.getStringSet(archiveOtherKey, new HashSet<String>());
 		
@@ -245,60 +267,97 @@ public class GoogleCloudService extends IntentService{
 		}
 			
 		if(archivedRecordingSet.size() + archivedSpeakerSet.size() + archivedOtherSet.size() == 0 || forceSync) {
+			prepareUploadSet();
 			prepareArchiveSet();
 		}
 		
 		Log.i(TAG, "Cloud created(recording-approve):" + approvedRecordingSet.toString());
 		Log.i(TAG, "CLoud created(recording-download):" + downloadRecordingSet.toString());
+		Log.i(TAG, "CLoud created(recording-uploaded):" + uploadedRecordingSet.toString());
 		Log.i(TAG, "Cloud created(recording-archive):" + archivedRecordingSet.toString());
 		Log.i(TAG, "Cloud created(speaker-approve):" + approvedSpeakerSet.toString());
 		Log.i(TAG, "CLoud created(speaker-download):" + downloadSpeakerSet.toString());
+		Log.i(TAG, "CLoud created(speaker-uploaded):" + uploadedSpeakerSet.toString());
 		Log.i(TAG, "Cloud created(speaker-archive):" + archivedSpeakerSet.toString());
 		Log.i(TAG, "Cloud created(other-approve):" + approvedOtherSet.toString());
 		Log.i(TAG, "CLoud created(other-download):" + downloadOtherSet.toString());
+		Log.i(TAG, "CLoud created(other-uploaded):" + uploadedOtherSet.toString());
 		Log.i(TAG, "Cloud created(otherr-archive):" + archivedOtherSet.toString());
 	}
 	
-	private void prepareArchiveSet() {
+	private void prepareUploadSet() {
 		DataStore gd;
 		try {
 			gd = new GoogleDriveStorage(googleAuthToken, 
-					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID);
+					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID, initializeCache);
+			initializeCache = false;
 		} catch (DataStore.StorageException e) {
 			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
 			return;
 		}
 
-		Log.i(TAG, "Start investigating");
+		Log.i(TAG, "Start investigating private GoogleDrive: " + googleEmailAccount);
 		// Collect archived file-cloudIDs in GoogleCloud
-		// TODO: For the case when there are too many files in GoogleDrive, it might need to use FusionIndex
+		// For the case when there are too many files in GoogleDrive, gd.list uses a custom field
         gd.list(new GoogleDriveStorage.ListItemHandler() {
 			@Override
 			public boolean processItem(String identifier, Date date) {
-				// Classify identifiers and store them in different lists 
-				if(identifier.matches(cloudIdFormat)) {
-					String relPath = identifier.substring(0, identifier.lastIndexOf('/')-12);
-					if(!identifier.endsWith("json")) {
-						if(relPath.endsWith(Recording.PATH)) {
-							if(identifier.endsWith("txt") || identifier.endsWith(FileModel.SAMPLE_SUFFIX)) {
-								archivedOtherSet.add(identifier);
-							} else {
-								archivedRecordingSet.add(identifier);
-							}
-						} else if(relPath.endsWith(Speaker.PATH)){
-							archivedSpeakerSet.add(identifier);
-						}
-					}
-				}
+				// Classify identifiers and store them in different sets 
+				classifyFileCloudId(identifier, 
+						uploadedRecordingSet, uploadedSpeakerSet, uploadedOtherSet);
 				return true;
 			}
 		});
         
-        prefsEditor.putStringSet(archiveKey, archivedRecordingSet);
+        prefsEditor.putStringSet(uploadKey, uploadedRecordingSet);
+        prefsEditor.putStringSet(uploadSpKey, uploadedSpeakerSet);
+        prefsEditor.putStringSet(uploadOtherKey, uploadedOtherSet);
+        
+        prefsEditor.commit();
+	}
+	
+	private void prepareArchiveSet() {
+		Index fi;
+		fi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), 
+				googleIdToken, googleAuthToken);
+		Map<String, String> constraints = new HashMap<String, String>();
+		constraints.put("user_id", googleEmailAccount);
+		
+		Log.i(TAG, "Start investigating central storage: " + googleEmailAccount);
+		fi.search(constraints, new Index.SearchResultProcessor() {
+			@Override
+			public boolean process(Map<String, String> result) {
+				String identifier = result.get("identifier");
+				classifyFileCloudId(identifier, 
+						archivedRecordingSet, archivedSpeakerSet, archivedOtherSet);
+				
+				return true;
+			}
+		});
+		
+		prefsEditor.putStringSet(archiveKey, archivedRecordingSet);
         prefsEditor.putStringSet(archiveSpKey, archivedSpeakerSet);
         prefsEditor.putStringSet(archiveOtherKey, archivedOtherSet);
         
         prefsEditor.commit();
+	}
+	
+	private void classifyFileCloudId(String identifier, 
+			Set<String> recordingSet, Set<String> speakerSet, Set<String> otherSet) {
+		if(identifier.matches(cloudIdFormat)) {
+			String relPath = identifier.substring(0, identifier.lastIndexOf('/')-12);
+			if(!identifier.endsWith("json")) {
+				if(relPath.endsWith(Recording.PATH)) {
+					if(identifier.endsWith("txt") || identifier.endsWith(FileModel.SAMPLE_SUFFIX)) {
+						otherSet.add(identifier);
+					} else {
+						recordingSet.add(identifier);
+					}
+				} else if(relPath.endsWith(Speaker.PATH)){
+					speakerSet.add(identifier);
+				}
+			}
+		}
 	}
 	
 	private void collectItemsInDevice() {
@@ -332,9 +391,9 @@ public class GoogleCloudService extends IntentService{
         collectItemsInDevice();
         
         // 2. Filtering
-        logFileInDownloadSet(archivedRecordingSet, false, downloadKey, downloadRecordingSet, recordings);
-        logFileInDownloadSet(archivedSpeakerSet, false, downloadSpKey, downloadSpeakerSet, speakers);
-        logFileInDownloadSet(archivedOtherSet, true, downloadOtherKey, downloadOtherSet, others);
+        logFileInDownloadSet(uploadedRecordingSet, false, downloadKey, downloadRecordingSet, recordings);
+        logFileInDownloadSet(uploadedSpeakerSet, false, downloadSpKey, downloadSpeakerSet, speakers);
+        logFileInDownloadSet(uploadedOtherSet, true, downloadOtherKey, downloadOtherSet, others);
         
         numOfItemsToDownload = downloadRecordingSet.size();
         
@@ -348,22 +407,24 @@ public class GoogleCloudService extends IntentService{
 		DataStore gd;
 		try {
 			gd = new GoogleDriveStorage(googleAuthToken, 
-					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID);
+					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID, initializeCache);
+			initializeCache = false;
 		} catch (DataStore.StorageException e) {
 			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
 			return;
 		}
 		
-		retryDownload(gd, 1, downloadOtherKey, downloadOtherSet);
-        retryDownload(gd, 0, downloadSpKey, downloadSpeakerSet);
-        retryDownload(gd, 0, downloadKey, downloadRecordingSet);
+		retryDownload(gd, 2, downloadOtherKey, downloadOtherSet, uploadOtherKey, uploadedOtherSet);
+        retryDownload(gd, 0, downloadSpKey, downloadSpeakerSet, uploadSpKey, uploadedSpeakerSet);
+        retryDownload(gd, 0, downloadKey, downloadRecordingSet, uploadKey, uploadedRecordingSet);
         
         if(numOfItemsToDownload - downloadRecordingSet.size() > 0) {
         	isNewRecording = true;
         }
 	}
 	
-	private void retryDownload(DataStore gd, int state, String dlKey, Set<String> downloadSet) {
+	private void retryDownload(DataStore gd, int state, 
+			String dlKey, Set<String> downloadSet, String upKey, Set<String> uploadedSet) {
 		Set<String> itemIdentifiers = new HashSet<String>(downloadSet);
 		
 		for(String itemIdentifier : itemIdentifiers) {
@@ -378,26 +439,28 @@ public class GoogleCloudService extends IntentService{
 			try {
 				switch(state) {
 				case 0:
-					InputStream metaIs = gd.load(item.getCloudIdentifier(1));
-					FileOutputStream metaFos = 
-							new FileOutputStream(new File(dir, item.getMetadataIdExt()));
-					if(metaIs == null || metaFos == null)
-						break;
-					Utils.copyStream(metaIs, metaFos, true);
-				case 1:
+				case 2:
 					InputStream is = gd.load(itemIdentifier);
 					FileOutputStream fos = 
 							new FileOutputStream(new File(dir, item.getIdExt()));
 					if(is == null || fos == null)
 						break;
 					Utils.copyStream(is, fos, true);
-				
-					downloadSet.remove(itemIdentifier);
-					prefsEditor.putStringSet(dlKey, downloadSet);
-					prefsEditor.commit();
-					
-					broadcastStatus(item.getVersionName() + "-" + item.getId());
+					if(state == 2)
+						break;
+				case 1:
+					InputStream metaIs = gd.load(item.getCloudIdentifier(1));
+					FileOutputStream metaFos = 
+							new FileOutputStream(new File(dir, item.getMetadataIdExt()));
+					if(metaIs == null || metaFos == null)
+						break;
+					Utils.copyStream(metaIs, metaFos, true);
 				}
+				downloadSet.remove(itemIdentifier);
+				prefsEditor.putStringSet(dlKey, downloadSet);
+				prefsEditor.commit();
+				
+				broadcastStatus(item.getVersionName() + "-" + item.getId());
 			} catch (FileNotFoundException e) {
         		Log.e(TAG, "no-found:" + e.getMessage());
         	} catch (IOException e) {
@@ -415,9 +478,12 @@ public class GoogleCloudService extends IntentService{
 	private void backUp() {
 		collectItemsInDevice();
 
-		logFileInApprovalSet(recordings, false, approvalKey, approvedRecordingSet, archivedRecordingSet);
-		logFileInApprovalSet(speakers, false, approvalSpKey, approvedSpeakerSet, archivedSpeakerSet);
-		logFileInApprovalSet(others, true, approvalOtherKey, approvedOtherSet, archivedOtherSet);
+		logFileInApprovalSet(recordings, false, false, approvalKey, approvedRecordingSet, 
+				uploadedRecordingSet, uploadedRecordingSet);
+		logFileInApprovalSet(speakers, false, false, approvalSpKey, approvedSpeakerSet, 
+				uploadedSpeakerSet, uploadedSpeakerSet);
+		logFileInApprovalSet(others, true, false, approvalOtherKey, approvedOtherSet, 
+				uploadedOtherSet, uploadedOtherSet);
 		
 		prefsEditor.commit();
 	}
@@ -431,31 +497,31 @@ public class GoogleCloudService extends IntentService{
 		DataStore gd;
 		try {
 			gd = new GoogleDriveStorage(googleAuthToken, 
-					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID);
+					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID, initializeCache);
+			initializeCache = false;
 		} catch (DataStore.StorageException e) {
 			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
 			return;
 		}
 		
 		Index fi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), googleIdToken, googleAuthToken);
-		//Index fi = new FusionIndex(googleAuthToken);
 		
 		// Others
 		retryBackup(gd, fi, approvalOtherKey, approvedOtherSet, 
-				archiveOtherKey, archivedOtherSet);
+				uploadOtherKey, uploadedOtherSet, archiveOtherKey, archivedOtherSet);
 
 		// Speakers
 		retryBackup(gd, fi, approvalSpKey, approvedSpeakerSet,
-				archiveSpKey, archivedSpeakerSet);
+				uploadSpKey, uploadedSpeakerSet, archiveSpKey, archivedSpeakerSet);
 		
 		// Recordings
 		retryBackup(gd, fi, approvalKey, approvedRecordingSet, 
-				archiveKey, archivedRecordingSet);
+				uploadKey, uploadedRecordingSet, archiveKey, archivedRecordingSet);
 		
 	}
 	
-	private void retryBackup(DataStore gd, Index fi, 
-			String apKey, Set<String> approvedSet, String arKey, Set<String> archivedSet) {
+	private void retryBackup(DataStore gd, Index fi, String apKey, Set<String> approvedSet, 
+			String upKey, Set<String> uploadedSet, String arKey, Set<String> archivedSet) {
 		Set<String> itemIdentifiers = new HashSet<String>(approvedSet);
 
 		for(String itemIdentifier : itemIdentifiers) {
@@ -470,13 +536,19 @@ public class GoogleCloudService extends IntentService{
 				int archiveProgress = 
 						Integer.parseInt(requestArchiveState[1]);
 				
+				if(archiveProgress != 2 && uploadedSet.contains(itemIdentifier)) {
+					updateApprovalArchiveSet(itemIdentifier, 
+							apKey, approvedSet, upKey, uploadedSet);
+					return;
+				}
+				
 				String uri = null;
 				if (requestArchiveState.length >= 3 && requestArchiveState[2].length() > 0)
 					uri = requestArchiveState[2];
 					
 				try {
 					startArchiving(gd, fi, item, requestDate, uri, archiveProgress,
-							apKey, approvedSet, arKey, archivedSet);
+							apKey, approvedSet, upKey, uploadedSet, arKey, archivedSet);
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage());
 				}
@@ -489,13 +561,13 @@ public class GoogleCloudService extends IntentService{
 	}
 	
 	/**
-	 * Log the recording/speaker-item of id to be uploaded
+	 * Log the recording/speaker-item of id to be uploaded or archived
 	 * 
 	 * @param verId	Version and ID of the recording item
 	 * @param type	Type of the item(0: recording, 1: speaker)
+	 * @param isArchive	(true: archive, false: upload) recording-related files
 	 */
-	private void archive(String verId, int type) {
-		
+	private void archive(String verId, int type, boolean isArchive) {
 		String[] splitName = verId.split("-");
 		
 		String versionName = splitName[0];
@@ -523,14 +595,23 @@ public class GoogleCloudService extends IntentService{
 					other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 							recording.getMapId(), "other", "txt"));
 				}
-			
-				logFileInApprovalSet(oneRecording, false, 
-						approvalKey, approvedRecordingSet, archivedRecordingSet);
-				logFileInApprovalSet(recordingSpeakers, false, 
-						approvalSpKey, approvedSpeakerSet, archivedSpeakerSet);
-				logFileInApprovalSet(other, true, 
-						approvalOtherKey, approvedOtherSet, archivedOtherSet);
-			
+				
+				if(isArchive) {
+					logFileToArchive(oneRecording, approvalKey, approvedRecordingSet, 
+							uploadKey, uploadedRecordingSet, archivedRecordingSet);
+					logFileToArchive(recordingSpeakers, approvalSpKey, approvedSpeakerSet, 
+							uploadSpKey, uploadedSpeakerSet, archivedSpeakerSet);
+					logFileToArchive(other, approvalOtherKey, approvedOtherSet, 
+							uploadOtherKey, uploadedOtherSet, archivedOtherSet);
+				} else {
+					logFileInApprovalSet(oneRecording, false, false,
+							approvalKey, approvedRecordingSet, uploadedRecordingSet, uploadedRecordingSet);
+					logFileInApprovalSet(recordingSpeakers, false, false,
+							approvalSpKey, approvedSpeakerSet, uploadedSpeakerSet, uploadedSpeakerSet);
+					logFileInApprovalSet(other, true, false,
+							approvalOtherKey, approvedOtherSet, uploadedOtherSet, uploadedOtherSet);
+				}
+
 			} else {	// Speaker
 				String id = splitName[1];
 				
@@ -538,14 +619,15 @@ public class GoogleCloudService extends IntentService{
 				List<Speaker> speakers = new ArrayList<Speaker>();
 				speakers.add(speaker);
 				
-				logFileInApprovalSet(speakers, false, approvalSpKey, approvedSpeakerSet, archivedSpeakerSet);
+				logFileInApprovalSet(speakers, false, false, approvalSpKey, approvedSpeakerSet, 
+						uploadedSpeakerSet, uploadedSpeakerSet);
 			}
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			Log.e(TAG, "archive failed: " + verId);
 		}
-		
+
 		prefsEditor.commit();
 	}
 	
@@ -573,30 +655,29 @@ public class GoogleCloudService extends IntentService{
 	
 	/**
 	 *  Log the file approved to be uploaded
-	 *  MyFile						(Recording, Speaker) : 0(file-upload) -> 1(metadata upload) -> 2(indexing in FusionTable)
-	 *  MyFile(others)	  (mapping, transcript, preview) : 3(file-upload)                       -> 2(indexing in FusionTable)
-	 *  Other-owner's file			(Recording, Speaker) : 4(file-upload) -> 5(metadata upload)
+	 *  MyFile			   (Source, Respeaking, Speaker) : 4(file-upload) -> 5(metadata upload)
+	 *  							can be changed to 	   0(file-upload) -> 1(metadata upload)  -> 2(indexing in FusionTable)
+	 *  MyFile(others)	  (mapping, transcript, preview) : 6(file-upload)
+	 *  							can be changed to	   3(file-upload)                        -> 2(indexing in FusionTable)
+	 *  Other-owner's file (Source, Respeaking, Speaker) : 4(file-upload) -> 5(metadata upload)
 	 *  Other-owner's file(mapping, transcript, preview) : 6(file-upload)
 	 */
-	private void logFileInApprovalSet(List<? extends FileModel> items, boolean isOtherType,
-			String apKey, Set<String> approvedSet, Set<String> archivedSet) {
+	private void logFileInApprovalSet(List<? extends FileModel> items, boolean isOtherType, boolean isArchive,
+			String apKey, Set<String> approvedSet, Set<String> uploadedSet, Set<String> archivedSet) {
 		String requestDate = new StandardDateFormat().
 				format(new Date()).toString();
 		String archiveState;
 		
 		for(FileModel item : items) {
 			String identifier = item.getCloudIdentifier(0);
-			if(!archivedSet.contains(identifier) && !approvedSet.contains(identifier)) {
+			if(!archivedSet.contains(identifier) && !approvedSet.contains(identifier) &&
+					(!isArchive || uploadedSet.contains(identifier))) {
 				approvedSet.add(identifier);
 				
-				String ownerId = item.getOwnerId();
-				if(ownerId.equals(googleEmailAccount)) {
-					if(isOtherType) {
-						archiveState = (requestDate + "|3");
-					} else {
-						archiveState = (requestDate + "|0");
-					}
-					
+//				String ownerId = item.getOwnerId();
+				
+				if(isArchive) {
+					archiveState = (requestDate + "|2");
 				} else {
 					if(isOtherType) {
 						archiveState = (requestDate + "|6");
@@ -612,6 +693,80 @@ public class GoogleCloudService extends IntentService{
 		prefsEditor.putStringSet(apKey, approvedSet);
 	}
 	
+	private void logFileToArchive(List<? extends FileModel> items, String apKey, Set<String> approvedSet, 
+			String upKey, Set<String> uploadedSet, Set<String> archivedSet) {
+		for(FileModel fm : items) {
+			changeState(fm.getCloudIdentifier(0), apKey, approvedSet, 
+					upKey, uploadedSet, archivedSet);
+		}
+	}
+
+	/**
+	 * Check the file state and change the state to make it be archived
+	 * 								  				  State-change
+	 * Approved (file, metadata)					: 4 -> 0
+	 *  		(file)								: 6 -> 3
+	 * Partially uploaded (metadata not uploaded)	: 5 -> 1
+	 * Fully Uploaded								: 2 (new state added)
+	 */
+	private void changeState(String itemCloudId, String apKey, Set<String> approvedSet, 
+			String upKey, Set<String> uploadedSet, Set<String> archivedSet) {
+		Log.i(TAG, "changeState(state, approved, uploaded, archived): " + 
+			itemCloudId + "(" + preferences.getString(itemCloudId, "NULL") + ", " + 
+			approvedSet.contains(itemCloudId) + ", " + uploadedSet.contains(itemCloudId) + ", " + 
+			archivedSet.contains(itemCloudId) + ")");
+		
+		if(archivedSet.contains(itemCloudId))
+			return;
+		
+		if(uploadedSet.contains(itemCloudId)) {
+			if(approvedSet.contains(itemCloudId))
+				return;
+			
+			FileModel fm = FileModel.fromCloudId(itemCloudId);
+			List<FileModel> items = new ArrayList<FileModel>();
+			items.add(fm);
+			
+			String fileType = fm.getFileType();
+			
+			if(fileType.equals("speaker") || fileType.equals("source") || 
+					fileType.equals("respeaking")) {
+				logFileInApprovalSet(items, false, true, apKey, approvedSet, uploadedSet, archivedSet);
+			} else {
+				logFileInApprovalSet(items, true, true, apKey, approvedSet, uploadedSet, archivedSet);
+			}
+		
+		} else {
+			if(approvedSet.contains(itemCloudId)) {
+				String itemArchiveState = preferences.getString(itemCloudId, "");
+				
+				String[] requestArchiveState = itemArchiveState.split("\\|");
+				String requestDate = requestArchiveState[0];
+				int archiveProgress = 
+						Integer.parseInt(requestArchiveState[1]);
+				
+				String uri = "";
+				if (requestArchiveState.length >= 3 && requestArchiveState[2].length() > 0)
+					uri = requestArchiveState[2];
+				
+				switch(archiveProgress) {
+				case 4:
+					itemArchiveState = (requestDate + "|0");
+					break;
+				case 5:
+					itemArchiveState = (requestDate + "|1|" + uri);
+					break;
+				case 6:
+					itemArchiveState = (requestDate + "|3");
+					break;
+				}
+				// Overwrite the old state with a new state
+				prefsEditor.putString(itemCloudId, itemArchiveState);
+			} else {
+				// This will not happen because all items are uploaded to private GoogleDrive
+			}
+		}
+	}
 	
 	// If the recording/speaker-item archiving is finished, update the Approval/Archive Set
 	private void updateApprovalArchiveSet(String itemCloudId,
@@ -638,7 +793,8 @@ public class GoogleCloudService extends IntentService{
 	 */
 	
 	private void startArchiving(DataStore gd, Index fi, FileModel item, String requestDate, String uri, int state,
-			String apKey, Set<String> approvedSet, String arKey, Set<String> archivedSet) throws IOException {
+			String apKey, Set<String> approvedSet, String upKey, Set<String> uploadedSet, 
+			String arKey, Set<String> archivedSet) throws IOException {
 		String identifier = item.getCloudIdentifier(0);	// path + id + [.wav|.mp4|-small-image.jpg|.txt]
 		String itemArchiveState;
 		File itemFile;
@@ -685,11 +841,13 @@ public class GoogleCloudService extends IntentService{
 				
 				if(state == 1) {
 					itemArchiveState = (requestDate + "|2|" + uri);
+					uploadedSet.add(identifier);
 					prefsEditor.putString(identifier, itemArchiveState);
+					prefsEditor.putStringSet(upKey, uploadedSet);
 					prefsEditor.commit();
 				} else {
 					updateApprovalArchiveSet(identifier, 
-							apKey, approvedSet, arKey, archivedSet);
+							apKey, approvedSet, upKey, uploadedSet);
 					return;
 				}
 			}	
@@ -698,7 +856,6 @@ public class GoogleCloudService extends IntentService{
 				uploadMetadata(fi, gd, item, identifier, requestDate, uri);
 			if(uploadDate == null) return;
 			
-			//recording.archive(uploadDate.toString(), uri);
 			updateApprovalArchiveSet(identifier,
 					apKey, approvedSet, arKey, archivedSet);
 			return;
@@ -735,6 +892,9 @@ public class GoogleCloudService extends IntentService{
 		if (emailAddr == null) {
 			Log.e(TAG, "itemOwnerAccount is null");
 			return null;
+		}
+		if (uri == null) {
+			uri = "";
 		}
 		
 		File metadataFile = item.getFile(1);
@@ -800,11 +960,14 @@ public class GoogleCloudService extends IntentService{
 			metadata.put("tags", suffix);
 		}	
 		
-		boolean isShared = gd.share(identifier);
+		boolean isSharedFile = gd.share(identifier);
+		boolean isSharedMetaFile = 
+				(metadataFile == null) || gd.share(item.getCloudIdentifier(1));
+
 		boolean isIndexed = fi.index(identifier, metadata);
-		Log.i(TAG, "(" + isShared +", " + isIndexed + "): " + metadata.toString());
+		Log.i(TAG, "(" + isSharedFile +", " + isSharedMetaFile +", " + isIndexed + "): " + metadata.toString());
 		
-		if (isShared && isIndexed) {
+		if (isSharedFile && isSharedMetaFile && isIndexed) {
 			Log.i(TAG, "Metadata-upload success");
 			return uploadDate;
 		}

@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
@@ -385,13 +386,16 @@ public class ListenActivity extends AikumaActivity {
 		Intent intent = new Intent(this, GoogleCloudService.class);
 		intent.putExtra(GoogleCloudService.ACTION_KEY, 
 				recording.getVersionName() + "-" + recording.getId());
-		intent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "recording");
+		intent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "archive");
 		intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
 				AikumaSettings.getCurrentUserId());
 		intent.putExtra(GoogleCloudService.TOKEN_KEY, 
 				AikumaSettings.getCurrentUserToken());
 		
 		startService(intent);
+		// Disable the button instantly because it can take a while until archive is finished
+		quickMenu.setItemEnabledAt(3, false);
+		quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
 	}
 	
 	private void updateStarButton() {
@@ -417,7 +421,7 @@ public class ListenActivity extends AikumaActivity {
 	}
 	
 	private void updateArchiveButton() {
-		if(recording.isArchived() || 
+		if(Aikuma.isArchived(AikumaSettings.getCurrentUserId(), recording) ||
 				!recording.getOwnerId().equals(AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(3, false);
 			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
