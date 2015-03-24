@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.json.simple.JSONValue;
 import org.lp20.aikuma.storage.*;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
 import static org.lp20.aikuma.storage.Utils.validateIndexMetadata;
 import org.lp20.aikuma.server.*;
 

@@ -1,8 +1,5 @@
 package org.lp20.aikuma.server;
 
-
-import org.lp20.aikuma.storage.GoogleAuth;
-
 import java.util.logging.Logger;
 
 /**

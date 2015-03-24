@@ -14,6 +14,8 @@ import org.json.simple.JSONValue;
 import org.lp20.aikuma.storage.Index;
 import org.lp20.aikuma.storage.FusionIndex;
 import org.lp20.aikuma.storage.InvalidAccessTokenException;
+import org.lp20.aikuma.storage.DataStore;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
 import static org.lp20.aikuma.storage.Utils.validateIndexMetadata;
 import org.lp20.aikuma.server.*;
 
@@ -28,12 +30,24 @@ public class IndexResource {
 
     private String table_id;
     private TokenManager tokenManager;
+    private UpdateNotifier updateNotifier;
 
     public IndexResource(@Context Application app) {
         //TODO: is there another way to do this?
         IndexServerApplication a = (IndexServerApplication) app;
         table_id =  (String) a.getProperty("table_id");
         tokenManager = a.tokenManager;
+
+        try {
+            GoogleDriveStorage gd = new GoogleDriveStorage(
+                    tokenManager.getAccessToken(),
+                    (String) a.getProperty("aikuma_root_id"),
+                    "");
+            updateNotifier = new UpdateNotifier(tokenManager, gd, a.gcmServer);
+        } catch (DataStore.StorageException e) {
+            log.warning("failed to initialize update notifier due to google drive storage error: " + e.getMessage());
+            updateNotifier = null;
+        }
 
         idx = new FusionIndex(tokenManager.getAccessToken());
         idx.setTableId(table_id);
@@ -113,6 +127,10 @@ public class IndexResource {
     @Path("{identifier: .+}")
     @RolesAllowed({"authenticatedUser"})
     public Response addItem(@PathParam("identifier") String identifier, MultivaluedMap<String, String> formParams) {
+        /* TODO: not ready for production
+        if (updateNotifier != null)
+            updateNotifier.processNewFile(identifier);
+        */
         try {
             return doAddItem(identifier, formParams);
         } catch (InvalidAccessTokenException e) {

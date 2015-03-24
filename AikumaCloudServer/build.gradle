@@ -1,0 +1,35 @@
+apply plugin: 'scala'
+apply plugin: 'application'
+
+group = 'org.lp20'
+jar.baseName = 'aikuma-cloud-server'
+mainClassName = 'org.lp20.aikuma.server.Main'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compile 'org.scala-lang:scala-library:2.11.1'
+    compile 'org.igniterealtime.smack:smack-core:4.0.7'
+    compile 'org.igniterealtime.smack:smack-tcp:4.0.7'
+    compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.10.1'
+    compile 'org.glassfish.jersey.ext:jersey-entity-filtering:2.10.1'
+    compile 'org.glassfish.jersey.media:jersey-media-moxy:2.10.1'
+    compile 'org.lp20:aikuma-cloud-storage:0.9.0'
+    compile 'io.jsonwebtoken:jjwt:0.3'
+    compile 'org.mapdb:mapdb:1.0.6'
+}
+
+sourceSets {
+    main {
+        scala {
+            srcDirs = ['src/main/java']
+        }
+        java {
+            srcDirs = []
+        }
+    }
+}
+
