@@ -539,8 +539,10 @@ public class CloudSearchActivity extends AikumaListActivity {
 
             	}
             } else {
-            	if(mSharedFileCloudIds.size() == 1) {
-            		//Aikuma.showAlertDialog(getApplicationContext(), "Error in getting a file");
+            	if(mSharedFileCloudIds.size() == 0) {
+            		Toast.makeText(CloudSearchActivity.this, 
+    						"Download failed", 
+    						Toast.LENGTH_LONG).show();
             	}
             	
             }
