@@ -449,8 +449,8 @@ public class Recording extends FileModel {
 		encodedRecording.put("source", this.sourceVerId);
 		if(latitude != null && longitude != null) {
 			JSONArray locationData = new JSONArray();
-			locationData.add(latitude+"");
-			locationData.add(longitude+"");
+			locationData.add(latitude);
+			locationData.add(longitude);
 			encodedRecording.put("location", locationData);
 		} else {
 			encodedRecording.put("location", null);
