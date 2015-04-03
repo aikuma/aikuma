@@ -17,13 +17,17 @@ import org.lp20.aikuma.storage.GoogleDriveStorage;
  */
 public class AikumaSettings {
 	/**
+	 * Test value
+	 */
+	public static boolean isProximityOn = false;
+	/**
 	 * Setting value for backup
 	 */
-	public static boolean isBackupEnabled;
+	public static boolean isBackupEnabled = true;
 	/**
 	 * Setting value for auto-download
 	 */
-	public static boolean isAutoDownloadEnabled;
+	public static boolean isAutoDownloadEnabled = true;
 	/**
 	 * Setting value for sync-only-over-wifi
 	 */
