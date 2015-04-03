@@ -6,6 +6,7 @@ package org.lp20.aikuma.ui;
 
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,6 +30,7 @@ public class AddSpeakerActivity1 extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.add_speaker1);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		//Lets method in superclass(AikumaAcitivity) know 
 		//to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
