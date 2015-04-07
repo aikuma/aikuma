@@ -21,7 +21,7 @@ Dependencies:
   * Google Play Service library (http://developer.android.com/google/play-services/setup.html)
   * JDK 6 (for the Android SDK)
   * Apache Ant (for the Android SDK)
-  * Gradle (to build aikuma-cloud-storage.jar)
+  * Gradle (2.3.6 recommended to build aikuma-cloud-storage.jar)
 
 Pre-installation steps:
   * Change the reference to Google Play Service library (http://developer.android.com/google/play-services/setup.html)
