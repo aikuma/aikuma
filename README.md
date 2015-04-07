@@ -29,7 +29,7 @@ Pre-installation steps:
     2. Copy the library-folder($ANDROID_HOME/extras/google/google_play_services/libproject/google-play-services_lib) to the location you want.
     2. Check the ID of Android_4.2.2_API. This can be checked using `android list target`.
     3. type in `android update lib-project --target <target_ID> --path <path_to_the_copied_google_play_services_lib>`
-    4. Change `../../workspace/google-play-services_lib` to <relative_path_to_google_play_services_lib> in Aikuma/project.properties
+    4. Change `../../workspace/google-play-services_lib` to \<relative_path_to_google_play_services_lib\> in Aikuma/project.properties
  
   * Build and move aikuma-cloud-storage library
     1. Install Gradle
