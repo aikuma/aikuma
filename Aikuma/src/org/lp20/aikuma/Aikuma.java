@@ -14,10 +14,17 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
+import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.io.IOException;
+
+import org.lp20.aikuma.model.FileModel;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
@@ -37,6 +44,7 @@ public class Aikuma extends android.app.Application {
 
 	private static Aikuma instance;
 	private static List<Language> languages;
+	private static Map<String, String> languageCodeMap;
 	private static SharedPreferences preferences;
 
 	/**
@@ -103,6 +111,50 @@ public class Aikuma extends android.app.Application {
     }
     
     /**
+     * Check if the file is already archived/in the progress of archiving or not
+     * 
+     * @param emailAccount	Owner account of the file
+     * @param fm			The file's model
+     * @return				boolean of the archive status
+     */
+    public static boolean isArchived(String emailAccount, FileModel fm) {
+    	String itemCloudId = fm.getCloudIdentifier(0);
+    	
+    	Set<String> approvedSet;
+    	Set<String> archivedSet;
+    	int archiveProgress = -1;
+    	
+    	SharedPreferences privatePreferences = 
+    			getContext().getSharedPreferences(emailAccount, MODE_PRIVATE);
+    	String fileType = fm.getFileType();
+    	if(fileType.equals("source") || fileType.equals("respeaking")) {
+    		approvedSet = (HashSet<String>) privatePreferences.getStringSet(
+    				AikumaSettings.APPROVED_RECORDING_KEY, new HashSet<String>());
+    		archivedSet = (HashSet<String>) privatePreferences.getStringSet(
+    				AikumaSettings.ARCHIVED_RECORDING_KEY, new HashSet<String>());
+		} else if(fileType.equals("speaker")) {
+			approvedSet = (HashSet<String>) privatePreferences.getStringSet(
+    				AikumaSettings.APPROVED_SPEAKERS_KEY, new HashSet<String>());
+			archivedSet = (HashSet<String>) privatePreferences.getStringSet(
+					AikumaSettings.ARCHIVED_SPEAKERS_KEY, new HashSet<String>());
+		} else {
+			approvedSet = (HashSet<String>) privatePreferences.getStringSet(
+    				AikumaSettings.APPROVED_OTHERS_KEY, new HashSet<String>());
+			archivedSet = (HashSet<String>) privatePreferences.getStringSet(
+					AikumaSettings.ARCHIVED_OTHERS_KEY, new HashSet<String>());
+		}
+    	
+    	if(approvedSet.contains(itemCloudId)) {
+    		String[] requestArchiveState = 
+					privatePreferences.getString(itemCloudId, "").split("\\|");
+			archiveProgress = 
+					Integer.parseInt(requestArchiveState[1]);
+    	}
+
+    	return archivedSet.contains(itemCloudId) || (archiveProgress >= 0 && archiveProgress <= 3);
+    }
+    
+    /**
      * Return an arraylist of available google-accounts in a device
      * @return	ArrayList of google-accounts
      */
@@ -142,17 +194,38 @@ public class Aikuma extends android.app.Application {
 		}
 		return languages;
 	}
+	
+	/**
+	 * Returns the ISO 639-3 language map (code - name)
+	 * 
+	 * @return	the languageCodeMap
+	 */
+	public static Map<String, String> getLanguageCodeMap() {
+		if (languageCodeMap == null) {
+			loadLanguages();
+			while (languageCodeMap == null) {
+				//Wait patiently
+			}
+		}
+		return languageCodeMap;
+	}
+	
+	
 
 	/**
 	 * Loads the ISO 639-3 languages.
 	 */
 	public static void loadLanguages() {
 		if (languages == null) {
+			languages = new ArrayList<Language>();
+			languageCodeMap = new HashMap<String, String>();
+			
 			if (loadLangCodesThread == null || !loadLangCodesThread.isAlive()) {
 				loadLangCodesThread = new Thread(new Runnable() {
 					public void run() {
 						try {
-							languages = FileIO.readLangCodes(getContext().getResources());
+							FileIO.readLangCodes(getContext().getResources(), 
+									languages, languageCodeMap);
 						} catch (IOException e) {
 							// This should never happen.
 							throw new RuntimeException("Cannot load languages");

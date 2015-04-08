@@ -17,13 +17,17 @@ import org.lp20.aikuma.storage.GoogleDriveStorage;
  */
 public class AikumaSettings {
 	/**
+	 * Test value
+	 */
+	public static boolean isProximityOn = false;
+	/**
 	 * Setting value for backup
 	 */
-	public static boolean isBackupEnabled;
+	public static boolean isBackupEnabled = true;
 	/**
 	 * Setting value for auto-download
 	 */
-	public static boolean isAutoDownloadEnabled;
+	public static boolean isAutoDownloadEnabled = true;
 	/**
 	 * Setting value for sync-only-over-wifi
 	 */
@@ -34,9 +38,17 @@ public class AikumaSettings {
 	// Current default owner_auth_token(== default Google API access_token)
 	private static String DEFAULT_USER_AUTH_TOKEN = null;
 	private static String DEFAULT_USER_ID_TOKEN = null;
-	private static String DEFAULT_INDEX_SERVER = "https://aikuma.info:445/index";
+	private static String DEFAULT_INDEX_SERVER = "https://aikuma.info:443/index";
 	private static String DEFAULT_INDEX_SERVER_CLIENT_ID = "530026557211-46brcqr1p4ltlru6j6duc0am14oh83ei.apps.googleusercontent.com";
-
+	/**
+	 * Account of central fusion table
+	 */
+	public static String CENTRAL_USER_ID = "lp20.org@gmail.com";
+	/**
+	 * Temporary ID for all root-folder (TODO: might be changed depending on project folder structures)
+	 */
+	public static String ROOT_FOLDER_ID = "asdf";
+	
 	private static int numOfUsers;
 	private static int numOfSpeakers;
 	private static int numOfItems;
@@ -80,6 +92,12 @@ public class AikumaSettings {
 	public static final long SYNC_INTERVAL = 30 * 60 * 1000;
 	
 	/**
+	 * Extra audio recording duration after a thumb is lifted or head becomes far away
+	 */
+	public static final int EXTRA_AUDIO_DURATION = 250;
+	
+	
+	/**
 	 * 	List of keys in default setting (application default SharedPreferences)
 	 * 
 	 *  BACKUP_MODE_KEY			: true/false
@@ -100,20 +118,23 @@ public class AikumaSettings {
 	 *  List of keys in each user's setting (SharedPreferences of emailAccount)
 	 *  
 	 *  APPROVED_RECORDING_KEY	: A set of recording's cloudID approved to be archived
-	 *  [archive-approved recording-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
+	 *  [upload/archive-approved recording-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
 	 *  DOWNLOAD_RECORDING_KEY	: A set of recording's cloudID to be downloaded from cloud
+	 *  UPLOAD_RECORDING_KEY	: A set of recording's cloudID to be uploaded
 	 *  [download-approved recording-cloudID] : <archive-state>
 	 *  ARCHIVED_RECORDING_KEY	: A set of recording IDs archived
 	 *  
 	 *  APPROVED_SPEAKERS_KEY	: A set of speaker's cloudID approved to be archived
-	 *  [archive-approved Speaker-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
+	 *  [upload/archive-approved Speaker-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
 	 *  DOWNLOAD_SPEAKERS_KEY	: A set of speaker's cloudID to be downloaded from cloud
+	 *  UPLOAD_SPEAKERS_KEY		: A set of speaker's cloudID to be uploaded
 	 *  [download-approved Speaker-cloudID] : <archive-state>
 	 *  ARCHIVED_SPEAKERS_KEY	: A set of speaker IDs archived
 	 *  
 	 *  APPROVED_OTHERS_KEY	: A set of other file's cloudID approved to be archived
-	 *  [archive-approved other-file-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
+	 *  [upload/archive-approved other-file-cloudID]	: <Approved-date>|<archive-state>|<data-store-uri>
 	 *  DOWNLOAD_OTHERS_KEY : A set of other file's cloudID to be downloaded from cloud
+	 *  UPLOAD_OTHERS_KEY	: A set of other file's cloudID to be uploaded
 	 *  [download-approved other-file-cloudID]  : <archive-state>
 	 *  ARCHIVED_OTHERS_KEY	: A set of other files' IDs archived (transcript, mapping files)
 	 */
@@ -121,17 +142,23 @@ public class AikumaSettings {
 	/** */
 	public static final String DOWNLOAD_RECORDING_KEY = "downloadRecordings";
 	/** */
+	public static final String UPLOAD_RECORDING_KEY = "uploadRecordings";
+	/** */
 	public static final String ARCHIVED_RECORDING_KEY = "archivedRecordings";
 	/** */
 	public static final String APPROVED_SPEAKERS_KEY = "approvedSpeakers";
 	/** */
 	public static final String DOWNLOAD_SPEAKERS_KEY = "downloadSpeakers";
 	/** */
+	public static final String UPLOAD_SPEAKERS_KEY = "uploadSpeakers";
+	/** */
 	public static final String ARCHIVED_SPEAKERS_KEY = "archivedSpeakers";
 	/** */
 	public static final String APPROVED_OTHERS_KEY = "approvedOthers";
 	/** */
 	public static final String DOWNLOAD_OTHERS_KEY = "downloadOthers";
+	/** */
+	public static final String UPLOAD_OTHERS_KEY = "uploadOthers";
 	/** */
 	public static final String ARCHIVED_OTHERS_KEY = "archivedOthers";
 	
@@ -295,6 +322,7 @@ public class AikumaSettings {
 
 	/**
 	 * Set the URL of the index server.
+	 * @param url	URL of central index-server
 	 */
 	public static void setIndexServerUrl(String url) {
 	    DEFAULT_INDEX_SERVER = url;
@@ -319,6 +347,10 @@ public class AikumaSettings {
 		return scope;
     }
 
+    /**
+     * Return a scope for a client ID of web-application
+     * @return	The scope for the web-application(central index-server)
+     */
 	public static String getIdTokenScope() {
 	    return "audience:server:client_id:" + DEFAULT_INDEX_SERVER_CLIENT_ID;
 	}

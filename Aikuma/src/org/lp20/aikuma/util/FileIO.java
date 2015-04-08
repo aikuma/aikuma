@@ -216,22 +216,27 @@ public final class FileIO {
 	 *
 	 * @param	resources	resources so that the iso 639-3 text file can be
 	 * retrieved.
+	 * @param languages			[Output] a list of languages having names and corresponding codes
+	 * @param languageCodeMap	[Output] a map of a language code to its name
 	 * @throws	IOException	If there is an issue reading from the langcodes
 	 * file.
-	 * @return	a map from language names to their corresponding codes.
 	 */
-	public static List<Language> readLangCodes(Resources resources) throws IOException {
+	public static void readLangCodes(Resources resources, 
+			List<Language> languages, Map<String, String> languageCodeMap) throws IOException {
+		languages.clear();
+		languageCodeMap.clear();
+		
 		InputStream is = resources.openRawResource(R.raw.iso_639_3);
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(is, writer, Charsets.UTF_8);
 		String inputString = writer.toString();
-		List<Language> languages = new ArrayList<Language>();
-		String[] lines = inputString.split("\n");
+ 		String[] lines = inputString.split("\n");
 		for (int i = 1; i < lines.length; i++) {
 			String[] elements = lines[i].split("(?=\t)");
 			languages.add(new Language(elements[6].trim(), elements[0].trim()));
+			languageCodeMap.put(elements[0].trim(), elements[6].trim());
 		}
-		return languages;
+		return;
 	}
 
 	/**

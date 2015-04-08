@@ -26,6 +26,7 @@ import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma2.R;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
+import org.lp20.aikuma.util.AikumaSettings;
 
 /**
  * The activity that allows audio to be recorded
@@ -122,29 +123,35 @@ public class RecordActivity extends AikumaActivity {
 	public void onPause() {
 		super.onPause();
 		pause();
-		this.proximityDetector.stop();
+		
+		if(AikumaSettings.isProximityOn)
+			this.proximityDetector.stop();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		this.proximityDetector = new ProximityDetector(this) {
-			public void near(float distance) {
-				WindowManager.LayoutParams params = getWindow().getAttributes();
-				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
-				params.screenBrightness = 0;
-				getWindow().setAttributes(params);
-				//record();
-			}
-			public void far(float distance) {
-				WindowManager.LayoutParams params = getWindow().getAttributes();
-				params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
-				params.screenBrightness = 1;
-				getWindow().setAttributes(params);
-				//pause();
-			}
-		};
-		this.proximityDetector.start();
+		
+		if(AikumaSettings.isProximityOn) {
+			this.proximityDetector = new ProximityDetector(this) {
+				public void near(float distance) {
+					WindowManager.LayoutParams params = getWindow().getAttributes();
+					params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
+					params.screenBrightness = 0;
+					getWindow().setAttributes(params);
+					//record();
+				}
+				public void far(float distance) {
+					WindowManager.LayoutParams params = getWindow().getAttributes();
+					params.flags |= LayoutParams.FLAG_KEEP_SCREEN_ON;
+					params.screenBrightness = 1;
+					getWindow().setAttributes(params);
+					//pause();
+				}
+			};
+			this.proximityDetector.start();
+		}
+		
 		
 	}
 
@@ -253,7 +260,7 @@ public class RecordActivity extends AikumaActivity {
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {
-		if (proximityDetector.isNear()) {
+		if (AikumaSettings.isProximityOn && proximityDetector.isNear()) {
 			return false;
 		} else {
 			return super.dispatchTouchEvent(event);

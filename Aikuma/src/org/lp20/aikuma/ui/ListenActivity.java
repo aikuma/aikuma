@@ -26,10 +26,10 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
@@ -53,7 +53,6 @@ public class ListenActivity extends AikumaActivity {
 		setContentView(R.layout.listen);
 		menuBehaviour = new MenuBehaviour(this);
 		videoView = (VideoView) findViewById(R.id.videoView);
-		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		googleAuthToken = AikumaSettings.getCurrentUserToken();
 
@@ -180,7 +179,7 @@ public class ListenActivity extends AikumaActivity {
 	// Creates the quickMenu for the original recording 
 	//(quickMenu: star/flag/share/archive)
 	private void setUpQuickMenu() {
-		quickMenu = new QuickActionMenu(this);
+		quickMenu = new QuickActionMenu<Recording>(this);
 		
 		QuickActionItem starAct = new QuickActionItem("star", R.drawable.star);
 		QuickActionItem flagAct = new QuickActionItem("flag", R.drawable.flag);
@@ -199,9 +198,9 @@ public class ListenActivity extends AikumaActivity {
 		
 		
 		//setup the action item click listener
-		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener() {			
+		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener<Recording>() {			
 			@Override
-			public void onItemClick(int pos) {
+			public void onItemClick(int pos, Recording recording) {
 				
 				if (pos == 0) { //Add item selected
 					onStarButtonPressed(null);
@@ -387,13 +386,16 @@ public class ListenActivity extends AikumaActivity {
 		Intent intent = new Intent(this, GoogleCloudService.class);
 		intent.putExtra(GoogleCloudService.ACTION_KEY, 
 				recording.getVersionName() + "-" + recording.getId());
-		intent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "recording");
+		intent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "archive");
 		intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
 				AikumaSettings.getCurrentUserId());
 		intent.putExtra(GoogleCloudService.TOKEN_KEY, 
 				AikumaSettings.getCurrentUserToken());
 		
 		startService(intent);
+		// Disable the button instantly because it can take a while until archive is finished
+		quickMenu.setItemEnabledAt(3, false);
+		quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
 	}
 	
 	private void updateStarButton() {
@@ -419,7 +421,7 @@ public class ListenActivity extends AikumaActivity {
 	}
 	
 	private void updateArchiveButton() {
-		if(recording.isArchived() || 
+		if(Aikuma.isArchived(AikumaSettings.getCurrentUserId(), recording) ||
 				!recording.getOwnerId().equals(AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(3, false);
 			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
@@ -457,10 +459,9 @@ public class ListenActivity extends AikumaActivity {
 	private String ownerId;
 	private String versionName;
 	private MenuBehaviour menuBehaviour;
-	private SimpleDateFormat simpleDateFormat;
 	private ProximityDetector proximityDetector;
 	
-	private QuickActionMenu quickMenu;
+	private QuickActionMenu<Recording> quickMenu;
 	
 	private String googleAuthToken;
 	

@@ -31,6 +31,7 @@ import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.model.Segments;
 import org.lp20.aikuma.model.Segments.Segment;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
 
 /**
@@ -93,6 +94,15 @@ public class PhoneRespeakFragment extends Fragment {
 				*/
 			}
 			public void far(float distance) {
+				Log.i("PhoneRespeak", "sleep: " + System.currentTimeMillis());
+				try {
+					Thread.sleep(AikumaSettings.EXTRA_AUDIO_DURATION);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					Log.e("PhoneRespeak", "sleep");
+				}
+				Log.i("PhoneRespeak", "sleep: " + System.currentTimeMillis());
+				
 				haltRespeaking();
 				/*
 				if (respeaker.getSimplePlayer().isPlaying()) {

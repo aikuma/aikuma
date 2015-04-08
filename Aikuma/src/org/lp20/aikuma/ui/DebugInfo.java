@@ -25,7 +25,12 @@ import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
@@ -36,6 +41,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * UI for debugging/testing communication with cloud-backend
+ * 
+ * @author Haejoong 
+ *
+ */
 public class DebugInfo extends Activity {
     final String TAG = DebugInfo.class.getName();
 
@@ -132,6 +143,11 @@ public class DebugInfo extends Activity {
         };
     }
 
+    /**
+     * Obtain access token and id token.
+     *
+     * @param view	The calling view
+     */
     public void runAuth(View view) {
         new AsyncTask<Void, Void, String[]>() {
             protected String[] doInBackground(Void... params) {
@@ -142,18 +158,43 @@ public class DebugInfo extends Activity {
                 if (tokens == null)
                     Log.i(TAG, "failed");
                 else {
+                    final String[] toks = tokens;
                     mPref.edit()
                             .putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, tokens[0])
                             .putString("id_token", tokens[1])
                             .commit();
-                    mGd = new GoogleDriveStorage(tokens[0]);
-                    mFi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), tokens[1], tokens[0]);
-                    displayTokens();
+
+                    new AsyncTask<Void,Void,Void>() {
+                        @Override
+                        protected Void doInBackground(final Void ... params) {
+                            try {
+                                mGd = new GoogleDriveStorage(
+                                        AikumaSettings.getCurrentUserToken(),
+                                        AikumaSettings.ROOT_FOLDER_ID,
+                                        AikumaSettings.CENTRAL_USER_ID);
+                            } catch (DataStore.StorageException e) {
+            			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(final Void result) {
+                            mFi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), toks[1], toks[0]);
+                            displayTokens();
+                        }
+                    }.execute();
+
                 }
             }
         }.execute(null, null, null);
     }
 
+    /**
+     * Test GD.list() method.
+     *
+     * @param view The calling view
+     */
     public void listDocs(View view) {
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -176,6 +217,11 @@ public class DebugInfo extends Activity {
         }.execute(null, null, null);
     }
 
+    /**
+     * Test FI2.search() method.
+     *
+     * @param view The calling view
+     */
     public void listIDs(View view) {
         new AsyncTask<Void,Void,Void>() {
             @Override
@@ -199,7 +245,83 @@ public class DebugInfo extends Activity {
         }.execute();
     }
 
-    public void clearLog(View view) {
+    /**
+     * Test share API of the server.
+     *
+     * @param view	The calling view
+     */
+    public void requestShare(View view) {
+        new AsyncTask<Void,Void,Boolean>() {
+            final String identifier = ((TextView) findViewById(R.id.identifier)).getText().toString();
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                String email = AikumaSettings.getCurrentUserId();
+                try {
+                    URL base = new URL(AikumaSettings.getIndexServerUrl());
+                    String path = String.format("/file/%s/share/%s", identifier, email);
+                    URL url = new URL(base, path);
+                    Log.i(TAG, "share url: " + url.toString());
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    con.setRequestMethod("PUT");
+                    con.setDoOutput(false);
+                    con.addRequestProperty("X-Aikuma-Auth-Token", AikumaSettings.getCurrentUserIdToken());
+                    switch (con.getResponseCode()) {
+                        case 200:
+                            return true;
+                        case 404:
+                            return false;
+                        default:
+                            return false;
+                    }
+                } catch (MalformedURLException e) {
+                    Log.e(TAG, "malformed URL: " + e.getMessage());
+                    return false;
+                } catch (ProtocolException e) {
+                    Log.e(TAG, "protocol error: " + e.getMessage());
+                    return false;
+                } catch (IOException e) {
+                    Log.e(TAG, "io exception: " + e.getMessage());
+                    return false;
+                }
+            }
+            @Override
+            protected void onPostExecute(final Boolean result) {
+                if (result.booleanValue())
+                    appendText("ok\n");
+                else
+                    appendText("error\n");
+            }
+        }.execute();
+    }
+
+    /**
+     * Test index API of the server.
+     *
+     * @param view	The calling view
+     */
+    public void indexSample(View view) {
+        new AsyncTask<Void, Void, Boolean>() {
+            protected Boolean doInBackground(Void... params) {
+                String identifier = "test-identifier-remove-please";
+                Map<String,String> meta = new HashMap<String,String>();
+                meta.put("data_store_uri","n/a");
+                meta.put("item_id","n/a");
+                meta.put("file_type","n/a");
+                meta.put("languages", "eng");
+                meta.put("speakers", "n/a");
+                meta.put("user_id", "n/a");
+                return mFi.index(identifier, meta);
+            }
+            protected void onPostExecute(Boolean result) {
+                if (result == true)
+                    appendText("index ok\n");
+                else
+                    appendText("index failed\n");
+            }
+        }.execute(null, null, null);
+    }
+
+    private void clearLog(View view) {
         ((TextView) findViewById(R.id.txtGd)).setText("");
     }
 

@@ -1,11 +1,11 @@
 package org.lp20.aikuma.ui;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.lp20.aikuma2.R;
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
@@ -42,7 +42,6 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listen_respeaking);
 		menuBehaviour = new MenuBehaviour(this);
-		simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 		originalListenFragment = new ListenFragment();
 		respeakingListenFragment = new ListenFragment();
@@ -137,7 +136,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 			String ownerId, String originalId) {
 		try {
 			original = Recording.read(versionName, ownerId, originalId);
-			originalQuickMenu = new QuickActionMenu(this);
+			originalQuickMenu = new QuickActionMenu<Recording>(this);
 			setUpQuickMenu(originalQuickMenu, original);
 			List<Recording> originalBox = new ArrayList<Recording>();
 			originalBox.add(original);
@@ -166,7 +165,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 				break;
 			}
 		}
-		respeakingQuickMenu = new QuickActionMenu(this);
+		respeakingQuickMenu = new QuickActionMenu<Recording>(this);
 		setUpQuickMenu(respeakingQuickMenu, respeaking);
 		List<Recording> respeakingBox = new ArrayList<Recording>();
 		respeakingBox.add(respeaking);
@@ -179,7 +178,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	}
 	
 	// Prepares the quickMenu(star/flag/share/archive)
-	private void setUpQuickMenu(QuickActionMenu quickMenu, 
+	private void setUpQuickMenu(QuickActionMenu<Recording> quickMenu, 
 			final Recording recording){	
 		QuickActionItem starAct = new QuickActionItem("star", R.drawable.star);
 		QuickActionItem flagAct = new QuickActionItem("flag", R.drawable.flag);
@@ -196,9 +195,9 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		}
 		
 		//setup the action item click listener
-		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener() {			
+		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener<Recording>() {			
 			@Override
-			public void onItemClick(int pos) {
+			public void onItemClick(int pos, Recording recording) {
 				
 				if (pos == 0) { //Add item selected
 					onStarButtonPressed(recording);
@@ -331,13 +330,22 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		Intent intent = new Intent(this, GoogleCloudService.class);
 		intent.putExtra(GoogleCloudService.ACTION_KEY, 
 				recording.getVersionName() + "-" + recording.getId());
-		intent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "recording");
+		intent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "archive");
 		intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
 				AikumaSettings.getCurrentUserId());
 		intent.putExtra(GoogleCloudService.TOKEN_KEY, 
 				AikumaSettings.getCurrentUserToken());
 		
 		startService(intent);
+		
+		// Disable the button instantly because it can take a while until archive is finished
+		if(recording.isOriginal()) {
+			originalQuickMenu.setItemEnabledAt(3, false);
+			originalQuickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
+		} else {
+			respeakingQuickMenu.setItemEnabledAt(3, false);
+			respeakingQuickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
+		}
 	}
 
 	private void updateStarButtons() {
@@ -355,7 +363,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		updateArchiveButton(respeakingQuickMenu, respeaking);
 	}
 	
-	private void updateStarButton(QuickActionMenu quickMenu, 
+	private void updateStarButton(QuickActionMenu<Recording> quickMenu, 
 			Recording recording) {
 		if(recording.isStarredByThisPhone(AikumaSettings.getLatestVersion(), 
 				AikumaSettings.getCurrentUserId())) {
@@ -367,7 +375,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		}
 	}
 	
-	private void updateFlagButton(QuickActionMenu quickMenu, 
+	private void updateFlagButton(QuickActionMenu<Recording> quickMenu, 
 			Recording recording) {
 		if(recording.isFlaggedByThisPhone(AikumaSettings.getLatestVersion(), 
 				AikumaSettings.getCurrentUserId())) {
@@ -379,9 +387,9 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		}
 	}
 
-	private void updateArchiveButton(QuickActionMenu quickMenu, 
+	private void updateArchiveButton(QuickActionMenu<Recording> quickMenu, 
 			Recording recording) {
-		if(recording.isArchived() || 
+		if(Aikuma.isArchived(AikumaSettings.getCurrentUserId(), recording) || 
 				!recording.getOwnerId().equals(AikumaSettings.getCurrentUserId())) {
 			quickMenu.setItemEnabledAt(3, false);
 			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
@@ -418,12 +426,11 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	private ListenFragment originalListenFragment;
 	private ListenFragment respeakingListenFragment;
 	private MenuBehaviour menuBehaviour;
-	private SimpleDateFormat simpleDateFormat;
 	private ProximityDetector proximityDetector;
 	
 	
-	private QuickActionMenu originalQuickMenu;
-	private QuickActionMenu respeakingQuickMenu;
+	private QuickActionMenu<Recording> originalQuickMenu;
+	private QuickActionMenu<Recording> respeakingQuickMenu;
 	
 	private String googleAuthToken;
 }

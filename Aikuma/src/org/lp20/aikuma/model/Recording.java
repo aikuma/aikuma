@@ -237,6 +237,20 @@ public class Recording extends FileModel {
 	}
 	
 	/**
+	 * Returns a File that refers to the recording's preview file.
+	 *
+	 * @return	The preview(sample) file of the recording.
+	 */
+	public File getPreviewFile() {
+		File f = new File(getRecordingsPath(), getGroupId() + "/"
+				+ getPreviewId() + ".wav");
+		if(f.exists())
+			return f;
+		else
+			return null;
+	}
+	
+	/**
 	 * Returns a File that refers to the respeaking's mapping file.
 	 *
 	 * @return	The mapping file of the respeaking.
@@ -248,15 +262,20 @@ public class Recording extends FileModel {
 				id + MAPPING_SUFFIX);
 	}
 	
-	public String getTranscriptId() {
-		return (getGroupId() + "-" + getOwnerId() + "-" 
-					+ TRANSCRIPT_SUFFIX.substring(0, TRANSCRIPT_SUFFIX.lastIndexOf('.')));
-	}
 	
 	public String getMapId() {
 		return (id + MAPPING_SUFFIX.substring(0, MAPPING_SUFFIX.lastIndexOf('.')));
 	}
-
+	
+	public String getPreviewId() {
+		return (id + SAMPLE_SUFFIX.substring(0, SAMPLE_SUFFIX.lastIndexOf('.')));
+	}
+	
+	public String getTranscriptId() {
+		return (getGroupId() + "-" + getOwnerId() + 
+					TRANSCRIPT_SUFFIX.substring(0, TRANSCRIPT_SUFFIX.lastIndexOf('.')));
+	}
+	
 	/**
 	 * Returns an identifier used in cloud-storage
 	 * @return	a relative-path of recording to 'aikuma/'
@@ -430,8 +449,8 @@ public class Recording extends FileModel {
 		encodedRecording.put("source", this.sourceVerId);
 		if(latitude != null && longitude != null) {
 			JSONArray locationData = new JSONArray();
-			locationData.add(latitude+"");
-			locationData.add(longitude+"");
+			locationData.add(latitude);
+			locationData.add(longitude);
 			encodedRecording.put("location", locationData);
 		} else {
 			encodedRecording.put("location", null);
@@ -1417,6 +1436,9 @@ public class Recording extends FileModel {
 			}
 		});
 
+		if(transcriptFiles == null)
+			return null;
+		
 		// Take the first one
 		for (File transcriptFile : transcriptFiles) {
 			Log.i(TAG, "transcriptFile: " + transcriptFile);
