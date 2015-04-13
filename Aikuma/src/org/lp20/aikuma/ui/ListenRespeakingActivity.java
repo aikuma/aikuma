@@ -15,18 +15,27 @@ import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.util.AikumaSettings;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -191,7 +200,10 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		if(googleAuthToken != null) {
 			QuickActionItem archiveAct = 
 					new QuickActionItem("share", R.drawable.aikuma_32);
+			QuickActionItem privateShareAct =
+					new QuickActionItem("share", R.drawable.speakers_32g);
 			quickMenu.addActionItem(archiveAct);
+			quickMenu.addActionItem(privateShareAct);
 		}
 		
 		//setup the action item click listener
@@ -207,7 +219,9 @@ public class ListenRespeakingActivity extends AikumaActivity{
 					onShareButtonPressed(recording);
 				} else if (pos == 3) {
 					onArchiveButtonPressed(recording);
-				}	
+				} else if (pos == 4) {
+					onPrivateShareButtonPressed(recording);
+				}
 			}
 		});
 	}
@@ -313,7 +327,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	 * @param recording	Recording object which will be shared
 	 */
 	public void onShareButtonPressed(Recording recording) {
-		String urlToShare = "http://example.com/" + recording.getGroupId();
+		String urlToShare = "http://server/item/" + 
+				recording.getGroupId() + "#" + recording.getRespeakingId();
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_SEND);
 		intent.setType("text/plain");
@@ -346,6 +361,52 @@ public class ListenRespeakingActivity extends AikumaActivity{
 			respeakingQuickMenu.setItemEnabledAt(3, false);
 			respeakingQuickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
 		}
+	}
+	
+	public void onPrivateShareButtonPressed(Recording recording) {
+		final EditText emailInput = new EditText(this);
+		emailInput.setInputType(InputType.TYPE_CLASS_TEXT | 
+				InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
+		final String recId = recording.getId();
+		final AlertDialog dialog = new AlertDialog.Builder(this)
+				.setTitle("Private Share")
+				.setMessage("Share the recording with ")
+				.setView(emailInput)
+				.setPositiveButton("Share", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO: Share the recording
+						String msg = String.format("Share %s with %s", 
+								recId, emailInput.getText());
+						Toast.makeText(ListenRespeakingActivity.this, 
+								msg, Toast.LENGTH_LONG).show();
+					}
+				})
+				.setNegativeButton("Cancel", null)
+				.create();
+		
+		emailInput.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				if(!TextUtils.isEmpty(s) && 
+						android.util.Patterns.EMAIL_ADDRESS.matcher(s).matches()) {
+					dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(true);
+				} else {
+					dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
+				}
+			}
+		});
+		
+		dialog.show();
+		dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
 	}
 
 	private void updateStarButtons() {

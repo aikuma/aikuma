@@ -4,8 +4,15 @@
 */
 package org.lp20.aikuma.ui;
 
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,6 +26,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.MediaController;
@@ -193,7 +201,10 @@ public class ListenActivity extends AikumaActivity {
 		if(googleAuthToken != null) {
 			QuickActionItem archiveAct = 
 					new QuickActionItem("share", R.drawable.aikuma_32);
+			QuickActionItem privateShareAct =
+					new QuickActionItem("share", R.drawable.speakers_32g);
 			quickMenu.addActionItem(archiveAct);
+			quickMenu.addActionItem(privateShareAct);
 		}
 		
 		
@@ -210,6 +221,8 @@ public class ListenActivity extends AikumaActivity {
 					onShareButtonPressed(null);
 				} else if (pos == 3) {
 					onArchiveButtonPressed(null);
+				} else if (pos == 4) {
+					onPrivateShareButtonPressed(null);
 				}
 			}
 		});
@@ -369,7 +382,8 @@ public class ListenActivity extends AikumaActivity {
 	 * @param	view	The share button
 	 */
 	public void onShareButtonPressed(View view) {
-		String urlToShare = "http://example.com/" + recording.getGroupId();
+		String urlToShare = "http://server/item/" + 
+				recording.getGroupId() + "#" + recording.getRespeakingId();
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_SEND);
 		intent.setType("text/plain");
@@ -396,6 +410,51 @@ public class ListenActivity extends AikumaActivity {
 		// Disable the button instantly because it can take a while until archive is finished
 		quickMenu.setItemEnabledAt(3, false);
 		quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
+	}
+	
+	public void onPrivateShareButtonPressed(View view) {
+		final EditText emailInput = new EditText(this);
+		emailInput.setInputType(InputType.TYPE_CLASS_TEXT | 
+				InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
+		final AlertDialog dialog = new AlertDialog.Builder(this)
+				.setTitle("Private Share")
+				.setMessage("Share the recording with ")
+				.setView(emailInput)
+				.setPositiveButton("Share", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO: Share the recording
+						String msg = String.format("Share %s with %s", 
+								recording.getId(), emailInput.getText());
+						Toast.makeText(ListenActivity.this, 
+								msg, Toast.LENGTH_LONG).show();
+					}
+				})
+				.setNegativeButton("Cancel", null)
+				.create();
+		
+		emailInput.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				if(!TextUtils.isEmpty(s) && 
+						android.util.Patterns.EMAIL_ADDRESS.matcher(s).matches()) {
+					dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(true);
+				} else {
+					dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
+				}
+			}
+		});
+		
+		dialog.show();
+		dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
 	}
 	
 	private void updateStarButton() {
