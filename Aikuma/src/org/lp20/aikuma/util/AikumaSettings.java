@@ -17,10 +17,6 @@ import org.lp20.aikuma.storage.GoogleDriveStorage;
  */
 public class AikumaSettings {
 	/**
-	 * Test value
-	 */
-	public static boolean isProximityOn = false;
-	/**
 	 * Setting value for backup
 	 */
 	public static boolean isBackupEnabled = true;
