@@ -9,12 +9,15 @@
 	    android:layout_height="wrap_content"
 	    android:text="Automatic Google-cloud sync" />
 
-	<CheckBox
+    <!-- 
+    <CheckBox
 	    android:id="@+id/sync_checkBox"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:text="Enable Sync" 
 	    android:onClick="onSyncCheckBoxClicked" />
+     -->
+	
 	
 	<CheckBox
 	    android:id="@+id/wifi_checkBox"
@@ -22,7 +25,12 @@
 	    android:layout_height="wrap_content"
 	    android:text="Allow sync over cellular-networks" 
 	    android:onClick="onWifiCheckBoxClicked" />
-    
-    
+
+	<Button
+	    android:id="@+id/syncNowButton"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:text="@string/syncNow"
+		android:onClick="onSyncNowButton" />
 
 </LinearLayout>

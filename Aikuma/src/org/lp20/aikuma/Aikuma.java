@@ -6,15 +6,16 @@ package org.lp20.aikuma;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.io.IOException;
 
 import org.lp20.aikuma.model.FileModel;
 import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
 
@@ -153,6 +155,65 @@ public class Aikuma extends android.app.Application {
 
     	return archivedSet.contains(itemCloudId) || (archiveProgress >= 0 && archiveProgress <= 3);
     }
+    
+    /**
+	 * Sync the device with Google-Cloud
+	 * 
+	 * @param	activity	The activity which triggers sync
+	 * @param	forceSync	Force the cloud-sync
+	 */
+	public static void syncRefresh(Activity activity, boolean forceSync) {
+		if(forceSync) {
+			if(!Aikuma.isDeviceOnline()) {
+				Aikuma.showAlertDialog(activity, "Network needs to be connected");
+				return;
+			} else if(AikumaSettings.getCurrentUserToken() == null) {
+				Aikuma.showAlertDialog(activity, 
+						"You need to connect to Google-Drive with your account");
+				return;
+			} else {
+				Intent syncIntent = new Intent(activity, GoogleCloudService.class);
+				syncIntent.putExtra(GoogleCloudService.ACTION_KEY, "sync");
+				syncIntent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
+						AikumaSettings.getCurrentUserId());
+				syncIntent.putExtra(GoogleCloudService.TOKEN_KEY, 
+						AikumaSettings.getCurrentUserToken());
+				syncIntent.putExtra("forceSync", forceSync);
+				activity.startService(syncIntent);
+			}
+		} else {
+			SharedPreferences settings = activity.getSharedPreferences(
+					AikumaSettings.getCurrentUserId(), MODE_PRIVATE);
+	
+			int sz = 0;
+			sz += settings.getStringSet(AikumaSettings.APPROVED_RECORDING_KEY, 
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.APPROVED_SPEAKERS_KEY,
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.APPROVED_OTHERS_KEY,
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_RECORDING_KEY, 
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_SPEAKERS_KEY,
+					new HashSet<String>()).size();
+			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_OTHERS_KEY,
+					new HashSet<String>()).size();
+
+			if(sz > 0) {
+	    		// If there are items to be uploaded,
+				// start the GoogleCloud upload service 
+	    		Intent intent = new Intent(activity, 
+	    				GoogleCloudService.class);
+	    		intent.putExtra(GoogleCloudService.ACTION_KEY, "retry");
+	    		intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
+						AikumaSettings.getCurrentUserId());
+				intent.putExtra(GoogleCloudService.TOKEN_KEY, 
+						AikumaSettings.getCurrentUserToken());
+				activity.startService(intent);
+			}
+		}
+	}
+    
     
     /**
      * Return an arraylist of available google-accounts in a device

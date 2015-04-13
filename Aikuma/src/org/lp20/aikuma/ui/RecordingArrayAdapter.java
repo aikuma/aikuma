@@ -5,7 +5,6 @@
 package org.lp20.aikuma.ui;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma2.R;
@@ -223,23 +221,19 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 
 			@Override
 			protected FilterResults performFiltering(CharSequence constraint) {
-				// TODO Auto-generated method stub
-				constraint = constraint.toString().toLowerCase();
 				Filter.FilterResults results = new Filter.FilterResults();
 				
 				if(constraint == null || constraint.length() == 0) {
 					results.values = recordings;
 				} else {
+					constraint = constraint.toString().toUpperCase();
+					
 					List<Recording> filteredRecordings = 
 							new ArrayList<Recording>();
 					for(int i=0; i<recordings.size(); i++) {
 						Recording item = recordings.get(i);
-						List<Language> languages = item.getLanguages();
-						for(Language lang : languages) {
-							if(lang.getCode().contains(constraint)) {
-								filteredRecordings.add(item);
-								break;
-							}
+						if(item.getSpeakersIds().contains(constraint)) {
+							filteredRecordings.add(item);
 						}
 					}
 					results.values = filteredRecordings;

@@ -112,11 +112,12 @@ public class MainActivity extends ListActivity {
     	
     	AikumaSettings.setUserId(emailAccount);
     	showUserAccount(emailAccount, null);
+    	/*
 		AikumaSettings.isBackupEnabled = 
-				settings.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
+				settings.getBoolean(AikumaSettings.BACKUP_MODE_KEY, true);
 		AikumaSettings.isAutoDownloadEnabled =
-				settings.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
-		
+				settings.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, true);
+		*/
 		
 		// Automatic validation
 		if(emailAccount != null) {
@@ -198,6 +199,21 @@ public class MainActivity extends ListActivity {
 		listViewState = getListView().onSaveInstanceState();
 		MainActivity.locationDetector.stop();
 	}
+	
+	@Override
+	public void onNewIntent(Intent intent) {
+		speakerId = intent.getStringExtra("speakerId");
+	}
+	
+	@Override
+	public void onBackPressed() {
+		if(speakerId != null) {
+			adapter.getFilter().filter(null);
+			speakerId = null;
+		} else {
+			this.finish();
+		}
+	}
 
 	@Override
 	public void onResume() {
@@ -216,10 +232,10 @@ public class MainActivity extends ListActivity {
 		Log.i(TAG, "original num: " + originals.size());
 
 		adapter = new RecordingArrayAdapter(this, originals);
-		/*
-		if(searchView != null) {
-			adapter.getFilter().filter(searchView.getQuery());
-		}*/
+	
+		if(speakerId != null) {
+			adapter.getFilter().filter(speakerId);
+		}
 		setListAdapter(adapter);
 		if (listViewState != null) {
 			getListView().onRestoreInstanceState(listViewState);
@@ -383,70 +399,12 @@ public class MainActivity extends ListActivity {
 			}
 		});	
 	}
-	
-	/**
-	 * Sync the device with Google-Cloud
-	 * 
-	 * @param	forceSync	Force the cloud-sync
-	 */
-	public void syncRefresh(boolean forceSync) {
-		if(forceSync) {
-			if(!Aikuma.isDeviceOnline()) {
-				Aikuma.showAlertDialog(this, "Network needs to be connected");
-				return;
-			} else if(AikumaSettings.getCurrentUserToken() == null) {
-				Aikuma.showAlertDialog(this, 
-						"You need to connect to Google-Drive with your account");
-				return;
-			} else {
-				Intent syncIntent = new Intent(this, GoogleCloudService.class);
-				syncIntent.putExtra(GoogleCloudService.ACTION_KEY, "sync");
-				syncIntent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
-						AikumaSettings.getCurrentUserId());
-				syncIntent.putExtra(GoogleCloudService.TOKEN_KEY, 
-						AikumaSettings.getCurrentUserToken());
-				syncIntent.putExtra("forceSync", forceSync);
-				startService(syncIntent);
-			}
-		} else {
-			SharedPreferences settings = 
-					getSharedPreferences(AikumaSettings.getCurrentUserId(), MODE_PRIVATE);
-	
-			int sz = 0;
-			sz += settings.getStringSet(AikumaSettings.APPROVED_RECORDING_KEY, 
-					new HashSet<String>()).size();
-			sz += settings.getStringSet(AikumaSettings.APPROVED_SPEAKERS_KEY,
-					new HashSet<String>()).size();
-			sz += settings.getStringSet(AikumaSettings.APPROVED_OTHERS_KEY,
-					new HashSet<String>()).size();
-			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_RECORDING_KEY, 
-					new HashSet<String>()).size();
-			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_SPEAKERS_KEY,
-					new HashSet<String>()).size();
-			sz += settings.getStringSet(AikumaSettings.DOWNLOAD_OTHERS_KEY,
-					new HashSet<String>()).size();
-
-			if(sz > 0) {
-	    		// If there are items to be uploaded,
-				// start the GoogleCloud upload service 
-	    		Intent intent = new Intent(MainActivity.this, 
-	    				GoogleCloudService.class);
-	    		intent.putExtra(GoogleCloudService.ACTION_KEY, "retry");
-	    		intent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
-						AikumaSettings.getCurrentUserId());
-				intent.putExtra(GoogleCloudService.TOKEN_KEY, 
-						AikumaSettings.getCurrentUserToken());
-				startService(intent);
-			}
-		}
-		
-	}
-	
 
 	BroadcastReceiver syncReceiver;
 	private List<Recording> originals;
 	
 	SearchView searchView;
+	private String speakerId;
 	
 	MenuBehaviour menuBehaviour;
 
@@ -655,15 +613,14 @@ public class MainActivity extends ListActivity {
         @Override
         protected void onPostExecute(Boolean result) {
         	showUserAccount(emailAccount, AikumaSettings.getCurrentUserToken());
+        	
         	if(!result)
         		return;
 
         	if(AikumaSettings.isBackupEnabled 
 					|| AikumaSettings.isAutoDownloadEnabled) {
-				syncRefresh(false);
-			} else if(forceSync) {
-        		syncRefresh(true);
-        	}
+				Aikuma.syncRefresh(MainActivity.this, true);
+			}
         }
         
         /**
