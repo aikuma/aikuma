@@ -363,6 +363,11 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		}
 	}
 	
+	/**
+	 * Callback for the private-share button
+	 *
+	 * @param recording	Recording object which will be shared
+	 */
 	public void onPrivateShareButtonPressed(Recording recording) {
 		final EditText emailInput = new EditText(this);
 		emailInput.setInputType(InputType.TYPE_CLASS_TEXT | 

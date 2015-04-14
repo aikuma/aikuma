@@ -268,7 +268,8 @@ public class MainActivity extends ListActivity {
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		if(emailAccount == null) {
-			Aikuma.showAlertDialog(this, "You need to select your account");
+			Aikuma.showAlertDialog(this, 
+					"Please sign in to your Google account using the settings menu");
 			
 			return;
 		}
@@ -458,7 +459,7 @@ public class MainActivity extends ListActivity {
     }
 	
     /**
-     * Start an activity which allows a user to pick up an account
+     * Start an activity which allows a user to pick an account
      */
     private void pickUserAccount() {
         String[] accountTypes = new String[]{"com.google"};
@@ -492,7 +493,7 @@ public class MainActivity extends ListActivity {
                     		Toast.LENGTH_SHORT).show();
                 }
             } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "You must pick up an account", 
+                Toast.makeText(this, "You must pick an account", 
                 		Toast.LENGTH_SHORT).show();
             }
             

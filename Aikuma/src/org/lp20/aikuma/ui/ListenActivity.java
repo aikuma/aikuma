@@ -412,6 +412,11 @@ public class ListenActivity extends AikumaActivity {
 		quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
 	}
 	
+	/**
+	 * Callback for the private-share quickAction button
+	 *
+	 * @param	view	The share button
+	 */
 	public void onPrivateShareButtonPressed(View view) {
 		final EditText emailInput = new EditText(this);
 		emailInput.setInputType(InputType.TYPE_CLASS_TEXT | 

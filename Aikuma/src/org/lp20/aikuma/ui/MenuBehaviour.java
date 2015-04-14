@@ -84,7 +84,7 @@ public class MenuBehaviour {
 			case R.id.record:
 				if(AikumaSettings.getCurrentUserId() == null) {
 					Aikuma.showAlertDialog(activity,
-							"You need to select your account");
+							"Please sign in to your Google account using the settings menu");
 					return true;
 				}
 				intent = new Intent(activity, RecordActivity.class);
@@ -93,7 +93,7 @@ public class MenuBehaviour {
 			case R.id.speakers:
 				if(AikumaSettings.getCurrentUserId() == null) {
 					Aikuma.showAlertDialog(activity,
-							"You need to select your account");
+							"Please sign in to your Google account using the settings menu");
 					return true;
 				}
 				intent = new Intent(activity, MainSpeakersActivity.class);
