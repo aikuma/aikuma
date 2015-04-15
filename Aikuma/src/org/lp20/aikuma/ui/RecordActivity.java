@@ -253,6 +253,7 @@ public class RecordActivity extends AikumaActivity {
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {
+		Log.i(TAG, "isNear: " + proximityDetector.isNear());
 		if (proximityDetector.isNear()) {
 			return false;
 		} else {
@@ -260,6 +261,7 @@ public class RecordActivity extends AikumaActivity {
 		}
 	}
 	
+	private static final String TAG = RecordActivity.class.getSimpleName();
 	static final int VIDEO_REQUEST_CODE = 0;
 
 	private boolean recording;
