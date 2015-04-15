@@ -37,7 +37,7 @@ public class Segments {
 		try {
 			readJSONSegments(new File(respeaking.getRecordingsPath(), 
 					respeaking.getGroupId() + "/" +
-					respeaking.getId() + "-mapping.txt"));
+					respeaking.getId() + FileModel.MAPPING_SUFFIX));
 		} catch (IOException e) {
 			// Temporary solution (If file is not in JSON format, try older format)
 			try {
