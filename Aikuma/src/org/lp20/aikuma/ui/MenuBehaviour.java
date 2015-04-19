@@ -8,16 +8,12 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.SearchView;
 
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.MainActivity;
@@ -88,7 +84,7 @@ public class MenuBehaviour {
 			case R.id.record:
 				if(AikumaSettings.getCurrentUserId() == null) {
 					Aikuma.showAlertDialog(activity,
-							"You need to select your account");
+							"Please sign in to your Google account using the settings menu");
 					return true;
 				}
 				intent = new Intent(activity, RecordActivity.class);
@@ -97,7 +93,7 @@ public class MenuBehaviour {
 			case R.id.speakers:
 				if(AikumaSettings.getCurrentUserId() == null) {
 					Aikuma.showAlertDialog(activity,
-							"You need to select your account");
+							"Please sign in to your Google account using the settings menu");
 					return true;
 				}
 				intent = new Intent(activity, MainSpeakersActivity.class);
@@ -134,11 +130,6 @@ public class MenuBehaviour {
 				}
 				
 				return true;
-			case R.id.cloud_sync_menu:
-				((MainActivity)activity).syncRefresh(true);
-				//intent = new Intent(activity, CloudSyncSettingsActivity.class);
-				//activity.startActivity(intent);
-				return true;
 			case R.id.cloud_sync_setting_menu:
 				intent = new Intent(activity, CloudSettingsActivity.class);
 				activity.startActivity(intent);
@@ -153,6 +144,10 @@ public class MenuBehaviour {
 				} catch (IOException e) {
 					Aikuma.showAlertDialog(activity, e.getMessage());
 				}
+				return true;
+			case R.id.testUI:
+				intent = new Intent(activity, TestActivity.class);
+				activity.startActivity(intent);
 				return true;
 			case R.id.debugInfo:
 				intent = new Intent(activity, DebugInfo.class);

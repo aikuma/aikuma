@@ -4,18 +4,16 @@
 */
 package org.lp20.aikuma.ui;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.Collections;
 import java.util.List;
+
+import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
@@ -60,6 +58,15 @@ public class MainSpeakersActivity extends AikumaListActivity {
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
+		Speaker speaker = (Speaker) l.getItemAtPosition(position);
+		
+		Intent intent = new Intent(this, MainActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | 
+				Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.putExtra("speakerId", speaker.getId());
+		startActivity(intent);
+		
+		
 		/*
 		Intent intent = new Intent();
 		intent.putExtra("speaker", (Speaker)l.getItemAtPosition(position));

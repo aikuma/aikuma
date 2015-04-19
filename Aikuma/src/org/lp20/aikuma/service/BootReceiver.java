@@ -28,14 +28,17 @@ public class BootReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		Log.i(TAG, "BootReceiver started");
 		if (intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE")) {
+			/*
 			SharedPreferences preferences = 
 					PreferenceManager.getDefaultSharedPreferences(context);
-			boolean isBackupEnabled = 
-					preferences.getBoolean(AikumaSettings.BACKUP_MODE_KEY, false);
-			boolean isAutoDownloadEnabled = 
-					preferences.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
+			
+			AikumaSettings.isBackupEnabled = 
+					preferences.getBoolean(AikumaSettings.BACKUP_MODE_KEY, true);
+			AikumaSettings.isAutoDownloadEnabled = 
+					preferences.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, true);
+			*/
 
-			if(isBackupEnabled && isAutoDownloadEnabled) {
+			if(AikumaSettings.isBackupEnabled && AikumaSettings.isAutoDownloadEnabled) {
 				Intent serviceIntent = new Intent(context, GoogleCloudService.class);
 				serviceIntent.putExtra(GoogleCloudService.ACTION_KEY, "sync");
 				serviceIntent.putStringArrayListExtra(GoogleCloudService.ACCOUNT_KEY, 

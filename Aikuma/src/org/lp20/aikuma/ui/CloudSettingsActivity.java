@@ -1,24 +1,16 @@
 package org.lp20.aikuma.ui;
 
-import java.io.IOException;
-
 import org.lp20.aikuma.Aikuma;
-import org.lp20.aikuma.service.BootReceiver;
-import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 
 /**
@@ -43,16 +35,22 @@ public class CloudSettingsActivity extends AikumaActivity {
 		preferences =
 				PreferenceManager.getDefaultSharedPreferences(this);
 		prefsEditor = preferences.edit();
+		
+		if(AikumaSettings.getCurrentUserId() == null || 
+				!AikumaSettings.isBackupEnabled || !AikumaSettings.isAutoDownloadEnabled) {
+			Button syncButton = (Button) findViewById(R.id.syncNowButton);
+			syncButton.setEnabled(false);
+		}
+		//setupSyncCheckBox();
+		setupWifiCheckBox();
 	}
 
 	@Override
 	public void onResume() {
-		super.onResume();
-		
-		setupSyncCheckBox();
-		setupWifiCheckBox();
+		super.onResume();	
 	}
 	
+	/*
 	private void setupSyncCheckBox() {
 		CheckBox syncCheckBox = (CheckBox)
 				findViewById(R.id.sync_checkBox);
@@ -65,7 +63,7 @@ public class CloudSettingsActivity extends AikumaActivity {
 				preferences.getBoolean(AikumaSettings.AUTO_DOWNLOAD_MODE_KEY, false);
 		
 		syncCheckBox.setChecked(AikumaSettings.isBackupEnabled);
-	}
+	}*/
 	
 	private void setupWifiCheckBox() {
 		wifiCheckBox = (CheckBox)
@@ -79,12 +77,13 @@ public class CloudSettingsActivity extends AikumaActivity {
 		
 		wifiCheckBox.setChecked(!AikumaSettings.isOnlyWifi);
 	}
-
+	
 	/**
 	 * Adjusts the settings when the sync checkbox is checked.
 	 * 
 	 * @param checkBox	The checkbox 
 	 */
+	/*
 	public void onSyncCheckBoxClicked(View checkBox) {
 		boolean checked = ((CheckBox) checkBox).isChecked();
 		Log.i(TAG, "sync-checkbox: " + checked);
@@ -117,7 +116,7 @@ public class CloudSettingsActivity extends AikumaActivity {
 			wifiCheckBox.setChecked(false);
 			wifiCheckBox.setEnabled(false);
 		}
-	}
+	}*/
 	
 	/**
 	 * Callback function for the checkbox allowing sync over cellular network
@@ -137,5 +136,16 @@ public class CloudSettingsActivity extends AikumaActivity {
 			prefsEditor.commit();
 		}
 
+	}
+	
+	/**
+	 * Callback function for the SyncNow button
+	 * 
+	 * @param button	Cloud sync button
+	 */
+	public void onSyncNowButton(View button) {
+		Aikuma.syncRefresh(this, true);
+		//intent = new Intent(activity, CloudSyncSettingsActivity.class);
+		//activity.startActivity(intent);
 	}
 }

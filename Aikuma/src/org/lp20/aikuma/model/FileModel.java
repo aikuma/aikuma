@@ -27,7 +27,7 @@ public class FileModel implements Parcelable {
 	 */
 	public static final String METADATA_SUFFIX = "-metadata.json";
 	/** */
-	public static final String MAPPING_SUFFIX = "-mapping.txt";
+	public static final String MAPPING_SUFFIX = "-mapping.json";
 	/** */
 	public static final String TRANSCRIPT_SUFFIX = "-transcript.txt";
 	/** */
