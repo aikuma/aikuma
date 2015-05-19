@@ -6,6 +6,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import org.lp20.aikuma.storage.*;
+import org.lp20.aikuma.storage.google.GoogleAuth;
 
 public class RefreshToken {
 	private static final Logger log = Logger.getLogger(GetAccessToken.class.getName());

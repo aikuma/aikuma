@@ -9,6 +9,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import org.lp20.aikuma.storage.*;
+import org.lp20.aikuma.storage.google.*;
 
 public class GetAccessToken {
 	private static final Logger log = Logger.getLogger(GetAccessToken.class.getName());

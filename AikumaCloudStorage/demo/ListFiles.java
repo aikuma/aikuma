@@ -1,7 +1,7 @@
 import java.util.Date;
 import java.util.Properties;
 
-import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
 import org.lp20.aikuma.storage.DataStore;
 
 

@@ -1,4 +1,4 @@
-package org.lp20.aikuma.storage;
+package org.lp20.aikuma.storage.google;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -9,6 +9,7 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 
 import org.json.simple.*;
+import org.lp20.aikuma.storage.*;
 
 /**
  * Utility class for handling google authentication/authorization.

@@ -1,4 +1,4 @@
-package org.lp20.aikuma.storage;
+package org.lp20.aikuma.storage.google;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;

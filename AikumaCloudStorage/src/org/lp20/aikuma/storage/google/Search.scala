@@ -19,11 +19,14 @@ abstract class Search(query: String, kind: String) {
     x
   }
 
+  processListObj(getMore(query, mNextPageToken))
+
   class Error extends Exception
 
   protected def getMore(query: String, pageToken: String): JSONObject
 
   def hasMoreElements: Boolean = {
+    // if there is error, let them call nextElement and handle error
     mErr || mNextPageToken != null || mNumItems > mIdx
   }
 

@@ -1,11 +1,9 @@
-package org.lp20.aikuma.storage;
+package org.lp20.aikuma.storage.google;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import org.lp20.aikuma.storage.GoogleAuth;
 
 public class GoogleCredentialManager {
 	String credentialFile_;

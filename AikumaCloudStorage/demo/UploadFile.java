@@ -2,6 +2,7 @@ import java.io.File;
 import java.util.Properties;
 
 import org.lp20.aikuma.storage.*;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
 
 
 public class UploadFile {

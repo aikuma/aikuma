@@ -1,4 +1,4 @@
-package org.lp20.aikuma.storage;
+package org.lp20.aikuma.storage.google;
 
 import java.io.*;
 import java.net.*;
@@ -11,8 +11,7 @@ import java.util.logging.Logger;
 import org.json.simple.*;
 
 import org.lp20.aikuma.net.*;
-import org.lp20.aikuma.storage.google.*;
-import org.lp20.aikuma.storage.google.Search;
+import org.lp20.aikuma.storage.*;
 
 /**
  * Implementation of DataStore backed by Google Drive.

@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Properties;
 
-import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
 import org.lp20.aikuma.storage.DataStore;
 import org.lp20.aikuma.storage.Utils;
 
