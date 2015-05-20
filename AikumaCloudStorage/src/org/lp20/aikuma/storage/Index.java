@@ -32,6 +32,14 @@ public interface Index {
     public abstract void search(Map<String, String> constraints, SearchResultProcessor processor);
 
     /**
+     * Query index and run the results through the provided result processor.
+     *
+     * @param query A query string. The syntax depends on the underlying backend.
+     * @param processor SearchResultProcessor object to process the search results.
+     */
+    public abstract void search(String query, SearchResultProcessor processor);
+
+    /**
      * Index an item. If item already exists, it gets updated.
      * For metadata, the following keys are required:
      * 

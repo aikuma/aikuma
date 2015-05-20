@@ -297,6 +297,10 @@ public class FusionIndex implements Index {
         }
     }
 
+    @Override
+    public void search(String query, SearchResultProcessor processor) {
+        // Do nothing. Probably this won't be implemented.
+    }
 
     private String makeSearchSQL(Map<String, String> constraints, boolean fullRecord) {
         StringBuilder sqlBuilder = new StringBuilder();
