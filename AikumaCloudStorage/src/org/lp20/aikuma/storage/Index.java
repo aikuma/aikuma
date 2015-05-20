@@ -22,6 +22,13 @@ public interface Index {
      */
     public abstract List<String> search(Map<String,String> constraints);
 
+    /**
+     * Search the index according to the specified constraints and run results
+     * through the provided result processor.
+     *
+     * @param constraints
+     * @param processor SearchResultProcessor object to process the search resultis.
+     */
     public abstract void search(Map<String, String> constraints, SearchResultProcessor processor);
 
     /**
@@ -37,9 +44,6 @@ public interface Index {
      * @param identifier
      * @param metadata
      */
-
-
-
     public abstract boolean index(String identifier, Map<String,String> metadata);
 
 
