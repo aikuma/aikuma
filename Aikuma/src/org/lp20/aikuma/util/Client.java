@@ -83,7 +83,7 @@ public class Client {
 		boolean result = false;
 		if (!apacheClient.isConnected()) {
 			try {
-				apacheClient.connect(serverURI);
+				apacheClient.connect(serverURI, 8888);
 				Log.i("sync", "Connected to: " + serverURI);
 			} catch (SocketException e) {
 				Log.e("sync", "apacheClient.connect() threw a SocketException", e);
