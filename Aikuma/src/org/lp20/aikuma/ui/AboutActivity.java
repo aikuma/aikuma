@@ -45,7 +45,7 @@ public class AboutActivity extends AikumaActivity {
 	private void setupVersionInfo() {
 		TextView versionField = (TextView) findViewById(R.id.versionField);
 		try {
-				versionField.setText("Version: " +
+				versionField.setText("Aikuma " +
 						this.getPackageManager().getPackageInfo(
 						this.getPackageName(), 0).versionName);
 		} catch (android.content.pm.PackageManager.NameNotFoundException e) {
