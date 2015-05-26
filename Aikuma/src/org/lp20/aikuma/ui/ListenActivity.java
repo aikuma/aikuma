@@ -382,7 +382,7 @@ public class ListenActivity extends AikumaActivity {
 	 * @param	view	The share button
 	 */
 	public void onShareButtonPressed(View view) {
-		String urlToShare = "http://server/item/" + 
+		String urlToShare = "http://repository.aikuma.org/item/" + 
 				recording.getGroupId() + "#" + recording.getRespeakingId();
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_SEND);

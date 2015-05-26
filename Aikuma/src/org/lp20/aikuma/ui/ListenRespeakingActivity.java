@@ -327,7 +327,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	 * @param recording	Recording object which will be shared
 	 */
 	public void onShareButtonPressed(Recording recording) {
-		String urlToShare = "http://server/item/" + 
+		String urlToShare = "http://repository.aikuma.org/item/" + 
 				recording.getGroupId() + "#" + recording.getRespeakingId();
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_SEND);
