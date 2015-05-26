@@ -5,7 +5,10 @@
 package org.lp20.aikuma.model;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.IdUtils;
 
@@ -25,13 +28,72 @@ public class FileModel implements Parcelable {
 	/**
 	 *  Suffix of metadata, maaping and transcript
 	 */
-	public static final String METADATA_SUFFIX = "-metadata.json";
+	protected static final String METADATA_SUFFIX = "-metadata";
 	/** */
-	public static final String MAPPING_SUFFIX = "-mapping.json";
+	public static final String MAPPING_SUFFIX = "-mapping";
 	/** */
-	public static final String TRANSCRIPT_SUFFIX = "-transcript.txt";
+	public static final String TRANSCRIPT_SUFFIX = "-transcript";
 	/** */
-	public static final String SAMPLE_SUFFIX = "-preview.wav";
+	public static final String SAMPLE_SUFFIX = "-preview";
+	
+	/**
+	 * A list of file-types 
+	 */
+	//public enum FileType { RECORDING, SPEAKER, OTHER };
+	public enum FileType { SOURCE, RESPEAKING, TRANSLATION, SPEAKER, METADATA, PREVIEW, TRANSCRIPT, MAPPING };
+	/** */
+	public static final String SOURCE_TYPE = "source";
+	/** */
+	public static final String RESPEAKING_TYPE = "respeak";
+	/** */
+	public static final String TRANSLATION_TYPE = "interpret";
+	/** */
+	public static final String SPEAKER_TYPE = "speaker";
+	/** */
+	public static final String METADATA_TYPE = "metadata";
+	/** */
+	public static final String PREVIEW_TYPE = "preview";
+	/** */
+	public static final String TRANSCRIPT_TYPE = "transcript";
+	/** */
+	public static final String MAPPING_TYPE = "mapping";
+	
+	private static Set<String> fileTypeSet;
+	static {
+		fileTypeSet = new HashSet<String>();
+		fileTypeSet.add(SOURCE_TYPE);
+		fileTypeSet.add(RESPEAKING_TYPE);
+		fileTypeSet.add(TRANSLATION_TYPE);
+		fileTypeSet.add(SPEAKER_TYPE);	// The filename has the format(speakerID-image-small)
+		fileTypeSet.add(METADATA_TYPE);
+		fileTypeSet.add(PREVIEW_TYPE);
+		fileTypeSet.add(TRANSCRIPT_TYPE);
+		fileTypeSet.add(MAPPING_TYPE);
+	}
+	
+	/**
+	 * A list of file formats
+	 */
+	public enum FileFormat { WAV, MP4, JPG, JSON, TXT };
+	/** */
+	public static final String AUDIO_EXT = "wav";
+	/** */
+	public static final String VIDEO_EXT = "mp4";
+	/** */
+	public static final String IMAGE_EXT = "jpg";
+	/** */
+	public static final String JSON_EXT = "json";
+	/** */
+	public static final String TEXT_EXT = "txt";
+	
+	/**
+	 * Keys of the metadata fields
+	 */
+	public static final String USER_ID_KEY = "user_id";
+	/** */
+	public static final String VERSION_KEY = "version";
+	/** */
+	public static final String DATA_STORE_URI_KEY = "data_store_uri";
 	
 	/**
 	 * Constructor of FileModel
@@ -40,15 +102,19 @@ public class FileModel implements Parcelable {
 	 * @param ownerId		OwnerID(UserID) of the file
 	 * @param id			Id of the file
 	 * @param type			Type of the file(speaker, mapping, ...)
-	 * @param format		Format of the file(jpg, mp4, wav, json, txt)
+	 * @param format		Extension of the file(jpg, mp4, vnd.wave, json, txt)
 	 */
 	public FileModel(
 			String versionName, String ownerId, String id, String type, String format) {
 		setVersionName(versionName);
 		setOwnerId(ownerId);
-		this.id = id;
+		setId(id);
 		this.fileType = type;
 		this.format = format;
+		if(format.equals("vnd.wave")) // vnd.wave is input by Recording constructor
+			this.extension = AUDIO_EXT;
+		else
+			this.extension = format;
 	}
 	
 	/**
@@ -63,22 +129,70 @@ public class FileModel implements Parcelable {
 		String fileName = splitCloudId[6].substring(0, index);
 		String ext = splitCloudId[6].substring(index+1);
 		
-		if(ext.equals("json"))			//metadata
+		String[] splitName = fileName.split("-");
+		String fileType = splitName[splitName.length-1];
+		
+		if(StringUtils.isNumeric(fileType))		//Derivative recordings(respeaking, interpret)
+			fileType = splitName[splitName.length-2];
+		
+		if(fileType.equals("small")) {	//speaker small image
+			return new FileModel(splitCloudId[0], splitCloudId[3], splitCloudId[5], SPEAKER_TYPE, ext);
+		} else if(fileType.equals(METADATA_TYPE)) {
 			return null;
-		else if(ext.equals("jpg")) {	//speaker small image
-			return new FileModel(splitCloudId[0], splitCloudId[3], splitCloudId[5], "speaker", ext);
-		} else if(ext.equals("txt")) {	//mapping, transcript
-			String[] splitName = fileName.split("-");
-			return new FileModel(splitCloudId[0], splitCloudId[3], fileName, splitName[splitName.length-1], ext);
-		} else {						//source, respeaking, preview
-			String[] splitName = fileName.split("-");
-			if(splitName[splitName.length-1].equals("preview")) {
-				return new FileModel(splitCloudId[0], splitCloudId[3], fileName, "preview", ext);
-			} else {
-				return new FileModel(splitCloudId[0], splitCloudId[3], fileName, splitName[2], ext);
-			}
+		} else if(fileTypeSet.contains(fileType)) {
+			return new FileModel(splitCloudId[0], splitCloudId[3], fileName, fileType, ext);
+		} else {
+			return null;
 		}
+		
 	}
+	
+	/**
+	 * Returns (suffix).(ext) for metadata, mapping, transcript, preview
+	 * 			null		  for other types
+	 * 
+	 * @param versionName	Version
+	 * @param type			METADATA | MAPPING | TRANSCRIPT | PREVIEW
+	 * @return a string of "(suffix).(ext)"
+	 */
+	public static String getSuffixExt(String versionName, FileType type) {
+		String suffixExt = null;
+		
+		// For a current version
+		switch(type) {
+		case SOURCE:
+			break;
+		case RESPEAKING:
+			break;
+		case TRANSLATION:
+			break;
+		case SPEAKER:
+			break;
+		case METADATA:
+			suffixExt = METADATA_SUFFIX + "." + JSON_EXT;
+			break;
+		case PREVIEW:
+			suffixExt = SAMPLE_SUFFIX + "." + AUDIO_EXT;
+			break;
+		case TRANSCRIPT:
+			if(versionName.equals("v01")) {
+				suffixExt = TRANSCRIPT_SUFFIX + "." + TEXT_EXT;
+			} else {
+				suffixExt = TRANSCRIPT_SUFFIX + "." + JSON_EXT;
+			}
+			break;
+		case MAPPING:
+			if(versionName.equals("v01")) {
+				suffixExt = MAPPING_SUFFIX + "." + TEXT_EXT;
+			} else {
+				suffixExt = MAPPING_SUFFIX + "." + JSON_EXT;
+			}
+			break;
+		}
+		
+		return suffixExt;
+	}
+	
 	
 	/**
 	 * Constructor for parcel (only used by Speaker)
@@ -89,8 +203,8 @@ public class FileModel implements Parcelable {
 		String ownerId = in.readString();
 		setVersionName(versionName);
 		setOwnerId(ownerId);
-		this.fileType = "speaker";
-		this.format = "jpg";
+		this.fileType = SPEAKER_TYPE;
+		this.extension = IMAGE_EXT;
 	}
 	
 	/**
@@ -101,15 +215,20 @@ public class FileModel implements Parcelable {
 		return id;
 	}
 	
+
+	protected void setId(String id) {
+		this.id = id;
+	}
+	
 	/**
 	 * Getter of the file ID + extension (used in GoogleCloudService)
 	 * @return	The ID + extension of the file-model
 	 */
 	public String getIdExt() {
-		if(fileType.equals("speaker")) {
+		if(fileType.equals(SPEAKER_TYPE)) {
 			return (id + "-image-small.jpg");
 		} else {
-			return (id + getExtension());
+			return (id + "." + getExtension());
 		}
 	}
 	
@@ -118,8 +237,9 @@ public class FileModel implements Parcelable {
 	 * @return	The metadata ID + extension of the file-model
 	 */
 	public String getMetadataIdExt() {
-		if(format.equals("jpg") || (format.equals("wav") && !fileType.equals("preview")))
-			return (id + METADATA_SUFFIX);
+		if(fileType.equals(SPEAKER_TYPE) || fileType.equals(SOURCE_TYPE) || 
+				fileType.equals(RESPEAKING_TYPE) || fileType.equals(TRANSLATION_TYPE))
+			return (id + getSuffixExt(versionName, FileType.METADATA));
 		return null;
 	}
 	
@@ -139,20 +259,21 @@ public class FileModel implements Parcelable {
 				ownerIdDirName.substring(0, 2) + "/" + ownerId + "/");
 		
 		String suffix;
-		if(fileType.equals("speaker")) {
+		if(fileType.equals(SPEAKER_TYPE)) {
 			if(option == 0)
 				suffix = "-image-small.jpg";
 			else
-				suffix = METADATA_SUFFIX;
+				suffix = getSuffixExt(versionName, FileType.METADATA);
 			
 			return (ownerDirStr + Speaker.PATH + getId() + "/" + getId() + suffix);
 		} else {
 			if(option == 0)
-				suffix = getExtension();
-			else if(format.equals("txt") || fileType.equals("preview"))	// No metadata for transcript/mapping/preview
+				suffix = "." + getExtension();
+			else if(!(fileType.equals(SOURCE_TYPE) || fileType.equals(RESPEAKING_TYPE)
+					|| fileType.equals(TRANSLATION_TYPE)))	// No metadata for transcript/mapping/preview
 				return null;
 			else
-				suffix = METADATA_SUFFIX;
+				suffix = getSuffixExt(versionName, FileType.METADATA);
 			String groupId = getId().split("-")[0];
 			
 			return (ownerDirStr + Recording.PATH + groupId + "/" + getId() + suffix);
@@ -171,7 +292,7 @@ public class FileModel implements Parcelable {
 		
 		File itemPath;
 		String suffix;
-		if(fileType.equals("speaker")) {
+		if(fileType.equals(SPEAKER_TYPE)) {
 			itemPath = new File(
 					FileIO.getOwnerPath(versionName, ownerId), Speaker.PATH);
 			itemPath.mkdirs();
@@ -179,7 +300,7 @@ public class FileModel implements Parcelable {
 			if(option == 0)
 				suffix = "-image-small.jpg";
 			else
-				suffix = METADATA_SUFFIX;
+				suffix = getSuffixExt(versionName, FileType.METADATA);
 			
 			return new File(itemPath, getId() + "/" + getId() + suffix);
 		} else {
@@ -188,11 +309,12 @@ public class FileModel implements Parcelable {
 			itemPath.mkdirs();
 			
 			if(option == 0)
-				suffix = getExtension();
-			else if(format.equals("txt") || fileType.equals("preview"))	// No metadata for transcript/mapping/preview
+				suffix = "." + getExtension();
+			else if(!(fileType.equals(SOURCE_TYPE) || fileType.equals(RESPEAKING_TYPE)
+					|| fileType.equals(TRANSLATION_TYPE)))	// No metadata for transcript/mapping/preview
 				return null;
 			else
-				suffix = METADATA_SUFFIX;
+				suffix = getSuffixExt(versionName, FileType.METADATA);
 			String groupId = getId().split("-")[0];
 			
 			return new File(itemPath, groupId + "/" + getId() + suffix);
@@ -203,15 +325,15 @@ public class FileModel implements Parcelable {
 	/**
 	 * Get the file's type
 	 * TODO: 'respeaking' needs to be changed later to 'respeak'. 'comment','interpret' can be added later
-	 * @return	the File-type (source, respeaking, preview, speaker, mapping, transcript)
+	 * @return	the File-type (source, respeaking, translation, preview, speaker, mapping, transcript)
 	 */
 	public String getFileType() {
 		return fileType;
 	}
 	
 	/**
-	 * Get the file's format
-	 * @return	the File-format (wav, mp4, jpg, json, txt)
+	 * Get the file's format (only used by Recording now)
+	 * @return	the File-format can be (vnd.wave, mp4)
 	 */
 	public String getFormat() {
 		return format;
@@ -225,8 +347,13 @@ public class FileModel implements Parcelable {
 		return versionName;
 	}
 	
-	// Sets the versionName(v0x)
+	/**
+	 * Sets the versionName(v0x)
+	 * @param versionName a string
+	 */
 	protected void setVersionName(String versionName) {
+		if(versionName == null)
+			throw new IllegalArgumentException("version should not be null");
 		this.versionName = versionName;
 	}
 	
@@ -235,16 +362,22 @@ public class FileModel implements Parcelable {
 		this.ownerId = ownerId;
 	}	
 	
+	/**
+	 * Get the file's extension
+	 * @return	the File-extension (wav, mp4, jpg, json, txt)
+	 */
 	private String getExtension() {
+		return extension;
+		/*
 		if(format.equals("mp4")) {
 			return ".mp4";
 		} else if(format.equals("jpg")) {
 			return ".jpg";
-		} else if(format.equals("txt")) {
-			return ".txt";
+		} else if(fileType!= null && fileType.equals("other")) {
+			return "." + format;
 		} else {
 			return ".wav";
-		}
+		}*/
 	}
 	
 	@Override
@@ -270,6 +403,8 @@ public class FileModel implements Parcelable {
 	
 	/**
 	 * The ID of the (recording/speaker).
+	 * SpeakerID = 12 upper-case alphabets
+	 * RecordingID = (item_id)-(user_id)-suffices
 	 */
 	protected String id;
 	
@@ -277,9 +412,16 @@ public class FileModel implements Parcelable {
 	 * The filetype (speaker, mapping, ...)
 	 */
 	protected String fileType;
+	//protected FileType fileType;
 
 	/**
-	 * vnd.wave / mp4 / jpg / txt
+	 * wav / mp4 / jpg / txt
+	 */
+	protected String extension;
+	
+	/**
+	 * vnd.wave (only used by Recording)
 	 */
 	protected String format;
+	//protected FileFormat format;
 }

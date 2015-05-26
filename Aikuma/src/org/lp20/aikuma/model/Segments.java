@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.lp20.aikuma.model.FileModel.FileType;
 import org.lp20.aikuma.util.FileIO;
 
 /**
@@ -37,7 +38,8 @@ public class Segments {
 		try {
 			readJSONSegments(new File(respeaking.getRecordingsPath(), 
 					respeaking.getGroupId() + "/" +
-					respeaking.getId() + FileModel.MAPPING_SUFFIX));
+					respeaking.getId() + 
+					FileModel.getSuffixExt(respeaking.getVersionName(), FileType.MAPPING)));
 		} catch (IOException e) {
 			// Temporary solution (If file is not in JSON format, try older format)
 			try {

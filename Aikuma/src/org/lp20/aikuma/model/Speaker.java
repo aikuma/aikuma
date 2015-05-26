@@ -13,8 +13,10 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -54,7 +56,7 @@ public class Speaker extends FileModel {
 	 */
 	public Speaker(UUID imageUUID, String name, List<Language> languages,
 			String versionName, String ownerId) {
-		super(versionName, ownerId, null, "speaker", "jpg");
+		super(versionName, ownerId, null, SPEAKER_TYPE, IMAGE_EXT);
 		this.imageUUID = imageUUID;
 		setName(name);
 		setId(createId(name));
@@ -88,7 +90,7 @@ public class Speaker extends FileModel {
 	 */
 	public Speaker(String name, List<Language> languages, String id,
 			String versionName, String ownerId) {
-		super(versionName, ownerId, null, "speaker", "jpg");
+		super(versionName, ownerId, null, SPEAKER_TYPE, IMAGE_EXT);
 		setName(name);
 		setLanguages(languages);
 		setId(id);
@@ -188,11 +190,11 @@ public class Speaker extends FileModel {
 	 */
 	public JSONObject encode() {
 		JSONObject encodedSpeaker = new JSONObject();
-		encodedSpeaker.put("name", this.name);
-		encodedSpeaker.put("id", this.id);
-		encodedSpeaker.put("languages", Language.encodeList(languages));
-		encodedSpeaker.put("version", this.versionName);
-		encodedSpeaker.put("user_id", this.ownerId);
+		encodedSpeaker.put(NAME_KEY, this.name);
+		encodedSpeaker.put(SPEAKER_ID_KEY, this.id);
+		encodedSpeaker.put(LANGUAGES_KEY, Language.encodeList(languages));
+		encodedSpeaker.put(VERSION_KEY, this.versionName);
+		encodedSpeaker.put(USER_ID_KEY, this.ownerId);
 		return encodedSpeaker;
 	}
 
@@ -240,7 +242,7 @@ public class Speaker extends FileModel {
 		JSONObject encodedSpeaker = this.encode();
 
 		FileIO.writeJSONObject(new File(getSpeakersPath(), getId() +
-				"/" + getId() + METADATA_SUFFIX), encodedSpeaker);
+				"/" + getId() + getSuffixExt(versionName, FileType.METADATA)), encodedSpeaker);
 	}
 
 	/**
@@ -257,15 +259,15 @@ public class Speaker extends FileModel {
 		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
 		
 		JSONObject jsonObj = FileIO.readJSONObject(
-				new File(getSpeakersPath(ownerDir), id + "/" + id + METADATA_SUFFIX));
-		String name = (String) jsonObj.get("name");
-		JSONArray languageArray = (JSONArray) jsonObj.get("languages");
+				new File(getSpeakersPath(ownerDir), id + "/" + id + getSuffixExt(verName, FileType.METADATA)));
+		String name = (String) jsonObj.get(NAME_KEY);
+		JSONArray languageArray = (JSONArray) jsonObj.get(LANGUAGES_KEY);
 		if (languageArray == null) {
 			throw new IOException("Null languages in the JSON file.");
 		}
 		List<Language> languages = Language.decodeJSONArray(languageArray);
-		String versionName = (String) jsonObj.get("version");
-		String ownerId = (String) jsonObj.get("user_id");
+		String versionName = (String) jsonObj.get(VERSION_KEY);
+		String ownerId = (String) jsonObj.get(USER_ID_KEY);
 		return new Speaker(name, languages, id, versionName, ownerId);
 	}
 
@@ -316,11 +318,13 @@ public class Speaker extends FileModel {
 		List<Speaker> speakers = new ArrayList<Speaker>();
 
 		// Get a list of version directories
+		final String currentVersionName = AikumaSettings.getLatestVersion();
 		File[] versionDirs = 
 				FileIO.getAppRootPath().listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String filename) {
-				return filename.startsWith("v") && filename.substring(1).matches("\\d+");
+				//return filename.startsWith("v") && filename.substring(1).matches("\\d+");
+				return filename.matches(currentVersionName);
 			}	
 		});
 
@@ -416,11 +420,11 @@ public class Speaker extends FileModel {
 			return path;
 	 }
 	
-		
+	/*	
 	private void setId(String id) {
 		Log.i("setId", "set Id: " + id);
 		this.id = id;
-	}
+	}*/
 
 	/**
 	 * Sets the name of the Speaker.
@@ -535,4 +539,23 @@ public class Speaker extends FileModel {
 	 * Relative path where speaker files are stored
 	 */
 	public static final String PATH = "speakers/";
+	
+	/**
+	 * Keys of the speaker metadata fields
+	 */
+	public static final String NAME_KEY = "name";
+	/** */
+	public static final String SPEAKER_ID_KEY = "id";
+	/** */
+	public static final String LANGUAGES_KEY = "languages";
+	
+	private static Set<String> fieldKeySet;
+	static {
+		fieldKeySet = new HashSet<String>();
+		fieldKeySet.add(NAME_KEY);
+		fieldKeySet.add(SPEAKER_ID_KEY);
+		fieldKeySet.add(VERSION_KEY);
+		fieldKeySet.add(USER_ID_KEY);
+		fieldKeySet.add(LANGUAGES_KEY);
+	}
 }
