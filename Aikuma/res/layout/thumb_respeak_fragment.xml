@@ -29,7 +29,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="0.5"
-			android:scaleType="centerInside"
+			android:scaleType="fitCenter"
 			android:src="@drawable/play_48"
 			style="@style/ImageButtonGreenTheme"
 		/>
@@ -38,7 +38,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="0.5"
-			android:scaleType="centerInside"
+			android:scaleType="fitCenter"
 			android:src="@drawable/record_48"
 			style="@style/ImageButtonRedTheme"
 		/>
