@@ -159,8 +159,14 @@ public class AikumaSettings {
 	public static final String ARCHIVED_OTHERS_KEY = "archivedOthers";
 	
 	
-	// Latest version name.
-	private static final String DEFAULT_VERSION = "v01";
+	/**
+	 * Latest version name.
+	 * 
+	 * v02: 1. translation -> interpret, resepaking -> respeak
+	 * 		2. mapping, transcript : TXT -> JSON
+	 * 		3. deletion, archive files (?)
+	 */
+	private static final String DEFAULT_VERSION = "v02";	
 	
 	
 	/**

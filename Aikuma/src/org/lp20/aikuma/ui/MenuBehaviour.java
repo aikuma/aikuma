@@ -130,6 +130,9 @@ public class MenuBehaviour {
 				}
 				
 				return true;
+			case R.id.cloud_sync_menu:
+				Aikuma.syncRefresh(activity, true);
+				return true;
 			case R.id.cloud_sync_setting_menu:
 				intent = new Intent(activity, CloudSettingsActivity.class);
 				activity.startActivity(intent);
@@ -147,6 +150,10 @@ public class MenuBehaviour {
 				return true;
 			case R.id.testUI:
 				intent = new Intent(activity, TestActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.wifi_sync_menu:
+				intent = new Intent(activity, WifiSyncActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.debugInfo:

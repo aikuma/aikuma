@@ -47,6 +47,7 @@
 			android:scaleType="centerInside"
 			android:src="@drawable/movie_48"
 			android:onClick="onVideoRecord"
+			android:visibility="gone"
 		/>
 	
 	<ImageButton

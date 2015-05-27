@@ -16,8 +16,12 @@ import org.lp20.aikuma.audio.record.analyzers.SimpleAnalyzer;
 import org.lp20.aikuma.audio.Beeper;
 import org.lp20.aikuma.audio.Sampler;
 import org.lp20.aikuma2.R;
+import org.lp20.aikuma.model.FileModel;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.FileModel.FileType;
 import org.lp20.aikuma.ui.RecordActivity;
+import org.lp20.aikuma.util.AikumaSettings;
+
 import static org.lp20.aikuma.audio.record.Microphone.MicException;
 
 /**
@@ -134,7 +138,7 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 		if(this.type == 0) {
 			String sampleFileName = 
 					targetFilename.substring(0, targetFilename.lastIndexOf('.')) + 
-					Recording.SAMPLE_SUFFIX;
+					FileModel.getSuffixExt(AikumaSettings.getLatestVersion(), FileType.PREVIEW);
 			sampleFile.prepare(sampleFileName);
 		}
 	}

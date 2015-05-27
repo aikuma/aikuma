@@ -52,9 +52,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /**
+ * Activity class dealing with recording item search interface
+ * 
  * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
  * 
- * Activity class dealing with recording item search interface
  */
 public class CloudSearchActivity extends AikumaListActivity {
 	
@@ -231,7 +232,8 @@ public class CloudSearchActivity extends AikumaListActivity {
 						
 						//If preview file doesn't exist, Download the sample(preview)
 						String sampleCloudId = new FileModel(recording.getVersionName(), 
-								recording.getOwnerId(), recording.getPreviewId(), "preview", "wav").
+								recording.getOwnerId(), recording.getPreviewId(), 
+								FileModel.PREVIEW_TYPE, FileModel.AUDIO_EXT).
 								getCloudIdentifier(0);
 						List<String> cloudId = new ArrayList<String>();
 						cloudId.add(sampleCloudId);

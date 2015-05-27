@@ -41,6 +41,7 @@
 	<string name="cloud_sync_label">GoogleCloud Sync</string>
 	<string name="cloud_sync_setting_label">Sync Settings</string>
 	<string name="ftp_sync_setting_label">FTP Sync Settings</string>
+	<string name="wifi_sync_label">Wi-Fi Sync</string>
 	<string name="language_setting_label">Language Settings</string>
 	<string name="indexing_label">Item Re-indexing</string>
 	<string name="http_dialog_success">Server started at port %1$d</string>
@@ -55,4 +56,5 @@
 	<string name="http_ui_default_port">8080</string>
 	<string name="title_activity_debug_info">DebugInfo</string>
 	<string name="action_settings">Settings</string>
+	<string name="copyright">Copyright (C) 2013-15, The Aikuma Project\nFor information please see aikuma.org\n\nAll content is made available under the terms of the Creative Commons Attribution-NonCommercial 3.0 Unported License (CC BY-NC 3.0).</string>
 </resources>

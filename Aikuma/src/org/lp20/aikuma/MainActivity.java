@@ -91,7 +91,7 @@ public class MainActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		menuBehaviour = new MenuBehaviour(this);
-		SyncUtil.startSyncLoop(this);
+		//SyncUtil.startSyncLoop(this);
 		
 		Aikuma.loadLanguages();
 

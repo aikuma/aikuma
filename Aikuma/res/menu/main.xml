@@ -20,10 +20,14 @@
 	    android:title="@string/connect"/>
 	<item android:id="@+id/gplus_signin_menu"
 	    android:title="@string/gplus_signin_menu_label"/>
+	<item android:id="@+id/cloud_sync_menu"
+	    android:title="@string/cloud_sync_label"
+	    android:visible="false"/>
 	<item android:id="@+id/cloud_sync_setting_menu"
 	    android:title="@string/cloud_sync_setting_label"/>
 	<item android:id="@+id/ftp_sync_setting_menu"
-	    android:title="@string/ftp_sync_setting_label"/>
+	    android:title="@string/ftp_sync_setting_label"
+	    android:visible="false" />
 	<item android:id="@+id/language_setting_menu"
 	    android:title="@string/language_setting_label"/>
 	<item android:id="@+id/settings"
@@ -40,6 +44,9 @@
 	<item android:id="@+id/testUI"
 	    android:visible="false"
 	    android:title="testUI"/>
+	<item android:id="@+id/wifi_sync_menu"
+	    android:visible="true"
+	    android:title="@string/wifi_sync_label"/>
 	<item android:id="@+id/debugInfo"
 		android:visible="false"
 		android:title="Debug Info"/>
