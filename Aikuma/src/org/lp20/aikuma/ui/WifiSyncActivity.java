@@ -4,32 +4,17 @@
 */
 package org.lp20.aikuma.ui;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.ftpserver.FtpServer;
-import org.apache.ftpserver.FtpServerFactory;
-import org.apache.ftpserver.ftplet.Authority;
-import org.apache.ftpserver.ftplet.FtpException;
-import org.apache.ftpserver.ftplet.UserManager;
-import org.apache.ftpserver.listener.ListenerFactory;
-import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
-import org.apache.ftpserver.usermanager.SaltedPasswordEncryptor;
-import org.apache.ftpserver.usermanager.impl.BaseUser;
-import org.apache.ftpserver.usermanager.impl.WritePermission;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.ServerCredentials;
 import org.lp20.aikuma.service.FTPServerService;
-import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.service.WifiStateReceiver;
-import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.SyncUtil;
 import org.lp20.aikuma2.R;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -45,14 +30,12 @@ import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -132,31 +115,18 @@ public class WifiSyncActivity extends AikumaListActivity implements ChannelListe
 						Intent serviceIntent = new Intent(WifiSyncActivity.this, FTPServerService.class);
 						serviceIntent.putExtra(FTPServerService.ACTION_KEY, "server");
 						startService(serviceIntent);
-						
-						/*
-						Intent wifiSyncIntent = new Intent(WifiTestActivity.this, WifiTestActivity2.class);
-						wifiSyncIntent.putExtra("server", true);
-						startActivity(wifiSyncIntent);
-						*/
+
 					} else {
 						Log.i(TAG, "I'm a client");
 						mStateView.setText("State: client (connected)");
 						mServerIP = info.groupOwnerAddress.getHostAddress();
 						mSyncButton.setEnabled(true);
-						
 						/*
-						Intent wifiSyncIntent = new Intent(WifiTestActivity.this, WifiTestActivity2.class);
-						wifiSyncIntent.putExtra("serverIP", serverIP);
-						startActivity(wifiSyncIntent);
-						*/
-						
-						//SyncUtil.startSyncLoop(WifiTestActivity.this, info.groupOwnerAddress);
-						/*
-						Intent serviceIntent = new Intent(WifiTestActivity.this, FTPServerService.class);
-						serviceIntent.putExtra(FTPServerService.ACTION_KEY, "client");
-						serviceIntent.putExtra(FTPServerService.SERVER_ADDR_KEY, serverIP);
-						startService(serviceIntent);
-						*/
+						try {
+							commitServerCredentials();
+						} catch (IOException e) {
+							Toast.makeText(WifiSyncActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+						}*/
 					}
 				}
 				
@@ -166,33 +136,6 @@ public class WifiSyncActivity extends AikumaListActivity implements ChannelListe
 		TextView deviceInfoView = (TextView) findViewById(R.id.deviceInfo);
 		deviceInfoView.setText("ID: " + Aikuma.getAndroidID());
 		mStateView = (TextView) findViewById(R.id.wifiState);
-		/*
-		mSearchButton = (Button) findViewById(R.id.wifiPeerSearchButton);
-		mSearchButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
-					@Override
-					public void onSuccess() {
-						// TODO Auto-generated method stub
-						Toast.makeText(WifiTestActivity.this, 
-								"Searching...", Toast.LENGTH_SHORT).show();
-					}
-	
-					@Override
-					public void onFailure(int reason) {
-						// TODO Auto-generated method stub
-					}
-				});
-			}
-		});*/
-		/*
-		mSyncButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				SyncUtil.startSyncLoop(WifiTestActivity.this, mServerIP);
-			}
-		});*/
 		
 		
 		mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
@@ -274,13 +217,11 @@ public class WifiSyncActivity extends AikumaListActivity implements ChannelListe
 		mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {	
 			@Override
 			public void onSuccess() {
-				// TODO Auto-generated method stub
 				Toast.makeText(WifiSyncActivity.this, "Connected", Toast.LENGTH_LONG).show();
 			}
 			
 			@Override
 			public void onFailure(int reason) {
-				// TODO Auto-generated method stub
 				Toast.makeText(WifiSyncActivity.this, "Connection failed", Toast.LENGTH_LONG).show();
 			}
 		});
@@ -325,6 +266,18 @@ public class WifiSyncActivity extends AikumaListActivity implements ChannelListe
 		mSyncButton.setEnabled(false);
 	}
 	
+	// Writes the server credentials to file for later use.
+	private void commitServerCredentials() throws IOException {
+		try {
+			ServerCredentials serverCredentials =
+					new ServerCredentials(mServerIP, "admin", "admin", false, "");
+			serverCredentials.write();
+		} catch (IllegalArgumentException e) {
+			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+		}
+	}
+		
+	
 	/**
 	 * Called when the user searches the other peers in wifi range
 	 *
@@ -334,14 +287,12 @@ public class WifiSyncActivity extends AikumaListActivity implements ChannelListe
 		mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
 			@Override
 			public void onSuccess() {
-				// TODO Auto-generated method stub
 				Toast.makeText(WifiSyncActivity.this, 
 						"Searching...", Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
 			public void onFailure(int reason) {
-				// TODO Auto-generated method stub
 			}
 		});
 	}

@@ -137,10 +137,6 @@ public class MenuBehaviour {
 				intent = new Intent(activity, CloudSettingsActivity.class);
 				activity.startActivity(intent);
 				return true;
-			case R.id.ftp_sync_setting_menu:
-				intent = new Intent(activity, SyncSettingsActivity.class);
-				activity.startActivity(intent);
-				return true;
 			case R.id.indexing_menu:
 				try {
 					Recording.indexAll();

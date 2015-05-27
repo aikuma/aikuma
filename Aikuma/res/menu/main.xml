@@ -25,9 +25,6 @@
 	    android:visible="false"/>
 	<item android:id="@+id/cloud_sync_setting_menu"
 	    android:title="@string/cloud_sync_setting_label"/>
-	<item android:id="@+id/ftp_sync_setting_menu"
-	    android:title="@string/ftp_sync_setting_label"
-	    android:visible="false" />
 	<item android:id="@+id/language_setting_menu"
 	    android:title="@string/language_setting_label"/>
 	<item android:id="@+id/settings"
