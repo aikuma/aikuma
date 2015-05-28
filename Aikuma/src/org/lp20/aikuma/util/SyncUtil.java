@@ -86,12 +86,13 @@ public class SyncUtil {
 	}
 
 	/**
-	 * Forces a sync to occur now.
+	 * Forces a sync to occur now only if syncThread already exists.
 	 */
 	public static void syncNow() {
 		//When we interrupt the syncThread, we fire up a new syncThread which
 		//syncs immediately.
-		syncThread.interrupt();
+		if(syncThread != null)
+			syncThread.interrupt();
 	}
 
 	/**
@@ -112,7 +113,6 @@ public class SyncUtil {
 		@Override
 		public void run() {
 			int waitMins = (int) AikumaSettings.SYNC_INTERVAL/(60000);
-			boolean syncResult;
 			while (true) {
 				previousStatus = "";
 				try {
@@ -171,15 +171,19 @@ public class SyncUtil {
 					updateMainView(1);
 				}
 				
-				return; // No automatic/periodic sync
-				/*
-				try {
-					TimeUnit.MINUTES.sleep(waitMins);
-				} catch (InterruptedException e) {
-					SyncUtil.syncThread = new SyncLoop(true);
-					SyncUtil.syncThread.start();
-					return;
-				}*/
+				
+				if(forceSync)	// One-time sync
+					break; 
+				else {			// Automatic/periodic sync
+					try {
+						TimeUnit.MINUTES.sleep(waitMins);
+					} catch (InterruptedException e) {
+						SyncUtil.syncThread = new SyncLoop(true);
+						SyncUtil.syncThread.start();
+						return;
+					}
+				}
+
 			}
 		}
 		private boolean forceSync;
