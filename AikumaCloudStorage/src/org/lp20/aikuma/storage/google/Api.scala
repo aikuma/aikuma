@@ -51,6 +51,15 @@ class Api(tm: TokenManager) {
     ghttp(url).method("DELETE").code == 204
   }
 
+  def getInfo(fileId: String): JSONObject = {
+    val url = s"https://www.googleapis.com/drive/v2/files/$fileId"
+    val http = ghttp(url).method("GET")
+    http.code match {
+      case 200 => JSONValue.parse(http.read).asInstanceOf[JSONObject]
+      case _ => null
+    }
+  }
+
   def insertFile(data: Data, meta: JSONObject): JSONObject = {
     val bd = "bdbdbdbdbdbdbdbdbdbd"
     val http = ghttp("https://www.googleapis.com/upload/drive/v2/files?uploadType=multipart")
