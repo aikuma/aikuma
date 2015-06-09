@@ -51,6 +51,8 @@ class Api(tm: TokenManager) {
     ghttp(url).method("DELETE").code == 204
   }
 
+  def exist(q: String): Boolean = search(q).hasMoreElements
+
   def getInfo(fileId: String): JSONObject = {
     val url = s"https://www.googleapis.com/drive/v2/files/$fileId"
     val http = ghttp(url).method("GET")
