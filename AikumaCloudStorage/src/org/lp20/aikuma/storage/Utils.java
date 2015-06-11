@@ -54,10 +54,11 @@ public class Utils {
 		BufferedReader in = new BufferedReader(
 			new InputStreamReader(is)
 		);
-		String line;
+                char[] a = new char[1024];
 		StringBuffer sb = new StringBuffer();
-		while ((line = in.readLine()) != null) {
-			sb.append(line);
+                int n = 0;
+		while ((n = in.read(a)) > 0) {
+			sb.append(new String(a, 0, n));
 		}
 		return sb.toString();		
 	}
