@@ -45,13 +45,10 @@ class GoogleDriveIndex(rootTitle: String, tm: TokenManager) extends Index {
   }
 
   private def mapToTags(map: JMap[String,String]): String = {
-    val sr = new java.io.StringWriter()
-    for ((k,v) <- map) {
+    map.map { case (k,v) =>
       val vv = if (v == "") "" else s"__${v.replaceAll("\\s+", "_")}"
-      val s = s"${k.replaceAll("\\s+", "_")}${vv}\n"
-      sr.write(s)
-    }
-    sr.toString
+      s"${k.replaceAll("\\s+", "_")}$vv"
+    } .mkString(" ")
   }
 
   private def tagsToMap(s: String): JMap[String,String] = {
