@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.json.simple.JSONValue;
 import org.lp20.aikuma.storage.Index;
-import org.lp20.aikuma.storage.FusionIndex;
+import org.lp20.aikuma.storage.google.GoogleDriveIndex;
 import org.lp20.aikuma.storage.InvalidAccessTokenException;
 import org.lp20.aikuma.storage.DataStore;
 import org.lp20.aikuma.storage.google.GoogleDriveStorage;
@@ -25,17 +25,17 @@ import org.lp20.aikuma.server.*;
  */
 @Path("index")
 public class IndexResource {
-    private final FusionIndex idx;
+    private final GoogleDriveIndex idx;
     private static final Logger log = Logger.getLogger(IndexResource.class.getName());
 
-    private String table_id;
+    private String gdRootName;
     private TokenManager tokenManager;
     private UpdateNotifier updateNotifier;
 
     public IndexResource(@Context Application app) {
         //TODO: is there another way to do this?
         IndexServerApplication a = (IndexServerApplication) app;
-        table_id =  (String) a.getProperty("table_id");
+        gdRootName =  (String) a.getProperty("aikuma_root_name");
         tokenManager = a.tokenManager;
 
         try {
@@ -49,8 +49,12 @@ public class IndexResource {
             updateNotifier = null;
         }
 
-        idx = new FusionIndex(tokenManager.getAccessToken());
-        idx.setTableId(table_id);
+        idx = new GoogleDriveIndex(gdRootName, new org.lp20.aikuma.storage.google.TokenManager() {
+            @Override
+            public String accessToken() {
+                return tokenManager.getAccessToken();
+            }
+        });
     }
 
     @POST
@@ -59,17 +63,7 @@ public class IndexResource {
     @RolesAllowed({"authenticatedUser"})
     public Response search(MultivaluedMap<String, String> formParams,
                            @DefaultValue("false") @QueryParam("detail") String detail) {
-        try {
-            return doSearch(formParams, detail);
-        } catch (InvalidAccessTokenException e1) {
-            idx.setAccessToken(tokenManager.refreshAccessToken());
-            try {
-                return doSearch(formParams, detail);
-            } catch (InvalidAccessTokenException e2) {
-                log.severe("Unable to refresh access_token successfully");
-                return Response.serverError().build();
-            }
-        }
+        return doSearch(formParams, detail);
     }
 
     private Response doSearch(MultivaluedMap<String, String> formParams, String detail)  {
@@ -97,17 +91,7 @@ public class IndexResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"authenticatedUser"})
     public Response getItem(@PathParam("identifier") String identifier) {
-        try {
-            return doGetItem(identifier);
-        } catch (InvalidAccessTokenException e) {
-            idx.setAccessToken(tokenManager.refreshAccessToken());
-            try {
-                return doGetItem(identifier);
-            } catch (InvalidAccessTokenException ex) {
-                log.severe("Unable to refresh access_token successfully");
-                return Response.serverError().build();
-            }
-        }
+        return doGetItem(identifier);
     }
 
     private Response doGetItem(String identifier) {
@@ -131,17 +115,7 @@ public class IndexResource {
         if (updateNotifier != null)
             updateNotifier.processNewFile(identifier);
         */
-        try {
-            return doAddItem(identifier, formParams);
-        } catch (InvalidAccessTokenException e) {
-            idx.setAccessToken(tokenManager.refreshAccessToken());
-            try {
-                return doAddItem(identifier, formParams);
-            } catch (InvalidAccessTokenException e1) {
-                log.severe("Unable to refresh access_token successfully");
-                return Response.serverError().build();
-            }
-        }
+        return doAddItem(identifier, formParams);
     }
 
     private Response doAddItem(String identifier, MultivaluedMap<String, String> formParams) {
@@ -165,17 +139,7 @@ public class IndexResource {
     @Path("{identifier: .+}")
     @RolesAllowed({"authenticatedUser"})
     public Response updateItem(@PathParam("identifier") String identifier, MultivaluedMap<String, String> formParams) {
-        try {
-            return doUpdateItem(identifier, formParams);
-        } catch (InvalidAccessTokenException e) {
-            idx.setAccessToken(tokenManager.refreshAccessToken());
-            try {
-                return doUpdateItem(identifier, formParams);
-            } catch (InvalidAccessTokenException e1) {
-                log.severe("Invalid access token; work out this logic, Bob");
-                return Response.serverError().build();
-            }
-        }
+        return doUpdateItem(identifier, formParams);
     }
 
     private Response doUpdateItem(String identifier, MultivaluedMap<String, String> formParams) {

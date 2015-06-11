@@ -17,7 +17,7 @@ dependencies {
     compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.10.1'
     compile 'org.glassfish.jersey.ext:jersey-entity-filtering:2.10.1'
     compile 'org.glassfish.jersey.media:jersey-media-moxy:2.10.1'
-    compile 'org.lp20:aikuma-cloud-storage:0.9.0'
+    compile 'org.lp20:aikuma-cloud-storage:0.10.0'
     compile 'io.jsonwebtoken:jjwt:0.3'
     compile 'org.mapdb:mapdb:1.0.6'
 }
