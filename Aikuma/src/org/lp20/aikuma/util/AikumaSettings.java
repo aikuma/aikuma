@@ -28,6 +28,10 @@ public class AikumaSettings {
 	 * Setting value for sync-only-over-wifi
 	 */
 	public static boolean isOnlyWifi;
+	/**
+	 * Setting value for public-share
+	 */
+	public static boolean isPublicShareEnabled;
 	
 	// Current default owner_id(== default Google account)
 	private static String DEFAULT_USER_ID = null;
@@ -99,6 +103,7 @@ public class AikumaSettings {
 	 *  BACKUP_MODE_KEY			: true/false
 	 *  AUTO_DOWNLOAD_MODE_KEY  : true/false
 	 *  WIFI_MODE_KEY			: true/false
+	 *  PUBLIC_SHARE_CONSENT_KEY: true/false
 	 *  RESPEAKING_MODE_KEY		: "phone"/"thumb"
 	 */
 	public static final String BACKUP_MODE_KEY = "backup_mode";
@@ -106,6 +111,8 @@ public class AikumaSettings {
 	public static final String AUTO_DOWNLOAD_MODE_KEY = "autoDownload_mode";
 	/** */
 	public static final String WIFI_MODE_KEY = "only_wifi";
+	/** */
+	public static final String PUBLIC_SHARE_CONSENT_KEY = "public_share";
 	/** */
 	public static final String RESPEAKING_MODE_KEY = "respeaking_mode";
 
@@ -162,7 +169,13 @@ public class AikumaSettings {
 	/**
 	 * Latest version name.
 	 * 
-	 * v02: 1. translation -> interpret, resepaking -> respeak
+	 * v02: 1. Recording-metadata: delete languages/speakers, add comments
+	 * 		2. Speaker-metadata: delete languages, add comments/date
+	 * 		3. Delete speaker-images
+	 * 		4. Add recording-images
+	 * 		5. New files: Tags (speaker, language, discourse-type, custom)
+	 *
+	 *      1. translation -> interpret, resepaking -> respeak
 	 * 		2. mapping, transcript : TXT -> JSON
 	 * 		3. deletion, archive files (?)
 	 */

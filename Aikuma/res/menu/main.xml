@@ -47,6 +47,8 @@
 	<item android:id="@+id/debugInfo"
 		android:visible="false"
 		android:title="Debug Info"/>
+	<item android:id="@+id/public_share_consent_menu"
+	    android:title="@string/public_share_consent_label" />
 	<item android:id="@+id/about"
 		android:title="@string/about"/>
 </menu>

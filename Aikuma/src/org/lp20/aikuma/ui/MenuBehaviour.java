@@ -89,6 +89,7 @@ public class MenuBehaviour {
 				}
 				intent = new Intent(activity, RecordActivity.class);
 				activity.startActivity(intent);
+				
 				return true;
 			case R.id.speakers:
 				if(AikumaSettings.getCurrentUserId() == null) {
@@ -113,6 +114,10 @@ public class MenuBehaviour {
 				return true;
 			case R.id.about:
 				intent = new Intent(activity, AboutActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.public_share_consent_menu:
+				intent = new Intent(activity, ConsentActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.start_http_server:
@@ -212,6 +217,7 @@ public class MenuBehaviour {
 		return menu.findItem(resourceId);
 	}
 	
+	
 	/**
 	 * Set if the user signed-in an account
 	 * @param state		true(signed-in), false(no sign-in)
@@ -220,7 +226,7 @@ public class MenuBehaviour {
 		this.signInState = state;
 		if(state) {
 			//TODO: get emailAccount from AikumaSettings
-			String signOutString = "Sign-out: "; // + activity.emailAccount;
+			String signOutString = "Sign-out"; // + activity.emailAccount;
 			findItem(R.id.gplus_signin_menu).setTitle(signOutString);
 		} else {
 			String signInString = 

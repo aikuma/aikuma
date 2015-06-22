@@ -91,6 +91,10 @@ public class MainActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		menuBehaviour = new MenuBehaviour(this);
+		originals = new ArrayList<Recording>();
+		adapter = new RecordingArrayAdapter(this, originals);
+		setListAdapter(adapter);
+		
 		//SyncUtil.startSyncLoop(this);
 		
 		Aikuma.loadLanguages();
@@ -108,7 +112,9 @@ public class MainActivity extends ListActivity {
 		googleAuthToken = settings.getString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, null);
                 googleIdToken = settings.getString(AikumaSettings.SETTING_ID_TOKEN_KEY, null);
 		googleAPIScope = AikumaSettings.getScope();
-    	Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
+		AikumaSettings.isPublicShareEnabled = 
+    			settings.getBoolean(AikumaSettings.PUBLIC_SHARE_CONSENT_KEY, false);
+		Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
     	
     	AikumaSettings.setUserId(emailAccount);
     	showUserAccount(emailAccount, null);
@@ -149,6 +155,7 @@ public class MainActivity extends ListActivity {
 				if(status.equals("start")) {
 					showProgressStatus(View.VISIBLE);
 				} else if(status.equals("end")) {
+					Toast.makeText(MainActivity.this, "sync finished", Toast.LENGTH_LONG).show();
 					showProgressStatus(View.GONE);
 				} else if(status.endsWith("source")) {	//source-download
 					String[] splitName = status.split("-");
@@ -202,11 +209,13 @@ public class MainActivity extends ListActivity {
 	
 	@Override
 	public void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
 		speakerId = intent.getStringExtra("speakerId");
 	}
 	
 	@Override
 	public void onBackPressed() {
+		Log.i(TAG, "backbutton");
 		if(speakerId != null) {
 			adapter.getFilter().filter(null);
 			speakerId = null;
@@ -229,14 +238,21 @@ public class MainActivity extends ListActivity {
 				originals.add(recording);
 			}
 		}
-		Log.i(TAG, "original num: " + originals.size());
-
-		adapter = new RecordingArrayAdapter(this, originals);
-	
+		
+		Log.i(TAG, "original num: " + originals.size() + ", " + adapter.getCount());
+		//adapter.clear();
+		//adapter.addAll(originals);
+		//adapter.notifyDataSetChanged();
+		Log.i(TAG, "original num: " + originals.size() + ", " + adapter.getCount());
+		
 		if(speakerId != null) {
 			adapter.getFilter().filter(speakerId);
+		} else {
+			adapter.setRecordings(originals);
+			//adapter.notifyDataSetChanged();
 		}
-		setListAdapter(adapter);
+		adapter.notifyDataSetChanged();
+		
 		if (listViewState != null) {
 			getListView().onRestoreInstanceState(listViewState);
 		}
