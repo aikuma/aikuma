@@ -4,12 +4,17 @@
 */
 package org.lp20.aikuma.ui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.util.Log;
 //import android.view.View;
@@ -22,6 +27,7 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
+import org.lp20.aikuma.util.StandardDateFormat;
 import org.lp20.aikuma.util.UsageUtils;
 
 /**
@@ -31,6 +37,9 @@ import org.lp20.aikuma.util.UsageUtils;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  */
 public class AboutActivity extends AikumaActivity {
+	
+	private static final String TAG = AboutActivity.class.getCanonicalName();
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,7 +56,8 @@ public class AboutActivity extends AikumaActivity {
 		try {
 				versionField.setText("Aikuma " +
 						this.getPackageManager().getPackageInfo(
-						this.getPackageName(), 0).versionName);
+						this.getPackageName(), 0).versionName +
+						" (Build. " + getBuildDateString() + ")");
 		} catch (android.content.pm.PackageManager.NameNotFoundException e) {
 			//Just leave the textview empty.
 		}
@@ -114,6 +124,25 @@ public class AboutActivity extends AikumaActivity {
 		cloudStatus.setText(sb);
 	}
 
+	private String getBuildDateString() {
+		try {
+			ApplicationInfo appInfo = getPackageManager().getApplicationInfo(getPackageName(), 0);
+			ZipFile zipFile = new ZipFile(appInfo.sourceDir);
+			ZipEntry zipEntry = zipFile.getEntry("classes.dex");
+			//ZipEntry zipEntry = zipFile.getEntry("META-INF/MANIFEST.MF");
+		    long time = zipEntry.getTime();
+		    String timeStr = new StandardDateFormat().format(new java.util.Date(time));
+		    zipFile.close();
+		    return timeStr;
+		} catch(IOException e) {
+			Log.e(TAG, e.getMessage());
+			return null;
+		} catch (NameNotFoundException e) {
+			Log.e(TAG, e.getMessage());
+			return null;
+		}
+		
+	}
 	
 	
 }
