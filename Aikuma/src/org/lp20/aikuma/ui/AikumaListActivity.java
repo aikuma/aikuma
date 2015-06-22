@@ -68,13 +68,13 @@ public abstract class AikumaListActivity extends ListActivity {
 	 */
 	public void onBackPressed() {
 		if (safeActivityTransition) {
-			menuBehaviour.safeGoBack(safeActivityTransitionMessage, null);
+			menuBehaviour.safeGoBack(safeActivityTransitionMessage, "Discard", null);
 		} else {
 			this.finish();
 		}
 	}
 
-	private MenuBehaviour menuBehaviour;
+	protected MenuBehaviour menuBehaviour;
 	/**
 	 * Indicates whether a safe activity transition should take place (warn
 	 * about data loss.

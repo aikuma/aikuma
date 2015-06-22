@@ -136,8 +136,6 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 			intent.putExtra("latitude", latitude);
 			intent.putExtra("longitude", longitude);
 		}
-		
-		
 		if(groupId != null)
 			intent.putExtra("groupId", groupId);
 		
@@ -147,7 +145,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 	@Override
 	public void onBackPressed() {
 		if (safeActivityTransition) {
-			menuBehaviour.safeGoBack(safeActivityTransitionMessage, safeBehaviour);
+			menuBehaviour.safeGoBack(safeActivityTransitionMessage, "Discard", safeBehaviour);
 		} else {
 			safeBehaviour.onSafeBackButton();
 			this.finish();

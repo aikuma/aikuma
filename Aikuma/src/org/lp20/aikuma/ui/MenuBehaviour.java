@@ -217,7 +217,6 @@ public class MenuBehaviour {
 		return menu.findItem(resourceId);
 	}
 	
-	
 	/**
 	 * Set if the user signed-in an account
 	 * @param state		true(signed-in), false(no sign-in)
@@ -290,7 +289,7 @@ public class MenuBehaviour {
 	 * @param	safeActivityTransitionMessage	The string to display in a warning message.
 	 * @param	safeBehaviour	Interface having a function required for safe back-button.
 	 */
-	public void safeGoBack(String safeActivityTransitionMessage, 
+	public void safeGoBack(String safeActivityTransitionMessage, String okMessage,
 			final BackButtonBehaviour safeBehaviour) {
 		String message = DEFAULT_MESSAGE;
 		if (safeActivityTransitionMessage != null) {
@@ -298,7 +297,7 @@ public class MenuBehaviour {
 		}
 		new AlertDialog.Builder(activity)
 				.setMessage(message)
-				.setPositiveButton("Discard",
+				.setPositiveButton(okMessage,
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog,
