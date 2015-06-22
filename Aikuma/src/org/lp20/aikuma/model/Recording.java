@@ -88,8 +88,6 @@ public class Recording extends FileModel {
 		setName(name);
 		setComments(comments);
 		setDate(date);
-//		setLanguages(languages);
-//		setSpeakersIds(speakersIds);
 		setDeviceName(deviceName);
 		setAndroidID(androidID);
 		setSampleRate(sampleRate);
@@ -138,8 +136,6 @@ public class Recording extends FileModel {
 		super(versionName, ownerId, null, null, format);	// id, fileType is defined by Recording class
 		setName(name);
 		setDate(date);
-//		setLanguages(languages);
-//		setSpeakersIds(speakersIds);
 		setAndroidID(androidID);
 		setSampleRate(sampleRate);
 		setDurationMsec(durationMsec);
@@ -527,19 +523,6 @@ public class Recording extends FileModel {
 		return tagFileModels;
 	}
 	
-
-	/**
-	 * Returns true if the Recording has at least one language; false otherwise.
-	 *
-	 * @return	true if the Recording has at least one language; false otherwise.
-	 */
-//	public boolean hasALanguage() {
-//		if (this.languages.size() == 0) {
-//			return false;
-//		}
-//		return true;
-//	}
-	
 	/**
 	 * Returns true if the recording is a movie file
 	 * (Currently movie file is only stored with .mp4 extension
@@ -603,14 +586,6 @@ public class Recording extends FileModel {
 		encodedRecording.put(DATE_KEY, new StandardDateFormat().format(this.date));
 		encodedRecording.put(VERSION_KEY, this.versionName);
 		encodedRecording.put(USER_ID_KEY, this.ownerId);
-		/*
-		encodedRecording.put(LANGUAGES_KEY, Language.encodeList(languages));
-		JSONArray speakersIdsArray = new JSONArray();
-		for (String id : speakersIds) {
-			speakersIdsArray.add(id.toString());
-		}
-		encodedRecording.put(SPEAKERS_KEY, speakersIdsArray);
-		*/
 		encodedRecording.put(DEVICE_NAME_KEY, deviceName);
 		encodedRecording.put(ANDROID_ID_KEY, this.androidID);
 		encodedRecording.put(SAMPLERATE_KEY, getSampleRate());
@@ -870,18 +845,6 @@ public class Recording extends FileModel {
 		String sourceVerId = (String) jsonObj.get(SOURCE_VER_ID_KEY);
 		String format = (String) jsonObj.get(FORMAT_KEY);
 		String fileType = (String) jsonObj.get(FILE_TYPE_KEY);
-		/*
-		JSONArray languageArray = (JSONArray) jsonObj.get(LANGUAGES_KEY);
-		if (languageArray == null) {
-			throw new IOException("Null languages in the JSON file.");
-		}
-		List<Language> languages = Language.decodeJSONArray(languageArray);
-		JSONArray speakerIdArray = (JSONArray) jsonObj.get(SPEAKERS_KEY);
-		if (speakerIdArray == null) {
-			throw new IOException("Null speakersIds in the JSON file.");
-		}
-		List<String> speakersIds = Speaker.decodeJSONArray(speakerIdArray);
-		*/
 		String androidID = (String) jsonObj.get(ANDROID_ID_KEY);
 		if (androidID == null) {
 			throw new IOException("Null androidID in the JSON file.");
@@ -1320,10 +1283,6 @@ public class Recording extends FileModel {
 				.append(name, rhs.name)
 				.append(comments, rhs.comments)
 				.append(date, rhs.date)
-				/*
-				.append(languages, rhs.languages)
-				.append(speakersIds, rhs.speakersIds)
-				*/
 				.append(androidID, rhs.androidID)
 				.append(groupId, rhs.groupId)
 				.append(respeakingId, rhs.respeakingId)
@@ -1369,55 +1328,6 @@ public class Recording extends FileModel {
 			}
 		}
 	}
-
-//	// Sets the languages 
-//	private void setLanguages(List<Language> languages) {
-//		if (languages == null) {
-//			throw new IllegalArgumentException(
-//					"Recording languages cannot be null. " +
-//					"Set as an empty List<Language> instead.");
-//		}
-//		this.languages = languages;
-//	}
-
-	/**
-	 * Add's another language to the Recording's language list
-	 *
-	 * @param	language	The language to be added to the Recording's list of
-	 * languages.
-	 */
-//	private void addLanguage(Language language) {
-//		if (language == null) {
-//			throw new IllegalArgumentException(
-//					"A language for the recording cannot be null");
-//		}
-//		this.languages.add(language);
-//	}
-
-	// Sets the speakers Ids, but won't accept a null list (empty lists are
-	// fine).
-//	private void setSpeakersIds(List<String> speakersIds) {
-//		if (speakersIds == null) {
-//			throw new IllegalArgumentException(
-//					"Recording speakersIds cannot be null. " +
-//					"Set as an empty List<String> instead.");
-//		}
-//		this.speakersIds = speakersIds;
-//	}
-
-	/**
-	 * Add's another speaker to the Recording's speaker list
-	 *
-	 * @param	speaker	The speaker to be added to the Recording's list of
-	 * speaker.
-	 */
-//	private void addSpeakerId(Speaker speaker) {
-//		if (speaker == null) {
-//			throw new IllegalArgumentException(
-//					"A speaker for the recording cannot be null");
-//		}
-//		this.speakersIds.add(speaker.getId());
-//	}
 
 	private void setDeviceName(String deviceName) {
 		if (deviceName == null) {
@@ -1898,16 +1808,8 @@ public class Recording extends FileModel {
 	 */
 	private Date date;
 
-//	/**
-//	 * The languages of the recording.
-//	 */
-//	private List<Language> languages;
-//
 	private List<Language> languagesBuffer;
-//	/**
-//	 * The speakers of the recording.
-//	 */
-//	private List<String> speakersIds;
+
 	private List<String> speakersIdsBuffer;
 	private List<String> speakersCreatorsBuffer;
 	
@@ -1982,10 +1884,6 @@ public class Recording extends FileModel {
 	public static final String COMMENTS_KEY = "comments";
 	/** */
 	public static final String DATE_KEY = "date";
-//	/** */
-//	public static final String LANGUAGES_KEY = "languages";
-//	/** */
-//	public static final String SPEAKERS_KEY = "speakers";
 	/** */
 	public static final String DEVICE_NAME_KEY = "device";
 	/** */
@@ -2020,8 +1918,6 @@ public class Recording extends FileModel {
 		fieldKeySet.add(DATE_KEY);
 		fieldKeySet.add(VERSION_KEY);
 		fieldKeySet.add(USER_ID_KEY);
-//		fieldKeySet.add(LANGUAGES_KEY);
-//		fieldKeySet.add(SPEAKERS_KEY);
 		fieldKeySet.add(DEVICE_NAME_KEY);
 		fieldKeySet.add(ANDROID_ID_KEY);
 		fieldKeySet.add(SAMPLERATE_KEY);

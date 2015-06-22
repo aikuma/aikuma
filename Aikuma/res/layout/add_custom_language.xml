@@ -12,6 +12,7 @@
 			android:layout_height="wrap_content"
 			android:hint="@string/language_name"
 			android:inputType="text"
+			android:maxLength="20"
 		/>
 		<Button
 			android:id="@+id/addCustomLanguageButton"

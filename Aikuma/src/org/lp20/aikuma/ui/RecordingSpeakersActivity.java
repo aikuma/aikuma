@@ -56,11 +56,6 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 		else {
 			selectedSpeakers = savedInstanceState.getParcelableArrayList("selectedSpeakers");
 		}
-		/*
-		selectedSpeakers = getIntent().getParcelableArrayListExtra("selectedSpeakers");
-		if(selectedSpeakers == null)
-			selectedSpeakers = new ArrayList<Speaker>();
-		updateOkButton();*/
 
 		speakers = Speaker.readAll(AikumaSettings.getCurrentUserId());
 		Collections.sort(speakers);
@@ -165,29 +160,8 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 		startActivity(intent);
 		
 		Toast.makeText(this, "Speaker tag added", Toast.LENGTH_LONG).show();
-		
-		/*
-		Intent intent = new Intent();
-		intent.putParcelableArrayListExtra("speakers", selectedSpeakers);
-		setResult(RESULT_OK, intent);
-		this.finish();*/
 	}
-	
-	/**
-	 * Disables or enables the OK button if at least one language is selected
-	 * used by LanguageArrayAdapter each time checkbox is checked
-	 */
-//	private void updateOkButton() {
-//		if (selectedSpeakers.size() > 0) {
-//			okButton.setImageResource(R.drawable.ok_48);
-//			okButton.setEnabled(true);
-//			safeActivityTransition = true;
-//		} else {
-//			okButton.setImageResource(R.drawable.ok_disabled_48);
-//			okButton.setEnabled(false);
-//			safeActivityTransition = false;
-//		}
-//	}
+
 
 	private ImageButton okButton;
 	

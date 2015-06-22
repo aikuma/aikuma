@@ -276,9 +276,6 @@ public class ListenRespeakingActivity extends AikumaActivity{
 				setPlayer(playerInterface, new SimplePlayer(recording, true));
 			} else {
 				setPlayer(playerInterface, new InterleavedPlayer(recording));
-//				ImageButton respeakingButton =
-//						(ImageButton) findViewById(R.id.respeaking);
-//				respeakingButton.setVisibility(View.GONE);
 			}
 		} catch (IOException e) {
 			//The player couldn't be created from the recoridng, so lets wrap

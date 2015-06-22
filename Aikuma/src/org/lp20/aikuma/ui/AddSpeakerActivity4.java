@@ -42,22 +42,11 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 		origin = intent.getExtras().getInt("origin");
 		name = (String) intent.getExtras().getString("name");
 		comments = (String) intent.getExtras().getString("comments");
-//		selectedLanguages = intent.getParcelableArrayListExtra("languages");
-//		String imageUUIDStr = intent.getExtras().getString("imageUUID");
-//		imageUUID = UUID.fromString(imageUUIDStr);
 		
 		TextView nameView = (TextView) findViewById(R.id.nameView3);
 		TextView commentsView = (TextView) findViewById(R.id.commentsView);
 		nameView.setText("Name: " + name);
 		commentsView.setText("Comments:\n" + comments);
-		
-//		TextView languageView = (TextView) findViewById(R.id.languageView2);
-//		StringBuilder sb = new StringBuilder("Languages:\n");
-//		for(Language lang : selectedLanguages) {
-//			sb.append(lang.getName() + "\n");
-//		}
-//		languageView.setText(sb);
-//		handleSmallCameraPhoto();
 		
 		//Lets method in superclass(AikumaAcitivity) know 
 		//to ask user if they are willing to
@@ -67,29 +56,12 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 				"This will discard the new speaker";
 	}
 
-	// Creates a smaller version of the photo taken and uses it for the speaker
-	// image view.
-//	private void handleSmallCameraPhoto() {
-//		Bitmap image;
-//		try {
-//			ImageUtils.createSmallSpeakerImage(this.imageUUID);
-//			image = ImageUtils.getNoSyncSmallImage(this.imageUUID);
-//			
-//		} catch (IOException e) {
-//			image = null;
-//		}
-//		ImageView speakerImage = (ImageView) findViewById(R.id.speakerImage);
-//		speakerImage.setImageBitmap(image);
-//	}
-
 	/**
 	 * Called when the user is ready to confirm the creation of the speaker.
 	 *
 	 * @param	view	The OK button.
 	 */
 	public void onOkButtonPressed(View view) {
-//		Speaker newSpeaker = new Speaker(imageUUID, name, comments, selectedLanguages, 
-//				AikumaSettings.getLatestVersion(), AikumaSettings.getCurrentUserId());
 		Date date = new Date();
 		Speaker newSpeaker = new Speaker(name, comments, date,
 				AikumaSettings.getLatestVersion(), AikumaSettings.getCurrentUserId());

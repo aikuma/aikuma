@@ -288,10 +288,7 @@ public class FileModel implements Parcelable {
 			String groupId = getId().split("-")[0];
 			return (ownerDirStr + Recording.TAG_PATH + groupId + "/" + getId());
 		} else if(fileType.equals(SPEAKER_TYPE)) {
-//			if(option == 0)
-//				suffix = "-image-small.jpg";
-//			else
-				suffix = getSuffixExt(versionName, FileType.METADATA);
+			suffix = getSuffixExt(versionName, FileType.METADATA);
 			
 			return (ownerDirStr + Speaker.PATH + getId() + "/" + getId() + suffix);
 		} else {
@@ -334,11 +331,8 @@ public class FileModel implements Parcelable {
 			itemPath = new File(
 					FileIO.getOwnerPath(versionName, ownerId), Speaker.PATH);
 			itemPath.mkdirs();
-			
-//			if(option == 0)
-//				suffix = "-image-small.jpg";
-//			else
-				suffix = getSuffixExt(versionName, FileType.METADATA);
+
+			suffix = getSuffixExt(versionName, FileType.METADATA);
 			
 			return new File(itemPath, getId() + "/" + getId() + suffix);
 		} else {

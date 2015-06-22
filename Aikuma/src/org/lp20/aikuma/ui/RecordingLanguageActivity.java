@@ -83,32 +83,6 @@ public class RecordingLanguageActivity extends AikumaListActivity {
 	    super.onSaveInstanceState(savedInstanceState);
 	}
 
-	@Override
-	public void onPause() {
-		super.onPause();
-		/*
-		try {
-			FileIO.writeDefaultLanguages(defaultLanguages);
-		} catch (IOException e) {
-			// Not much that can be done if writing fails, except perhaps
-			// toasting the user.
-		}
-		*/
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		
-		/*
-		defaultLanguages = FileIO.readDefaultLanguages();
-		ArrayAdapter<Language> adapter =
-				new SpeakerLanguagesArrayAdapter(this, defaultLanguages, 
-						selectedDefaultLanguages);
-		setListAdapter(adapter);
-		*/
-	}
-
 	/**
 	 * Called when a user presses the add ISO language button.
 	 *

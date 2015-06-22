@@ -76,18 +76,10 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 		// settings for recording information
 		description = (String) intent.getExtras().get("description");
 		comments = (String) intent.getExtras().get("comments");
-		//speakersIds = new ArrayList<String>();
-		//selectedSpeakers = intent.getParcelableArrayListExtra("speakers");
 		selectedLanguages = intent.getParcelableArrayListExtra("languages");
 		for(Language lang : selectedLanguages) {
 			Log.i(TAG, lang.getName() + " : " + lang.getCode() + " -> " + lang.toTagString());
 		}
-		/*
-		// Speakers images
-		userImages =
-				(LinearLayout) findViewById(R.id.userImagesAndAddUserButton);
-		setUpSpeakersImages();
-		*/
 		
 		// Recording name
 		TextView descriptionView = (TextView) findViewById(R.id.description);
@@ -116,11 +108,6 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 		// Recording comments
 		TextView commentsView = (TextView) findViewById(R.id.commentsView);
 		commentsView.setText("Comments:\n" + comments);
-		
-		/*
-		for(Speaker speaker : selectedSpeakers) {
-			speakersIds.add(speaker.getId());
-		}*/
 
 		//Lets method in superclass know to ask user if they are willing to go back
 		safeActivityTransition = true;
@@ -262,10 +249,7 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 	static final int ADD_SPEAKER = 0;
 	private UUID imageUUID;
 	private UUID uuid;
-	private List<String> speakersIds;
-	private List<Speaker> selectedSpeakers;
 	private List<Language> selectedLanguages;
-	private LinearLayout userImages;
 	private long sampleRate;
 	private int durationMsec;
 	private String groupId;

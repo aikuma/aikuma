@@ -37,27 +37,23 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 
 		// Get metadata
 		Intent intent = getIntent();
-		//String mode = intent.getStringExtra("mode");
-		//if(mode == null) {
-			uuid = UUID.fromString(
-					(String) intent.getExtras().get("uuidString"));
-			sampleRate = (Long) intent.getExtras().get("sampleRate");
-			durationMsec = (Integer) intent.getExtras().get("durationMsec");
-			groupId = (String)
-					intent.getExtras().get("groupId");
-			sourceVerId = (String)
-					intent.getExtras().get("sourceVerId");
-			numChannels = (Integer) intent.getExtras().get("numChannels");
-			bitsPerSample = (Integer) intent.getExtras().get("bitsPerSample");
-			latitude = (Double) intent.getExtras().get("latitude");
-			longitude = (Double) intent.getExtras().get("longitude");
-			format = (String)
-					intent.getExtras().get("format");
-			
-			selectedLanguages = intent.getParcelableArrayListExtra("languages");
-		//}
+		uuid = UUID.fromString(
+				(String) intent.getExtras().get("uuidString"));
+		sampleRate = (Long) intent.getExtras().get("sampleRate");
+		durationMsec = (Integer) intent.getExtras().get("durationMsec");
+		groupId = (String)
+				intent.getExtras().get("groupId");
+		sourceVerId = (String)
+				intent.getExtras().get("sourceVerId");
+		numChannels = (Integer) intent.getExtras().get("numChannels");
+		bitsPerSample = (Integer) intent.getExtras().get("bitsPerSample");
+		latitude = (Double) intent.getExtras().get("latitude");
+		longitude = (Double) intent.getExtras().get("longitude");
+		format = (String)
+				intent.getExtras().get("format");
 		
-		
+		selectedLanguages = intent.getParcelableArrayListExtra("languages");
+
 		okButton = (ImageButton) findViewById(R.id.okButton2);
 		updateOkButton();
 

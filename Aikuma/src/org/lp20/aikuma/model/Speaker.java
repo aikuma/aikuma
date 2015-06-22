@@ -58,29 +58,13 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 	public Speaker(String name, String comments, Date date,
 			String versionName, String ownerId) {
 		super(versionName, ownerId, null, SPEAKER_TYPE, IMAGE_EXT);
-//		this.imageUUID = imageUUID;
 		setName(name);
 		setComments(comments);
 		setDate(date);
 		setId(createId(name));
-//		setLanguages(languages);
 		setVersionName(versionName);
 		setOwnerId(ownerId);
 	}
-
-//	private void importImage(UUID imageUUID) throws IOException {
-//		// First import the full sized image
-//		File imageFile = ImageUtils.getNoSyncImageFile(imageUUID);
-//		FileUtils.moveFile(imageFile,
-//				new File(getSpeakersPath(),
-//						getId() + "/" + getId() + "-image.jpg"));
-//
-//		// Then import the small image
-//		File smallImageFile = ImageUtils.getNoSyncSmallImageFile(imageUUID);
-//		FileUtils.moveFile(smallImageFile,
-//				new File(getSpeakersPath(),
-//						getId() + "/" + getId() + "-image-small.jpg"));
-//	}
 
 	/**
 	 * The constructor used when reading an existing speaker.
@@ -94,7 +78,6 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 			String versionName, String ownerId) {
 		super(versionName, ownerId, null, SPEAKER_TYPE, IMAGE_EXT);
 		setName(name);
-//		setLanguages(languages);
 		setId(id);
 	}
 
@@ -125,81 +108,6 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 		return date;
 	}
 
-//	/**
-//	 * Gets the list of languages associated with the Speaker.
-//	 *
-//	 * @return	A List of Language objects.
-//	 */
-//	public List<Language> getLanguages() {
-//		return languages;
-//	}
-//
-//	/**
-//	 * Returns true if the Speaker has at least one language; false otherwise.
-//	 *
-//	 * @return	true if the Speaker has at least one language; false otherwise.
-//	 */
-//	public boolean hasALanguage() {
-//		if (languages.size() == 0) {
-//			return false;
-//		}
-//		return true;
-//	}
-//
-//	/**
-//	 * Get the Speaker's image as a File.
-//	 * @return A File containing the Speaker's image.
-//	 */
-//	public File getImageFile() {
-//		return new File(getSpeakersPath(), getId() + "/" + getId() + "-image.jpg");
-//	}
-//	
-//	/**
-//	 * Get the small version of Speaker's image as a File.
-//	 * @return A File containing the Speaker's small image.
-//	 */
-//	public File getSmallImageFile() {
-//		return new File(getSpeakersPath(), getId() + "/" + getId() + "-image-small.jpg");
-//	}
-//	
-//	/**
-//	 * Gets the Speaker's image.
-//	 *
-//	 * @return	A Bitmap object.
-//	 * @throws	IOException	If the image cannot be retrieved.
-//	 */
-//	public Bitmap getImage() throws IOException {
-//		return ImageUtils.retrieveFromFile(getImageFile());
-//	}
-//
-//	/**
-//	 * Gets the small version of the Speaker's image.
-//	 *
-//	 * @return	A Bitmap object.
-//	 * @throws	IOException	If the image cannot be retrieved.
-//	 */
-//	public Bitmap getSmallImage() throws IOException {
-//		return ImageUtils.retrieveFromFile(getSmallImageFile());
-//	}
-//
-//	/**
-//	 * Gets the small version of the Speaker's image.
-//	 *
-//	 * @param	verName		The version name of the recording
-//	 * @param	ownerAccount OwnerID of the recording
-//	 * @param	speakerId	The ID of the speaker whose image is to be fetched.
-//	 * @return	A Bitmap object.
-//	 * @throws	IOException	If the image cannot be retrieved.
-//	 */
-//	public static Bitmap getSmallImage(String verName, String ownerAccount,
-//			String speakerId) throws IOException {
-//		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
-//		return ImageUtils.retrieveFromFile(
-//				new File(getSpeakersPath(ownerDir),
-//						speakerId + "/" + speakerId + "-image-small.jpg"));
-//	}
-
-
 	/**
 	 * Encodes the Speaker object as a corresponding JSONObject.
 	 *
@@ -211,7 +119,6 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 		encodedSpeaker.put(COMMENTS_KEY, this.comments);
 		encodedSpeaker.put(DATE_KEY, new StandardDateFormat().format(this.date));
 		encodedSpeaker.put(SPEAKER_ID_KEY, this.id);
-//		encodedSpeaker.put(LANGUAGES_KEY, Language.encodeList(languages));
 		encodedSpeaker.put(VERSION_KEY, this.versionName);
 		encodedSpeaker.put(USER_ID_KEY, this.ownerId);
 		return encodedSpeaker;
@@ -255,9 +162,6 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 	 * @throws	IOException	If the speaker metadata cannot be written to file.
 	 */
 	public void write() throws IOException {
-		// Move the image to the Speaker directory with an appropriate name
-//		importImage(imageUUID);
-
 		JSONObject encodedSpeaker = this.encode();
 
 		FileIO.writeJSONObject(new File(getSpeakersPath(), getId() +
@@ -279,13 +183,6 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 		JSONObject jsonObj = FileIO.readJSONObject(
 				new File(getSpeakersPath(ownerDir), id + "/" + id + getSuffixExt(verName, FileType.METADATA)));
 		String name = (String) jsonObj.get(NAME_KEY);
-		/*
-		JSONArray languageArray = (JSONArray) jsonObj.get(LANGUAGES_KEY);
-		if (languageArray == null) {
-			throw new IOException("Null languages in the JSON file.");
-		}
-		List<Language> languages = Language.decodeJSONArray(languageArray);
-		*/
 		String versionName = (String) jsonObj.get(VERSION_KEY);
 		String ownerId = (String) jsonObj.get(USER_ID_KEY);
 		return new Speaker(name, /*languages, */id, versionName, ownerId);
@@ -402,7 +299,6 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 		Speaker rhs = (Speaker) obj;
 		return new EqualsBuilder()
 				.append(id, rhs.id).append(name, rhs.name)
-//				.append(languages, rhs.languages)
 				.isEquals();
 	}
 
@@ -478,15 +374,6 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 		this.date = date;
 	}	
 
-
-//	private void setLanguages(List<Language> languages) throws
-//			IllegalArgumentException {
-//		if (languages == null) {
-//			throw new IllegalArgumentException("Speaker languages cannot be null.");
-//		}
-//		this.languages = languages;
-//	}
-
 	@Override
 	public int describeContents() {
 		return 0;
@@ -504,7 +391,6 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 		out.writeString(ownerId);
 		out.writeString(id.toString());
 		out.writeString(name);
-//		out.writeTypedList(languages);
 	}
 
 	/**
@@ -531,7 +417,6 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 		setName(in.readString());
 		List<Language> languages = new ArrayList<Language>();
 		in.readTypedList(languages, Language.CREATOR);
-//		setLanguages(languages);
 	}
 
 	// Creates a purely numeric speaker ID
@@ -573,14 +458,7 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 	 * The recording's date.
 	 */
 	private Date date;
-	
-	/**
-	 * The languages of the Speaker.
-	 */
-//	private List<Language> languages;
 
-	// The temporary UUID of the image before it gets renamed appropriately.
-//	private UUID imageUUID;
 	
 	/**
 	 * Relative path where speaker files are stored
@@ -599,8 +477,6 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 	public static final String DATE_KEY = "date";
 	/** */
 	public static final String SPEAKER_ID_KEY = "id";
-	/** */
-//	public static final String LANGUAGES_KEY = "languages";
 	
 	private static Set<String> fieldKeySet;
 	static {
@@ -611,6 +487,5 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 		fieldKeySet.add(SPEAKER_ID_KEY);
 		fieldKeySet.add(VERSION_KEY);
 		fieldKeySet.add(USER_ID_KEY);
-//		fieldKeySet.add(LANGUAGES_KEY);
 	}
 }

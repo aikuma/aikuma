@@ -302,6 +302,7 @@ public class MenuBehaviour {
 	 * data.
 	 *
 	 * @param	safeActivityTransitionMessage	The string to display in a warning message.
+	 * @param	okMessage		The string to display in Yes Button
 	 * @param	safeBehaviour	Interface having a function required for safe back-button.
 	 */
 	public void safeGoBack(String safeActivityTransitionMessage, String okMessage,

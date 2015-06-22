@@ -110,9 +110,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 
 		String verName = recording.getVersionName();
 		String ownerId = recording.getOwnerId();
-//		for (String id : recording.getSpeakersIds()) {
-//			speakerImagesView.addView(makeSpeakerImageView(verName, ownerId, id));
-//		}
+
 		speakerImagesView.addView(makeRecordingImageView(recording));
 		
 		recordingNameView.setText(recording.getNameAndLang());
@@ -241,30 +239,6 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		
 		return iconImage;
 	}
-	
-	/**
-	 * Creates the view for a given speaker.
-	 *
-	 * @param	verName		The version of the recording
-	 * @param	ownerId		The owner ID of the speaker
-	 * @param	speakerId	The ID of the speaker.
-	 * @return	The image view for the speaker.
-	 */
-//	private ImageView makeSpeakerImageView(String verName, String ownerId, 
-//			String speakerId) {
-//		int pixels = ImageUtils.getPixelsFromDp(context, 40);
-//		ImageView speakerImage = new ImageView(context);
-//		speakerImage.setAdjustViewBounds(true);
-////		speakerImage.setScaleType(ImageView.ScaleType.FIT_END);
-//		speakerImage.setMaxHeight(pixels);//40
-//		speakerImage.setMaxWidth(pixels);//40
-//		try {
-//			speakerImage.setImageBitmap(Speaker.getSmallImage(verName, ownerId, speakerId));
-//		} catch (IOException e) {
-//			// Not much can be done if the image can't be loaded.
-//		}
-//		return speakerImage;
-//	}
 	
 	/**
 	 * Creates the image-view for a given recording.

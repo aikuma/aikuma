@@ -74,6 +74,9 @@ public abstract class AikumaListActivity extends ListActivity {
 		}
 	}
 
+	/**
+	 * Menu behaviour
+	 */
 	protected MenuBehaviour menuBehaviour;
 	/**
 	 * Indicates whether a safe activity transition should take place (warn

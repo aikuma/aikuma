@@ -66,14 +66,6 @@ public class MainSpeakersActivity extends AikumaListActivity {
 				Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.putExtra("speakerId", speaker.getId());
 		startActivity(intent);
-		
-		
-		/*
-		Intent intent = new Intent();
-		intent.putExtra("speaker", (Speaker)l.getItemAtPosition(position));
-		setResult(RESULT_OK, intent);
-		this.finish();
-		*/
 	}
 	
 	/**

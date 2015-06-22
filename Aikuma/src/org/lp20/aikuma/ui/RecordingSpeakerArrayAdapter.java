@@ -61,26 +61,6 @@ public class RecordingSpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 		if(!AikumaSettings.getCurrentUserId().equals(speaker.getOwnerId()))
 			speakerOwnerView.setText("(" + speaker.getOwnerId() + ")");
 		
-//		TextView speakerLanguagesView =
-//				(TextView) speakerView.findViewById(R.id.recordingSpeakerLanguages);
-//		List<Language> languages = new
-//				ArrayList<Language>(speaker.getLanguages());
-//		if (languages.size() > 0) {
-//			String languageNames = languages.remove(0).getName();
-//			for (Language language : languages) {
-//				languageNames = languageNames + ", " + language.getName();
-//			}
-//			speakerLanguagesView.setText(languageNames);
-//		}
-//		ImageView speakerImage =
-//				(ImageView) speakerView.findViewById(R.id.recordingSpeakerImage);
-//		try {
-//			speakerImage.setImageBitmap(speaker.getSmallImage());
-//		} catch (IOException e) {
-//			// If the image can't be loaded, we just leave it at that.
-//		}
-		
-		
 		CheckBox speakerCheckBox = (CheckBox)
 				speakerView.findViewById(R.id.speakerCheckBox);
 		
