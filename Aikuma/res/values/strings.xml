@@ -9,6 +9,8 @@
     <string name="mainlist">Main list</string>
     <string name="addLanguage">Add Language</string>
     <string name="recording_description">Recording name</string>
+    <string name="recording_comments">Recording comments (Optional)</string>
+    <string name="recording_custom_tag_hint">Custom tag</string>
     <string name="share_dialog">			Your recording will be shared with everybody. Share?</string>
     <string name="discard_dialog">			Are you sure you want to discard this recording?</string>
     <string name="share">Share</string>
@@ -18,11 +20,10 @@
 			recording and start a new recording?</string>
     <string name="defaultLangHeading">Default languages used when adding a
 			speaker</string>
-	<string name="speaker_name">Name
-			</string>
-	<string name="add_iso_language">Add language from list </string>
-	<string name="add_custom_language">Add Custom Language
-			</string>
+	<string name="speaker_name">Name</string>
+	<string name="speaker_comments">Comments (Optional)</string>
+	<string name="add_iso_language">Add ISO639 Language</string>
+	<string name="add_custom_language">Add Custom Language</string>
 	<string name="take_photo">Take photo (necessary)</string>
 	<string name="thumb_respeaking">Thumb commentary</string>
 	<string name="phone_respeaking">Voice-activated commentary</string>
@@ -44,6 +45,7 @@
 	<string name="wifi_sync_label">Wi-Fi Sync</string>
 	<string name="language_setting_label">Language Settings</string>
 	<string name="indexing_label">Item Re-indexing</string>
+	<string name="public_share_consent_label">License</string>
 	<string name="http_dialog_success">Server started at port %1$d</string>
 	<string name="http_dialog_failure">Failed to start server</string>
 	<string name="http_server_activity_title">HTTP Server</string>
@@ -57,4 +59,24 @@
 	<string name="title_activity_debug_info">DebugInfo</string>
 	<string name="action_settings">Settings</string>
 	<string name="copyright">Copyright (C) 2013-15, The Aikuma Project\nFor information please see aikuma.org\n\nAll content is made available under the terms of the Creative Commons Attribution-NonCommercial 3.0 Unported License (CC BY-NC 3.0).</string>
+	<string name="consent">By checking this box, you agree that any content that you create and publicly share using Aikuma is made available under the terms of the Creative Commons Attribution-NonCommercial 3.0 Unported License (CC BY-NC 3.0). You also agree only to share content for which you have obtained the necessary permissions. Once a recording has been publicly shared, it cannot be unshared.</string>
+	<string name="agree">I agree</string>
+	<string name ="add_language_tag_label">Add Language Tags</string>
+	<string name ="add_speaker_tag_label">Add Speaker Tags</string>
+	<string name ="add_olac_tag_label">Add OLAC Tags</string>
+	<string name ="add_custom_tag_label">Add Custom Tags</string>
+	
+	<string-array name="olac_discourse_tags">
+	    <item>dialogue</item>
+	    <item>drama</item>
+	    <item>formulaic</item>
+	    <item>ludic</item>
+	    <item>oratory</item>
+	    <item>narrative</item>
+	    <item>procedural</item>
+	    <item>report</item>
+	    <item>singing</item>
+	    <item>unintelligible_speech</item>
+	</string-array>
+	
 </resources>
