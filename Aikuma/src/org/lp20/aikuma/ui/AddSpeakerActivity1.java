@@ -95,11 +95,14 @@ public class AddSpeakerActivity1 extends AikumaActivity {
 	 */
 	public void onOkButtonPressed(View view) {
 		EditText textField = (EditText) findViewById(R.id.speakerName);
+		EditText commentField = (EditText) findViewById(R.id.speakerComments);
 		String name = textField.getText().toString();
+		String comments = commentField.getText().toString();	// can be empty instead of null
 		
-		Intent intent = new Intent(this, AddSpeakerActivity2.class);
+		Intent intent = new Intent(this, AddSpeakerActivity4.class);
 		intent.putExtra("origin", getIntent().getExtras().getInt("origin"));
 		intent.putExtra("name", name);
+		intent.putExtra("comments", comments);
 		startActivity(intent);
 	}
 }

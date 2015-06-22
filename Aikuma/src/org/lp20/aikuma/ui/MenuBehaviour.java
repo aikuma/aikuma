@@ -87,7 +87,9 @@ public class MenuBehaviour {
 							"Please sign in to your Google account using the settings menu");
 					return true;
 				}
-				intent = new Intent(activity, RecordActivity.class);
+				//intent = new Intent(activity, RecordActivity.class);
+				intent = new Intent(activity, RecordingLanguageActivity.class);
+				intent.putExtra("mode", "source");
 				activity.startActivity(intent);
 				
 				return true;
@@ -215,6 +217,19 @@ public class MenuBehaviour {
 	 */
 	public MenuItem findItem(int resourceId) {
 		return menu.findItem(resourceId);
+	}
+	
+	/**
+	 * Add a MenuItem with the icon-image and description string
+	 * 
+	 * @param drawableId	The icon image ID
+	 * @param description	The string description of the menu item
+	 */
+	public void addItem(int drawableId, String description) {
+		if(menu != null) {
+			menu.add(0, Menu.FIRST, Menu.NONE, description).setIcon(drawableId)
+				.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		}
 	}
 	
 	/**

@@ -6,10 +6,12 @@ package org.lp20.aikuma.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.lp20.aikuma2.R;
 import org.lp20.aikuma.audio.SimplePlayer;
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.util.FileIO;
 
@@ -56,6 +58,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 		format = (String)
 				intent.getExtras().get("format");
 
+		selectedLanguages = intent.getParcelableArrayListExtra("languages");
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
 		//if duration of the file > 250msec
@@ -119,7 +122,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 	public void onOkButtonPressed(View view) {
 		Intent intent;
 		if(sourceVerId != null) {
-			intent = new Intent(this, RecordingMetadataActivity3.class);
+			intent = new Intent(this, RecordingMetadataActivity4.class);
 			intent.putExtra("sourceVerId", sourceVerId);
 			intent.putExtra("description", "");
 		} else {
@@ -138,6 +141,8 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 		}
 		if(groupId != null)
 			intent.putExtra("groupId", groupId);
+		
+		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		
 		startActivity(intent);
 	}
@@ -179,6 +184,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;
+	private ArrayList<Language> selectedLanguages;
 	
 	private Double latitude;
 	private Double longitude;

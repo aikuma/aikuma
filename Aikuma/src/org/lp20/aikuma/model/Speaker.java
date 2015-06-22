@@ -13,6 +13,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -27,6 +28,7 @@ import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.IdUtils;
 import org.lp20.aikuma.util.ImageUtils;
+import org.lp20.aikuma.util.StandardDateFormat;
 
 /**
  * The class that stores the data pertaining to a speaker who has contributed
@@ -35,7 +37,7 @@ import org.lp20.aikuma.util.ImageUtils;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class Speaker extends FileModel {
+public class Speaker extends FileModel implements Comparable<Speaker> {
 
 	// String tag for debugging
 	private static final String TAG = "Speaker";
@@ -47,52 +49,52 @@ public class Speaker extends FileModel {
 	 * For any tasks involving reading Speakers, use the constructor that takes
 	 * an ID argument
 	 *
-	 * @param	imageUUID	The UUID used to identify the temporary name of the
-	 * image files
-	 * @param	name	The name of the speaker
-	 * @param	languages	A list of languages of the speaker.
+	 * @param	name		The name of the speaker
+	 * @param	comments	The optional free text string
+	 * @param	date		The date of creation.
 	 * @param	versionName	The speaker-metadata's version(v0x)
 	 * @param	ownerId	The speaker owner's ID(Google account)
 	 */
-	public Speaker(UUID imageUUID, String name, List<Language> languages,
+	public Speaker(String name, String comments, Date date,
 			String versionName, String ownerId) {
 		super(versionName, ownerId, null, SPEAKER_TYPE, IMAGE_EXT);
-		this.imageUUID = imageUUID;
+//		this.imageUUID = imageUUID;
 		setName(name);
+		setComments(comments);
+		setDate(date);
 		setId(createId(name));
-		setLanguages(languages);
+//		setLanguages(languages);
 		setVersionName(versionName);
 		setOwnerId(ownerId);
 	}
 
-	private void importImage(UUID imageUUID) throws IOException {
-		// First import the full sized image
-		File imageFile = ImageUtils.getNoSyncImageFile(imageUUID);
-		FileUtils.moveFile(imageFile,
-				new File(getSpeakersPath(),
-						getId() + "/" + getId() + "-image.jpg"));
-
-		// Then import the small image
-		File smallImageFile = ImageUtils.getNoSyncSmallImageFile(imageUUID);
-		FileUtils.moveFile(smallImageFile,
-				new File(getSpeakersPath(),
-						getId() + "/" + getId() + "-image-small.jpg"));
-	}
+//	private void importImage(UUID imageUUID) throws IOException {
+//		// First import the full sized image
+//		File imageFile = ImageUtils.getNoSyncImageFile(imageUUID);
+//		FileUtils.moveFile(imageFile,
+//				new File(getSpeakersPath(),
+//						getId() + "/" + getId() + "-image.jpg"));
+//
+//		// Then import the small image
+//		File smallImageFile = ImageUtils.getNoSyncSmallImageFile(imageUUID);
+//		FileUtils.moveFile(smallImageFile,
+//				new File(getSpeakersPath(),
+//						getId() + "/" + getId() + "-image-small.jpg"));
+//	}
 
 	/**
 	 * The constructor used when reading an existing speaker.
 	 *
 	 * @param	name	The name of the speaker
-	 * @param	languages	A list of languages of the speaker.
 	 * @param	id	The 8+ char string identifier of the speaker.
 	 * @param versionName	Current aikuma's version
 	 * @param ownerId		Current user's ID
 	 */
-	public Speaker(String name, List<Language> languages, String id,
+	public Speaker(String name, String id,
 			String versionName, String ownerId) {
 		super(versionName, ownerId, null, SPEAKER_TYPE, IMAGE_EXT);
 		setName(name);
-		setLanguages(languages);
+//		setLanguages(languages);
 		setId(id);
 	}
 
@@ -107,80 +109,95 @@ public class Speaker extends FileModel {
 		}
 		return name;
 	}
-
-	/**
-	 * Gets the list of languages associated with the Speaker.
-	 *
-	 * @return	A List of Language objects.
-	 */
-	public List<Language> getLanguages() {
-		return languages;
-	}
-
-	/**
-	 * Returns true if the Speaker has at least one language; false otherwise.
-	 *
-	 * @return	true if the Speaker has at least one language; false otherwise.
-	 */
-	public boolean hasALanguage() {
-		if (languages.size() == 0) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Get the Speaker's image as a File.
-	 * @return A File containing the Speaker's image.
-	 */
-	public File getImageFile() {
-		return new File(getSpeakersPath(), getId() + "/" + getId() + "-image.jpg");
-	}
 	
 	/**
-	 * Get the small version of Speaker's image as a File.
-	 * @return A File containing the Speaker's small image.
+	 * Comments accessor; returns an empty string if the comments is null
+	 * 
+	 * @return	The comments of the recording
 	 */
-	public File getSmallImageFile() {
-		return new File(getSpeakersPath(), getId() + "/" + getId() + "-image-small.jpg");
+	public String getComments() {
+		if (comments == null)
+			return "";
+		return comments;
 	}
 	
-	/**
-	 * Gets the Speaker's image.
-	 *
-	 * @return	A Bitmap object.
-	 * @throws	IOException	If the image cannot be retrieved.
-	 */
-	public Bitmap getImage() throws IOException {
-		return ImageUtils.retrieveFromFile(getImageFile());
+	public Date getDate() {
+		return date;
 	}
 
-	/**
-	 * Gets the small version of the Speaker's image.
-	 *
-	 * @return	A Bitmap object.
-	 * @throws	IOException	If the image cannot be retrieved.
-	 */
-	public Bitmap getSmallImage() throws IOException {
-		return ImageUtils.retrieveFromFile(getSmallImageFile());
-	}
-
-	/**
-	 * Gets the small version of the Speaker's image.
-	 *
-	 * @param	verName		The version name of the recording
-	 * @param	ownerAccount OwnerID of the recording
-	 * @param	speakerId	The ID of the speaker whose image is to be fetched.
-	 * @return	A Bitmap object.
-	 * @throws	IOException	If the image cannot be retrieved.
-	 */
-	public static Bitmap getSmallImage(String verName, String ownerAccount,
-			String speakerId) throws IOException {
-		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
-		return ImageUtils.retrieveFromFile(
-				new File(getSpeakersPath(ownerDir),
-						speakerId + "/" + speakerId + "-image-small.jpg"));
-	}
+//	/**
+//	 * Gets the list of languages associated with the Speaker.
+//	 *
+//	 * @return	A List of Language objects.
+//	 */
+//	public List<Language> getLanguages() {
+//		return languages;
+//	}
+//
+//	/**
+//	 * Returns true if the Speaker has at least one language; false otherwise.
+//	 *
+//	 * @return	true if the Speaker has at least one language; false otherwise.
+//	 */
+//	public boolean hasALanguage() {
+//		if (languages.size() == 0) {
+//			return false;
+//		}
+//		return true;
+//	}
+//
+//	/**
+//	 * Get the Speaker's image as a File.
+//	 * @return A File containing the Speaker's image.
+//	 */
+//	public File getImageFile() {
+//		return new File(getSpeakersPath(), getId() + "/" + getId() + "-image.jpg");
+//	}
+//	
+//	/**
+//	 * Get the small version of Speaker's image as a File.
+//	 * @return A File containing the Speaker's small image.
+//	 */
+//	public File getSmallImageFile() {
+//		return new File(getSpeakersPath(), getId() + "/" + getId() + "-image-small.jpg");
+//	}
+//	
+//	/**
+//	 * Gets the Speaker's image.
+//	 *
+//	 * @return	A Bitmap object.
+//	 * @throws	IOException	If the image cannot be retrieved.
+//	 */
+//	public Bitmap getImage() throws IOException {
+//		return ImageUtils.retrieveFromFile(getImageFile());
+//	}
+//
+//	/**
+//	 * Gets the small version of the Speaker's image.
+//	 *
+//	 * @return	A Bitmap object.
+//	 * @throws	IOException	If the image cannot be retrieved.
+//	 */
+//	public Bitmap getSmallImage() throws IOException {
+//		return ImageUtils.retrieveFromFile(getSmallImageFile());
+//	}
+//
+//	/**
+//	 * Gets the small version of the Speaker's image.
+//	 *
+//	 * @param	verName		The version name of the recording
+//	 * @param	ownerAccount OwnerID of the recording
+//	 * @param	speakerId	The ID of the speaker whose image is to be fetched.
+//	 * @return	A Bitmap object.
+//	 * @throws	IOException	If the image cannot be retrieved.
+//	 */
+//	public static Bitmap getSmallImage(String verName, String ownerAccount,
+//			String speakerId) throws IOException {
+//		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
+//		return ImageUtils.retrieveFromFile(
+//				new File(getSpeakersPath(ownerDir),
+//						speakerId + "/" + speakerId + "-image-small.jpg"));
+//	}
 
 
 	/**
@@ -191,8 +208,10 @@ public class Speaker extends FileModel {
 	public JSONObject encode() {
 		JSONObject encodedSpeaker = new JSONObject();
 		encodedSpeaker.put(NAME_KEY, this.name);
+		encodedSpeaker.put(COMMENTS_KEY, this.comments);
+		encodedSpeaker.put(DATE_KEY, new StandardDateFormat().format(this.date));
 		encodedSpeaker.put(SPEAKER_ID_KEY, this.id);
-		encodedSpeaker.put(LANGUAGES_KEY, Language.encodeList(languages));
+//		encodedSpeaker.put(LANGUAGES_KEY, Language.encodeList(languages));
 		encodedSpeaker.put(VERSION_KEY, this.versionName);
 		encodedSpeaker.put(USER_ID_KEY, this.ownerId);
 		return encodedSpeaker;
@@ -237,7 +256,7 @@ public class Speaker extends FileModel {
 	 */
 	public void write() throws IOException {
 		// Move the image to the Speaker directory with an appropriate name
-		importImage(imageUUID);
+//		importImage(imageUUID);
 
 		JSONObject encodedSpeaker = this.encode();
 
@@ -257,18 +276,19 @@ public class Speaker extends FileModel {
 	public static Speaker read(String verName, String ownerAccount, 
 			String id) throws IOException {
 		File ownerDir = FileIO.getOwnerPath(verName, ownerAccount);
-		
 		JSONObject jsonObj = FileIO.readJSONObject(
 				new File(getSpeakersPath(ownerDir), id + "/" + id + getSuffixExt(verName, FileType.METADATA)));
 		String name = (String) jsonObj.get(NAME_KEY);
+		/*
 		JSONArray languageArray = (JSONArray) jsonObj.get(LANGUAGES_KEY);
 		if (languageArray == null) {
 			throw new IOException("Null languages in the JSON file.");
 		}
 		List<Language> languages = Language.decodeJSONArray(languageArray);
+		*/
 		String versionName = (String) jsonObj.get(VERSION_KEY);
 		String ownerId = (String) jsonObj.get(USER_ID_KEY);
-		return new Speaker(name, languages, id, versionName, ownerId);
+		return new Speaker(name, /*languages, */id, versionName, ownerId);
 	}
 
 	/**
@@ -382,17 +402,27 @@ public class Speaker extends FileModel {
 		Speaker rhs = (Speaker) obj;
 		return new EqualsBuilder()
 				.append(id, rhs.id).append(name, rhs.name)
-				.append(languages, rhs.languages).isEquals();
+//				.append(languages, rhs.languages)
+				.isEquals();
 	}
 
+	/**
+	 * Compares the given speaker with this speaker
+	 *
+	 * @param	that	Speaker object compared with this object
+	 * @return			compare result of speaker
+	 */
+	public int compareTo(Speaker that) {
+		return name.compareTo(that.getName());
+	}
+	
 	/**
 	 * Provides a string representation of the speaker.
 	 *
 	 * @return	A string representation of the Speaker
 	 */
 	public String toString() {
-		String s = getId().toString() + ", " + getName() + ", " +
-				getLanguages().toString();
+		String s = getId().toString() + ", " + getName();// + ", " + getLanguages().toString();
 		return s;
 	}
 	 
@@ -434,21 +464,28 @@ public class Speaker extends FileModel {
 	private void setName(String name) {
 		this.name = name;
 	}
-
-	/**
-	 * Sets the Languages of the Speaker.
-	 *
-	 * @param	languages	A List<Language> object representing the languages
-	 * associated with the Speaker.
-	 * @throws	IllegalArgumentException	If the language list is null
-	 */
-	private void setLanguages(List<Language> languages) throws
-			IllegalArgumentException {
-		if (languages == null) {
-			throw new IllegalArgumentException("Speaker languages cannot be null.");
-		}
-		this.languages = languages;
+	
+	private void setComments(String comments) {
+		this.comments = comments;
 	}
+	
+	// Sets the date; the date cannot be null.
+	private void setDate(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException(
+					"Recording date cannot be null.");
+		}
+		this.date = date;
+	}	
+
+
+//	private void setLanguages(List<Language> languages) throws
+//			IllegalArgumentException {
+//		if (languages == null) {
+//			throw new IllegalArgumentException("Speaker languages cannot be null.");
+//		}
+//		this.languages = languages;
+//	}
 
 	@Override
 	public int describeContents() {
@@ -467,7 +504,7 @@ public class Speaker extends FileModel {
 		out.writeString(ownerId);
 		out.writeString(id.toString());
 		out.writeString(name);
-		out.writeTypedList(languages);
+//		out.writeTypedList(languages);
 	}
 
 	/**
@@ -494,13 +531,13 @@ public class Speaker extends FileModel {
 		setName(in.readString());
 		List<Language> languages = new ArrayList<Language>();
 		in.readTypedList(languages, Language.CREATOR);
-		setLanguages(languages);
+//		setLanguages(languages);
 	}
 
 	// Creates a purely numeric speaker ID
 	private String createId(String name) {
 		// Generate 12 random uppercase alphabets.
-		return IdUtils.sampleFromAlphabet(12, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+		return IdUtils.sampleFromAlphabet(SPEAKER_ID_LEN, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 	}
 
 	// Extracts the first character of each token in a string and uppercases, but
@@ -528,34 +565,52 @@ public class Speaker extends FileModel {
 	private String name;
 	
 	/**
+	 * The optional free string
+	 */
+	private String comments;
+	
+	/**
+	 * The recording's date.
+	 */
+	private Date date;
+	
+	/**
 	 * The languages of the Speaker.
 	 */
-	private List<Language> languages;
+//	private List<Language> languages;
 
 	// The temporary UUID of the image before it gets renamed appropriately.
-	private UUID imageUUID;
+//	private UUID imageUUID;
 	
 	/**
 	 * Relative path where speaker files are stored
 	 */
 	public static final String PATH = "speakers/";
+	/** the length of speaker_id */
+	public static final int SPEAKER_ID_LEN = 12;
 	
 	/**
 	 * Keys of the speaker metadata fields
 	 */
 	public static final String NAME_KEY = "name";
 	/** */
+	public static final String COMMENTS_KEY = "comments";
+	/** */
+	public static final String DATE_KEY = "date";
+	/** */
 	public static final String SPEAKER_ID_KEY = "id";
 	/** */
-	public static final String LANGUAGES_KEY = "languages";
+//	public static final String LANGUAGES_KEY = "languages";
 	
 	private static Set<String> fieldKeySet;
 	static {
 		fieldKeySet = new HashSet<String>();
 		fieldKeySet.add(NAME_KEY);
+		fieldKeySet.add(COMMENTS_KEY);
+		fieldKeySet.add(DATE_KEY);
 		fieldKeySet.add(SPEAKER_ID_KEY);
 		fieldKeySet.add(VERSION_KEY);
 		fieldKeySet.add(USER_ID_KEY);
-		fieldKeySet.add(LANGUAGES_KEY);
+//		fieldKeySet.add(LANGUAGES_KEY);
 	}
 }

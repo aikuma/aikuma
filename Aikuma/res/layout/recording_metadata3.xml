@@ -6,48 +6,41 @@
 		android:focusable="true"
 		android:focusableInTouchMode="true"
 	>
-	
-    <ImageButton
-			android:id="@+id/okButton3"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
+	<ImageButton
+			android:id="@+id/takePhotoButton"
+			android:layout_width="match_parent"
+			android:layout_height="70dp"
 			android:scaleType="centerInside"
-			android:src="@drawable/ok_48"
+			android:src="@drawable/camera_48"
 			android:layout_alignParentBottom="true"
-			android:onClick="onOkButtonPressed"
+			android:onClick="takePhoto"
 		/>
-	
-    <TextView
-	    android:id="@+id/description"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:layout_marginBottom="10dp"
-	    android:text="test" />
-    
-    <ImageButton
-		android:id="@+id/addUserButton"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:scaleType="centerInside"
-		android:src="@drawable/add_speaker48"
-		android:layout_below="@id/description"
-				
-		android:onClick="onAddUserButtonPressed" />
-    
-    <LinearLayout
-		android:id="@+id/userImagesAndAddUserButton"
-		android:orientation="horizontal"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/addUserButton" 
-		android:layout_below="@id/description" />
-
-	<ListView android:id="@android:id/list"
+	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/addUserButton"
+		android:orientation="vertical"
+		android:layout_alignParentTop="true"
+		android:layout_above="@id/takePhotoButton"
+		>
 		
-		android:layout_above="@id/okButton3" />
-
-	
+		<TextView
+	    	android:id="@+id/description"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+			android:layout_marginBottom="10dp"
+	    	android:text="" />
+		
+		<TextView
+		    android:id="@+id/languageView"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    />
+		
+		<TextView
+		    android:id="@+id/commentsView"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    />
+		    
+	</LinearLayout>
 </RelativeLayout>

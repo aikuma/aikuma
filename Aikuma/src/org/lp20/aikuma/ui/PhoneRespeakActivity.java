@@ -8,16 +8,20 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.lp20.aikuma.audio.record.PhoneRespeaker;
 import org.lp20.aikuma.audio.record.analyzers.ThresholdSpeechAnalyzer;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.recognizers.AverageRecognizer;
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma2.R;
 import org.lp20.aikuma.util.FileIO;
@@ -35,8 +39,11 @@ public class PhoneRespeakActivity extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.phone_respeak);
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
+		menuBehaviour = new MenuBehaviour(this);
 		//Lets a method in AikumaActivity superclass know to ask user if they
 		//are not willing to discard new data on an activity transition via the
 		//menu.
@@ -105,6 +112,22 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		);
 	}	
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		Intent intent = getIntent();
+		String respeakingType = intent.getStringExtra("respeakingType");
+		selectedLanguages = intent.getParcelableArrayListExtra("languages");
+		String firstLang = "";
+		if(selectedLanguages.size() > 0)
+			firstLang = "(" + selectedLanguages.get(0).getCode() + ")";
+		boolean isMenu = menuBehaviour.onCreateOptionsMenu(menu);
+		if(respeakingType.equals("respeak"))
+			menuBehaviour.addItem(R.drawable.respeak_32, "respeak" + firstLang);
+		else
+			menuBehaviour.addItem(R.drawable.translate_32, "interpret" + firstLang);
+		return isMenu;
+	}
+	
 	/**
 	 * Sends the appropriate metadata to the RecordingMetadataActivity so that
 	 * the data can be saved.
@@ -124,6 +147,8 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		intent.putExtra("numChannels", respeaker.getNumChannels());
 		intent.putExtra("format", respeaker.getFormat());
 		intent.putExtra("bitsPerSample", respeaker.getBitsPerSample());
+		
+		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		startActivity(intent);
 		PhoneRespeakActivity.this.finish();
 	}
@@ -165,6 +190,8 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		sensitivitySlider.setProgress(threshold);
 	}
 
+	private ArrayList<Language> selectedLanguages;
+	
 	private PhoneRespeakFragment fragment;
 	private PhoneRespeaker respeaker;
 	private String sourceId;

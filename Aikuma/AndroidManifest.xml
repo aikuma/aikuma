@@ -109,14 +109,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.lp20.aikuma.MainActivity" />
 		</activity>
-		<activity android:name="org.lp20.aikuma.ui.RecordingMetadataActivity33"
-				android:configChanges="orientation"
-				android:label="@string/app_name"
-				android:parentActivityName="org.lp20.aikuma.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.lp20.aikuma.MainActivity" />
-		</activity>
 		<activity android:name="org.lp20.aikuma.ui.RecordingMetadataActivity4"
 				android:configChanges="orientation"
 				android:label="@string/app_name"

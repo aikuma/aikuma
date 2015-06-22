@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
 
 /**
@@ -54,25 +55,30 @@ public class RecordingSpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 		final Speaker speaker = getItem(position);
 		TextView speakerNameView =
 				(TextView) speakerView.findViewById(R.id.recordingSpeakerName);
+		TextView speakerOwnerView =
+				(TextView) speakerView.findViewById(R.id.recordingSpeakerOwner);
 		speakerNameView.setText(speaker.getName());
-		TextView speakerLanguagesView =
-				(TextView) speakerView.findViewById(R.id.recordingSpeakerLanguages);
-		List<Language> languages = new
-				ArrayList<Language>(speaker.getLanguages());
-		if (languages.size() > 0) {
-			String languageNames = languages.remove(0).getName();
-			for (Language language : languages) {
-				languageNames = languageNames + ", " + language.getName();
-			}
-			speakerLanguagesView.setText(languageNames);
-		}
-		ImageView speakerImage =
-				(ImageView) speakerView.findViewById(R.id.recordingSpeakerImage);
-		try {
-			speakerImage.setImageBitmap(speaker.getSmallImage());
-		} catch (IOException e) {
-			// If the image can't be loaded, we just leave it at that.
-		}
+		if(!AikumaSettings.getCurrentUserId().equals(speaker.getOwnerId()))
+			speakerOwnerView.setText("(" + speaker.getOwnerId() + ")");
+		
+//		TextView speakerLanguagesView =
+//				(TextView) speakerView.findViewById(R.id.recordingSpeakerLanguages);
+//		List<Language> languages = new
+//				ArrayList<Language>(speaker.getLanguages());
+//		if (languages.size() > 0) {
+//			String languageNames = languages.remove(0).getName();
+//			for (Language language : languages) {
+//				languageNames = languageNames + ", " + language.getName();
+//			}
+//			speakerLanguagesView.setText(languageNames);
+//		}
+//		ImageView speakerImage =
+//				(ImageView) speakerView.findViewById(R.id.recordingSpeakerImage);
+//		try {
+//			speakerImage.setImageBitmap(speaker.getSmallImage());
+//		} catch (IOException e) {
+//			// If the image can't be loaded, we just leave it at that.
+//		}
 		
 		
 		CheckBox speakerCheckBox = (CheckBox)

@@ -15,7 +15,7 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="5"
         android:layout_gravity="center_vertical"
         android:orientation="vertical" >
         
@@ -41,9 +41,9 @@
 	
 	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
 			android:textSize="16sp"
-			android:layout_height="wrap_content"
 			android:layout_width="0dp"
-			android:layout_weight="1"
+			android:layout_height="wrap_content"
+			android:layout_weight="5"
 			android:text=""
 			android:layout_gravity="center_vertical"
 			android:id="@+id/recordingDateDuration"
@@ -58,8 +58,9 @@
 	
 	<LinearLayout 
 	    android:id="@+id/extraInformation"
-	    android:layout_width="wrap_content"
+	    android:layout_width="0dp"
 	    android:layout_height="wrap_content"
+	    android:layout_weight="2"
 	    android:layout_gravity="center_vertical"
 	    android:orientation="vertical"
 	    >
@@ -70,24 +71,29 @@
 	        >
 	        <LinearLayout 
 	            android:id="@+id/recordingIcons"
-	            android:layout_width="wrap_content"
+	            android:layout_width="0dp"
 	            android:layout_height="fill_parent"
+	            android:layout_weight="1"
 	            android:layout_gravity="left"
+	            android:gravity="top|left"
 	            android:orientation="horizontal"
 	            />
+	
+	        <!-- 
 	        <View 
 	            android:layout_width="0dp"
           		android:layout_height="match_parent"
           		android:layout_weight="1" />
+	         -->
 	        
 	        <TextView android:textAppearance="?android:attr/textAppearanceMedium"
 	        	android:id="@+id/speakerNames"
 	        	android:textSize="12sp"
-	        	android:layout_width="wrap_content"
+	        	android:layout_width="0dp"
 	        	android:layout_height="wrap_content"
+	        	android:layout_weight="2"
 	        	android:gravity="right"
 	        	android:text=""
-	        	android:ellipsize="end"
 	        	/>
 	     
 	        

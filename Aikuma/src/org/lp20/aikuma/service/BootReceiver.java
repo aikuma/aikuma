@@ -41,6 +41,7 @@ public class BootReceiver extends BroadcastReceiver {
 			if(AikumaSettings.isBackupEnabled && AikumaSettings.isAutoDownloadEnabled) {
 				Intent serviceIntent = new Intent(context, GoogleCloudService.class);
 				serviceIntent.putExtra(GoogleCloudService.ACTION_KEY, "sync");
+				serviceIntent.putExtra(GoogleCloudService.ACTION_EXTRA, "all");
 				serviceIntent.putStringArrayListExtra(GoogleCloudService.ACCOUNT_KEY, 
 						Aikuma.getGoogleAccounts());
 				

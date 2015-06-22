@@ -72,6 +72,8 @@ public class GoogleCloudService extends IntentService{
 	public final static String TOKEN_KEY = "authToken";
 	/** */
 	public final static String ARCHIVE_FILE_TYPE_KEY = "type";
+	/** */
+	public final static String ACTION_EXTRA = "extra";
 	
 	private final static String TAG = "GoogleCloudService";
 	
@@ -138,11 +140,13 @@ public class GoogleCloudService extends IntentService{
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		String id = intent.getStringExtra(ACTION_KEY);
+		String extra = intent.getStringExtra(ACTION_EXTRA);
 		
 		googleAuthToken = intent.getStringExtra(TOKEN_KEY);
 		
 		List<String> googleAccountList;
-		if(googleAuthToken == null) {	
+		if(googleAuthToken == null && extra != null && extra.equals("all")) {	
+			// token can be null if the device is offline
 			// when the automatic-sync is checked or 
 			// when the connectivity changes after the automatic-sync is enabled
 			googleAccountList = intent.getStringArrayListExtra(ACCOUNT_KEY);
@@ -188,6 +192,17 @@ public class GoogleCloudService extends IntentService{
 				if(itemCloudIdsToDownload != null) {
 					//downloadOtherSet.addAll(itemCloudIdsToDownload);
 					prepareUploadSet();
+					
+					//Log the files in archivedSet
+					for(String itemCloudId : itemCloudIdsToDownload) {
+						classifyFileCloudId(itemCloudId, 
+								archivedRecordingSet, archivedSpeakerSet, archivedOtherSet);
+					}
+					prefsEditor.putStringSet(archiveKey, archivedRecordingSet);
+			        prefsEditor.putStringSet(archiveSpKey, archivedSpeakerSet);
+			        prefsEditor.putStringSet(archiveOtherKey, archivedOtherSet);
+			        
+			        prefsEditor.commit();
 				}
 				
 				retryDownload();
@@ -197,11 +212,18 @@ public class GoogleCloudService extends IntentService{
 						intent.getExtras().get("type");
 				// id : (version)-(file's ID)
 				if(itemType.equals("archive"))
-					archive(id, 0, true);
+					archive(id, null, 0, true);
 				else if(itemType.equals("recording"))
-					archive(id, 0, false);
+					archive(id, null, 0, false);
+				else if(itemType.equals("tag")) {
+					ArrayList<String> tagVerIdList = 
+							intent.getStringArrayListExtra(ACTION_EXTRA);
+					for(String tagVerId : tagVerIdList) {
+						archive(tagVerId, id, 2, false);
+					}
+				}
 				else
-					archive(id, 1, false);
+					archive(id, null, 1, false);
 				
 				validateToken();
 				
@@ -346,10 +368,11 @@ public class GoogleCloudService extends IntentService{
 	// Classify all Aikuma files except for metadata-file
 	private void classifyFileCloudId(String identifier, 
 			Set<String> recordingSet, Set<String> speakerSet, Set<String> otherSet) {
+		Log.i(TAG, "classify: " + identifier);
 		if(identifier.matches(cloudIdFormat)) {
 			String currentVersionName = AikumaSettings.getLatestVersion();
 			String relPath = identifier.substring(0, identifier.lastIndexOf('/')-Recording.ITEM_ID_LEN);
-			if(identifier.endsWith(FileModel.getSuffixExt(currentVersionName, FileType.METADATA)) || 
+			if((identifier.endsWith(FileModel.getSuffixExt(currentVersionName, FileType.METADATA)) && !relPath.endsWith(Speaker.PATH)) || 
 					!identifier.startsWith(currentVersionName))
 				return;
 			
@@ -363,7 +386,10 @@ public class GoogleCloudService extends IntentService{
 					otherSet.add(identifier);
 				}
 			} else if(relPath.endsWith(Speaker.PATH)) {
+				Log.i(TAG, "speaker added");
 				speakerSet.add(identifier);
+			} else if(relPath.endsWith(Recording.TAG_PATH)) {
+				otherSet.add(identifier);
 			}
 		}
 	}
@@ -376,6 +402,7 @@ public class GoogleCloudService extends IntentService{
 		recordings = Recording.readAll();
         speakers = Speaker.readAll();
         others = new ArrayList<FileModel>();
+        others.addAll(Recording.readAllTags());
         
         for(Recording recording : recordings) {
 			if(recording.isOriginal()) {
@@ -386,6 +413,10 @@ public class GoogleCloudService extends IntentService{
 				if(recording.getPreviewFile() != null) {
 					others.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 							recording.getPreviewId(), FileModel.PREVIEW_TYPE, FileModel.AUDIO_EXT));
+				}
+				if(recording.getImageFile() != null) {
+					others.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
+							recording.getImageId(), FileModel.IMAGE_TYPE, FileModel.IMAGE_EXT));
 				}
 			} else {
 				others.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
@@ -424,7 +455,7 @@ public class GoogleCloudService extends IntentService{
 		}
 		
 		retryDownload(gd, 2, downloadOtherKey, downloadOtherSet, uploadOtherKey, uploadedOtherSet);
-        retryDownload(gd, 0, downloadSpKey, downloadSpeakerSet, uploadSpKey, uploadedSpeakerSet);
+        retryDownload(gd, 2, downloadSpKey, downloadSpeakerSet, uploadSpKey, uploadedSpeakerSet);
         retryDownload(gd, 0, downloadKey, downloadRecordingSet, uploadKey, uploadedRecordingSet);
         
         if(numOfItemsToDownload - downloadRecordingSet.size() > 0) {
@@ -489,7 +520,7 @@ public class GoogleCloudService extends IntentService{
 
 		logFileInApprovalSet(recordings, false, false, approvalKey, approvedRecordingSet, 
 				uploadedRecordingSet, uploadedRecordingSet);
-		logFileInApprovalSet(speakers, false, false, approvalSpKey, approvedSpeakerSet, 
+		logFileInApprovalSet(speakers, true, false, approvalSpKey, approvedSpeakerSet, 
 				uploadedSpeakerSet, uploadedSpeakerSet);
 		logFileInApprovalSet(others, true, false, approvalOtherKey, approvedOtherSet, 
 				uploadedOtherSet, uploadedOtherSet);
@@ -556,6 +587,7 @@ public class GoogleCloudService extends IntentService{
 					uri = requestArchiveState[2];
 					
 				try {
+					Log.i(TAG, "startArchiving: " + itemIdentifier);
 					startArchiving(gd, fi, item, requestDate, uri, archiveProgress,
 							apKey, approvedSet, upKey, uploadedSet, arKey, archivedSet);
 				} catch (IOException e) {
@@ -573,10 +605,11 @@ public class GoogleCloudService extends IntentService{
 	 * Log the recording/speaker-item of id to be uploaded or archived
 	 * 
 	 * @param verId	Version and ID of the recording item
+	 * @param extra	Extra information for upload or archive
 	 * @param type	Type of the item(0: recording, 1: speaker)
 	 * @param isArchive	(true: archive, false: upload) recording-related files
 	 */
-	private void archive(String verId, int type, boolean isArchive) {
+	private void archive(String verId, String extra, int type, boolean isArchive) {
 		String[] splitName = verId.split("-");
 		
 		String versionName = splitName[0];
@@ -589,7 +622,7 @@ public class GoogleCloudService extends IntentService{
 				Recording recording = Recording.read(versionName, ownerId, id);
 				List<Recording> oneRecording = new ArrayList<Recording>();
 				oneRecording.add(recording);
-				List<FileModel> recordingSpeakers = recording.getSpeakers();
+				List<? extends FileModel> recordingSpeakers = recording.getSpeakers();
 				List<FileModel> other = new ArrayList<FileModel>();
 				if(recording.isOriginal()) {
 					if (recording.getTranscriptFile() != null) {
@@ -600,10 +633,15 @@ public class GoogleCloudService extends IntentService{
 						other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 								recording.getPreviewId(), FileModel.PREVIEW_TYPE, FileModel.AUDIO_EXT));
 					}
+					if(recording.getImageFile() != null) {
+						other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
+								recording.getImageId(), FileModel.IMAGE_TYPE, FileModel.IMAGE_EXT));
+					}
 				} else {
 					other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 							recording.getMapId(), FileModel.MAPPING_TYPE, FileModel.JSON_EXT));
 				}
+				other.addAll(recording.getTags());
 				
 				if(isArchive) {
 					logFileToArchive(oneRecording, approvalKey, approvedRecordingSet, 
@@ -615,20 +653,29 @@ public class GoogleCloudService extends IntentService{
 				} else {
 					logFileInApprovalSet(oneRecording, false, false,
 							approvalKey, approvedRecordingSet, uploadedRecordingSet, uploadedRecordingSet);
-					logFileInApprovalSet(recordingSpeakers, false, false,
+					logFileInApprovalSet(recordingSpeakers, true, false,
 							approvalSpKey, approvedSpeakerSet, uploadedSpeakerSet, uploadedSpeakerSet);
 					logFileInApprovalSet(other, true, false,
 							approvalOtherKey, approvedOtherSet, uploadedOtherSet, uploadedOtherSet);
 				}
 
-			} else {	// Speaker
+			} else if (type == 2) {	// Tag
+				String id = verId.substring(4);
+				FileModel tagFileModel = 
+						new FileModel(versionName, extra, id, FileModel.TAG_TYPE, "");
+				List<FileModel> tags = new ArrayList<FileModel>();
+				tags.add(tagFileModel);
+				
+				logFileInApprovalSet(tags, true, false,
+						approvalOtherKey, approvedOtherSet, uploadedOtherSet, uploadedOtherSet);
+			} else {				// Speaker
 				String id = splitName[1];
 				
 				Speaker speaker = Speaker.read(versionName, ownerId, id);
 				List<Speaker> speakers = new ArrayList<Speaker>();
 				speakers.add(speaker);
 				
-				logFileInApprovalSet(speakers, false, false, approvalSpKey, approvedSpeakerSet, 
+				logFileInApprovalSet(speakers, true, false, approvalSpKey, approvedSpeakerSet, 
 						uploadedSpeakerSet, uploadedSpeakerSet);
 			}
 			
@@ -642,7 +689,8 @@ public class GoogleCloudService extends IntentService{
 	
 	/**
 	 *  Log the file approved to be downloaded
-	 *  (Recording, Speaker) 		: 0(metadata-download) -> 1(file-download)
+	 *  (Recording)			 		: 0(metadata-download) -> 1(file-download)
+	 *  (Speaker)					:						  1(metadataFile-download)
 	 *  (Others:mapping, transcript): 						  1(file-download)
 	 */
 	private void logFileInDownloadSet(Set<String> archivedSet, boolean isOtherType,
@@ -664,10 +712,12 @@ public class GoogleCloudService extends IntentService{
 	
 	/**
 	 *  Log the file approved to be uploaded
-	 *  MyFile			   (Source, Respeaking, Speaker) : 4(file-upload) -> 5(metadata upload)
+	 *  MyFile			   			(Source, Respeaking) : 4(file-upload) -> 5(metadata upload)
 	 *  							can be changed to 	   0(file-upload) -> 1(metadata upload)  -> 2(indexing in FusionTable)
-	 *  MyFile(others)	  (mapping, transcript, preview) : 6(file-upload)
-	 *  							can be changed to	   3(file-upload)                        -> 2(indexing in FusionTable)
+	 *  MyFile								   (Speaker) : 6(metadataFile-upload)
+	 *  							can be changed to	 : 3(metadataFile-upload)				 -> 2(indexing)
+	 *  MyFile		(mapping, transcript, preview, image): 6(file-upload)
+	 *  (others)					can be changed to	   3(file-upload)                        -> 2(indexing in FusionTable)
 	 *  Other-owner's file (Source, Respeaking, Speaker) : 4(file-upload) -> 5(metadata upload)
 	 *  Other-owner's file(mapping, transcript, preview) : 6(file-upload)
 	 */
@@ -679,7 +729,6 @@ public class GoogleCloudService extends IntentService{
 		
 		for(FileModel item : items) {
 			String identifier = item.getCloudIdentifier(0);
-			Log.i(TAG, "hi: " + identifier + ", " + item.getFileType() + ", " + item.getFormat());
 			if(!archivedSet.contains(identifier) && !approvedSet.contains(identifier) &&
 					(!isArchive || uploadedSet.contains(identifier))) {
 				approvedSet.add(identifier);
@@ -739,7 +788,7 @@ public class GoogleCloudService extends IntentService{
 			
 			String fileType = fm.getFileType();
 			
-			if(fileType.equals(FileModel.SPEAKER_TYPE) || fileType.equals(FileModel.SOURCE_TYPE) || 
+			if(/* fileType.equals(FileModel.SPEAKER_TYPE) || */fileType.equals(FileModel.SOURCE_TYPE) || 
 					fileType.equals(FileModel.RESPEAKING_TYPE) || fileType.equals(FileModel.TRANSLATION_TYPE)) {
 				logFileInApprovalSet(items, false, true, apKey, approvedSet, uploadedSet, archivedSet);
 			} else {
@@ -833,7 +882,7 @@ public class GoogleCloudService extends IntentService{
 				itemArchiveState = (requestDate + "|5|" + uri);
 			} else {
 				updateApprovalArchiveSet(identifier,
-						apKey, approvedSet, arKey, archivedSet);
+						apKey, approvedSet, upKey, uploadedSet);
 				return;
 			}
 			
@@ -926,32 +975,32 @@ public class GoogleCloudService extends IntentService{
 			} else {
 				groupId = (String) jsonfile.get(Recording.ITEM_ID_KEY);
 				
-				JSONArray speakers_arr = (JSONArray) jsonfile.get(Recording.SPEAKERS_KEY);
-				for (Object obj: speakers_arr) {
-					speakers += joiner + (String) obj;
-					joiner = ",";
-				}
+//				JSONArray speakers_arr = (JSONArray) jsonfile.get(Recording.SPEAKERS_KEY);
+//				for (Object obj: speakers_arr) {
+//					speakers += joiner + (String) obj;
+//					joiner = ",";
+//				}
 			}
 			
-			String languages = "";
-			joiner = "";
-			for (Object obj: (JSONArray) jsonfile.get(Recording.LANGUAGES_KEY)) {
-				String lang;
-				if (obj instanceof JSONObject) {
-					lang = (String) ((JSONObject) obj).get("code");
-				} else {
-					lang = (String) obj;
-				}
-				languages += joiner + lang;
-				joiner = ",";
-			}
+//			String languages = "";
+//			joiner = "";
+//			for (Object obj: (JSONArray) jsonfile.get(Recording.LANGUAGES_KEY)) {
+//				String lang;
+//				if (obj instanceof JSONObject) {
+//					lang = (String) ((JSONObject) obj).get("code");
+//				} else {
+//					lang = (String) obj;
+//				}
+//				languages += joiner + lang;
+//				joiner = ",";
+//			}
 			
 			metadata.put(FileModel.USER_ID_KEY, emailAddr);
 			metadata.put(FileModel.DATA_STORE_URI_KEY, uri);
 			metadata.put(Recording.ITEM_ID_KEY, groupId); // This key is used for all data types
 			metadata.put(Recording.FILE_TYPE_KEY, item.getFileType()); // This key is used for all data types
-			metadata.put(Recording.SPEAKERS_KEY, speakers); // Empty for other data types
-			metadata.put(Recording.LANGUAGES_KEY, languages); // This key is also used for SPEAKER_LANGUAGES
+//			metadata.put(Recording.SPEAKERS_KEY, speakers); // Empty for other data types
+//			metadata.put(Recording.LANGUAGES_KEY, languages); // This key is also used for SPEAKER_LANGUAGES
 			metadata.put("metadata", jsonstr);
 			
 		} else {	// Other-type(transcript, mapping)
@@ -961,8 +1010,8 @@ public class GoogleCloudService extends IntentService{
 			String groupId = splitName[0];
 			metadata.put(Recording.ITEM_ID_KEY, groupId);
 			metadata.put(Recording.FILE_TYPE_KEY, item.getFileType());
-			metadata.put(Recording.SPEAKERS_KEY, "");
-			metadata.put(Recording.LANGUAGES_KEY, "");
+//			metadata.put(Recording.SPEAKERS_KEY, "");
+//			metadata.put(Recording.LANGUAGES_KEY, "");
 		}
 		
 		metadata.put("date_approved", requestDate);

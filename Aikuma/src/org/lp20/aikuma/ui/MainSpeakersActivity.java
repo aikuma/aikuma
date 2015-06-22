@@ -38,7 +38,8 @@ public class MainSpeakersActivity extends AikumaListActivity {
 		super.onResume();
 
 		speakers = Speaker.readAll(AikumaSettings.getCurrentUserId());
-		Collections.reverse(speakers);
+		//Collections.reverse(speakers);
+		Collections.sort(speakers);
 
 		ArrayAdapter<Speaker> adapter =
 				new SpeakerArrayAdapter(this, speakers);

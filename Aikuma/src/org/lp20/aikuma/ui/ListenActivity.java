@@ -35,9 +35,11 @@ import android.widget.VideoView;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.lp20.aikuma.Aikuma;
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
@@ -70,6 +72,11 @@ public class ListenActivity extends AikumaActivity {
 	}
 	
 	@Override
+	public void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+	}
+	
+	@Override
 	public void onStart() {
 		super.onStart();
 		
@@ -92,9 +99,9 @@ public class ListenActivity extends AikumaActivity {
 		super.onResume();
 		updateStarButton();
 		updateFlagButton();
-		if(googleAuthToken != null) {
-			updateArchiveButton();
-		}
+		updatePublicShareButton();
+		updateArchiveButton();
+		//TODO: updatePrivateShareButton(), updateRefreshButton()
 		
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
@@ -138,7 +145,6 @@ public class ListenActivity extends AikumaActivity {
 			original.add(recording);
 			ArrayAdapter<Recording> adapter = 
 					new RecordingArrayAdapter(this, original, quickMenu);
-			
 			ListView originalView = 
 					(ListView) findViewById(R.id.selectedOriginal);
 			originalView.setAdapter(adapter);
@@ -193,11 +199,15 @@ public class ListenActivity extends AikumaActivity {
 		QuickActionItem flagAct = new QuickActionItem("flag", R.drawable.flag);
 		QuickActionItem shareAct = 
 				new QuickActionItem("share", R.drawable.share);
+		QuickActionItem respeakAct = new QuickActionItem("respeak", R.drawable.respeak_32);
+		QuickActionItem translateAct = new QuickActionItem("interpret", R.drawable.translate_32);
+		QuickActionItem refresthAct = new QuickActionItem("refresh", R.drawable.refresh_32);
 		
 		quickMenu.addActionItem(starAct);
 		quickMenu.addActionItem(flagAct);
 		quickMenu.addActionItem(shareAct);
 		
+		/*
 		if(googleAuthToken != null) {
 			QuickActionItem archiveAct = 
 					new QuickActionItem("share", R.drawable.aikuma_32);
@@ -205,8 +215,26 @@ public class ListenActivity extends AikumaActivity {
 					new QuickActionItem("share", R.drawable.speakers_32g);
 			quickMenu.addActionItem(archiveAct);
 			quickMenu.addActionItem(privateShareAct);
+		}*/
+		QuickActionItem archiveAct = 
+				new QuickActionItem("share", R.drawable.aikuma_32);
+		QuickActionItem privateShareAct =
+				new QuickActionItem("share", R.drawable.speakers_32g);
+		quickMenu.addActionItem(archiveAct);
+		quickMenu.addActionItem(privateShareAct);
+		if(googleAuthToken == null) {
+			quickMenu.setItemEnabledAt(3, false);
+			quickMenu.setItemEnabledAt(4, false);
 		}
 		
+		quickMenu.addActionItem(respeakAct);
+		quickMenu.addActionItem(translateAct);
+		quickMenu.addActionItem(refresthAct);
+		
+		// Tagging buttons
+		QuickActionItem tagAct =
+				new QuickActionItem("tag", R.drawable.tag_32);
+		quickMenu.addActionItem(tagAct);
 		
 		//setup the action item click listener
 		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener<Recording>() {			
@@ -223,6 +251,17 @@ public class ListenActivity extends AikumaActivity {
 					onArchiveButtonPressed(null);
 				} else if (pos == 4) {
 					onPrivateShareButtonPressed(null);
+				} else if (pos == 5) {
+					//respeak
+					onRespeakButton(null, "respeak");
+				} else if (pos == 6) {
+					//translate
+					onInterpretButtonPressed(null);
+				} else if (pos == 7) {
+					//refresh
+				} else if (pos == 8) {
+					// tag
+					onTagButtonPressed(null);
 				}
 			}
 		});
@@ -258,9 +297,11 @@ public class ListenActivity extends AikumaActivity {
 				
 			} else {
 				setPlayer(new InterleavedPlayer(recording));
+				/*
 				ImageButton respeakingButton =
 						(ImageButton) findViewById(R.id.respeaking);
 				respeakingButton.setVisibility(View.GONE);
+				*/
 			}
 		} catch (IOException e) {
 			//The player couldn't be created from the recoridng, so lets wrap
@@ -308,11 +349,12 @@ public class ListenActivity extends AikumaActivity {
 	}
 
 	/**
-	 * Change to the thumb respeaking activity
+	 * Change to the thumb respeak/interpret activity
 	 *
 	 * @param	respeakingButton	The thumb respeaking button
+	 * @param	respeakingType		Derivative recording type(respeak/interpret)
 	 */
-	public void onRespeakingButton(View respeakingButton) {
+	public void onRespeakButton(View respeakingButton, String respeakingType) {
 		SharedPreferences preferences =
 				PreferenceManager.getDefaultSharedPreferences(this);
 		String respeakingMode = preferences.getString(
@@ -321,13 +363,30 @@ public class ListenActivity extends AikumaActivity {
 		Log.i(TAG, 
 				"respeakingMode: " + respeakingMode +", rewindAmount: " + rewindAmount);
 
+		/*
 		Intent intent;
 		if (respeakingMode.equals("phone")) {
 			intent = new Intent(this, PhoneRespeakActivity.class);
 		} else {
 			// Lets just default to thumb respeaking
 			intent = new Intent(this, ThumbRespeakActivity.class);
+		}*/
+		Intent intent;
+		if(respeakingType.equals("respeak")) {
+			if (respeakingMode.equals("phone")) {
+				intent = new Intent(this, PhoneRespeakActivity.class);
+			} else {				// thumb
+				// Lets just default to thumb respeaking
+				intent = new Intent(this, ThumbRespeakActivity.class);
+			}
+			intent.putParcelableArrayListExtra("languages", (ArrayList<Language>) recording.getLanguages());
+		} else {
+			intent = new Intent(this, RecordingLanguageActivity.class);
+
+			intent.putExtra("mode", respeakingMode);
 		}
+		intent.putExtra("respeakingType", respeakingType);
+
 		intent.putExtra("sourceId", recording.getId());
 		intent.putExtra("ownerId", ownerId);
 		intent.putExtra("versionName", versionName);
@@ -397,6 +456,13 @@ public class ListenActivity extends AikumaActivity {
 	 * @param	view	The share button
 	 */
 	public void onArchiveButtonPressed(View view) {
+		if(!AikumaSettings.isPublicShareEnabled) {
+			Intent intent = new Intent(this, ConsentActivity.class);
+			startActivity(intent);
+	
+			return;
+		}
+		
 		Intent intent = new Intent(this, GoogleCloudService.class);
 		intent.putExtra(GoogleCloudService.ACTION_KEY, 
 				recording.getVersionName() + "-" + recording.getId());
@@ -462,6 +528,25 @@ public class ListenActivity extends AikumaActivity {
 		dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
 	}
 	
+	/**
+	 * Callback for an interpret quickaction button
+	 * @param view	The interpret quickaction button
+	 */
+	public void onInterpretButtonPressed(View view) {
+		onRespeakButton(view, "interpret");
+	}
+	
+	/**
+	 * Callback for an tagging quickaction button
+	 * @param view	The tagging quickaction button
+	 */
+	public void onTagButtonPressed(View view) {
+		Intent intent = new Intent(this, RecordingTagActivity.class);
+		intent.putExtra("id", recording.getId());
+		intent.putExtra("start", 0);
+		startActivity(intent);
+	}
+	
 	private void updateStarButton() {
 		if(recording.isStarredByThisPhone(AikumaSettings.getLatestVersion(), 
 				AikumaSettings.getCurrentUserId())) {
@@ -484,6 +569,17 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 	
+	private void updatePublicShareButton() {	// external share
+		if(Aikuma.isArchived(AikumaSettings.getCurrentUserId(), recording) &&
+				Aikuma.isDeviceOnline()) {
+			quickMenu.setItemEnabledAt(2, true);
+			quickMenu.setItemImageResourceAt(2, R.drawable.share);
+		} else {
+			quickMenu.setItemEnabledAt(2, false);
+			quickMenu.setItemImageResourceAt(2, R.drawable.share_grey);
+		}
+	}
+	
 	private void updateArchiveButton() {
 		if(Aikuma.isArchived(AikumaSettings.getCurrentUserId(), recording) ||
 				!recording.getOwnerId().equals(AikumaSettings.getCurrentUserId())) {
@@ -494,7 +590,6 @@ public class ListenActivity extends AikumaActivity {
 			quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_32);
 		}
 	}
-
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {

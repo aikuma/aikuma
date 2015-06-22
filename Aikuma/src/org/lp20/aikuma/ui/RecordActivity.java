@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -246,6 +247,8 @@ public class RecordActivity extends AikumaActivity {
 			intent.putExtra("latitude", latitude);
 			intent.putExtra("longitude", longitude);
 		}
+		
+		intent.putParcelableArrayListExtra("languages", getIntent().getParcelableArrayListExtra("languages"));
 		
 		startActivity(intent);
 		RecordActivity.this.finish();

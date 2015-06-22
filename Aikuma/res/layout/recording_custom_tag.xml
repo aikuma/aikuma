@@ -1,31 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:focusable="true"
-		android:focusableInTouchMode="true"
-	>
+		android:focusableInTouchMode="true" >
+	
 	<EditText
-	    android:id="@+id/speakerName"
+	    android:id="@+id/recordingCustomTag"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:hint="@string/speaker_name"
+		android:hint="@string/recording_custom_tag_hint"
 		android:inputType="text"	
+		android:maxLength="20"
 		/>
-
-	<EditText
-	    android:id="@+id/speakerComments"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_below="@id/speakerName"
-	    android:hint="@string/speaker_comments"
-	    android:inputType="textMultiLine" >
-	</EditText>
 	
 	<ImageButton
-		android:id="@+id/okButton1"
+		android:id="@+id/tagOkButton"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
@@ -33,7 +24,4 @@
 		android:src="@drawable/ok_48"
 		android:onClick="onOkButtonPressed"
 		/>
-
-	
-
 </RelativeLayout>

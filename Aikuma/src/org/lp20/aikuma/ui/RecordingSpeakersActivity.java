@@ -16,9 +16,17 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import org.lp20.aikuma.MainActivity;
+import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.model.Recording.TagType;
+import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
 
@@ -29,6 +37,8 @@ import org.lp20.aikuma2.R;
  */
 public class RecordingSpeakersActivity extends AikumaListActivity {
 
+	private static final String TAG = RecordingSpeakersActivity.class.getCanonicalName();
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,23 +51,20 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 		
 		okButton = (ImageButton) findViewById(R.id.recordingSpeakerOkButton);
 
+		if(savedInstanceState == null)
+			selectedSpeakers = new ArrayList<Speaker>();
+		else {
+			selectedSpeakers = savedInstanceState.getParcelableArrayList("selectedSpeakers");
+		}
+		/*
 		selectedSpeakers = getIntent().getParcelableArrayListExtra("selectedSpeakers");
-		updateOkButton();
-	}
-
-	@Override
-	public void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
+		if(selectedSpeakers == null)
+			selectedSpeakers = new ArrayList<Speaker>();
+		updateOkButton();*/
 
 		speakers = Speaker.readAll(AikumaSettings.getCurrentUserId());
-		ArrayAdapter<Speaker> adapter =
-				new RecordingSpeakerArrayAdapter(
-						this, speakers, selectedSpeakers) {
+		Collections.sort(speakers);
+		adapter = new RecordingSpeakerArrayAdapter(this, speakers, selectedSpeakers) {/*
 			@Override
 			// When checkbox in a listview is checked/unchecked
 			public void updateActivityState() {
@@ -65,11 +72,32 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 				if(selectedSpeakers.size() > 0) {
 					safeActivityTransition = true;
 				}
-			}
+			}*/
 		};
 		setListAdapter(adapter);
 	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putParcelableArrayList("selectedSpeakers", selectedSpeakers);
+		
+		//Call the superclass to save the view hierarchy state
+	    super.onSaveInstanceState(savedInstanceState);
+	}
 
+	@Override
+	public void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		Speaker speaker = (Speaker) intent.getParcelableExtra("speaker");
+		if(speaker != null && !speakers.contains(speaker)) {
+			speakers.add(speaker);
+			Collections.sort(speakers);
+			adapter.notifyDataSetChanged();
+			selectedSpeakers.add(speaker);
+		}
+	}
+
+	
 	/**
 	 * Starts the AddSpeakerActivity.
 	 *
@@ -82,35 +110,88 @@ public class RecordingSpeakersActivity extends AikumaListActivity {
 	}
 	
 	/**
-	 * Return all speakers selected to RecordingMetadataActivity
+	 * Create speaker tag files for the corresponding recording
 	 * 
 	 * @param 	_view	The ok-button pressed
 	 */
 	public void speakerOkButtonPressed(View _view) {
+		ArrayList<String> tagVerIdList = new ArrayList<String>();
+		String recordingId = getIntent().getStringExtra("recordingId");
+		try {
+			Recording recording = Recording.read(recordingId);
+			String versionName = recording.getVersionName();
+			
+			for(Speaker speaker : selectedSpeakers) {
+				String tagFileName = recording.tag(TagType.SPEAKER, 
+						speaker.getId(), AikumaSettings.getCurrentUserId());
+				if(tagFileName != null)
+					tagVerIdList.add(versionName + "-" + tagFileName);
+			}
+		} catch (IOException e) {
+			Log.e(TAG, "The recording can't be tagged: " + e.getMessage());
+			Intent intent = new Intent(this, MainActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | 
+					Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			
+			Toast.makeText(this, "The recording can't be tagged", Toast.LENGTH_LONG).show();
+		}
+		
+		// If automatic-backup is enabled, archive this file
+		if(AikumaSettings.isBackupEnabled) {
+			Intent serviceIntent = new Intent(RecordingSpeakersActivity.this, 
+					GoogleCloudService.class);
+			serviceIntent.putExtra(GoogleCloudService.ACTION_KEY, AikumaSettings.getCurrentUserId());
+			serviceIntent.putExtra(GoogleCloudService.ARCHIVE_FILE_TYPE_KEY, "tag");
+			serviceIntent.putStringArrayListExtra(GoogleCloudService.ACTION_EXTRA, tagVerIdList);
+			serviceIntent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
+					AikumaSettings.getCurrentUserId());
+			serviceIntent.putExtra(GoogleCloudService.TOKEN_KEY, 
+					AikumaSettings.getCurrentUserToken());
+			
+			startService(serviceIntent);
+		}		
+		
+		
+		int startActivity = getIntent().getIntExtra("start", 0);
+		Intent intent;
+		if(startActivity == 0) {
+			intent = new Intent(this, ListenActivity.class);
+		} else {
+			intent = new Intent(this, ListenRespeakingActivity.class);
+		}
+		intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | 
+				Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intent);
+		
+		Toast.makeText(this, "Speaker tag added", Toast.LENGTH_LONG).show();
+		
+		/*
 		Intent intent = new Intent();
 		intent.putParcelableArrayListExtra("speakers", selectedSpeakers);
 		setResult(RESULT_OK, intent);
-		this.finish();
+		this.finish();*/
 	}
 	
 	/**
 	 * Disables or enables the OK button if at least one language is selected
 	 * used by LanguageArrayAdapter each time checkbox is checked
 	 */
-	private void updateOkButton() {
-		if (selectedSpeakers.size() > 0) {
-			okButton.setImageResource(R.drawable.ok_48);
-			okButton.setEnabled(true);
-			safeActivityTransition = true;
-		} else {
-			okButton.setImageResource(R.drawable.ok_disabled_48);
-			okButton.setEnabled(false);
-			safeActivityTransition = false;
-		}
-	}
-
+//	private void updateOkButton() {
+//		if (selectedSpeakers.size() > 0) {
+//			okButton.setImageResource(R.drawable.ok_48);
+//			okButton.setEnabled(true);
+//			safeActivityTransition = true;
+//		} else {
+//			okButton.setImageResource(R.drawable.ok_disabled_48);
+//			okButton.setEnabled(false);
+//			safeActivityTransition = false;
+//		}
+//	}
 
 	private ImageButton okButton;
+	
+	ArrayAdapter<Speaker> adapter;
 	
 	private List<Speaker> speakers;
 	private ArrayList<Speaker> selectedSpeakers;

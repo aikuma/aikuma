@@ -5,6 +5,7 @@
 package org.lp20.aikuma.ui;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.io.IOException;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma2.R;
@@ -78,6 +81,17 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		this.quickMenu = quickMenu;
 	}
 	
+	/**
+	 * Change the underlying data
+	 * 
+	 * @param recordings	The underlying data
+	 */
+	public void setRecordings(List<Recording> recordings) {
+		this.clear();
+		this.addAll(recordings);
+		this.recordings = new ArrayList<Recording>(recordings);
+	}
+	
 	@Override
 	public View getView(int position, View _, ViewGroup parent) {
 		LinearLayout recordingView =
@@ -87,6 +101,8 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		// Set the view to have recording name, date, duration, speakerImage
 		TextView recordingNameView = 
 				(TextView) recordingView.findViewById(R.id.recordingName);
+		TextView recordingTagView = 
+				(TextView) recordingView.findViewById(R.id.recordingTags);
 		TextView recordingDateDurationView = 
 				(TextView) recordingView.findViewById(R.id.recordingDateDuration);
 		LinearLayout speakerImagesView = (LinearLayout)
@@ -94,11 +110,63 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 
 		String verName = recording.getVersionName();
 		String ownerId = recording.getOwnerId();
-		for (String id : recording.getSpeakersIds()) {
-			speakerImagesView.addView(makeSpeakerImageView(verName, ownerId, id));
-		}
+//		for (String id : recording.getSpeakersIds()) {
+//			speakerImagesView.addView(makeSpeakerImageView(verName, ownerId, id));
+//		}
+		speakerImagesView.addView(makeRecordingImageView(recording));
+		
 		recordingNameView.setText(recording.getNameAndLang());
 		
+		// Set the speakers' names
+		// Set tag strings
+		StringBuilder sb = new StringBuilder();
+		List<Speaker> speakers = recording.getSpeakers();
+		List<Language> langTagList = recording.getLanguages();
+		List<String> olacTagList = recording.getOLACTagStrings();
+		List<String> customTagList = recording.getCustomTagStrings();
+		
+		for(Speaker speaker : speakers) {
+			sb.append(speaker.getName() + ", ");
+		}
+		if(sb.length() > 2) {
+			TextView speakerNameView = (TextView)
+					recordingView.findViewById(R.id.speakerNames);
+			String speakerListStr = sb.substring(0, sb.length()-2);
+			speakerNameView.setText(speakerListStr);
+			sb.setLength(0);
+			sb.append("Speakers: " + speakerListStr + "\n");
+		}
+			
+		for(int i = 0; i < langTagList.size(); i++) {
+			if(i == 0)
+				sb.append("Languages: ");
+			Language lang = langTagList.get(i);
+			sb.append(lang.getCode() + ", ");
+			if(i == langTagList.size() - 1) {
+				sb.setLength(sb.length() - 2);
+				sb.append("\n");
+			}
+		}
+		for(int i = 0; i < olacTagList.size(); i++) {
+			if(i == 0)
+				sb.append("OLAC: ");
+			sb.append(olacTagList.get(i) + ", ");
+			if(i == olacTagList.size() - 1) {
+				sb.setLength(sb.length() - 2);
+				sb.append("\n");
+			}
+		}
+		for(int i = 0; i < customTagList.size(); i++) {
+			if(i == 0)
+				sb.append("Custom: ");
+			sb.append(customTagList.get(i) + ", ");
+			if(i == customTagList.size() - 1) {
+				sb.setLength(sb.length() - 2);
+			}
+		}
+		recordingTagView.setText(sb);
+		
+		// Set the duration
 		Integer duration = recording.getDurationMsec() / 1000;
 		if (recording.getDurationMsec() == -1) {
 			recordingDateDurationView.setText(
@@ -109,25 +177,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 				duration.toString() + "s)");
 		}
 		
-		// Set the speakers' names
-		List<String> speakers = recording.getSpeakersIds();
-		StringBuilder sb = new StringBuilder();
-		for(String speakerId : speakers) {
-			try {
-				sb.append(Speaker.read(verName, ownerId, speakerId).getName()+", ");
-			} catch (IOException e) {
-				// If the reader can't be read for whatever reason 
-				// (perhaps JSON file wasn't formatted correctly),
-				// Empty the speakersName
-				e.printStackTrace();
-			}
-		}
 		
-		TextView speakerNameView = (TextView)
-				recordingView.findViewById(R.id.speakerNames);
-		if(sb.length() > 2)
-			speakerNameView.setText(sb.substring(0, sb.length()-2));
-
 		// Add the comment(two way arrow icon) or movie icon
 		LinearLayout icons = (LinearLayout)
 				recordingView.findViewById(R.id.recordingIcons);
@@ -185,8 +235,9 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		ImageView iconImage = new ImageView(context);
 		iconImage.setImageResource(resourceId);
 		iconImage.setAdjustViewBounds(true);
-		iconImage.setLayoutParams(new LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+//		iconImage.setLayoutParams(new LayoutParams(
+//				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		iconImage.setScaleType(ScaleType.FIT_START);
 		
 		return iconImage;
 	}
@@ -199,20 +250,40 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 	 * @param	speakerId	The ID of the speaker.
 	 * @return	The image view for the speaker.
 	 */
-	private ImageView makeSpeakerImageView(String verName, String ownerId, 
-			String speakerId) {
-		int pixels = ImageUtils.getPixelsFromDp(context, 40);
-		ImageView speakerImage = new ImageView(context);
-		speakerImage.setAdjustViewBounds(true);
-//		speakerImage.setScaleType(ImageView.ScaleType.FIT_END);
-		speakerImage.setMaxHeight(pixels);//40
-		speakerImage.setMaxWidth(pixels);//40
+//	private ImageView makeSpeakerImageView(String verName, String ownerId, 
+//			String speakerId) {
+//		int pixels = ImageUtils.getPixelsFromDp(context, 40);
+//		ImageView speakerImage = new ImageView(context);
+//		speakerImage.setAdjustViewBounds(true);
+////		speakerImage.setScaleType(ImageView.ScaleType.FIT_END);
+//		speakerImage.setMaxHeight(pixels);//40
+//		speakerImage.setMaxWidth(pixels);//40
+//		try {
+//			speakerImage.setImageBitmap(Speaker.getSmallImage(verName, ownerId, speakerId));
+//		} catch (IOException e) {
+//			// Not much can be done if the image can't be loaded.
+//		}
+//		return speakerImage;
+//	}
+	
+	/**
+	 * Creates the image-view for a given recording.
+	 * @param recording		The given recording
+	 * @return				The image view for the recording
+	 */
+	private ImageView makeRecordingImageView(Recording recording) {
+		int pixels = ImageUtils.getPixelsFromDp(context, 60);
+		ImageView recordingImageView = new ImageView(context);
+		recordingImageView.setAdjustViewBounds(true);
+//		recordingImageView.setScaleType(ImageView.ScaleType.FIT_END);
+		recordingImageView.setMaxHeight(pixels);//40
+		recordingImageView.setMaxWidth(pixels);//40
 		try {
-			speakerImage.setImageBitmap(Speaker.getSmallImage(verName, ownerId, speakerId));
+			recordingImageView.setImageBitmap(recording.getImage());
 		} catch (IOException e) {
 			// Not much can be done if the image can't be loaded.
 		}
-		return speakerImage;
+		return recordingImageView;
 	}
 	
 	@Override

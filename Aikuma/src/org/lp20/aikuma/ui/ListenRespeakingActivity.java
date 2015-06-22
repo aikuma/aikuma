@@ -68,6 +68,11 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	}
 	
 	@Override
+	public void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+	}
+	
+	@Override
 	public void onStart() {
 		super.onStart();
 		setUp();
@@ -78,9 +83,9 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		super.onResume();
 		updateStarButtons();
 		updateFlagButtons();
-		if(googleAuthToken != null) {
-			updateArchiveButtons();
-		}
+		updatePublicShareButtons();
+		updateArchiveButtons();
+		//TODO: updatePrivateShareButton(), updateRefreshButton()
 		
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
@@ -192,11 +197,14 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		QuickActionItem starAct = new QuickActionItem("star", R.drawable.star);
 		QuickActionItem flagAct = new QuickActionItem("flag", R.drawable.flag);
 		QuickActionItem shareAct = new QuickActionItem("share", R.drawable.share);
+		QuickActionItem respeakAct = new QuickActionItem("respeak", R.drawable.respeak_32);
+		QuickActionItem translateAct = new QuickActionItem("translate", R.drawable.translate_32);
+		QuickActionItem refresthAct = new QuickActionItem("refresh", R.drawable.refresh_32);
 		
 		quickMenu.addActionItem(starAct);
 		quickMenu.addActionItem(flagAct);
 		quickMenu.addActionItem(shareAct);
-		
+		/*
 		if(googleAuthToken != null) {
 			QuickActionItem archiveAct = 
 					new QuickActionItem("share", R.drawable.aikuma_32);
@@ -204,7 +212,26 @@ public class ListenRespeakingActivity extends AikumaActivity{
 					new QuickActionItem("share", R.drawable.speakers_32g);
 			quickMenu.addActionItem(archiveAct);
 			quickMenu.addActionItem(privateShareAct);
+		}*/
+		QuickActionItem archiveAct = 
+				new QuickActionItem("share", R.drawable.aikuma_32);
+		QuickActionItem privateShareAct =
+				new QuickActionItem("share", R.drawable.speakers_32g);
+		quickMenu.addActionItem(archiveAct);
+		quickMenu.addActionItem(privateShareAct);
+		if(googleAuthToken == null) {
+			quickMenu.setItemEnabledAt(3, false);
+			quickMenu.setItemEnabledAt(4, false);
 		}
+		/*
+		quickMenu.addActionItem(respeakAct);
+		quickMenu.addActionItem(translateAct);
+		quickMenu.addActionItem(refresthAct);
+		*/
+		// Tagging buttons
+		QuickActionItem tagAct =
+				new QuickActionItem("tag", R.drawable.tag_32);
+		quickMenu.addActionItem(tagAct);		
 		
 		//setup the action item click listener
 		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener<Recording>() {			
@@ -221,6 +248,15 @@ public class ListenRespeakingActivity extends AikumaActivity{
 					onArchiveButtonPressed(recording);
 				} else if (pos == 4) {
 					onPrivateShareButtonPressed(recording);
+				} else if (pos == 5) {
+					//respeak
+					//onRespeakButton(recording);
+					onTagButtonPressed(recording);
+				} else if (pos == 6) {
+					//translate
+					//onInterpretButtonPressed(recording);
+				} else if (pos == 7) {
+					//refresh
 				}
 			}
 		});
@@ -342,6 +378,16 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	 * @param recording	Recording object which will be shared
 	 */
 	public void onArchiveButtonPressed(Recording recording) {
+		if(!AikumaSettings.isPublicShareEnabled) {
+			Toast.makeText(this, 
+					"Before sharing, please see the sharing agreement in the settings menu.", 
+					Toast.LENGTH_LONG).show();
+			Intent intent = new Intent(this, ConsentActivity.class);
+			startActivity(intent);
+			
+			return;
+		}
+		
 		Intent intent = new Intent(this, GoogleCloudService.class);
 		intent.putExtra(GoogleCloudService.ACTION_KEY, 
 				recording.getVersionName() + "-" + recording.getId());
@@ -413,6 +459,18 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		dialog.show();
 		dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
 	}
+	
+	/**
+	 * Callback for the tagging button
+	 *
+	 * @param recording	Recording object which will be tagged
+	 */
+	public void onTagButtonPressed(Recording recording) {
+		Intent intent = new Intent(this, RecordingTagActivity.class);
+		intent.putExtra("id", recording.getId());
+		intent.putExtra("start", 1);
+		startActivity(intent);
+	}
 
 	private void updateStarButtons() {
 		updateStarButton(originalQuickMenu, original);
@@ -422,6 +480,11 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	private void updateFlagButtons() {
 		updateFlagButton(originalQuickMenu, original);
 		updateFlagButton(respeakingQuickMenu, respeaking);
+	}
+	
+	private void updatePublicShareButtons() {
+		updatePublicShareButton(originalQuickMenu, original);
+		updatePublicShareButton(respeakingQuickMenu, respeaking);
 	}
 	
 	private void updateArchiveButtons() {
@@ -450,6 +513,18 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		} else {
 			quickMenu.setItemEnabledAt(1, true);
 			quickMenu.setItemImageResourceAt(1, R.drawable.flag);
+		}
+	}
+	
+	private void updatePublicShareButton(QuickActionMenu<Recording> quickMenu, 
+			Recording recording) {
+		if(Aikuma.isArchived(AikumaSettings.getCurrentUserId(), recording) &&
+				Aikuma.isDeviceOnline()) {
+			quickMenu.setItemEnabledAt(2, true);
+			quickMenu.setItemImageResourceAt(2, R.drawable.share);
+		} else {
+			quickMenu.setItemEnabledAt(2, false);
+			quickMenu.setItemImageResourceAt(2, R.drawable.share_grey);
 		}
 	}
 
