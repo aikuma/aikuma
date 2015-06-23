@@ -48,10 +48,14 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 		
 		Intent intent = getIntent();
 		name = (String) intent.getExtras().getString("name");
+		comments = (String) intent.getExtras().getString("comments");
 		selectedLanguages = intent.getParcelableArrayListExtra("languages");
 		
 		TextView nameView = (TextView) findViewById(R.id.nameView2);
+		TextView commentsView = (TextView) findViewById(R.id.commentsView);
 		nameView.setText("Name: " + name);
+		commentsView.setText("Comments: " + comments);
+		
 		TextView languageView = (TextView) findViewById(R.id.languageView1);
 		StringBuilder sb = new StringBuilder("Languages:\n");
 		for(Language lang : selectedLanguages) {
@@ -90,6 +94,7 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 			Intent lastIntent = new Intent(this, AddSpeakerActivity4.class);
 			lastIntent.putExtra("origin", getIntent().getExtras().getInt("origin"));
 			lastIntent.putExtra("name", name);
+			lastIntent.putExtra("comments", comments);
 			lastIntent.putParcelableArrayListExtra("languages", selectedLanguages);
 			lastIntent.putExtra("imageUUID", imageUUID.toString());
 			startActivity(lastIntent);
@@ -124,6 +129,7 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 	static final int PHOTO_REQUEST_CODE = 1;
 	
 	private String name;
+	private String comments;
 	private ArrayList<Language> selectedLanguages;
 
 	private UUID imageUUID;

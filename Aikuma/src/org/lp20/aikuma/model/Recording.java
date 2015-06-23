@@ -4,6 +4,7 @@
 */
 package org.lp20.aikuma.model;
 
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.os.Parcel;
 import android.util.Log;
@@ -11,6 +12,7 @@ import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.IdUtils;
+import org.lp20.aikuma.util.ImageUtils;
 import org.lp20.aikuma.util.StandardDateFormat;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -53,13 +55,13 @@ public class Recording extends FileModel {
 	 *
 	 * @param	recordingUUID	the temporary UUID of the recording in question.
 	 * 							(recording can be wav or movie(mp4))
+	 * @param	imageUUID		the temporary UUID of the recording-image
 	 * @param	name	The recording's name.
+	 * @param	comments	The optional free text string
 	 * @param	date	The date of creation.
-	 * 	 * @param	versionName	The recording's version(v0x)
+	 * @param	versionName	The recording's version(v0x)
 	 * @param	ownerId	The recording owner's ID(Google account)
-	 * @param	languages	The languages associated with the recording
-	 * @param	speakersIds	The IDs of the speakers associated with the
-	 * recording
+	 * @param	languages	The languages associated with the recording (used to determine fileType)
 	 * @param	deviceName	The model name of the device
 	 * @param	androidID	The android ID of the device that created the
 	 * recording
@@ -74,18 +76,18 @@ public class Recording extends FileModel {
 	 * @param	latitude The location data
 	 * @param	longitude The location data
 	 */
-	public Recording(UUID recordingUUID, String name, Date date,
+	public Recording(UUID recordingUUID, UUID imageUUID, String name, String comments, Date date,
 			String versionName, String ownerId,
-			List<Language> languages, List<String> speakersIds,
+			List<Language> languages,
 			String deviceName, String androidID, String groupId, String sourceVerId,
 			long sampleRate, int durationMsec, String format, int numChannels, 
 			int bitsPerSample, Double latitude, Double longitude) {
 		super(versionName, ownerId, null, null, format);	// id, fileType is defined by Recording class
 		this.recordingUUID = recordingUUID;
+		this.imageUUID = imageUUID;
 		setName(name);
+		setComments(comments);
 		setDate(date);
-		setLanguages(languages);
-		setSpeakersIds(speakersIds);
 		setDeviceName(deviceName);
 		setAndroidID(androidID);
 		setSampleRate(sampleRate);
@@ -118,9 +120,6 @@ public class Recording extends FileModel {
 	 * @param	sourceVerId	The source's version and Id (if not respeaking, null)
 	 * @param	format		The file format
 	 * @param	fileType	The file type
-	 * @param	languages	The languages associated with the recording
-	 * @param	speakersIds	The IDs of the speakers associated with the
-	 * recording
 	 * @param	androidID	The android ID of the device that created the
 	 * recording
 	 * @param	groupId	The ID of the group of recordings this recording
@@ -132,14 +131,11 @@ public class Recording extends FileModel {
 	 */
 	public Recording(String name, Date date,
 			String versionName, String ownerId, String sourceVerId,
-			List<Language> languages, List<String> speakersIds,
 			String androidID, String groupId, String respeakingId,
 			long sampleRate, int durationMsec, String format, String fileType) {
 		super(versionName, ownerId, null, null, format);	// id, fileType is defined by Recording class
 		setName(name);
 		setDate(date);
-		setLanguages(languages);
-		setSpeakersIds(speakersIds);
 		setAndroidID(androidID);
 		setSampleRate(sampleRate);
 		setDurationMsec(durationMsec);
@@ -198,6 +194,13 @@ public class Recording extends FileModel {
 		FileUtils.moveFile(movFile, this.getFile());
 		Log.i(TAG, movFile.getAbsolutePath() + " move to " + this.getFile().getAbsolutePath());
 	}
+	
+	// Moves a recording-image file from a no-sync directory to its rightful place
+	private void importImage(UUID imageUUID) throws IOException {
+		// First import the full sized image
+		File imageFile = ImageUtils.getNoSyncImageFile(imageUUID);
+		FileUtils.moveFile(imageFile, getImageFile());
+	}
 
 	// Similar to importWav, except for the mapping file.
 	private void importMapping(UUID wavUUID, String id)
@@ -254,6 +257,27 @@ public class Recording extends FileModel {
 	}
 	
 	/**
+	 * Returns a File that refers to the recording's image file
+	 * 
+	 * @return The recording-image file, which might not exist
+	 */
+	public File getImageFile() {
+		return new File(getRecordingsPath(), getGroupId() + "/"
+				+ getImageId() + "." + IMAGE_EXT);
+	}
+
+	/**
+	 * Gets the recording's image.
+	 *
+	 * @return	A Bitmap object.
+	 * @throws	IOException	If the image cannot be retrieved.
+	 */
+	public Bitmap getImage() throws IOException {
+		return ImageUtils.retrieveFromFile(getImageFile());
+	}
+
+	
+	/**
 	 * Returns a File that refers to the respeaking's mapping file.
 	 *
 	 * @return	The mapping file of the respeaking.
@@ -272,6 +296,10 @@ public class Recording extends FileModel {
 	
 	public String getPreviewId() {
 		return (id + SAMPLE_SUFFIX);
+	}
+	
+	public String getImageId() {
+		return (id + IMAGE_SUFFIX);
 	}
 	
 	public String getTranscriptId() {
@@ -303,13 +331,50 @@ public class Recording extends FileModel {
 			return "";
 		}
 	}
+	
+	/**
+	 * Comments accessor; returns an empty string if the comments is null
+	 * 
+	 * @return	The comments of the recording
+	 */
+	public String getComments() {
+		if (comments == null)
+			return "";
+		return comments;
+	}
 
 	public Date getDate() {
 		return date;
 	}
 
+	/**
+	 * Languages accessor; return a list of languages associated with the recording
+	 * It looks for all language tag files under aikuma folder 
+	 * 
+	 * @return	a list of languages
+	 */
 	public List<Language> getLanguages() {
-		return languages;
+		if(languagesBuffer != null)
+			return languagesBuffer;
+		
+		languagesBuffer = new ArrayList<Language>();
+		final Map<String, String> languageCodeMap = Aikuma.getLanguageCodeMap();
+		
+		filterTags(LANGUAGE_TAG_TYPE, new TagProcessor() {
+			@Override
+			public void processTag(String verGroupOwnerStr, String tagStr) {
+				if(tagStr.length() > 7 && tagStr.startsWith("iso639_")) {
+					String langCode = tagStr.substring(7);
+					languagesBuffer.add(
+							new Language(languageCodeMap.get(langCode), langCode));
+				} else {
+					languagesBuffer.add(new Language(tagStr, ""));
+				}
+			}
+			
+		});
+		
+		return languagesBuffer;
 	}
 
 	/**
@@ -346,7 +411,22 @@ public class Recording extends FileModel {
 	 * @return	A list of IDs representing the speakers of the recording.
 	 */
 	public List<String> getSpeakersIds() {
-		return speakersIds;
+		if(speakersIdsBuffer != null)
+			return speakersIdsBuffer;
+		
+		speakersCreatorsBuffer = new ArrayList<String>();
+		speakersIdsBuffer = new ArrayList<String>();
+		
+		filterTags(SPEAKER_TAG_TYPE, new TagProcessor() {
+			@Override
+			public void processTag(String verGroupOwnerStr, String tagStr) {
+				String tagCreator = verGroupOwnerStr.substring(Recording.ITEM_ID_LEN + 5);
+				speakersCreatorsBuffer.add(tagCreator);
+				speakersIdsBuffer.add(tagStr);
+			}	
+		});
+		
+		return speakersIdsBuffer;
 	}
 	
 	/**
@@ -354,24 +434,93 @@ public class Recording extends FileModel {
 	 * @return	a list of File-model instances of the recording's speakers
 	 *          (Speakers will always have the same version with the recording)
 	 */
-	public List<FileModel> getSpeakers() {
-		List<FileModel> speakers = new ArrayList<FileModel>();
-		for(String speakerId : speakersIds) {
-			speakers.add(new FileModel(this.versionName, this.ownerId, speakerId, SPEAKER_TYPE, IMAGE_EXT));
+	public List<Speaker> getSpeakers() {
+		if(speakersIdsBuffer == null) {
+			getSpeakersIds();
 		}
+		Log.i(TAG, speakersIdsBuffer.toString());
+		//List<FileModel> speakers = new ArrayList<FileModel>();
+		List<Speaker> speakers = new ArrayList<Speaker>();
+		for(int i = 0; i < speakersIdsBuffer.size(); i++) {
+			String creatorId = speakersCreatorsBuffer.get(i);
+			String speakerId = speakersIdsBuffer.get(i);
+			//speakers.add(new FileModel(this.versionName, creatorId, speakerId, SPEAKER_TYPE, IMAGE_EXT));
+			try {
+				speakers.add(Speaker.read(this.versionName, creatorId, speakerId));
+			} catch(IOException e) {
+				Log.e(TAG, speakerId + " file can't be read under the folder of " + creatorId);
+			}
+		}
+		
 		return speakers;
 	}
-
+	
 	/**
-	 * Returns true if the Recording has at least one language; false otherwise.
-	 *
-	 * @return	true if the Recording has at least one language; false otherwise.
+	 * Get a list of OLAC tag strings associated with the recording
+	 * 
+	 * @return	a list of OLAC tag strings
 	 */
-	public boolean hasALanguage() {
-		if (this.languages.size() == 0) {
-			return false;
-		}
-		return true;
+	public List<String> getOLACTagStrings() {
+		if(olacTagStringsBuffer != null)
+			return olacTagStringsBuffer;
+		
+		olacTagStringsBuffer = new ArrayList<String>();
+		
+		filterTags(OLAC_TAG_TYPE, new TagProcessor() {
+			@Override
+			public void processTag(String verGroupOwnerStr, String tagStr) {
+				olacTagStringsBuffer.add(tagStr);
+			}
+		});
+		
+		return olacTagStringsBuffer;
+	}
+	
+	/**
+	 * Get a list of custom tag strings associated with the recording
+	 * 
+	 * @return	a list of custom tag strings
+	 */
+	public List<String> getCustomTagStrings() {
+		if(customTagStringsBuffer != null)
+			return customTagStringsBuffer;
+		
+		customTagStringsBuffer = new ArrayList<String>();
+		
+		filterTags(CUSTOM_TAG_TYPE, new TagProcessor() {
+			@Override
+			public void processTag(String verGroupOwnerStr, String tagStr) {
+				customTagStringsBuffer.add(tagStr);
+			}
+		});
+		
+		return customTagStringsBuffer;
+	}
+	
+	/** 
+	 * Get a list of FileModels of all tags associated with the recording
+	 * 
+	 * @return	a list of FileModel structures of all tags
+	 */
+	public List<FileModel> getTags() {
+		final List<FileModel> tagFileModels = new ArrayList<FileModel>();
+		
+		filterTags(ALL_TAG_TYPE, new TagProcessor() {
+			@Override
+			public void processTag(String verGroupOwnerStr, String tagFileName) {
+				String[] splitVerGroupOwnerStr = verGroupOwnerStr.split("-");
+				if(splitVerGroupOwnerStr.length > 3) {
+					for(int i = 3; i < splitVerGroupOwnerStr.length; i++) {
+						splitVerGroupOwnerStr[2] += splitVerGroupOwnerStr[i];
+					}
+				}
+				tagFileModels.add(new FileModel(splitVerGroupOwnerStr[0], 
+						splitVerGroupOwnerStr[2], tagFileName, FileModel.TAG_TYPE, ""));
+			}
+			
+		});
+		
+		return tagFileModels;
 	}
 	
 	/**
@@ -433,15 +582,10 @@ public class Recording extends FileModel {
 	public JSONObject encode() {
 		JSONObject encodedRecording = new JSONObject();
 		encodedRecording.put(NAME_KEY, this.name);
+		encodedRecording.put(COMMENTS_KEY, this.comments);
 		encodedRecording.put(DATE_KEY, new StandardDateFormat().format(this.date));
 		encodedRecording.put(VERSION_KEY, this.versionName);
 		encodedRecording.put(USER_ID_KEY, this.ownerId);
-		encodedRecording.put(LANGUAGES_KEY, Language.encodeList(languages));
-		JSONArray speakersIdsArray = new JSONArray();
-		for (String id : speakersIds) {
-			speakersIdsArray.add(id.toString());
-		}
-		encodedRecording.put(SPEAKERS_KEY, speakersIdsArray);
 		encodedRecording.put(DEVICE_NAME_KEY, deviceName);
 		encodedRecording.put(ANDROID_ID_KEY, this.androidID);
 		encodedRecording.put(SAMPLERATE_KEY, getSampleRate());
@@ -543,15 +687,16 @@ public class Recording extends FileModel {
 		if(this.isMovie()) {
 			importMov(recordingUUID, getId());
 		} else {
-			importWav(recordingUUID, getId());
-			
+			importWav(recordingUUID, getId());	
 		}
+		
 
 		// if the recording is original
 		if (isOriginal()) {
 			// Import the sample wave file into the new recording directory
 			String suffixExt = getSuffixExt(versionName, FileType.PREVIEW);
 			importWav(recordingUUID + suffixExt, getId() + suffixExt);
+			importImage(imageUUID);
 		} else {
 			// Try and import the mapping file
 			importMapping(recordingUUID, getId());
@@ -626,6 +771,19 @@ public class Recording extends FileModel {
 	}
 
 	/**
+	 * Read a recording of the given ID 
+	 * (assuming that the file and aikuma are in the same version)
+	 * 
+	 * @param 	id			The recording's ID
+	 * @return	A recording object corresponding to the ID
+	 * @throws IOException	if the recording metadata file cannot be read
+	 */
+	public static Recording read(String id) throws IOException {
+		String[] splitId = id.split("-");
+		return Recording.read(AikumaSettings.getLatestVersion(), splitId[1], id);
+	}
+	
+	/**
 	 * Read a recording corresponding to the given filename prefix.
 	 *
 	 * @param	verName			The recording's versionName
@@ -687,17 +845,6 @@ public class Recording extends FileModel {
 		String sourceVerId = (String) jsonObj.get(SOURCE_VER_ID_KEY);
 		String format = (String) jsonObj.get(FORMAT_KEY);
 		String fileType = (String) jsonObj.get(FILE_TYPE_KEY);
-		
-		JSONArray languageArray = (JSONArray) jsonObj.get(LANGUAGES_KEY);
-		if (languageArray == null) {
-			throw new IOException("Null languages in the JSON file.");
-		}
-		List<Language> languages = Language.decodeJSONArray(languageArray);
-		JSONArray speakerIdArray = (JSONArray) jsonObj.get(SPEAKERS_KEY);
-		if (speakerIdArray == null) {
-			throw new IOException("Null speakersIds in the JSON file.");
-		}
-		List<String> speakersIds = Speaker.decodeJSONArray(speakerIdArray);
 		String androidID = (String) jsonObj.get(ANDROID_ID_KEY);
 		if (androidID == null) {
 			throw new IOException("Null androidID in the JSON file.");
@@ -723,7 +870,7 @@ public class Recording extends FileModel {
 			Log.i(TAG, "reading: " + durationMsec);
 		}
 		Recording recording = new Recording(name, date, versionName, ownerId, 
-				sourceVerId, languages, speakersIds, androidID, groupId, 
+				sourceVerId, /*languages, speakersIds, */androidID, groupId, 
 				respeakingId, sampleRate, (Integer) durationMsec, format, fileType);
 		return recording;
 	}
@@ -771,8 +918,9 @@ public class Recording extends FileModel {
 					FileIO.getOwnerPath(splitRespkName[0], splitRespkName[2]);
 			File groupDir = 
 					new File(getRecordingsPath(ownerDir), splitRespkName[1]);
-			
-			groupDirList.add(groupDir);
+			//Check if this index is created for derivative recordings, not for tags 
+			if(groupDir.exists())	
+				groupDirList.add(groupDir);
 		}
 		// For the respeakings existing in the same folder of original
 		File currentDir = new File(getRecordingsPath(), getGroupId());
@@ -807,6 +955,63 @@ public class Recording extends FileModel {
 		}
 		
 		return respeakings;
+	}
+	
+	/**
+	 * read all tags in the device
+	 * @return	a list of FileModel structures of all tags
+	 */
+	public static List<FileModel> readAllTags() {
+		List<FileModel> tags = new ArrayList<FileModel>();
+		
+		// Get a list of version directories
+		final String currentVersionName = AikumaSettings.getLatestVersion();
+		File[] versionDirs = 
+				FileIO.getAppRootPath().listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String filename) {
+				//return filename.startsWith("v") && filename.substring(1).matches("\\d+");
+				return filename.matches(currentVersionName);
+			}	
+		});
+
+		for(File f1 : versionDirs) {
+			String versionName = f1.getName();
+			File[] firstHashDirs = f1.listFiles();
+			for(File f2 : firstHashDirs) {
+				File[] secondHashDirs = f2.listFiles();
+				for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f3.listFiles();
+					for(File f : ownerIdDirs) {
+						addTagsInDir(versionName, tags, f);
+					}
+				}
+			}
+		}
+
+		return tags;		
+	}
+	
+	private static void addTagsInDir(final String versionName, 
+			List<FileModel> tags, File ownerDir) {
+		// Constructs a list of directories in the recordings directory.
+		File[] recordingPathFiles = getTagsPath(ownerDir).listFiles();
+		
+		if (recordingPathFiles == null) {
+			return;
+		}
+			
+		for (File f : recordingPathFiles) {
+			if (f.isDirectory()) {	// f is a item directory under social/
+				File[] tagFiles = f.listFiles();
+
+				for (File tagFile : tagFiles) {
+					FileModel fm = new FileModel(versionName, ownerDir.getName(), 
+							tagFile.getName(), FileModel.TAG_TYPE, "");
+					tags.add(fm);
+				}
+			}
+		}
 	}
 
 	/**
@@ -906,7 +1111,7 @@ public class Recording extends FileModel {
 		File indexFile = new File(FileIO.getAppRootPath(), "index.json");
 		
 		JSONObject indices = new JSONObject();
-		List<String> originals = new ArrayList<String>();
+		List<String> recordingIds = new ArrayList<String>();
 		JSONObject itemDirPaths = new JSONObject();
 
 		// Get a list of version directories
@@ -926,8 +1131,11 @@ public class Recording extends FileModel {
 					File[] ownerIdDirs = f3.listFiles();
 					for(File f4 : ownerIdDirs) {						
 						Log.i(TAG, "indexAll: " + f4.getPath());
-						File[] itemDirs = getRecordingsPath(f4).listFiles();
-						for(File f5 : itemDirs) {
+						List<File> itemDirsList = new ArrayList<File>(
+								Arrays.asList(getRecordingsPath(f4).listFiles()));
+						itemDirsList.addAll(Arrays.asList(getTagsPath(f4).listFiles()));
+						
+						for(File f5 : itemDirsList) {
 							
 							if (f5.isDirectory()) {
 								// Record the path to this item folder
@@ -943,19 +1151,23 @@ public class Recording extends FileModel {
 									itemDirPaths.put(f5.getName(), values);
 								}
 																					
-								// Record the original
-								File[] files = f5.listFiles();
+								// Record all the recordings (original: derivative, tag / derivative: tag)
+								File[] files = f5.listFiles(new FilenameFilter() {
+									public boolean accept(File dir, String filename) {
+										return filename.endsWith(AUDIO_EXT) || filename.endsWith(VIDEO_EXT);
+									}
+								});
 								for(File f : files) {
 									String fileName = f.getName();
 									String srcId = fileName.substring(0, fileName.lastIndexOf('.'));
-									if(srcId.endsWith("source")) {
+									String tempId = srcId.substring(0, srcId.length()-7);
+									if(srcId.endsWith(SOURCE_TYPE) || tempId.endsWith(RESPEAKING_TYPE) ||
+											tempId.endsWith(TRANSLATION_TYPE)) {
 										// At most one source file can exist in one item folder
-										if(!originals.contains(srcId))
-											originals.add(srcId);
-										break;
+										if(!recordingIds.contains(srcId))
+											recordingIds.add(srcId);
 									}	
 								}
-								
 								
 							}
 						}
@@ -964,7 +1176,7 @@ public class Recording extends FileModel {
 			}
 		}
 		
-		for(String srcId : originals) {
+		for(String srcId : recordingIds) {
 			String itemId = srcId.split("-")[0];
 			indices.put(srcId, itemDirPaths.get(itemId));
 		}
@@ -1069,9 +1281,8 @@ public class Recording extends FileModel {
 		Recording rhs = (Recording) obj;
 		return new EqualsBuilder()
 				.append(name, rhs.name)
+				.append(comments, rhs.comments)
 				.append(date, rhs.date)
-				.append(languages, rhs.languages)
-				.append(speakersIds, rhs.speakersIds)
 				.append(androidID, rhs.androidID)
 				.append(groupId, rhs.groupId)
 				.append(respeakingId, rhs.respeakingId)
@@ -1084,6 +1295,10 @@ public class Recording extends FileModel {
 	 */
 	private void setName(String name) {
 		this.name = name;
+	}
+	
+	private void setComments(String comments) {
+		this.comments = comments;
 	}
 
 	// Sets the date; the date cannot be null.
@@ -1112,55 +1327,6 @@ public class Recording extends FileModel {
 				// written.
 			}
 		}
-	}
-
-	// Sets the languages 
-	private void setLanguages(List<Language> languages) {
-		if (languages == null) {
-			throw new IllegalArgumentException(
-					"Recording languages cannot be null. " +
-					"Set as an empty List<Language> instead.");
-		}
-		this.languages = languages;
-	}
-
-	/**
-	 * Add's another language to the Recording's language list
-	 *
-	 * @param	language	The language to be added to the Recording's list of
-	 * languages.
-	 */
-	private void addLanguage(Language language) {
-		if (language == null) {
-			throw new IllegalArgumentException(
-					"A language for the recording cannot be null");
-		}
-		this.languages.add(language);
-	}
-
-	// Sets the speakers Ids, but won't accept a null list (empty lists are
-	// fine).
-	private void setSpeakersIds(List<String> speakersIds) {
-		if (speakersIds == null) {
-			throw new IllegalArgumentException(
-					"Recording speakersIds cannot be null. " +
-					"Set as an empty List<String> instead.");
-		}
-		this.speakersIds = speakersIds;
-	}
-
-	/**
-	 * Add's another speaker to the Recording's speaker list
-	 *
-	 * @param	speaker	The speaker to be added to the Recording's list of
-	 * speaker.
-	 */
-	private void addSpeakerId(Speaker speaker) {
-		if (speaker == null) {
-			throw new IllegalArgumentException(
-					"A speaker for the recording cannot be null");
-		}
-		this.speakersIds.add(speaker.getId());
 	}
 
 	private void setDeviceName(String deviceName) {
@@ -1236,6 +1402,29 @@ public class Recording extends FileModel {
 		path.mkdirs();
 		return path;
 	}
+	
+	/**
+	 * Get the directory of the tags created by the owner
+	 * 
+	 * @param ownerDir		The owner directory 
+	 * @return				The owner's tag directory
+	 */
+	public static File getTagsPath(File ownerDir) {
+		File path = new File(ownerDir, TAG_PATH);
+		path.mkdirs();
+		return path;
+	}
+	
+	/**
+	 * Get this recording owner's tag directory
+	 * @return	the tag directory
+	 */
+	public File getTagsPath() {
+		File path = new File(
+				FileIO.getOwnerPath(versionName, ownerId), TAG_PATH);
+		path.mkdirs();
+		return path;
+	}
 
 	/**
 	 * Returns the groupId given an id
@@ -1300,6 +1489,125 @@ public class Recording extends FileModel {
 		FileIO.writeJSONObject(new File(getRecordingsPath(), 
 				getGroupId() + "/" + id + "-archive.json"),
 				archiveMetadata);
+	}
+	
+	/**
+	 * Tag the recording
+	 * 
+	 * @param tagType		The kinds of tag (Language, Speaker, OLAC, Custom)
+	 * @param tagStr		The contents of the tag
+	 * @param userId		The user creating the tag
+	 * @return the tag-file name or NULL if it fails
+	 * @throws IOException	In case of an issue writing the tag file
+	 */
+	public String tag(TagType tagType, String tagStr, String userId) throws IOException {
+		String tagOwnerId = AikumaSettings.getCurrentUserId();
+		if(tagOwnerId == null) {
+			Log.e(TAG, "Tagging fails because the creator is not specified");
+			return null;
+		}
+		
+		String tagTypeSuffix = "";
+		switch(tagType) {
+		case LANGUAGE:
+			tagTypeSuffix = LANGUAGE_TAG_TYPE;
+			break;
+		case SPEAKER:
+			tagTypeSuffix = SPEAKER_TAG_TYPE;
+			break;
+		case OLAC:
+			tagTypeSuffix = OLAC_TAG_TYPE;
+			break;
+		case CUSTOM:
+			tagTypeSuffix = CUSTOM_TAG_TYPE;
+			break;
+		}
+
+		tagStr = tagStr.trim();
+		tagStr = tagStr.replaceAll("\\s+", " ");
+		tagStr = tagStr.replace(' ', '_');
+		// Tag can only be created for the recordings having the same version with Aikuma version
+		File tagFile = new File(FileIO.getOwnerPath(this.versionName, userId), 
+				TAG_PATH + getGroupId() + "/" + 
+				getId() + "-" + tagTypeSuffix + "-" + tagStr);
+		tagFile.getParentFile().mkdirs();
+		tagFile.createNewFile();
+		
+		index(getVersionName() + "-" + getId(), 
+				AikumaSettings.getLatestVersion() + "-" + getGroupId() + "-" + tagOwnerId);
+		
+		return tagFile.getName();
+	}
+	
+	private void filterTags(String tagTypeStr, TagProcessor tagProcessor) {
+		List<String> selectedVerGroupOwners = new ArrayList<String>();
+		List<File> groupDirList = new ArrayList<File>();
+		
+		File indexFile = new File(FileIO.getAppRootPath(), "index.json");
+		JSONObject indices = null;
+		try {
+			indices = FileIO.readJSONObject(indexFile);
+		} catch (IOException e1) {
+			// TODO: How to deal with no index-file?
+			Log.e(TAG, "getRespeakings(): error in reading index file");
+			indices = new JSONObject();
+		}
+		
+		// Collect directories where related respeakings exist form index file
+		JSONArray verGroupOwnerList = (JSONArray) indices.get(getId());
+		if(verGroupOwnerList == null) {
+			// TODO: How to deal with no index-file?
+			verGroupOwnerList = new JSONArray();
+		}
+		
+		for (int i = 0; i < verGroupOwnerList.size(); i++) {
+			String verGroupOwnerStr = (String) verGroupOwnerList.get(i);
+			String[] splitVerGroupOwnerStr = verGroupOwnerStr.split("-");
+			if(!splitVerGroupOwnerStr[0].matches(versionName))	// tag version needs to match recording version
+				continue;
+			
+			File ownerDir = 
+					FileIO.getOwnerPath(splitVerGroupOwnerStr[0], splitVerGroupOwnerStr[2]);
+			File groupDir = 
+					new File(getTagsPath(ownerDir), splitVerGroupOwnerStr[1]);
+					
+			if(groupDir.exists()) {
+				selectedVerGroupOwners.add(verGroupOwnerStr);
+				groupDirList.add(groupDir);
+			}
+				
+		}
+		
+		// Process all the tag files 
+		for(int i = 0; i < groupDirList.size(); i++) {
+			String verGroupOwnerStr = selectedVerGroupOwners.get(i);
+			File groupDir = groupDirList.get(i);
+			
+			File[] tagFiles = groupDir.listFiles();
+			for(File tagFile : tagFiles) {
+				String tagTypeSuffix = "";
+				String tagStr = "";
+				String[] splitName = tagFile.getName().split("-");
+				
+				if(fileType.equals(SOURCE_TYPE) && 
+						splitName[2].equals(SOURCE_TYPE)) {
+					tagTypeSuffix = splitName[3];
+					tagStr = splitName[4];
+				} else if(fileType.equals(splitName[2]) && 
+						respeakingId.equals(splitName[3])) {
+					tagTypeSuffix = splitName[4];
+					tagStr = splitName[5];
+				} else
+					continue;
+				
+				if(tagTypeStr.equals(ALL_TAG_TYPE)) {
+					tagProcessor.processTag(verGroupOwnerStr, tagFile.getName());
+				} else if(tagTypeSuffix.equals(tagTypeStr)) {
+					tagProcessor.processTag(verGroupOwnerStr, tagStr);
+				}
+			}
+		}
+		
 	}
 
 	/**
@@ -1482,6 +1790,8 @@ public class Recording extends FileModel {
 		//TODO: IF needed later
 	}
 	
+	// The temporary UUID of the image before it gets renamed appropriately.
+	private UUID imageUUID;
 	
 	/**
 	 * The recording's name.
@@ -1489,20 +1799,23 @@ public class Recording extends FileModel {
 	private String name;
 	
 	/**
+	 * The optional free string
+	 */
+	private String comments;
+	
+	/**
 	 * The recording's date.
 	 */
 	private Date date;
 
-	/**
-	 * The languages of the recording.
-	 */
-	private List<Language> languages;
+	private List<Language> languagesBuffer;
 
-	/**
-	 * The speakers of the recording.
-	 */
-	private List<String> speakersIds;
-
+	private List<String> speakersIdsBuffer;
+	private List<String> speakersCreatorsBuffer;
+	
+	private List<String> olacTagStringsBuffer;
+	private List<String> customTagStringsBuffer;
+	
 	/**
 	 * The device model name
 	 */
@@ -1558,6 +1871,8 @@ public class Recording extends FileModel {
 	 * Relative path where recording files are stored
 	 */
 	public static final String PATH = "items/";
+	/** Relative path where tag files are stored */
+	public static final String TAG_PATH = "social/";
 	/** the length of item_id */
 	public static final int ITEM_ID_LEN = 12;
 	
@@ -1566,11 +1881,9 @@ public class Recording extends FileModel {
 	 */
 	public static final String NAME_KEY = "name";
 	/** */
+	public static final String COMMENTS_KEY = "comments";
+	/** */
 	public static final String DATE_KEY = "date";
-	/** */
-	public static final String LANGUAGES_KEY = "languages";
-	/** */
-	public static final String SPEAKERS_KEY = "speakers";
 	/** */
 	public static final String DEVICE_NAME_KEY = "device";
 	/** */
@@ -1601,11 +1914,10 @@ public class Recording extends FileModel {
 	static {
 		fieldKeySet = new HashSet<String>();
 		fieldKeySet.add(NAME_KEY);
+		fieldKeySet.add(COMMENTS_KEY);
 		fieldKeySet.add(DATE_KEY);
 		fieldKeySet.add(VERSION_KEY);
 		fieldKeySet.add(USER_ID_KEY);
-		fieldKeySet.add(LANGUAGES_KEY);
-		fieldKeySet.add(SPEAKERS_KEY);
 		fieldKeySet.add(DEVICE_NAME_KEY);
 		fieldKeySet.add(ANDROID_ID_KEY);
 		fieldKeySet.add(SAMPLERATE_KEY);
@@ -1618,5 +1930,39 @@ public class Recording extends FileModel {
 		fieldKeySet.add(FORMAT_KEY);
 		fieldKeySet.add(BITS_PER_SAMPLE_KEY);
 		fieldKeySet.add(NUM_CHANNELS_KEY);
+	}
+	
+	/** A list of tag types */
+	public enum TagType { LANGUAGE, SPEAKER, OLAC, CUSTOM };
+	/** */
+	public static final String LANGUAGE_TAG_TYPE = "language";
+	/** */
+	public static final String SPEAKER_TAG_TYPE = "speaker";
+	/** */
+	public static final String OLAC_TAG_TYPE = "olac";
+	/** */
+	public static final String CUSTOM_TAG_TYPE = "custom";
+	/** */
+	public static final String ALL_TAG_TYPE = "alltags";
+	
+	private static Set<String> tagTypeSet;
+	static {
+		tagTypeSet = new HashSet<String>();
+		tagTypeSet.add(LANGUAGE_TAG_TYPE);
+		tagTypeSet.add(SPEAKER_TAG_TYPE);
+		tagTypeSet.add(OLAC_TAG_TYPE);
+		tagTypeSet.add(CUSTOM_TAG_TYPE);	// The filename has the format(speakerID-image-small)
+	}
+	
+	/**
+	 * A function pointer passed to filterTags()
+	 */
+	private interface TagProcessor {
+		/**
+		 * Interface function to process collected tags
+		 * @param verGroupOwnerStr	a string of (version)-(Group ID)-(Owner ID)
+		 * @param tagContentStr		a string of tag content
+		 */
+		public void processTag(String verGroupOwnerStr, String tagContentStr);
 	}
 }

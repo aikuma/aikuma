@@ -94,6 +94,7 @@
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.RecordingMetadataActivity2"
 				android:configChanges="orientation"
+				android:windowSoftInputMode="adjustResize"
 				android:label="@string/app_name"
 				android:parentActivityName="org.lp20.aikuma.MainActivity">
             <meta-data
@@ -142,6 +143,7 @@
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.AddSpeakerActivity1"
 				android:configChanges="orientation"
+				android:windowSoftInputMode="adjustResize"
 				android:label="@string/app_name"
 				android:parentActivityName="org.lp20.aikuma.MainActivity">
             <meta-data
@@ -212,14 +214,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.lp20.aikuma.MainActivity" />
 		</activity>
-		<activity android:name="org.lp20.aikuma.ui.SyncSettingsActivity"
-				android:configChanges="orientation"
-				android:label="@string/app_name"
-				android:parentActivityName="org.lp20.aikuma.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.lp20.aikuma.MainActivity" />
-		</activity>
 		<activity android:name="org.lp20.aikuma.ui.AboutActivity"
 				android:configChanges="orientation"
 				android:label="@string/app_name"
@@ -249,6 +243,31 @@
 					android:value="MainActivity" />
 		</activity>
 		<activity android:name="org.lp20.aikuma.ui.WifiSyncActivity"
+		    android:parentActivityName=".AikumaActivity" >
+				<meta-data android:name="android.support.PARENT_ACTIVITY"
+					android:value="MainActivity" />
+		</activity>
+		<activity android:name="org.lp20.aikuma.ui.ConsentActivity"
+		    android:parentActivityName=".AikumaActivity" >
+				<meta-data android:name="android.support.PARENT_ACTIVITY"
+					android:value="MainActivity" />
+		</activity>
+		<activity android:name="org.lp20.aikuma.ui.RecordingLanguageActivity"
+		    android:parentActivityName=".AikumaActivity" >
+				<meta-data android:name="android.support.PARENT_ACTIVITY"
+					android:value="MainActivity" />
+		</activity>
+		<activity android:name="org.lp20.aikuma.ui.RecordingTagActivity"
+		    android:parentActivityName=".AikumaActivity" >
+				<meta-data android:name="android.support.PARENT_ACTIVITY"
+					android:value="MainActivity" />
+		</activity>
+		<activity android:name="org.lp20.aikuma.ui.RecordingOLACActivity"
+		    android:parentActivityName=".AikumaActivity" >
+				<meta-data android:name="android.support.PARENT_ACTIVITY"
+					android:value="MainActivity" />
+		</activity>
+		<activity android:name="org.lp20.aikuma.ui.RecordingCustomTagActivity"
 		    android:parentActivityName=".AikumaActivity" >
 				<meta-data android:name="android.support.PARENT_ACTIVITY"
 					android:value="MainActivity" />

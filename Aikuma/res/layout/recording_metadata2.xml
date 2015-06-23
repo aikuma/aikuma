@@ -14,6 +14,15 @@
 		android:inputType="text"	
 		/>
 
+	<EditText
+	    android:id="@+id/recordingComments"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/recordingDescription"
+	    android:hint="@string/recording_comments"
+	    android:inputType="textMultiLine" >
+	</EditText>
+	
 	<ImageButton
 		android:id="@+id/okButton2"
 		android:layout_width="match_parent"

@@ -87,8 +87,11 @@ public class MenuBehaviour {
 							"Please sign in to your Google account using the settings menu");
 					return true;
 				}
-				intent = new Intent(activity, RecordActivity.class);
+				//intent = new Intent(activity, RecordActivity.class);
+				intent = new Intent(activity, RecordingLanguageActivity.class);
+				intent.putExtra("mode", "source");
 				activity.startActivity(intent);
+				
 				return true;
 			case R.id.speakers:
 				if(AikumaSettings.getCurrentUserId() == null) {
@@ -113,6 +116,10 @@ public class MenuBehaviour {
 				return true;
 			case R.id.about:
 				intent = new Intent(activity, AboutActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.public_share_consent_menu:
+				intent = new Intent(activity, ConsentActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.start_http_server:
@@ -213,6 +220,19 @@ public class MenuBehaviour {
 	}
 	
 	/**
+	 * Add a MenuItem with the icon-image and description string
+	 * 
+	 * @param drawableId	The icon image ID
+	 * @param description	The string description of the menu item
+	 */
+	public void addItem(int drawableId, String description) {
+		if(menu != null) {
+			menu.add(0, Menu.FIRST, Menu.NONE, description).setIcon(drawableId)
+				.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		}
+	}
+	
+	/**
 	 * Set if the user signed-in an account
 	 * @param state		true(signed-in), false(no sign-in)
 	 */
@@ -220,7 +240,7 @@ public class MenuBehaviour {
 		this.signInState = state;
 		if(state) {
 			//TODO: get emailAccount from AikumaSettings
-			String signOutString = "Sign-out: "; // + activity.emailAccount;
+			String signOutString = "Sign-out"; // + activity.emailAccount;
 			findItem(R.id.gplus_signin_menu).setTitle(signOutString);
 		} else {
 			String signInString = 
@@ -282,9 +302,10 @@ public class MenuBehaviour {
 	 * data.
 	 *
 	 * @param	safeActivityTransitionMessage	The string to display in a warning message.
+	 * @param	okMessage		The string to display in Yes Button
 	 * @param	safeBehaviour	Interface having a function required for safe back-button.
 	 */
-	public void safeGoBack(String safeActivityTransitionMessage, 
+	public void safeGoBack(String safeActivityTransitionMessage, String okMessage,
 			final BackButtonBehaviour safeBehaviour) {
 		String message = DEFAULT_MESSAGE;
 		if (safeActivityTransitionMessage != null) {
@@ -292,7 +313,7 @@ public class MenuBehaviour {
 		}
 		new AlertDialog.Builder(activity)
 				.setMessage(message)
-				.setPositiveButton("Discard",
+				.setPositiveButton(okMessage,
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog,

@@ -1,44 +1,59 @@
 /*
 	Copyright (C) 2013, The Aikuma Project
-	AUTHORS: Oliver Adams and Florian Hanke
+	AUTHORS: Oliver Sangyeop Lee
 */
 package org.lp20.aikuma.ui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import org.lp20.aikuma2.R;
-import org.lp20.aikuma.model.Language;
-import org.lp20.aikuma.model.Speaker;
-import org.lp20.aikuma.util.FileIO;
-import org.lp20.aikuma.util.ImageUtils;
-
+import android.app.ListActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma2.R;
+import org.lp20.aikuma.util.FileIO;
+import org.lp20.aikuma.util.ImageUtils;
 
 /**
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
- * @author 	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+ * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
  */
-public class RecordingMetadataActivity3 extends AikumaListActivity {
+public class RecordingMetadataActivity3 extends AikumaActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recording_metadata3);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
+		
+		// For the recording image
+		if(savedInstanceState != null) {
+			imageUUID = UUID.fromString(savedInstanceState.getString("imageUUID"));
+		} else {
+			imageUUID = UUID.randomUUID();
+		}
+		
 		// Get metadata
 		Intent intent = getIntent();
 		uuid = UUID.fromString(
@@ -56,200 +71,118 @@ public class RecordingMetadataActivity3 extends AikumaListActivity {
 		format = (String)
 				intent.getExtras().get("format");
 		
+		selectedLanguages = intent.getParcelableArrayListExtra("languages");
+		
 		// settings for recording description
 		description = (String) intent.getExtras().get("description");
 		TextView descriptionView = (TextView) findViewById(R.id.description);
 		descriptionView.setText(description);	
 		
-		// settings to add speakers to recording
-		userImages =
-				(LinearLayout) findViewById(R.id.userImagesAndAddUserButton);
-		
-		selectedSpeakers = new ArrayList<Speaker>();
-		if(savedInstanceState != null) {
-			ArrayList<Speaker> savedSpeakers = 
-					savedInstanceState.getParcelableArrayList("selectedSpeakers");
-			languages = savedInstanceState.getParcelableArrayList("languages");
-			selectedLanguages = 
-					savedInstanceState.getParcelableArrayList("selectedLanguages");
-			updateSpeakerLanguageView(savedSpeakers);
-		} else {
-			languages = new ArrayList<Language>();
-			selectedLanguages = new ArrayList<Language>();
+		// Recording languages
+		TextView languageView = (TextView) findViewById(R.id.languageView);
+		StringBuilder sb = new StringBuilder("Languages:\n");
+		for(Language lang : selectedLanguages) {
+			sb.append(lang.getName() + "\n");
 		}
-		
-		// settings for OK button
-		okButton = (ImageButton) findViewById(R.id.okButton3);
-		updateOkButton();
+		languageView.setText(sb);
 
-		//Lets method in superclass know to ask user if they are willing to
-		//discard new data if they selected a speaker and languages
+		comments = (String) intent.getExtras().getString("comments");
+		if(comments == null)
+			comments = "";
+		TextView commentsView = (TextView) findViewById(R.id.commentsView);
+		commentsView.setText("Comments:\n" + comments);
+		
+		//Lets method in superclass(AikumaAcitivity) know 
+		//to ask user if they are willing to
+		//discard new data on an activity transition via the menu.
 		safeActivityTransition = false;
-		safeActivityTransitionMessage = "Are you sure you want to discard this speaker and language?";
-		
-
-		adapter = new LanguagesArrayAdapter(this, languages, selectedLanguages) {
-			@Override
-			// When checkbox in a listview is checked/unchecked
-			public void updateActivityState() {
-				updateOkButton();
-			}
-		};
-		setListAdapter(adapter);
+		safeActivityTransitionMessage =  "This will discard the new recording's photo.";		
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 	    // Save the current activity state
-		savedInstanceState.putParcelableArrayList("selectedSpeakers", selectedSpeakers);
-		savedInstanceState.putParcelableArrayList("languages", languages);
-	    savedInstanceState.putParcelableArrayList("selectedLanguages", selectedLanguages);
+		savedInstanceState.putString("imageUUID", imageUUID.toString());
 	    
 	    //Call the superclass to save the view hierarchy state
 	    super.onSaveInstanceState(savedInstanceState);
 	}
-	
 
-	/**
-	 * Starts the AddSpeakerActivity.
-	 *
-	 * @param	view	The AddSpeakerButton
-	 */
-	public void onAddUserButtonPressed(View view) {
-		Intent intent =
-			new Intent(RecordingMetadataActivity3.this,
-						RecordingSpeakersActivity.class);
-		intent.putParcelableArrayListExtra("selectedSpeakers", selectedSpeakers);
-		startActivityForResult(intent, ADD_SPEAKER);
-	}
-
-
-	// Used to recieve the results of taking photos and adding speakers.
 	@Override
-	protected void onActivityResult(
-			int requestCode, int resultCode, Intent intent) {
-		if (requestCode == ADD_SPEAKER) {
-			if (resultCode == RESULT_OK) {
-				ArrayList<Speaker> speakers = intent.getParcelableArrayListExtra("speakers");
-				
-				//Speaker speaker = intent.getParcelableExtra("speaker");
-				updateSpeakerLanguageView(speakers);
-				updateOkButton();
+	protected void onActivityResult(int requestCode, int resultCode, Intent
+			result) {
+		if (resultCode == RESULT_OK) {	
+			Intent intent = new Intent(this, RecordingMetadataActivity4.class);
+			intent.putExtra("uuidString", uuid.toString());
+			intent.putExtra("sampleRate", sampleRate);
+			intent.putExtra("durationMsec", durationMsec);
+			intent.putExtra("numChannels", numChannels);
+			intent.putExtra("format", format);
+			intent.putExtra("bitsPerSample", bitsPerSample);
+			if(latitude != null && longitude != null) {
+				// if location data is available, put else don't put
+				intent.putExtra("latitude", latitude);
+				intent.putExtra("longitude", longitude);
 			}
+			
+			if(sourceVerId != null)
+				intent.putExtra("sourceVerId", sourceVerId);
+			if(groupId != null)
+				intent.putExtra("groupId", groupId);
+			
+			intent.putExtra("description", description);
+			intent.putExtra("comments", comments);
+
+			intent.putParcelableArrayListExtra("languages", selectedLanguages);
+			
+			intent.putExtra("imageUUID", imageUUID.toString());
+			
+			startActivity(intent);
 		}
 	}
 
-
 	/**
-	 * Called when the user has confirmed the recording
+	 * When the take photo button is pressed.
 	 *
-	 * @param	view	the OK button.
+	 * @param	view	The take photo button.
 	 */
-	public void onOkButtonPressed(View view) {
-		Intent intent = new Intent(this, RecordingMetadataActivity4.class);
-		intent.putExtra("uuidString", uuid.toString());
-		intent.putExtra("sampleRate", sampleRate);
-		intent.putExtra("durationMsec", durationMsec);
-		intent.putExtra("numChannels", numChannels);
-		intent.putExtra("format", format);
-		intent.putExtra("bitsPerSample", bitsPerSample);
-		if(latitude != null && longitude != null) {
-			// if location data is available, put else don't put
-			intent.putExtra("latitude", latitude);
-			intent.putExtra("longitude", longitude);
-		}
-		
-		if(sourceVerId != null)
-			intent.putExtra("sourceVerId", sourceVerId);
-		if(groupId != null)
-			intent.putExtra("groupId", groupId);
-		
-		intent.putExtra("description", description);
-
-		intent.putParcelableArrayListExtra("speakers", selectedSpeakers);
-		intent.putParcelableArrayListExtra("languages", selectedLanguages);
-		
-		startActivity(intent);
+	public void takePhoto(View view) {
+		dispatchTakePictureIntent(PHOTO_REQUEST_CODE);
 	}
-	
 
-	/**
-	 * Disables or enables the OK button depending on whether the recording now
-	 * has a speaker and name.
-	 * Turn on safeGoBackTransition when at least one thing is input by a user.
-	 */
-	private void updateOkButton() {
-		if (recordingHasSpeaker && selectedLanguages.size() > 0) {
-			okButton.setImageResource(R.drawable.ok_48);
-			okButton.setEnabled(true);
-			safeActivityTransition = true;
-		} else {
-			okButton.setImageResource(R.drawable.ok_disabled_48);
-			okButton.setEnabled(false);
-			safeActivityTransition = false;
-		}
-	}
-	
-	private void updateSpeakerLanguageView(List<Speaker> speakers) {
-		userImages.removeAllViews();
-		selectedSpeakers.clear();
-		languages.clear();
-		recordingHasSpeaker = false;
+	private void dispatchTakePictureIntent(int actionCode) {
+		// Create an no-sync-path for an image-file
+		File imageOutputFile = ImageUtils.getNoSyncImageFile(this.imageUUID);
+		Uri imageUri = Uri.fromFile(imageOutputFile);
 		
-		if(speakers.size() > 0) {
-			for(Speaker speaker : speakers) {
-				selectedSpeakers.add(speaker);
-				for (Language language : speaker.getLanguages()) {
-					if (!languages.contains(language)) {
-						languages.add(language);
-						adapter.notifyDataSetChanged();
-					}
-				}
-				
-				ImageView speakerImage = new ImageView(this);
-				speakerImage.setAdjustViewBounds(true);
-				speakerImage.setMaxHeight(ImageUtils.getPixelsFromDp(this, 40));
-				speakerImage.setMaxWidth(ImageUtils.getPixelsFromDp(this, 40));
-				//speakerImage.setPaddingRelative(5,5,5,5);
-				try {
-					speakerImage.setImageBitmap(speaker.getSmallImage());
-				} catch (IOException e) {
-					// If the image can't be loaded, we just leave it at that.
-				}
-				userImages.addView(speakerImage);
-				recordingHasSpeaker = true;
-			}
-		}
+		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        // TODO: This is a temporary solution, custom camera activity is needed for facing-camera
+		//takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
 		
-		// In the case when a speaker is removed after being added, 
-		// remove the speaker's languages
-		for(Language lang : selectedLanguages) {
-			if(!languages.contains(lang)) {
-				selectedLanguages.remove(lang);
-			}
-		}
-		
+		if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+			startActivityForResult(takePictureIntent, actionCode);
+	    }
 		
 	}
 
-	static final int ADD_SPEAKER = 0;
+	static final int PHOTO_REQUEST_CODE = 1;
+
+	//Metadata
 	private UUID uuid;
-	private ArrayList<Speaker> selectedSpeakers;
-	private ArrayList<Language> languages;
 	private ArrayList<Language> selectedLanguages;
-	private ArrayAdapter<Language> adapter;
-	private LinearLayout userImages;
 	private long sampleRate;
 	private int durationMsec;
 	private String groupId;
-	private ImageButton okButton;
-	private boolean recordingHasSpeaker;
 	private String sourceVerId;
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;
 	private String description;
+	private String comments;
 	
 	private Double latitude;
 	private Double longitude;
+	
+	private UUID imageUUID;
 }

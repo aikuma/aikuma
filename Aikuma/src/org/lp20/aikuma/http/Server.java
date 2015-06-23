@@ -99,18 +99,6 @@ public class Server extends NanoHTTPD {
 				return serveShapeFile(session.getUri());
 			}
 		}).add(new Proc() {
-			// serve recordings by uuid
-			@Override
-			public Response run(IHTTPSession session) {
-				return serveSpeakerImage(session.getUri());
-			}
-		}).add(new Proc() {
-			// serve recordings by uuid
-			@Override
-			public Response run(IHTTPSession session) {
-				return serveSpeakerSmallImage(session.getUri());
-			}
-		}).add(new Proc() {
 			// create, save and load transcripts
 			@Override
 			public Response run(IHTTPSession session) {
@@ -359,42 +347,6 @@ public class Server extends NanoHTTPD {
 			return new Response(Status.OK, "application/octet-stream", is);
 		}
 		catch (FileNotFoundException e) {
-			return mkNotFoundResponse(path);
-		}
-	}
-	
-	private Response serveSpeakerImage(String path) {
-		// GET /speaker/versionName/owner_id/filename/image
-		String[] a = path.split("/");
-		if (a.length != 6 || !a[1].equals("speaker") || !a[5].equals("image"))
-			return null;
-		
-		try {
-			InputStream is = new FileInputStream(Speaker.read(a[2], a[3], a[4]).getImageFile());
-			return new Response(Status.OK, "image/jpeg", is);
-		}
-		catch (IOException e) {
-			return mkNotFoundResponse(path);
-		}
-		catch (IllegalArgumentException e) {
-			return mkNotFoundResponse(path);
-		}
-	}
-	
-	private Response serveSpeakerSmallImage(String path) {
-		// GET /recording/versionName/owner_id/filename/smallimage
-		String[] a = path.split("/");
-		if (a.length != 6 || !a[1].equals("speaker") || !a[5].equals("smallimage"))
-			return null;
-		
-		try {
-			InputStream is = new FileInputStream(Speaker.read(a[2], a[3], a[4]).getSmallImageFile());
-			return new Response(Status.OK, "image/jpeg", is);
-		}
-		catch (IOException e) {
-			return mkNotFoundResponse(path);
-		}
-		catch (IllegalArgumentException e) {
 			return mkNotFoundResponse(path);
 		}
 	}

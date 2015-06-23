@@ -43,7 +43,17 @@ public class Language implements Parcelable, Comparable<Language> {
 		return this.name;
 	}
 
+	/**
+	 * Return the string of language code 
+	 * (ISO639: three characters, Custom: first three chars)
+	 * 
+	 * @return	the language code
+	 */
 	public String getCode() {
+		if(this.code.isEmpty() && !this.name.isEmpty()) {	// Custom language
+			int end = this.name.length() > 3 ? 3 : this.name.length();
+			return this.name.substring(0, end);
+		}
 		return this.code;
 	}
 	
@@ -66,6 +76,18 @@ public class Language implements Parcelable, Comparable<Language> {
 	public String toString() {
 		return getName() + " : " + getCode();
 	}
+	
+	/**
+	 * Returns a string used in the tag filename
+	 * @return	A string of the tag contents
+	 */
+	public String toTagString() {
+		if(this.code.isEmpty() && !this.name.isEmpty()) {	// Custom language
+			return this.name;
+		} else {	
+			return "iso639_" + this.code;
+		}
+	}
 
 	/**
 	 * Describe the kinds of special objects contained in this Parcelable's
@@ -86,7 +108,7 @@ public class Language implements Parcelable, Comparable<Language> {
 	 */
 	public void writeToParcel(Parcel out, int _flags) {
 		out.writeString(getName());
-		out.writeString(getCode());
+		out.writeString(this.code);
 	}
 
 	/**

@@ -12,6 +12,7 @@ import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.ServerCredentials;
 import org.lp20.aikuma.service.FTPServerService;
 import org.lp20.aikuma.service.WifiStateReceiver;
+import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.SyncUtil;
 import org.lp20.aikuma2.R;
 
@@ -20,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -107,8 +109,13 @@ public class WifiSyncActivity extends AikumaListActivity implements ChannelListe
 				
 				Toast.makeText(WifiTestActivity.this, msg, Toast.LENGTH_LONG).show();
 				*/
+
 				mDisconnectButton.setEnabled(true);
 				if(info.groupFormed) {
+					safeActivityTransition = true;
+					safeActivityTransitionMessage = 
+							"Do you reall want to disconnect?";
+					
 					if(info.isGroupOwner) {
 						Log.i(TAG, "I'm an owner");
 						mStateView.setText("State: server (connected)");
@@ -134,7 +141,7 @@ public class WifiSyncActivity extends AikumaListActivity implements ChannelListe
 		};
 		
 		TextView deviceInfoView = (TextView) findViewById(R.id.deviceInfo);
-		deviceInfoView.setText("ID: " + Aikuma.getAndroidID());
+		deviceInfoView.setText("Device: Android_" + Aikuma.getAndroidID().substring(0, 4));
 		mStateView = (TextView) findViewById(R.id.wifiState);
 		
 		
@@ -184,10 +191,6 @@ public class WifiSyncActivity extends AikumaListActivity implements ChannelListe
 	@Override
 	public void onStop() {
 		super.onStop();
-		Intent serviceIntent = new Intent(WifiSyncActivity.this, FTPServerService.class);
-		serviceIntent.putExtra(FTPServerService.ACTION_KEY, "stop");
-		startService(serviceIntent);
-		disconnect();
 	}
 	
 	@Override
@@ -318,7 +321,32 @@ public class WifiSyncActivity extends AikumaListActivity implements ChannelListe
 		serviceIntent.putExtra(FTPServerService.ACTION_KEY, "stop");
 		startService(serviceIntent);
 		disconnect();
+		
+		safeActivityTransition = false;
 	}
+	
+	@Override
+	public void onBackPressed() {
+		if (safeActivityTransition) {
+			menuBehaviour.safeGoBack(safeActivityTransitionMessage, "Disconnect", safeBehaviour);
+		} else {
+			safeBehaviour.onSafeBackButton();
+			this.finish();
+		}
+	}
+	/**
+	 * Interface class having a function called when back-button is pressed
+	 */
+	private MenuBehaviour.BackButtonBehaviour safeBehaviour = 
+			new MenuBehaviour.BackButtonBehaviour() {
+				@Override
+				public void onSafeBackButton() {
+					Intent serviceIntent = new Intent(WifiSyncActivity.this, FTPServerService.class);
+					serviceIntent.putExtra(FTPServerService.ACTION_KEY, "stop");
+					startService(serviceIntent);
+					disconnect();
+				}
+			}; 
 
 	/**
      * Listview adapter to show a list of peer devices in wifi range
@@ -332,6 +360,8 @@ public class WifiSyncActivity extends AikumaListActivity implements ChannelListe
 		private LayoutInflater mInflater;
 		
 		private List<WifiP2pDevice> mPeers;
+		
+		private int selectedPeerPos = -1;
 		
 		public WifiPeerListAdapter(Context context, List<WifiP2pDevice> peers) {
 			super(context, LIST_ITEM_LAYOUT, peers);
@@ -356,6 +386,12 @@ public class WifiSyncActivity extends AikumaListActivity implements ChannelListe
 			sb.append("Address: " + device.deviceAddress + "\n");
 			sb.append("State: " + getStatusString(device.status));
 			textView1.setText(sb.toString());
+			
+			if(device.status == WifiP2pDevice.CONNECTED)
+				layout.setBackgroundColor(Color.LTGRAY);
+			else
+				layout.setBackgroundColor(0xeeeeee);
+			
 			
 			return layout;
 		}

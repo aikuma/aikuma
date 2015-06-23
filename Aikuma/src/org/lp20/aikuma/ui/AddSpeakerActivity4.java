@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Speaker;
@@ -40,41 +41,19 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 		Intent intent = getIntent();
 		origin = intent.getExtras().getInt("origin");
 		name = (String) intent.getExtras().getString("name");
-		selectedLanguages = intent.getParcelableArrayListExtra("languages");
-		String imageUUIDStr = intent.getExtras().getString("imageUUID");
-		imageUUID = UUID.fromString(imageUUIDStr);
+		comments = (String) intent.getExtras().getString("comments");
 		
 		TextView nameView = (TextView) findViewById(R.id.nameView3);
+		TextView commentsView = (TextView) findViewById(R.id.commentsView);
 		nameView.setText("Name: " + name);
-		TextView languageView = (TextView) findViewById(R.id.languageView2);
-		StringBuilder sb = new StringBuilder("Languages:\n");
-		for(Language lang : selectedLanguages) {
-			sb.append(lang.getName() + "\n");
-		}
-		languageView.setText(sb);
-		handleSmallCameraPhoto();
+		commentsView.setText("Comments:\n" + comments);
 		
 		//Lets method in superclass(AikumaAcitivity) know 
 		//to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
 		safeActivityTransition = true;
 		safeActivityTransitionMessage = 
-				"This will discard the new speaker's photo.";
-	}
-
-	// Creates a smaller version of the photo taken and uses it for the speaker
-	// image view.
-	private void handleSmallCameraPhoto() {
-		Bitmap image;
-		try {
-			ImageUtils.createSmallSpeakerImage(this.imageUUID);
-			image = ImageUtils.getNoSyncSmallImage(this.imageUUID);
-			
-		} catch (IOException e) {
-			image = null;
-		}
-		ImageView speakerImage = (ImageView) findViewById(R.id.speakerImage);
-		speakerImage.setImageBitmap(image);
+				"This will discard the new speaker";
 	}
 
 	/**
@@ -83,8 +62,10 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 	 * @param	view	The OK button.
 	 */
 	public void onOkButtonPressed(View view) {
-		Speaker newSpeaker = new Speaker(imageUUID, name, selectedLanguages, 
+		Date date = new Date();
+		Speaker newSpeaker = new Speaker(name, comments, date,
 				AikumaSettings.getLatestVersion(), AikumaSettings.getCurrentUserId());
+		
 		try {
 			newSpeaker.write();
 		} catch (IOException e) {
@@ -111,21 +92,23 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 		Intent intent;
 		if(origin == 0)
 			intent = new Intent(this, MainSpeakersActivity.class);
-		else
+		else {
 			intent = new Intent(this, RecordingSpeakersActivity.class);
+			intent.putExtra("speaker", newSpeaker);
+		}
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		startActivity(intent);
 	}
 
-	@Override
-	public void onBackPressed() {
-		if (safeActivityTransition) {
-			menuBehaviour.safeGoBack(safeActivityTransitionMessage, safeBehaviour);
-		} else {
-			this.finish();
-		}
-	}
+//	@Override
+//	public void onBackPressed() {
+//		if (safeActivityTransition) {
+//			menuBehaviour.safeGoBack(safeActivityTransitionMessage, safeBehaviour);
+//		} else {
+//			this.finish();
+//		}
+//	}
 	/**
 	 * Interface class having a function called when back-button is pressed
 	 */
@@ -147,6 +130,7 @@ public class AddSpeakerActivity4 extends AikumaActivity {
 	
 	private int origin;	//0: MainSpeakersActivity, 1:RecordingSpeakersActivity
 	private String name;
+	private String comments;
 	private ArrayList<Language> selectedLanguages;
 	private UUID imageUUID;
 }

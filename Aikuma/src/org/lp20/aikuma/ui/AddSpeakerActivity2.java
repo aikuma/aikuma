@@ -41,8 +41,11 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 		
 		Intent intent = getIntent();
 		name = (String) intent.getExtras().getString("name");
+		comments = (String) intent.getExtras().getString("comments");
 		TextView nameView = (TextView) findViewById(R.id.nameView1);
+		TextView commentsView = (TextView) findViewById(R.id.commentsView);
 		nameView.setText("Name: " + name);
+		commentsView.setText("Comments: " + comments);
 		
 		//Lets method in superclass(AikumaAcitivity) know 
 		//to ask user if they are willing to
@@ -151,6 +154,7 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 		Intent intent = new Intent(this, AddSpeakerActivity3.class);
 		intent.putExtra("origin", getIntent().getExtras().getInt("origin"));
 		intent.putExtra("name", name);
+		intent.putExtra("comments", comments);
 		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		startActivity(intent);
 	}
@@ -175,6 +179,7 @@ public class AddSpeakerActivity2 extends AikumaListActivity {
 	static final int SELECT_LANGUAGE = 0;
 	//Speaker-name
 	private String name;
+	private String comments;
 	
 	private ImageButton okButton;
 	

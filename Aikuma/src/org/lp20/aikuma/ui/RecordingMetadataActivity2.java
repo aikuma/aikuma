@@ -4,9 +4,11 @@
 */
 package org.lp20.aikuma.ui;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma2.R;
 
 import android.content.Intent;
@@ -50,6 +52,8 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 		format = (String)
 				intent.getExtras().get("format");
 		
+		selectedLanguages = intent.getParcelableArrayListExtra("languages");
+
 		okButton = (ImageButton) findViewById(R.id.okButton2);
 		updateOkButton();
 
@@ -102,8 +106,13 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 		if(groupId != null)
 			intent.putExtra("groupId", groupId);
 		
+		EditText commentsField = (EditText) findViewById(R.id.recordingComments);
 		String description = nameField.getText().toString();
+		String comments = commentsField.getText().toString();	// can be empty instead of null
 		intent.putExtra("description", description);
+		intent.putExtra("comments", comments);
+		
+		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		
 		startActivity(intent);
 	}
@@ -156,6 +165,7 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;
+	private ArrayList<Language> selectedLanguages;
 	
 	private Double latitude;
 	private Double longitude;

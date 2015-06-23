@@ -35,12 +35,14 @@ public class FileModel implements Parcelable {
 	public static final String TRANSCRIPT_SUFFIX = "-transcript";
 	/** */
 	public static final String SAMPLE_SUFFIX = "-preview";
+	/** */
+	public static final String IMAGE_SUFFIX = "-image";
 	
 	/**
 	 * A list of file-types 
 	 */
 	//public enum FileType { RECORDING, SPEAKER, OTHER };
-	public enum FileType { SOURCE, RESPEAKING, TRANSLATION, SPEAKER, METADATA, PREVIEW, TRANSCRIPT, MAPPING };
+	public enum FileType { SOURCE, RESPEAKING, TRANSLATION, SPEAKER, METADATA, PREVIEW, TRANSCRIPT, MAPPING, TAG };
 	/** */
 	public static final String SOURCE_TYPE = "source";
 	/** */
@@ -57,6 +59,10 @@ public class FileModel implements Parcelable {
 	public static final String TRANSCRIPT_TYPE = "transcript";
 	/** */
 	public static final String MAPPING_TYPE = "mapping";
+	/** */
+	public static final String TAG_TYPE = "social";
+	/** */
+	public static final String IMAGE_TYPE = "image";
 	
 	private static Set<String> fileTypeSet;
 	static {
@@ -69,6 +75,8 @@ public class FileModel implements Parcelable {
 		fileTypeSet.add(PREVIEW_TYPE);
 		fileTypeSet.add(TRANSCRIPT_TYPE);
 		fileTypeSet.add(MAPPING_TYPE);
+		fileTypeSet.add(TAG_TYPE);
+		fileTypeSet.add(IMAGE_TYPE);
 	}
 	
 	/**
@@ -126,8 +134,17 @@ public class FileModel implements Parcelable {
 		String[] splitCloudId = cloudIdentifier.split("\\/");
 		
 		int index = splitCloudId[6].lastIndexOf('.');
-		String fileName = splitCloudId[6].substring(0, index);
-		String ext = splitCloudId[6].substring(index+1);
+		String fileName;
+		String ext;
+		
+		if(splitCloudId[4].equals(TAG_TYPE)) {	//tags
+			fileName = splitCloudId[6];
+			ext = "";
+			return new FileModel(splitCloudId[0], splitCloudId[3], fileName, TAG_TYPE, ext);
+		}
+		
+		fileName = splitCloudId[6].substring(0, index);
+		ext = splitCloudId[6].substring(index+1);
 		
 		String[] splitName = fileName.split("-");
 		String fileType = splitName[splitName.length-1];
@@ -135,7 +152,8 @@ public class FileModel implements Parcelable {
 		if(StringUtils.isNumeric(fileType))		//Derivative recordings(respeaking, interpret)
 			fileType = splitName[splitName.length-2];
 		
-		if(fileType.equals("small")) {	//speaker small image
+		if(fileType.equals(METADATA_TYPE) && 
+				fileName.length() == Speaker.SPEAKER_ID_LEN + METADATA_SUFFIX.length()) {	//speaker small image
 			return new FileModel(splitCloudId[0], splitCloudId[3], splitCloudId[5], SPEAKER_TYPE, ext);
 		} else if(fileType.equals(METADATA_TYPE)) {
 			return null;
@@ -160,6 +178,8 @@ public class FileModel implements Parcelable {
 		
 		// For a current version
 		switch(type) {
+		case TAG:
+			break;
 		case SOURCE:
 			break;
 		case RESPEAKING:
@@ -226,7 +246,9 @@ public class FileModel implements Parcelable {
 	 */
 	public String getIdExt() {
 		if(fileType.equals(SPEAKER_TYPE)) {
-			return (id + "-image-small.jpg");
+			return (id + getSuffixExt(versionName, FileType.METADATA));
+		} else if(fileType.equals(TAG_TYPE)) {
+			return id;
 		} else {
 			return (id + "." + getExtension());
 		}
@@ -259,11 +281,14 @@ public class FileModel implements Parcelable {
 				ownerIdDirName.substring(0, 2) + "/" + ownerId + "/");
 		
 		String suffix;
-		if(fileType.equals(SPEAKER_TYPE)) {
-			if(option == 0)
-				suffix = "-image-small.jpg";
-			else
-				suffix = getSuffixExt(versionName, FileType.METADATA);
+		if(fileType.equals(TAG_TYPE)) {
+			if(option != 0)
+				return null;
+			
+			String groupId = getId().split("-")[0];
+			return (ownerDirStr + Recording.TAG_PATH + groupId + "/" + getId());
+		} else if(fileType.equals(SPEAKER_TYPE)) {
+			suffix = getSuffixExt(versionName, FileType.METADATA);
 			
 			return (ownerDirStr + Speaker.PATH + getId() + "/" + getId() + suffix);
 		} else {
@@ -292,15 +317,22 @@ public class FileModel implements Parcelable {
 		
 		File itemPath;
 		String suffix;
-		if(fileType.equals(SPEAKER_TYPE)) {
+		if(fileType.equals(TAG_TYPE)) {
+			if(option != 0)
+				return null;
+			
+			itemPath = new File(
+					FileIO.getOwnerPath(versionName, ownerId), Recording.TAG_PATH);
+			itemPath.mkdirs();
+			
+			String groupId = getId().split("-")[0];
+			return new File(itemPath, groupId + "/" + getId());
+		} else if(fileType.equals(SPEAKER_TYPE)) {
 			itemPath = new File(
 					FileIO.getOwnerPath(versionName, ownerId), Speaker.PATH);
 			itemPath.mkdirs();
-			
-			if(option == 0)
-				suffix = "-image-small.jpg";
-			else
-				suffix = getSuffixExt(versionName, FileType.METADATA);
+
+			suffix = getSuffixExt(versionName, FileType.METADATA);
 			
 			return new File(itemPath, getId() + "/" + getId() + suffix);
 		} else {

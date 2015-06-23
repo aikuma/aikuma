@@ -2,7 +2,7 @@
 	Copyright (C) 2013, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
-package org.lp20.aikuma;
+package org.lp20.aikuma.ui;
 
 import android.accounts.AccountManager;
 import android.app.ActionBar;
@@ -79,7 +79,7 @@ import org.lp20.aikuma2.R;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class MainActivity extends ListActivity {
+public class TestActivity extends ListActivity {
 
 	// Helps us store how far down the list we are when MainActivity gets
 	// stopped.
@@ -89,13 +89,9 @@ public class MainActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.test_activity);
 		menuBehaviour = new MenuBehaviour(this);
-		originals = new ArrayList<Recording>();
-		adapter = new RecordingArrayAdapter(this, originals);
-		setListAdapter(adapter);
-		
-		//SyncUtil.startSyncLoop(this);
+		SyncUtil.startSyncLoop(this);
 		
 		Aikuma.loadLanguages();
 
@@ -112,9 +108,7 @@ public class MainActivity extends ListActivity {
 		googleAuthToken = settings.getString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, null);
                 googleIdToken = settings.getString(AikumaSettings.SETTING_ID_TOKEN_KEY, null);
 		googleAPIScope = AikumaSettings.getScope();
-		AikumaSettings.isPublicShareEnabled = 
-    			settings.getBoolean(AikumaSettings.PUBLIC_SHARE_CONSENT_KEY, false);
-		Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
+    	Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
     	
     	AikumaSettings.setUserId(emailAccount);
     	showUserAccount(emailAccount, null);
@@ -144,7 +138,7 @@ public class MainActivity extends ListActivity {
 		}
 			
 		// Start gathering location data
-		MainActivity.locationDetector = new LocationDetector(this);
+		TestActivity.locationDetector = new LocationDetector(this);
 		
 		// Create a broadcastReceiver to receive sync-data
 		syncReceiver = new BroadcastReceiver() {
@@ -155,7 +149,6 @@ public class MainActivity extends ListActivity {
 				if(status.equals("start")) {
 					showProgressStatus(View.VISIBLE);
 				} else if(status.equals("end")) {
-					Toast.makeText(MainActivity.this, "sync finished", Toast.LENGTH_LONG).show();
 					showProgressStatus(View.GONE);
 				} else if(status.endsWith("source")) {	//source-download
 					String[] splitName = status.split("-");
@@ -204,24 +197,12 @@ public class MainActivity extends ListActivity {
 	public void onPause() {
 		super.onPause();
 		listViewState = getListView().onSaveInstanceState();
-		MainActivity.locationDetector.stop();
+		TestActivity.locationDetector.stop();
 	}
 	
 	@Override
 	public void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
 		speakerId = intent.getStringExtra("speakerId");
-	}
-	
-	@Override
-	public void onBackPressed() {
-		Log.i(TAG, "backbutton");
-		if(speakerId != null) {
-			adapter.getFilter().filter(null);
-			speakerId = null;
-		} else {
-			this.finish();
-		}
 	}
 
 	@Override
@@ -238,26 +219,19 @@ public class MainActivity extends ListActivity {
 				originals.add(recording);
 			}
 		}
-		
-		Log.i(TAG, "original num: " + originals.size() + ", " + adapter.getCount());
-		//adapter.clear();
-		//adapter.addAll(originals);
-		//adapter.notifyDataSetChanged();
-		Log.i(TAG, "original num: " + originals.size() + ", " + adapter.getCount());
-		
+		Log.i(TAG, "original num: " + originals.size());
+
+		adapter = new RecordingArrayAdapter(this, originals);
+	
 		if(speakerId != null) {
 			adapter.getFilter().filter(speakerId);
-		} else {
-			adapter.setRecordings(originals);
-			//adapter.notifyDataSetChanged();
 		}
-		adapter.notifyDataSetChanged();
-		
+		setListAdapter(adapter);
 		if (listViewState != null) {
 			getListView().onRestoreInstanceState(listViewState);
 		}
 
-		MainActivity.locationDetector.start();
+		TestActivity.locationDetector.start();
 	}
 	
 	@Override
@@ -277,15 +251,14 @@ public class MainActivity extends ListActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		MainActivity.locationDetector.stop();
+		TestActivity.locationDetector.stop();
 	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Recording recording = (Recording) getListAdapter().getItem(position);
 		if(emailAccount == null) {
-			Aikuma.showAlertDialog(this, 
-					"Please sign in to your Google account using the settings menu");
+			Aikuma.showAlertDialog(this, "You need to select your account");
 			
 			return;
 		}
@@ -475,7 +448,7 @@ public class MainActivity extends ListActivity {
     }
 	
     /**
-     * Start an activity which allows a user to pick an account
+     * Start an activity which allows a user to pick up an account
      */
     private void pickUserAccount() {
         String[] accountTypes = new String[]{"com.google"};
@@ -509,7 +482,7 @@ public class MainActivity extends ListActivity {
                     		Toast.LENGTH_SHORT).show();
                 }
             } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "You must pick an account", 
+                Toast.makeText(this, "You must pick up an account", 
                 		Toast.LENGTH_SHORT).show();
             }
             
@@ -567,7 +540,7 @@ public class MainActivity extends ListActivity {
                     		((GooglePlayServicesAvailabilityException)e)
                             .getConnectionStatusCode();
                     GooglePlayServicesUtil.getErrorDialog(statusCode, 
-                    		MainActivity.this, 
+                    		TestActivity.this, 
                     		RECOVER_FROM_GOOGLEPLAY_ERROR_REQUEST_CODE).show();
                 } else if (e instanceof UserRecoverableAuthException) {
                     // When authenticate failed
@@ -630,14 +603,15 @@ public class MainActivity extends ListActivity {
         @Override
         protected void onPostExecute(Boolean result) {
         	showUserAccount(emailAccount, AikumaSettings.getCurrentUserToken());
-        	
         	if(!result)
         		return;
 
         	if(AikumaSettings.isBackupEnabled 
 					|| AikumaSettings.isAutoDownloadEnabled) {
-				Aikuma.syncRefresh(MainActivity.this, true);
-			}
+				Aikuma.syncRefresh(TestActivity.this, false);
+			} else if(forceSync) {
+        		Aikuma.syncRefresh(TestActivity.this, true);
+        	}
         }
         
         /**
@@ -649,8 +623,8 @@ public class MainActivity extends ListActivity {
          */
         private void getToken() throws IOException {
             try {
-                googleAuthToken = GoogleAuthUtil.getToken(MainActivity.this, mEmailAccount, mScope);
-                googleIdToken = GoogleAuthUtil.getToken(MainActivity.this, mEmailAccount, AikumaSettings.getIdTokenScope());
+                googleAuthToken = GoogleAuthUtil.getToken(TestActivity.this, mEmailAccount, mScope);
+                googleIdToken = GoogleAuthUtil.getToken(TestActivity.this, mEmailAccount, AikumaSettings.getIdTokenScope());
             } catch (UserRecoverableAuthException userRecoverableException) {
                 // Error which can be recovered by a user occurs
                 // Show the user some UI through the activity.

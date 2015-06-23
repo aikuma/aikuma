@@ -16,15 +16,17 @@
 	    android:layout_height="wrap_content"
 	    android:layout_below="@id/selectedOriginal" />
 	
+	<!-- 
 	<ImageButton
 			android:id="@+id/respeaking"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:onClick="onRespeakingButton"
+			android:onClick="onRespeakButton"
 			android:src="@drawable/exchange_48"
 			android:scaleType="centerInside"
 			android:layout_alignParentBottom="true"
 	/>
+	 -->
 
 	<View
 		android:id="@+id/topLine"
@@ -76,7 +78,7 @@
 	    android:layout_height="wrap_content"
 	    android:orientation="vertical"
 	    android:layout_below="@id/bottomLine"
-	    android:layout_above="@id/respeaking"
+	    android:layout_alignParentBottom="true"
 	    >
 	    <VideoView
 	    	android:id="@+id/videoView"

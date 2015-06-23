@@ -53,7 +53,7 @@ public abstract class AikumaActivity extends Activity {
 	 */
 	public void onBackPressed() {
 		if (safeActivityTransition) {
-			menuBehaviour.safeGoBack(safeActivityTransitionMessage, null);
+			menuBehaviour.safeGoBack(safeActivityTransitionMessage, "Discard", null);
 		} else {
 			this.finish();
 		}

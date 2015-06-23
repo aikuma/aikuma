@@ -3,6 +3,7 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:orientation="horizontal" android:baselineAligned="false" android:id="@+id/addNewUser">
+	<!-- 
 	<ImageView android:src="@drawable/unknown_speaker"
 			android:layout_gravity="center"
 			android:padding="5dip"
@@ -11,6 +12,8 @@
 			android:layout_width="60dip"
 			android:layout_height="60dip"
 			android:id="@+id/speakerImage"/>
+	 -->
+	
 	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
 			android:layout_height="wrap_content"
 			android:text=""
@@ -22,7 +25,7 @@
 			android:layout_height="wrap_content"
 			android:text=""
 			android:layout_width="0dp"
-			android:layout_weight="1"
+			android:layout_weight="2"
 			android:layout_gravity="center_vertical"
-			android:id="@+id/speakerLanguages"/>
+			android:id="@+id/speakerOwner"/>
 </LinearLayout>

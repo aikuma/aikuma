@@ -38,7 +38,8 @@ public class MainSpeakersActivity extends AikumaListActivity {
 		super.onResume();
 
 		speakers = Speaker.readAll(AikumaSettings.getCurrentUserId());
-		Collections.reverse(speakers);
+		//Collections.reverse(speakers);
+		Collections.sort(speakers);
 
 		ArrayAdapter<Speaker> adapter =
 				new SpeakerArrayAdapter(this, speakers);
@@ -65,14 +66,6 @@ public class MainSpeakersActivity extends AikumaListActivity {
 				Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.putExtra("speakerId", speaker.getId());
 		startActivity(intent);
-		
-		
-		/*
-		Intent intent = new Intent();
-		intent.putExtra("speaker", (Speaker)l.getItemAtPosition(position));
-		setResult(RESULT_OK, intent);
-		this.finish();
-		*/
 	}
 	
 	/**

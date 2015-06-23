@@ -17,11 +17,14 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.lp20.aikuma2.R;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 
 /**
@@ -38,6 +41,8 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.thumb_respeak);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+		menuBehaviour = new MenuBehaviour(this);
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
 		safeActivityTransition = true;
@@ -47,6 +52,22 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		fragment.setThumbRespeaker(respeaker);
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		Intent intent = getIntent();
+		String respeakingType = intent.getStringExtra("respeakingType");
+		selectedLanguages = intent.getParcelableArrayListExtra("languages");
+		String firstLang = "";
+		if(selectedLanguages.size() > 0)
+			firstLang = "(" + selectedLanguages.get(0).getCode() + ")";
+		boolean isMenu = menuBehaviour.onCreateOptionsMenu(menu);
+		if(respeakingType.equals("respeak"))
+			menuBehaviour.addItem(R.drawable.respeak_32, "respeak" + firstLang);
+		else
+			menuBehaviour.addItem(R.drawable.translate_32, "interpret" + firstLang);
+		return isMenu;
+	}
+	
 	// Creates an appropriate ThumbRespeaker for this activity.
 	private void setUpThumbRespeaker() {
 		Intent intent = getIntent();
@@ -88,6 +109,7 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		intent.putExtra("numChannels", recorder.getNumChannels());
 		intent.putExtra("format", recorder.getFormat());
 		intent.putExtra("bitsPerSample", recorder.getBitsPerSample());
+		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		startActivity(intent);
 		ThumbRespeakActivity.this.finish();
 		try {
@@ -109,4 +131,5 @@ public class ThumbRespeakActivity extends AikumaActivity {
 	private UUID respeakingUUID;
 	private Recording recording;
 	private long sampleRate;
+	private ArrayList<Language> selectedLanguages;
 }
