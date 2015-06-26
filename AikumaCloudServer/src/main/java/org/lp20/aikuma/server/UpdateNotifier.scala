@@ -16,7 +16,7 @@ class UpdateNotifier(tm: TokenManager, gd: GoogleDriveStorage, gcm: GcmServer) {
   val storageTm = new TM {
     override def accessToken: String = tm.getAccessToken
   }
-  val mUserIdx = new GoogleUserIndex(storageTm, gd)
+  //val mUserIdx = new GoogleUserIndex(storageTm, gd)
 
   def processNewFile(identifier: String) {
     parseIdentifier(identifier) match {
@@ -30,7 +30,8 @@ class UpdateNotifier(tm: TokenManager, gd: GoogleDriveStorage, gcm: GcmServer) {
   }
 
   def findFollowers(itemId: String): Iterator[String] = {
-    mUserIdx.searchUser(s"follow-item:$itemId")
+    //mUserIdx.searchUser(s"follow-item:$itemId")
+    null
   }
 
   def notify(user: String, identifier: String): Unit = {
