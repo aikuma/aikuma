@@ -161,9 +161,9 @@ class Api(tm: TokenManager) {
 
   def updateFile(fileId: String, data: Data, meta: JSONObject): JSONObject = {
     val bd = "bdbdbdbdbdbdbdbdbdbd"
-    val fid = if (fileId=="") "" else s"/$fileId"
+    val (fid, method) = if (fileId=="") ("", "POST") else (s"/$fileId", "PUT")
     val http = ghttp(s"https://www.googleapis.com/upload/drive/v2/files$fid?uploadType=multipart")
-      .method("POST")
+      .method(method)
       .header("Content-Type", s"""multipart/related; boundary="$bd"""")
       .chunked(8192)
       .body(s"--$bd\r\n")
