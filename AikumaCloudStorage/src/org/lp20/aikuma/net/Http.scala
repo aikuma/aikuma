@@ -9,7 +9,9 @@ class Http(url: URL) {
   type X <: Http
 
   val con = try {
-    Option(url.openConnection.asInstanceOf[HttpURLConnection])
+    val c = url.openConnection.asInstanceOf[HttpURLConnection]
+    c.setInstanceFollowRedirects(true)
+    Option(c)
   } catch {
     case e: IOException => None
   }

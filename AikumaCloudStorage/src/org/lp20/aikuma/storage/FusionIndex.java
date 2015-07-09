@@ -28,11 +28,8 @@ import static org.lp20.aikuma.storage.Utils.readStream;
  */
 public class FusionIndex implements Index {
 
-
-
     private static final Logger log = Logger.getLogger(FusionIndex.class.getName());
     private String tableId;
-
 
     public static enum MetadataField {
         DATA_STORE_URI("data_store_uri", true, false),
@@ -184,13 +181,13 @@ public class FusionIndex implements Index {
         this.tableId = "1Kw1vNV3BpSlInhZeSh5l36__Qsnz1JvwSXuJgfhD";
 
     }
-	
-	/* (non-Javadoc)
-	 * @see org.lp20.aikuma.storage.Index#get_item_metadata(java.lang.String)
-	 */
-	@Override
+    
+    /* (non-Javadoc)
+     * @see org.lp20.aikuma.storage.Index#get_item_metadata(java.lang.String)
+     */
+    @Override
     @SuppressWarnings("unchecked")
-	public Map<String,String> getItemMetadata(String identifier) {
+    public Map<String,String> getItemMetadata(String identifier) {
         Map json = getMetadata(identifier);
         if (json == null || !json.containsKey("rows")) return null;
         List<String> columns = (List<String>) json.get("columns");
@@ -198,7 +195,7 @@ public class FusionIndex implements Index {
 
         Map<String, String> ret = makeMetadataMapFromQueryResult(columns, row);
         return ret;
-	}
+    }
 
     private Map<String, String> makeMetadataMapFromQueryResult(List<String> columns, List<String> row) {
         Map<String, String> ret = new HashMap<String, String>(10);
@@ -271,8 +268,8 @@ public class FusionIndex implements Index {
     /**
      * @see org.lp20.aikuma.storage.Index#search(java.util.Map)
      */
-	@Override
-	public List<String> search(Map<String,String> constraints) {
+    @Override
+    public List<String> search(Map<String,String> constraints) {
         String sql = makeSearchSQL(constraints, false);
         JSONObject tmp = (JSONObject) doGet("[None]", sql);
 
@@ -283,7 +280,7 @@ public class FusionIndex implements Index {
             }
         }
         return retval;
-	}
+    }
 
     @Override
     public void search(Map<String, String> constraints, SearchResultProcessor processor ) {
@@ -300,6 +297,10 @@ public class FusionIndex implements Index {
         }
     }
 
+    @Override
+    public void search(String query, SearchResultProcessor processor) {
+        // Do nothing. Probably this won't be implemented.
+    }
 
     private String makeSearchSQL(Map<String, String> constraints, boolean fullRecord) {
         StringBuilder sqlBuilder = new StringBuilder();
@@ -338,8 +339,8 @@ public class FusionIndex implements Index {
     /* (non-Javadoc)
      * @see org.lp20.aikuma.storage.Index#index(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List)
      */
-	@Override
-	public boolean index(String identifier, Map<String,String> metadata) {
+    @Override
+    public boolean index(String identifier, Map<String,String> metadata) {
         doValidation(metadata, true);
         if (getRowId(identifier) != null) {
             log.severe("index called on item with existing index entry");
@@ -459,7 +460,4 @@ public class FusionIndex implements Index {
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
-
-
-
 }

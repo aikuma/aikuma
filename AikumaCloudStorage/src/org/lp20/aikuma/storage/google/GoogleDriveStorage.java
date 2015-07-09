@@ -28,11 +28,9 @@ public class GoogleDriveStorage implements DataStore {
     static final String PREFIX_FIELD = "aikuma_prefix";
     static final String FOLDER_MIME = "application/vnd.google-apps.folder";
 
-    GoogleDriveFolderCache mCache;
-    static boolean mCacheInitialized = false;
-
     String mAccessToken;
     String mRootId;
+    String mRootFileId;
     String mCentralEmail;
     
     Api gapi;
@@ -88,15 +86,7 @@ public class GoogleDriveStorage implements DataStore {
             }
         });
 
-        mCache = GoogleDriveFolderCache.getInstance();
-        if (initialize == true) {
-            mCacheInitialized = false;
-            mCache.clear();
-        }
-        if (mCacheInitialized == false) {
-            initialize_aikuma_folder();
-            mCacheInitialized = true;
-        }
+        mRootFileId = initialize_aikuma_folder();
 
         import_shared_files();
     }
@@ -112,21 +102,12 @@ public class GoogleDriveStorage implements DataStore {
 
     @Override
     public InputStream load(String identifier) {
-        String prefix = dirname(identifier);
-        String pid = mCache.getFid(prefix);
-        if (pid == null) {
-            log.log(Level.FINE, "containing folder doesn't exist: " + prefix);
-            return null;
-        }
-
         String query = String.format(
                 "trashed = false" +
                 " and title = '%s'" +
-                " and properties has {key='%s' and value='%s' and visibility='PUBLIC'}" +
-                " and '%s' in parents",
-                escape_quote(basename(identifier)),
-                ROOT_FIELD, escape_quote(mRootId),
-                pid);
+                " and '%s' in parents" +
+                " and mimeType != '%s'",
+                escape_quote(identifier), mRootFileId, FOLDER_MIME);
 
         JSONObject obj = gapi.list(query, null);
 
@@ -141,18 +122,14 @@ public class GoogleDriveStorage implements DataStore {
 
     @Override
     public String store(String identifier, Data data) {
-        File f = new File(normpath(identifier));
-        String parentId = mkdir(f.getParent());
-
         JSONObject meta = new JSONObject();
-        meta.put("title", f.getName());
+        meta.put("title", identifier);
 
         JSONArray parents = new JSONArray();
         JSONObject parent = new JSONObject();
-        parent.put("id", parentId);
+        parent.put("id", mRootFileId);
         parents.add(parent);
         meta.put("parents", parents);
-        meta.put("properties", getProp(f.getParent()));
 
         JSONObject obj = gapi.insertFile(data, meta);
         if (obj == null) return null;
@@ -162,25 +139,16 @@ public class GoogleDriveStorage implements DataStore {
 
     @Override
     public boolean share(String identifier) {
-        String prefix = dirname(identifier);
-        String pid = mCache.getFid(prefix);
-        if (pid == null) {
-            log.log(Level.FINE, "containing folder doesn't exist: " + prefix);
-            return false;
-        }
-
         String query = String.format(
                 "trashed = false" +
                 " and title = '%s'" +
-                " and properties has {key='%s' and value='%s' and visibility='PUBLIC'}" +
-                " and '%s' in parents",
-                escape_quote(basename(identifier)),
-                ROOT_FIELD, escape_quote(mRootId),
-                pid);
+                " and '%s' in parents" + 
+                " and mimeType != '%s'",
+                escape_quote(identifier), mRootFileId, FOLDER_MIME);
 
         JSONObject obj = gapi.list(query, null);
         
-        if (obj == null) return false;  // "list" call failed
+        if (obj == null) return false;
         
         String fileid = null;
         JSONArray arr = (JSONArray) obj.get("items");
@@ -200,10 +168,9 @@ public class GoogleDriveStorage implements DataStore {
     public void list(ListItemHandler listItemHandler) {
         String query = String.format(
                 "trashed = false" +
-                " and mimeType != '" + FOLDER_MIME + "'" +
-                " and properties has {key='%s' and value='%s' and visibility='PUBLIC'}",
-                ROOT_FIELD,
-                mRootId.replaceAll("'", "\\'"));
+                " and mimeType != '%s'" +
+                " and '%s' in parents",
+                FOLDER_MIME, mRootFileId);
 
         for (Search e = gapi.search(query); e.hasMoreElements();) {
             JSONObject o;
@@ -214,16 +181,7 @@ public class GoogleDriveStorage implements DataStore {
                 log.log(Level.FINE, "search failed");
                 return;
             }
-            String identifier = "UNKNOWN";
-            for (Object pidObj: (JSONArray) o.get("parents")) {
-                JSONObject parent = (JSONObject) pidObj;
-                String pid = (String) parent.get("id");
-                String prefix = mCache.getPath(pid);
-                if (prefix != null) {
-                    identifier = joinpath(prefix, (String) o.get("title")).replaceAll("^/*","");
-                    break;
-                }
-            }
+            String identifier = (String) o.get("title");
             String datestr = (String) o.get("modifiedDate");
             SimpleDateFormat datefmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             Date date;
@@ -251,23 +209,6 @@ public class GoogleDriveStorage implements DataStore {
     
 
 
-    private String normpath(String path) {
-        return path.replaceAll("^/*", "/");
-    }
-
-    private String joinpath(String p1, String p2) {
-        return p1.replaceAll("/*$","") + "/" + p2.replaceAll("^/*","");
-    }
-
-    private String dirname(String path) {
-        String p = (new File(normpath(path))).getParent();
-        return p == null ? "" : p;
-    }
-
-    private String basename(String path) {
-        return (new File(normpath(path))).getName();
-    }
-
     private String escape_quote(String s) {
         return s.replaceAll("'", "\\'");
     }
@@ -286,61 +227,43 @@ public class GoogleDriveStorage implements DataStore {
         Properties props = new GoogleDriveStorage.Properties();
         props.put(DSVER_FIELD, DSVER);
         props.put(ROOT_FIELD, mRootId);
-                props.put(PREFIX_FIELD, prefix);
+        props.put(PREFIX_FIELD, prefix);
         return props;
     }
 
-    private void initialize_aikuma_folder() throws DataStore.StorageException {
+    private String initialize_aikuma_folder() throws DataStore.StorageException {
         String query = String.format(
                 "trashed = false" +
+                " and 'root' in parents" +
                 " and 'me' in owners" +
                 " and mimeType='%s'" +
                 " and properties has {key='%s' and value='%s' and visibility='PUBLIC'}",
                 FOLDER_MIME,
-                ROOT_FIELD,
-                escape_quote(mRootId));
+                ROOT_FIELD, escape_quote(mRootId));
         
         Search e = gapi.search(query);
         if (e.hasMoreElements()) {
-            log.log(Level.FINE, "found aikumafied folders");
-            mCache.beginTable();
-            for (; e.hasMoreElements();) {
-                JSONObject o;
-                try {
-                    o = e.nextElement();
-                } catch (Search.Error err) {
-                    log.log(Level.FINE, "search exception");
-                                        try {
-                        mCache.finishTable();
-                    } catch (Exception err2) {
-                        // ignore
-                    }
-                    throw new DataStore.StorageException();
-                }
-                String fid = (String) o.get("id");
-                String title = (String) o.get("title");
-                for (Object pidObj: (JSONArray) o.get("parents")) {
-                    JSONObject parent = (JSONObject) pidObj;
-                    mCache.addToTable(fid, title, (String) parent.get("id"));
-                }
-            }
+            String fid = null;
             try {
-                mCache.finishTable();
-            } catch (GoogleDriveFolderCache.Error err) {
+                fid = (String) ((JSONObject) e.nextElement()).get("id");
+                log.log(Level.FINE, "found aikumafied folder");
+            } catch (Search.Error err) {
+                log.log(Level.FINE, "failed to find aikumafied folder");
                 throw new DataStore.StorageException();
             }
-            if (mCache.getFid("/") == null) {
-                log.log(Level.FINE, "no aikumafied root found -- falling back");
-                mCache.clear();
-                initialize_aikuma_folder2();
+            if (e.hasMoreElements()) {
+                log.log(Level.FINE, "found more aikumafied folders");
+                // more than one folder with the same root id
+                throw new DataStore.StorageException();
             }
+            return fid;
         } else {
-            log.log(Level.FINE, "didn't find aikumafied dir structure, falling back");
-            initialize_aikuma_folder2();
+            log.log(Level.FINE, "didn't find aikumafied folder, falling back");
+            return initialize_aikuma_folder2();
         }
     }
 
-    private void initialize_aikuma_folder2() throws DataStore.StorageException {
+    private String initialize_aikuma_folder2() throws DataStore.StorageException {
         String query = String.format(
                 "trashed = false " +
                 " and 'me' in owners" +
@@ -384,95 +307,34 @@ public class GoogleDriveStorage implements DataStore {
             }
             if (parentIds.size() == 0) {
                 log.log(Level.FINE, "failed to identify root folder containing the root id file");
-                initialize_aikuma_folder3();
+                return initialize_aikuma_folder3();
             } else if (parentIds.size() == 1) {
-                log.log(Level.FINE, "found manually created aikuma folder");
-                aikumafy(parentIds.get(0));
+                log.log(Level.FINE, "found manually created aikuma folder; setting root id");
+                String fid = parentIds.get(0);
+                JSONObject meta = new JSONObject();
+                meta.put("properties", getProp("/"));
+                if (gapi.updateMetadata(fid, meta) == null)
+                    throw new DataStore.StorageException();
+                return fid;
             } else {
                 log.log(Level.FINE, "multiple Aikuma folders matching root id: " + mRootId);
                 throw new DataStore.StorageException();
             }
         } else {
-            initialize_aikuma_folder3();
+            return initialize_aikuma_folder3();
         }
     }    
 
-    private void initialize_aikuma_folder3() throws DataStore.StorageException {
+    private String initialize_aikuma_folder3() throws DataStore.StorageException {
         log.log(Level.FINE, "creating a new root");
         JSONObject meta = new JSONObject();
         meta.put("properties", getProp("/"));
         meta.put("title", "aikuma");
-                meta.put("mimeType", FOLDER_MIME);
+        meta.put("mimeType", FOLDER_MIME);
         JSONObject res = gapi.makeFile(meta);
-                if (res == null)
-                    throw new DataStore.StorageException();
-        String fid = (String) res.get("id");
-        mCache.add(fid, "/");
-    }
-
-    private void aikumafy(String fileid) throws DataStore.StorageException {
-        log.log(Level.FINE, "aikumafying folder: " + fileid);
-        Stack<String> stack = new Stack<String>();
-        stack.push(fileid);
-        stack.push("/");
-
-        String q = "trashed = false and 'me' in owners and '%s' in parents and mimeType='" + FOLDER_MIME + "'";
-        while (!stack.empty()) {
-            String base = stack.pop();
-            String pid = stack.pop();
-            mCache.add(pid, base);
-            aikumafy_update_properties(pid, base);
-            for (Search e = gapi.search(String.format(q,pid)); e.hasMoreElements();) {
-                JSONObject c;
-                try {
-                    c = e.nextElement();
-                } catch (Search.Error err) {
-                    log.log(Level.FINE, "search exception");
-                    throw new DataStore.StorageException();
-                }
-                String fid = (String) c.get("id");
-                String name = (String) c.get("title");
-                stack.push(fid);
-                stack.push(normpath(joinpath(base, name)));
-            }
-        }
-
-        q = "trashed=false and 'me' in owners and '%s' in parents and mimeType!='" + FOLDER_MIME + "'";
-        for (String path:  mCache.listPaths()) {
-            String pid = mCache.getFid(path);
-            for (Search e = gapi.search(String.format(q,pid)); e.hasMoreElements();)
-                try {
-                    aikumafy_update_properties(e.nextElement(), path);
-                } catch (Search.Error err) {
-                    log.log(Level.FINE, "search exception");
-                    throw new DataStore.StorageException();
-                }
-        }
-    }
-
-    private void aikumafy_update_properties(JSONObject child, String basedir) {
-        String fid = (String) child.get("id");
-        String name = (String) child.get("title");
-        String p = joinpath(basedir, name);
-        aikumafy_update_properties(fid, p);
-    }
-
-    private void aikumafy_update_properties(String fileid, String path) {
-        log.log(Level.FINE, "updating: " + path);
-        JSONObject meta = new JSONObject();
-        if (path != "/") {
-            File f = new File(path);
-            String parentId = mkdir(f.getParent());
-            JSONArray parents = new JSONArray();
-            JSONObject parent = new JSONObject();
-            parent.put("id", parentId);
-            parents.add(parent);
-            meta.put("parents", parents);
-            meta.put("title", f.getName());
-        }
-        meta.put("properties", getProp(dirname(path)));
-                log.log(Level.FINE, "setting properties for " + fileid + ": " + meta.toString());
-        gapi.updateMetadata(fileid, meta);
+        if (res == null)
+            throw new DataStore.StorageException();
+        return (String) res.get("id");
     }
 
     /**
@@ -483,11 +345,16 @@ public class GoogleDriveStorage implements DataStore {
         String query = String.format(
                 "trashed = false" +
                 " and sharedWithMe" +
-                " and properties has {key='%s' and value='%s' and visibility='PUBLIC'}" +
+                " and title contains 'aikuma/%s'" +
                 " and not ('%s' in parents)",
-                DSVER_FIELD,
-                DSVER,
-                mkdir("/trash"));
+                DSVER, mRootFileId);
+
+        JSONObject meta = new JSONObject();
+        JSONArray parents = new JSONArray();
+        JSONObject parent = new JSONObject();
+        parent.put("id", mRootFileId);
+        parents.add(parent);
+        meta.put("parents", parents);
 
         for (Search e = gapi.search(query); e.hasMoreElements();) {
             JSONObject obj;
@@ -498,78 +365,8 @@ public class GoogleDriveStorage implements DataStore {
                 break;
             }
             String fid = (String) obj.get("id");
-            String prefix = props_to_map(obj.get("properties")).get(PREFIX_FIELD);
-            if (prefix == null) {
-                log.log(Level.FINE, "file has no prefix: " + fid);
-                continue;
-            }
-            String pid = mkdir(prefix);
-            JSONObject meta = new JSONObject();
-            meta.put("properties", getProp(prefix));
-            JSONArray parents = new JSONArray();
-            JSONObject parent = new JSONObject();
-            parent.put("id", pid);
-            parents.add(parent);
-            meta.put("parents", parents);
-            if (gapi.copyFile(fid, meta) == null)
-                log.log(Level.FINE, "failed to copy: " + fid);
-            if (gapi_trash_file2(fid) == null)
-                log.log(Level.FINE, "failed to trash file: " + fid);
+            if (gapi.updateMetadata(fid, meta) == null)
+                log.log(Level.FINE, "failed to move to aikuma folder: " + fid);
         }
-    }
-
-    private Map<String,String> props_to_map(Object props) {
-        HashMap<String,String> h = new HashMap<String,String>();
-        for (Object p: (JSONArray) props) {
-            JSONObject obj = (JSONObject) p;
-            h.put((String) obj.get("key"), (String) obj.get("value"));
-        }
-        return h;
-    }
-
-    private String mkdir(String path) {
-        File f = new File(path==null ? "/" : path);
-        String fid = mCache.getFid(f.getPath());
-        if (fid == null) {
-            String parentFid = mkdir(f.getParent());
-
-            JSONObject meta = new JSONObject();
-            meta.put("properties", getProp(f.getParent()));
-            meta.put("title", f.getName());
-            meta.put("mimeType", FOLDER_MIME);
-
-            JSONArray parents = new JSONArray();
-            JSONObject parent = new JSONObject();
-            parent.put("id", parentFid);
-            parents.add(parent);
-            meta.put("parents", parents);
-
-            JSONObject res = gapi.makeFile(meta);
-            fid = (String) res.get("id");
-            mCache.add(fid, f.getPath());
-        }
-        return fid;
-    }
-
-    /**
-     * Trash given file into Aikuma trash dir.
-     *
-     * @param fileid Google file ID.
-     * @return JSONObject on success, null otherwise.
-     */
-    private JSONObject gapi_trash_file2(String fileid) {
-        String pid = mkdir("/trash");
-        JSONObject meta = new JSONObject();
-        JSONArray parents = new JSONArray();
-        JSONObject parent = new JSONObject();
-        parent.put("id", pid);
-        parents.add(parent);
-        meta.put("parents", parents);
-        JSONObject res = gapi.updateMetadata(fileid, meta);
-        if (res == null) {
-            log.log(Level.FINE, "failed trash into aikuma/trash: " + fileid);
-            return null;
-        }
-        return res;
     }
 }

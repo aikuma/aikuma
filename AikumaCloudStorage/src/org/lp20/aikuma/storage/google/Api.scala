@@ -51,30 +51,18 @@ class Api(tm: TokenManager) {
     ghttp(url).method("DELETE").code == 204
   }
 
-  def insertFile(data: Data, meta: JSONObject): JSONObject = {
-    val bd = "bdbdbdbdbdbdbdbdbdbd"
-    val http = ghttp("https://www.googleapis.com/upload/drive/v2/files?uploadType=multipart")
-      .method("POST")
-      .header("Content-Type", s"""multipart/related; boundary="$bd"""")
-      .chunked(8192)
-      .body(s"--$bd\r\n")
-      .body("Content-Type: application/json\r\n")
-      .body("\r\n")
-      .body(meta.toString)
-      .body("\r\n")
-      .body(s"--$bd\r\n")
-      .body(s"Content-Type: ${data.getMimeType}\r\n")
-      .body("\r\n")
-      .body(data.getInputStream)
-      .body("\r\n")
-      .body(s"--$bd--\r\n")
+  def exist(q: String): Boolean = search(q).hasMoreElements
 
+  def getInfo(fileId: String): JSONObject = {
+    val url = s"https://www.googleapis.com/drive/v2/files/$fileId"
+    val http = ghttp(url).method("GET")
     http.code match {
-      case HttpURLConnection.HTTP_OK =>
-        JSONValue.parse(http.read).asInstanceOf[JSONObject]
+      case 200 => JSONValue.parse(http.read).asInstanceOf[JSONObject]
       case _ => null
     }
   }
+
+  def insertFile(data: Data, meta: JSONObject): JSONObject = updateFile("", data, meta)
 
   def list(query: String, pageToken: String): JSONObject = {
     val url = try {
@@ -171,6 +159,32 @@ class Api(tm: TokenManager) {
     }
   }
 
+  def updateFile(fileId: String, data: Data, meta: JSONObject): JSONObject = {
+    val bd = "bdbdbdbdbdbdbdbdbdbd"
+    val (fid, method) = if (fileId=="") ("", "POST") else (s"/$fileId", "PUT")
+    val http = ghttp(s"https://www.googleapis.com/upload/drive/v2/files$fid?uploadType=multipart")
+      .method(method)
+      .header("Content-Type", s"""multipart/related; boundary="$bd"""")
+      .chunked(8192)
+      .body(s"--$bd\r\n")
+      .body("Content-Type: application/json\r\n")
+      .body("\r\n")
+      .body(meta.toString)
+      .body("\r\n")
+      .body(s"--$bd\r\n")
+      .body(s"Content-Type: ${data.getMimeType}\r\n")
+      .body("\r\n")
+      .body(data.getInputStream)
+      .body("\r\n")
+      .body(s"--$bd--\r\n")
+
+    http.code match {
+      case HttpURLConnection.HTTP_OK =>
+        JSONValue.parse(http.read).asInstanceOf[JSONObject]
+      case _ => null
+    }
+  }
+ 
   def updateMetadata(fileId: String, meta: JSONObject): JSONObject = {
     val http = ghttp("https://www.googleapis.com/drive/v2/files/" + fileId)
       .method("PUT")
