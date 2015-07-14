@@ -13,7 +13,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -50,16 +52,28 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 		updateOkButton();
 
 		//Lets method in superclass know to ask user if they are willing to
-		//discard new data on an activity transition via the menu.
-		//if duration of the file > 250msec
-		if(durationMsec > 250) {
-			safeActivityTransition = true;
-		}
-		safeActivityTransitionMessage = "Are you sure you want to discard this recording?";
+		//discard the name if they typed in it
+		safeActivityTransition = false;
+		safeActivityTransitionMessage = "Are you sure you want to discard the name?";
 		
 		// EditText for the recording name
 		nameField = (EditText) findViewById(R.id.recordingDescription);
 		nameField.addTextChangedListener(emptyTextWatcher);
+		
+		nameField.setOnKeyListener(new OnKeyListener() {
+
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				// TODO Auto-generated method stub
+				if((event.getAction() == KeyEvent.ACTION_DOWN && 
+						(event.getKeyCode() == KeyEvent.KEYCODE_ENTER))) {
+					onOkButtonPressed(null);
+					return true;
+				}
+				return false;
+			}
+			
+		});
 	}
 
 	/**
@@ -92,7 +106,6 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 		startActivity(intent);
 	}
 
-
 	// Used to check whether the recording name is long enough based on what
 	// the user is entered, and disable/enable the okButton on the fly.
 	private TextWatcher emptyTextWatcher = new TextWatcher() {
@@ -106,9 +119,11 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 			if (s.length() == 0) {
 				recordingHasName = false;
 				updateOkButton();
+				safeActivityTransition = false;
 			} else {
 				recordingHasName = true;
 				updateOkButton();
+				safeActivityTransition = true;
 			}
 		}
 	};

@@ -40,6 +40,11 @@
 				android:label="@string/app_name"
 				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
+		<activity android:name="org.lp20.aikuma.ui.CloudSearchActivity"
+				android:configChanges="orientation"
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.MainActivity">
+		</activity>
 		<activity android:name="org.lp20.aikuma.ui.RecordActivity"
 				android:configChanges="orientation"
 				android:label="@string/app_name"

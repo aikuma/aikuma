@@ -68,12 +68,9 @@ public class RecordingMetadataActivity3 extends AikumaListActivity {
 		updateOkButton();
 
 		//Lets method in superclass know to ask user if they are willing to
-		//discard new data on an activity transition via the menu.
-		//if duration of the file > 250msec
-		if(durationMsec > 250) {
-			safeActivityTransition = true;
-		}
-		safeActivityTransitionMessage = "Are you sure you want to discard this recording?";
+		//discard new data if they selected a speaker and languages
+		safeActivityTransition = false;
+		safeActivityTransitionMessage = "Are you sure you want to discard this speaker and language?";
 		
 
 		adapter = new LanguagesArrayAdapter(this, languages, selectedLanguages) {
@@ -180,9 +177,11 @@ public class RecordingMetadataActivity3 extends AikumaListActivity {
 		if (recordingHasSpeaker && selectedLanguages.size() > 0) {
 			okButton.setImageResource(R.drawable.ok_48);
 			okButton.setEnabled(true);
+			safeActivityTransition = true;
 		} else {
 			okButton.setImageResource(R.drawable.ok_disabled_48);
 			okButton.setEnabled(false);
+			safeActivityTransition = false;
 		}
 	}
 
