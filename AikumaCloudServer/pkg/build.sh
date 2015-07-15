@@ -1,6 +1,6 @@
 #! /bin/bash
 
-REPO=hleeldc/aikuma-cloud-server
+REPO=aikuma/aikuma
 VER=1.2.0
 TAG=$REPO:$VER
 TAG_LATEST=$REPO:latest
