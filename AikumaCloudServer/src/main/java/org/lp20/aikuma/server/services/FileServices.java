@@ -22,7 +22,7 @@ import org.lp20.aikuma.server.*;
  */
 @Path("file")
 public class FileServices {
-    private static final Logger log = Logger.getLogger(IndexResource.class.getName());
+    private static final Logger log = Logger.getLogger(FileServices.class.getName());
 
     private String mRootId;
     private TokenManager mTm;
