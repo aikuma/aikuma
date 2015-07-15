@@ -21,6 +21,7 @@ refresh_token=[refresh token obtained by admin for the client ID]
 table_id=[Google FusionTables table ID for the metadata table]
 
 aikuma_root_id=[Globally unique ID for the aikuma root folder]
+aikuma_root_name=[Name of the aikuma root folder. Needed by GoogleDriveIndex.]
 base_uri=[base uri on which to listen e.g., https://0.0.0.0:8080]
 use_ssl=[if "yes", use ssl; else, don't]
 keystore_file=[a file url that points to a java keystore with your ssl cert in it]
