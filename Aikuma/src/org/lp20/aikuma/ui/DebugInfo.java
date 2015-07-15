@@ -15,11 +15,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import org.lp20.aikuma.storage.DataStore;
-import org.lp20.aikuma.storage.FusionIndex2;
 import org.lp20.aikuma.storage.google.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.GoogleDriveIndex2;
+import org.lp20.aikuma.storage.google.TokenManager;
 import org.lp20.aikuma.storage.Index;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
@@ -54,7 +56,7 @@ public class DebugInfo extends Activity {
     boolean mRecovering = false;
     SharedPreferences mPref;
     GoogleDriveStorage mGd;
-    FusionIndex2 mFi;
+    GoogleDriveIndex2 mGi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,10 +112,6 @@ public class DebugInfo extends Activity {
             scopeBuilder.append(joiner);
             scopeBuilder.append(s);
             joiner = " ";
-        }
-        for (String s: FusionIndex2.getScopes()) {
-            scopeBuilder.append(joiner);
-            scopeBuilder.append(s);
         }
         return scopeBuilder.toString();
     }
@@ -175,12 +173,20 @@ public class DebugInfo extends Activity {
                             } catch (DataStore.StorageException e) {
             			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
                             }
+
+                            TokenManager tm = new TokenManager() {
+                                @Override
+                                public String accessToken() {
+                                    return toks[0];
+                                }
+                            };
+                            mGi = new GoogleDriveIndex2("aikuma-central", tm, AikumaSettings.getIndexServerUrl(), toks[1]);
+
                             return null;
                         }
 
                         @Override
                         protected void onPostExecute(final Void result) {
-                            mFi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), toks[1], toks[0]);
                             displayTokens();
                         }
                     }.execute();
@@ -227,7 +233,7 @@ public class DebugInfo extends Activity {
             @Override
             protected Void doInBackground(Void... params) {
                 Map<String, String> opt = new HashMap<String, String>();
-                mFi.search(opt, new Index.SearchResultProcessor() {
+                mGi.search(opt, new Index.SearchResultProcessor() {
                     @Override
                     public boolean process(Map<String, String> record) {
                         final Map<String,String> r = record;
@@ -302,7 +308,7 @@ public class DebugInfo extends Activity {
     public void indexSample(View view) {
         new AsyncTask<Void, Void, Boolean>() {
             protected Boolean doInBackground(Void... params) {
-                String identifier = "test-identifier-remove-please";
+                String identifier = ((EditText) findViewById(R.id.identifier)).getText().toString();
                 Map<String,String> meta = new HashMap<String,String>();
                 meta.put("data_store_uri","n/a");
                 meta.put("item_id","n/a");
@@ -310,7 +316,7 @@ public class DebugInfo extends Activity {
                 meta.put("languages", "eng");
                 meta.put("speakers", "n/a");
                 meta.put("user_id", "n/a");
-                return mFi.index(identifier, meta);
+                return mGi.index(identifier, meta);
             }
             protected void onPostExecute(Boolean result) {
                 if (result == true)
@@ -321,7 +327,7 @@ public class DebugInfo extends Activity {
         }.execute(null, null, null);
     }
 
-    private void clearLog(View view) {
+    public void clearLog(View view) {
         ((TextView) findViewById(R.id.txtGd)).setText("");
     }
 
