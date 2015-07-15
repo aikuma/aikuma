@@ -29,6 +29,7 @@ public class GdIndexSearch {
                     System.out.print(" -> ");
                     System.out.println(meta.get(key));
                 }
+                System.out.println();
                 return true;
             }
         });
