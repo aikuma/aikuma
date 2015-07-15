@@ -40,11 +40,7 @@ public class GoogleDriveStorage implements DataStore {
      * Google Drive.
      *
      * Files are stored in a directory structure whose root folder is
-     * identified by a root ID. The directory structure is initially read and
-     * cached. Subsequent accesses to the directory structure is mediated by
-     * the cache. Cache is static, therefore persistent throughout the life
-     * time of the program. If the cache is invalidated, the cache can be
-     * re-built by setting the {@code initialize} parameter to true.
+     * identified by a root ID.
      *
      * Clients can share files with another google account. The email address
      * of the account should be provided by the centralEmail parameter. The
@@ -66,8 +62,7 @@ public class GoogleDriveStorage implements DataStore {
      * @param accessToken Access token for a google drive account.
      * @param rootId Globally unique identifier for the root directory.
      * @param centeralEmail Email address to share stored files with.
-     * @param initialize Tell whether to re-build the cache of the aikuma
-     *        folder directory structure.
+     * @param initialize Ignored. Kept for backward compatibility.
      */
     public GoogleDriveStorage(
             String accessToken,
