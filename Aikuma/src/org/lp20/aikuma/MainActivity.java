@@ -30,17 +30,26 @@ import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.musicg.wave.Wave;
+import com.musicg.wave.WaveFileManager;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Calendar;
 import java.util.List;
 
 import org.lp20.aikuma.Aikuma;
+import org.lp20.aikuma.model.FileModel;
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.RecordingCSVFile;
+import org.lp20.aikuma.model.Recording.TagType;
+import org.lp20.aikuma.model.RecordingCSVFile.MetadataChunk;
+import org.lp20.aikuma.model.Speaker;
+import org.lp20.aikuma.model.SpeakerCSVFile;
 import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.storage.GoogleAuth;
 import org.lp20.aikuma.ui.ListenActivity;
@@ -62,6 +71,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -71,6 +81,7 @@ import java.io.FilenameFilter;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.lp20.aikuma2.R;
+
 
 /**
  * The primary activity that lists existing recordings and allows you to select
@@ -90,6 +101,8 @@ public class MainActivity extends ListActivity {
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		
 		menuBehaviour = new MenuBehaviour(this);
 		originals = new ArrayList<Recording>();
 		adapter = new RecordingArrayAdapter(this, originals);
@@ -228,30 +241,7 @@ public class MainActivity extends ListActivity {
 	public void onResume() {
 		super.onResume();	
 
-		List<Recording> recordings = Recording.readAll();
-		Log.i(TAG, "num: " +recordings.size());
-		
-		// Filter the recordings for originals
-		originals = new ArrayList<Recording>();
-		for (Recording recording : recordings) {
-			if (recording.isOriginal()) {
-				originals.add(recording);
-			}
-		}
-		
-		Log.i(TAG, "original num: " + originals.size() + ", " + adapter.getCount());
-		//adapter.clear();
-		//adapter.addAll(originals);
-		//adapter.notifyDataSetChanged();
-		Log.i(TAG, "original num: " + originals.size() + ", " + adapter.getCount());
-		
-		if(speakerId != null) {
-			adapter.getFilter().filter(speakerId);
-		} else {
-			adapter.setRecordings(originals);
-			//adapter.notifyDataSetChanged();
-		}
-		adapter.notifyDataSetChanged();
+		updateRecordingList();
 		
 		if (listViewState != null) {
 			getListView().onRestoreInstanceState(listViewState);
@@ -296,6 +286,33 @@ public class MainActivity extends ListActivity {
 		intent.putExtra("versionName", recording.getVersionName());
 
 		startActivity(intent);
+	}
+	
+	private void updateRecordingList() {
+		List<Recording> recordings = Recording.readAll();
+		Log.i(TAG, "num: " +recordings.size());
+		
+		// Filter the recordings for originals
+		originals = new ArrayList<Recording>();
+		for (Recording recording : recordings) {
+			if (recording.isOriginal()) {
+				originals.add(recording);
+			}
+		}
+		
+		Log.i(TAG, "original num: " + originals.size() + ", " + adapter.getCount());
+		//adapter.clear();
+		//adapter.addAll(originals);
+		//adapter.notifyDataSetChanged();
+		Log.i(TAG, "original num: " + originals.size() + ", " + adapter.getCount());
+		
+		if(speakerId != null) {
+			adapter.getFilter().filter(speakerId);
+		} else {
+			adapter.setRecordings(originals);
+			//adapter.notifyDataSetChanged();
+		}
+		adapter.notifyDataSetChanged();
 	}
 	
 	// If current year < 2000, make the user type in the correct date continuously
@@ -683,9 +700,43 @@ public class MainActivity extends ListActivity {
 	 *
 	 * @param	_view	the audio import button.
 	 */
-	public void audioImport(View _view) {
-		mPath = Environment.getExternalStorageDirectory();
-		loadFileList(mPath, FILE_TYPE);
+    public void fileImport(View _view) {
+    	mPath = Environment.getExternalStorageDirectory();
+		
+    	final CharSequence[] fileTypes = {"Speaker", "Recording"};
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	builder.setTitle("Select the filetype to import");
+    	builder.setSingleChoiceItems(fileTypes, -1, new DialogInterface.OnClickListener() {	
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				switch(which) {
+				case 0:
+					mFileType = FileModel.FileType.SPEAKER;
+					listFiles();
+					break;
+				case 1:
+					mFileType = FileModel.FileType.SOURCE;
+					listFiles();
+					break;
+				}
+				mDialog.dismiss();
+			}
+		});
+    	mDialog = builder.show();
+    }
+    
+    /**
+     * Called when the import filetype is selected
+     */
+	private void listFiles() {
+		switch(mFileType) {
+		case SPEAKER:
+			loadFileList(mPath, FILE_EXT2);
+			break;
+		case SOURCE:
+			loadFileList(mPath, FILE_EXT, FILE_EXT2);
+			break;
+		}
 		showAudioFilebrowserDialog();
 	}
 
@@ -693,15 +744,18 @@ public class MainActivity extends ListActivity {
 	 * Loads the list of files in the specified directory into mFileList
 	 *
 	 * @param	dir	The directory to scan.
-	 * @param	fileType	The type of file (other than directories) to look
+	 * @param	fileTypes	The types of file (other than directories) to look
 	 * for.
 	 */
-	private void loadFileList(File dir, final String fileType) {
+	private void loadFileList(File dir, final String... fileTypes) {
 		if(dir.exists()) {
 			FilenameFilter filter = new FilenameFilter() {
 				public boolean accept(File dir, String filename) {
 					File sel = new File(dir, filename);
-					return filename.contains(fileType) || sel.isDirectory();
+					boolean isType = sel.isDirectory();
+					for(String fileType : fileTypes)
+						isType  |= filename.contains(fileType);
+					return isType;
 				}
 			};
 			mFileList = mPath.list(filter);
@@ -728,78 +782,212 @@ public class MainActivity extends ListActivity {
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			Dialog dialog = null;
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-			builder.setTitle("Import audio file");
 			if(mFileList == null) {
 				Log.e("importfile", "Showing file picker before loading the file list");
 				dialog = builder.create();
 				return dialog;
 			}
+			if (mFileType == FileModel.FileType.SPEAKER)
+				builder.setTitle("Import speaker file");
+			else if (mFileType == FileModel.FileType.SOURCE)
+				builder.setTitle("Import source file");
 			builder.setItems(mFileList, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					mChosenFile = mFileList[which];
 					Log.i("importfile", "mChosenFile: " + mChosenFile);
-					mPath = new File(mPath, mChosenFile);
-					if (mPath.isDirectory()) {
-						loadFileList(mPath, ".wav");
-						showAudioFilebrowserDialog();
+					File chosenFile = new File(mPath, mChosenFile);
+					if (chosenFile.isDirectory()) {
+						mPath = chosenFile;
+						MainActivity.this.listFiles();
 					} else {
-						//Then it must be a .wav file.
-
-						UUID uuid = UUID.randomUUID();
-
-						// Use musicg WaveHeader to extract information.
-						try {
-							Wave wave = new Wave(
-									new FileInputStream(mPath));
-							String format = wave.getWaveHeader().getFormat();
-							int sampleRate = wave.getWaveHeader().
-									getSampleRate();
-							int durationMsec = (int) wave.length() * 1000;
-							int bitsPerSample = wave.getWaveHeader().
-									getBitsPerSample();
-							int numChannels = wave.getWaveHeader().
-									getChannels();
-
-							//Copy the file to the no-sync directory.
-							try {
-								FileUtils.copyFile(mPath,
-										new File(Recording.getNoSyncRecordingsPath(),
-										uuid.toString() + ".wav"));
-							} catch (IOException e) {
-								Toast.makeText(getActivity(),
-										"Failed to import the recording.",
-										Toast.LENGTH_LONG).show();
-							}
-
-							// Pass the info along to RecordingMetadataActivity.
-							Intent intent = new Intent(getActivity(),
-									RecordingMetadataActivity1.class);
-							intent.putExtra("uuidString", uuid.toString());
-							intent.putExtra("sampleRate", (long) sampleRate);
-							intent.putExtra("durationMsec", durationMsec);
-							intent.putExtra("numChannels", numChannels);
-							intent.putExtra("format", format);
-							intent.putExtra("bitsPerSample", bitsPerSample);
-							startActivity(intent);
-
-						} catch (FileNotFoundException e) {
-							// This shouldn't be happening.
-							throw new RuntimeException(e);
-						}
-
+						MainActivity.this.startImporting(chosenFile);
 					}
+					
 				}
 			});
 			dialog = builder.show();
 			return dialog;
 		}
 	}
+	
+	private void startImporting(File chosenFile) {
+		if (mFileType == FileModel.FileType.SOURCE) {
+			if (chosenFile.getName().endsWith(FILE_EXT2)) { //csv
+				try {
+					RecordingCSVFile csvReader = new RecordingCSVFile(mPath, mChosenFile);
+					for(RecordingCSVFile.MetadataChunk metadata : csvReader.getMetadataChunks()) {
+						//Then it must be a .wav file.
+						UUID uuid = UUID.randomUUID();
+						UUID imageUUID = null;
+						
+						// Use WaveHeader to extract info
+						File recordingFile = new File(mPath, metadata.getFileName());
+						Wave wave = new Wave(new FileInputStream(recordingFile));
+						String format = "vnd.wave";//wave.getWaveHeader().getFormat();
+						int sampleRate = wave.getWaveHeader().
+								getSampleRate();
+						int durationMsec = (int) wave.length() * 1000;
+						int bitsPerSample = wave.getWaveHeader().
+								getBitsPerSample();
+						int numChannels = wave.getWaveHeader().
+								getChannels();
+						Log.i(TAG, metadata.getFileName() + ": " + format + ", " + sampleRate + ", " + durationMsec + ", " + bitsPerSample + ", " + numChannels);
+						
+						//Copy the file to the no-sync directory.
+						try {
+							FileUtils.copyFile(recordingFile,
+									new File(Recording.getNoSyncRecordingsPath(),
+									uuid.toString() + "." + FileModel.AUDIO_EXT));
+						} catch (IOException e) {
+							Toast.makeText(this,
+									"Failed to import the recording.",
+									Toast.LENGTH_LONG).show();
+						}
+						
+						// Create preview file
+						wave.getWaveHeader().setChunkSize(recordingFile.length() - 8);
+						double trimmedDurationSec = durationMsec/1000 < Recording.SAMPLE_SEC? 
+								0 : (durationMsec/1000 - Recording.SAMPLE_SEC);
+						Log.i(TAG, trimmedDurationSec * sampleRate * (bitsPerSample / 8) * numChannels + " / " + wave.getWaveHeader().getSubChunk2Size());
+						wave.rightTrim(trimmedDurationSec);
+						WaveFileManager waveFileManager = new WaveFileManager(wave);
+						waveFileManager.saveWaveAsFile(Recording.getNoSyncRecordingsPath() + 
+								"/" + uuid.toString() + FileModel.SAMPLE_SUFFIX + "." + FileModel.AUDIO_EXT);
+						
+						
+						//Optional image
+						if(metadata.getImageName() != null) {
+							File imageFile = new File(mPath, metadata.getImageName());
+							imageUUID = UUID.randomUUID();
+							try {
+								FileUtils.copyFile(imageFile,
+										new File(Recording.getNoSyncRecordingsPath(),
+										imageUUID.toString() + "." + FileModel.IMAGE_EXT));
+							} catch (IOException e) {
+								Toast.makeText(this,
+										"Failed to import the image.",
+										Toast.LENGTH_LONG).show();
+							}
+						}
+						
+						//Write the recording
+						Recording recording = new Recording(
+								uuid, imageUUID, metadata.getTitle(), metadata.getComments(), metadata.getDate(), 
+								AikumaSettings.getLatestVersion(), AikumaSettings.getCurrentUserId(),
+								metadata.getLanguages(),
+								Aikuma.getDeviceName(), Aikuma.getAndroidID(), null, null,
+								sampleRate, durationMsec, format, numChannels, 
+								bitsPerSample, null, null);
+						
+						//Write the tags(speakers, languages)
+						recording.write();
+						
+						for(Language lang : metadata.getLanguages()) {
+							recording.tag(TagType.LANGUAGE, lang.toTagString(), 
+									AikumaSettings.getCurrentUserId());
+						}
+						
+						List<Speaker> deviceSpeakers = Speaker.readAll();
+						for(Speaker speaker : metadata.getSpeakers()) {
+							if(deviceSpeakers.contains(speaker)) {
+								recording.tag(TagType.SPEAKER, 
+										speaker.getId(), AikumaSettings.getCurrentUserId());
+							}	
+						}
+						
+						//Backup? or put it to MetadataActivity?
+						if(AikumaSettings.isBackupEnabled) {
+							Aikuma.syncRefresh(MainActivity.this, true);
+						}
+						
+					}
+					
+				} catch (IOException e) {
+					Log.e(TAG, e.getMessage());
+					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+				}
+				updateRecordingList();		
+						
+			} else {
+				//Then it must be a .wav file.
+				UUID uuid = UUID.randomUUID();
+				UUID imageUUID = null;
 
+				// Use musicg WaveHeader to extract information.
+				try {
+					Wave wave = new Wave(
+							new FileInputStream(chosenFile));
+	
+					String format = "vnd.wave";//wave.getWaveHeader().getFormat();
+					int sampleRate = wave.getWaveHeader().
+							getSampleRate();
+					int durationMsec = (int) wave.length() * 1000;
+					int bitsPerSample = wave.getWaveHeader().
+							getBitsPerSample();
+					int numChannels = wave.getWaveHeader().
+							getChannels();
+					
+					//Copy the file to the no-sync directory.
+					try {
+						FileUtils.copyFile(chosenFile,
+								new File(Recording.getNoSyncRecordingsPath(),
+								uuid.toString() + "." + FileModel.AUDIO_EXT));
+					} catch (IOException e) {
+						Toast.makeText(this,
+								"Failed to import the recording.",
+								Toast.LENGTH_LONG).show();
+					}
+
+					// Pass the info along to RecordingMetadataActivity.
+					Intent intent = new Intent(this,
+							RecordingMetadataActivity1.class);
+					intent.putExtra("uuidString", uuid.toString());
+					intent.putExtra("sampleRate", (long) sampleRate);
+					intent.putExtra("durationMsec", durationMsec);
+					intent.putExtra("numChannels", numChannels);
+					intent.putExtra("format", format);
+					intent.putExtra("bitsPerSample", bitsPerSample);
+					intent.putParcelableArrayListExtra("languages", new ArrayList<Language>());
+					startActivity(intent);
+
+				} catch (FileNotFoundException e) {
+					// This shouldn't be happening.
+					throw new RuntimeException(e);
+				}
+
+			}
+		} else if (mFileType == FileModel.FileType.SPEAKER) {
+			try {
+				SpeakerCSVFile csvReader = new SpeakerCSVFile(mPath, mChosenFile);
+				List<Speaker> deviceSpeakers = Speaker.readAll();
+				for(SpeakerCSVFile.MetadataChunk metadata : csvReader.getMetadataChunks()) {
+					Speaker speaker = metadata.getSpeaker();
+					if(!deviceSpeakers.contains(speaker)) {
+						speaker.write();
+					}	
+				}
+				
+				//Backup? or put it to MetadataActivity?
+				if(AikumaSettings.isBackupEnabled) {
+					Aikuma.syncRefresh(MainActivity.this, true);
+				}
+				
+			} catch (IOException e) {
+				Log.e(TAG, e.getMessage());
+				Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+			}
+		}
+		
+	}
+	
+
+	private AlertDialog mDialog;
 	private String[] mFileList;
 	private File mPath;
+	private FileModel.FileType mFileType;
 	private String mChosenFile;
-	private static final String FILE_TYPE = ".wav";
+	private static final String FILE_EXT = ".wav";
+	private static final String FILE_EXT2 = ".csv";
 	
 	private static final String TAG = "MainActivity";
 	/**

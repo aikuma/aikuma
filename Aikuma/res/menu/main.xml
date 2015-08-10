@@ -32,7 +32,7 @@
 		android:title="@string/settings"/>
 		<!--android:showAsAction="always"/>-->
 	<item android:id="@+id/audio_import_menu"
-	    android:title="@string/audio_import_label"/>
+	    android:title="@string/import_label"/>
 	<item android:id="@+id/indexing_menu"
 	    android:title="@string/indexing_label"/>
 	<item android:id="@+id/help"

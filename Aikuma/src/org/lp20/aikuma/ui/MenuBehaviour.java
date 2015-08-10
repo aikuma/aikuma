@@ -11,6 +11,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -127,7 +128,12 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				return true;
 			case R.id.audio_import_menu:
-				((MainActivity)activity).audioImport(null);
+				if(AikumaSettings.getCurrentUserId() == null) {
+					Aikuma.showAlertDialog(activity,
+							"Please sign in to your Google account using the settings menu");
+					return true;
+				}
+				((MainActivity)activity).fileImport(null);
 				return true;
 			case R.id.gplus_signin_menu:
 				if(signInState) {
@@ -237,6 +243,10 @@ public class MenuBehaviour {
 	 * @param state		true(signed-in), false(no sign-in)
 	 */
 	public void setSignInState(boolean state) {
+		if(menu == null) {
+			Log.e("MenuBehaviour", "called before menu is created"); // by MainActivity?
+			return;
+		}
 		this.signInState = state;
 		if(state) {
 			//TODO: get emailAccount from AikumaSettings

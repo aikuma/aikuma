@@ -298,7 +298,9 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 		}
 		Speaker rhs = (Speaker) obj;
 		return new EqualsBuilder()
-				.append(id, rhs.id).append(name, rhs.name)
+				//.append(id, rhs.id)
+				.append(name, rhs.name)
+				.append(ownerId, rhs.ownerId)
 				.isEquals();
 	}
 
