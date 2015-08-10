@@ -696,7 +696,8 @@ public class Recording extends FileModel {
 			// Import the sample wave file into the new recording directory
 			String suffixExt = getSuffixExt(versionName, FileType.PREVIEW);
 			importWav(recordingUUID + suffixExt, getId() + suffixExt);
-			importImage(imageUUID);
+			if(imageUUID != null)	// image is optional
+				importImage(imageUUID);
 		} else {
 			// Try and import the mapping file
 			importMapping(recordingUUID, getId());
@@ -1879,7 +1880,7 @@ public class Recording extends FileModel {
 	/**
 	 * Keys of the recording metadata fields
 	 */
-	public static final String NAME_KEY = "name";
+	public static final String NAME_KEY = "title";
 	/** */
 	public static final String COMMENTS_KEY = "comments";
 	/** */

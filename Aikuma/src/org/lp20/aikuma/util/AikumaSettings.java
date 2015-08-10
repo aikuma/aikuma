@@ -164,7 +164,10 @@ public class AikumaSettings {
 	public static final String UPLOAD_OTHERS_KEY = "uploadOthers";
 	/** */
 	public static final String ARCHIVED_OTHERS_KEY = "archivedOthers";
-	
+	/** */
+	public static final String SOURCE_LANG_BUFFER_KEY = "sourceLanguages";
+	/** */
+	public static final String INTERPRET_LANG_BUFFER_KEY = "interpretLanguages";
 	
 	/**
 	 * Latest version name.
