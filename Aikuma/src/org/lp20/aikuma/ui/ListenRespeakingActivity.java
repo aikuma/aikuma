@@ -404,6 +404,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 			respeakingQuickMenu.setItemEnabledAt(3, false);
 			respeakingQuickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
 		}
+		
+		Toast.makeText(this, "Queued for public sharing", Toast.LENGTH_LONG).show();
 	}
 	
 	/**

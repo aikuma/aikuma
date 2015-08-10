@@ -363,14 +363,6 @@ public class ListenActivity extends AikumaActivity {
 		Log.i(TAG, 
 				"respeakingMode: " + respeakingMode +", rewindAmount: " + rewindAmount);
 
-		/*
-		Intent intent;
-		if (respeakingMode.equals("phone")) {
-			intent = new Intent(this, PhoneRespeakActivity.class);
-		} else {
-			// Lets just default to thumb respeaking
-			intent = new Intent(this, ThumbRespeakActivity.class);
-		}*/
 		Intent intent;
 		if(respeakingType.equals("respeak")) {
 			if (respeakingMode.equals("phone")) {
@@ -476,6 +468,8 @@ public class ListenActivity extends AikumaActivity {
 		// Disable the button instantly because it can take a while until archive is finished
 		quickMenu.setItemEnabledAt(3, false);
 		quickMenu.setItemImageResourceAt(3, R.drawable.aikuma_grey);
+		
+		Toast.makeText(this, "Queued for public sharing", Toast.LENGTH_LONG).show();
 	}
 	
 	/**
