@@ -29,7 +29,7 @@ import org.lp20.aikuma.model.FileModel.FileType;
 import org.lp20.aikuma.storage.Data;
 import org.lp20.aikuma.storage.DataStore;
 import org.lp20.aikuma.storage.FusionIndex2;
-import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
 import org.lp20.aikuma.storage.Index;
 import org.lp20.aikuma.storage.Utils;
 import org.lp20.aikuma.util.AikumaSettings;

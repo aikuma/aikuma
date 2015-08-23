@@ -51,7 +51,7 @@ import org.lp20.aikuma.model.RecordingCSVFile.MetadataChunk;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.SpeakerCSVFile;
 import org.lp20.aikuma.service.GoogleCloudService;
-import org.lp20.aikuma.storage.GoogleAuth;
+import org.lp20.aikuma.storage.google.GoogleAuth;
 import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.MenuBehaviour;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;

@@ -67,6 +67,14 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="share central GD"
+            android:id="@+id/button_share_central_gd"
+            android:onClick="shareCentralGD" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Index"
             android:id="@+id/button5"
             android:onClick="indexSample" />

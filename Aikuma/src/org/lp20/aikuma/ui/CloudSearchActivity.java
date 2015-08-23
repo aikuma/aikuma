@@ -31,7 +31,7 @@ import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.storage.DataStore;
 import org.lp20.aikuma.storage.FusionIndex;
-import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
 import org.lp20.aikuma.storage.Index;
 import org.lp20.aikuma.storage.Utils;
 import org.lp20.aikuma.util.AikumaSettings;
