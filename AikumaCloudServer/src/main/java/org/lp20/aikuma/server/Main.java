@@ -82,7 +82,7 @@ public class Main {
                         props.getProperty("client_id"),
                         props.getProperty("client_secret"),
                         props.getProperty("refresh_token"));
-
+/*
         File mapdbFile = new File(props.getProperty("mapdb"));
         app.db = DBMaker.newFileDB(mapdbFile).closeOnJvmShutdown().make();
         ConcurrentNavigableMap<String,String> regIds = app.getGcmRegIdsMap();
@@ -106,7 +106,7 @@ public class Main {
                 app.db.commit();
             }
         };
-
+*/
         if ("yes".equals(props.getProperty("require_auth"))) {
             localProps.put("require_auth", "yes");
             String audience = props.getProperty("audience");

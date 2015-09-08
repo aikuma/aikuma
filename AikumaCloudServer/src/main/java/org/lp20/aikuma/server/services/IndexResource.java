@@ -120,7 +120,8 @@ public class IndexResource {
 
     private Response doAddItem(String identifier, MultivaluedMap<String, String> formParams) {
         Map<String, String> data = makeMetadataMap(formParams);
-        String msg = validateIndexMetadata(data, true);
+        //String msg = validateIndexMetadata(data, true);
+	String msg = "";
         if (msg.length() != 0) {
             return Response.status(new ErrorStatus(400, msg.replace('\n', ';'))).build();
         }
@@ -144,7 +145,8 @@ public class IndexResource {
 
     private Response doUpdateItem(String identifier, MultivaluedMap<String, String> formParams) {
         Map<String, String> data = makeMetadataMap(formParams);
-        String msg = validateIndexMetadata(data, false);
+        //String msg = validateIndexMetadata(data, false);
+	String msg = "";
         if (msg.length() != 0) {
             return Response.status(new ErrorStatus(400, msg)).build();
         }
