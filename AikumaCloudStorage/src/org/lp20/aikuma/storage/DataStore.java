@@ -27,6 +27,13 @@ public interface DataStore {
 	public boolean share(String identifier);
 	
 	/**
+	 * Copy a data item from central-storage to private-storage
+	 * @param identifier Identifier for a data item.
+	 * @return true on success, false on failure.
+	 */
+	public boolean copy(String identifier);
+	
+	/**
 	 * Provide a callback method for handling list items.
 	 * @author haejoong
 	 */

@@ -22,16 +22,19 @@ public class GoogleDriveStorage implements DataStore {
     private static final Logger log = Logger.getLogger(GoogleDriveStorage.class.getName());
 
     static final String DSVER_FIELD = "aikuma_ds_version";
-    static final String DSVER = "v01";
+    static final String DSVER = "v03";
     static final String ROOT_FIELD = "aikuma_root_id";
     static final String ROOT_FILE = "aikuma_root_id.txt";
     static final String PREFIX_FIELD = "aikuma_prefix";
     static final String FOLDER_MIME = "application/vnd.google-apps.folder";
+    static final String TRASH_FOLDER_NAME = "aikuma-trash";
+    static final String CENTRAL_ACCOUNT = "lp20.org@gmail.com";
 
     String mAccessToken;
     String mRootId;
     String mRootFileId;
     String mCentralEmail;
+    String mTrashFolderId;
     
     Api gapi;
 
@@ -60,7 +63,7 @@ public class GoogleDriveStorage implements DataStore {
      * }
      * 
      * @param accessToken Access token for a google drive account.
-     * @param rootId Globally unique identifier for the root directory.
+     * @param rootId Globally unique identifier for the root directory.(also used as a root folder name)
      * @param centeralEmail Email address to share stored files with.
      * @param initialize Ignored. Kept for backward compatibility.
      */
@@ -82,7 +85,8 @@ public class GoogleDriveStorage implements DataStore {
         });
 
         mRootFileId = initialize_aikuma_folder();
-
+        mTrashFolderId = initialize_trash_folder();
+        
         import_shared_files();
     }
     
@@ -140,9 +144,9 @@ public class GoogleDriveStorage implements DataStore {
                 " and '%s' in parents" + 
                 " and mimeType != '%s'",
                 escape_quote(identifier), mRootFileId, FOLDER_MIME);
-
+        //System.out.println(mRootFileId + " : " + query);
         JSONObject obj = gapi.list(query, null);
-        
+        //System.out.println(obj);
         if (obj == null) return false;
         
         String fileid = null;
@@ -226,8 +230,52 @@ public class GoogleDriveStorage implements DataStore {
         return props;
     }
 
+    private String initialize_trash_folder() throws DataStore.StorageException {
+    	String query = String.format(
+    			"trashed = false" +
+    	        " and 'root' in parents" +
+    	        " and 'me' in owners" +
+    	        " and title = '%s'" +
+                " and mimeType = '%s'",
+                TRASH_FOLDER_NAME,
+                FOLDER_MIME);
+    	
+    	Search e = gapi.search(query);
+        if (e.hasMoreElements()) {
+            String fid = null;
+            try {
+                fid = (String) ((JSONObject) e.nextElement()).get("id");
+                log.log(Level.FINE, "found aikumafied trash folder");
+            } catch (Search.Error err) {
+                log.log(Level.FINE, "failed to find aikumafied trash folder");
+                throw new DataStore.StorageException();
+            }
+            if (e.hasMoreElements()) {
+                log.log(Level.FINE, "found more aikumafied trash folders");
+                // more than one folder with the same name 'aikuma-trash'
+                throw new DataStore.StorageException();
+            }
+            return fid;
+        } else {
+            log.log(Level.FINE, "didn't find aikumafied trash folder, falling back");
+            return initialize_trash_folder2();
+        }
+    }
+    
+    private String initialize_trash_folder2() throws DataStore.StorageException {
+    	log.log(Level.FINE, "creating a new trash folder");
+        JSONObject meta = new JSONObject();
+        //meta.put("properties", getProp("/"));
+        meta.put("title", TRASH_FOLDER_NAME);
+        meta.put("mimeType", FOLDER_MIME);
+        JSONObject res = gapi.makeFile(meta);
+        if (res == null)
+            throw new DataStore.StorageException();
+        return (String) res.get("id");
+    }
+    
     private String initialize_aikuma_folder() throws DataStore.StorageException {
-        String query = String.format(
+    	String query = String.format(
                 "trashed = false" +
                 " and 'root' in parents" +
                 " and 'me' in owners" +
@@ -259,7 +307,7 @@ public class GoogleDriveStorage implements DataStore {
     }
 
     private String initialize_aikuma_folder2() throws DataStore.StorageException {
-        String query = String.format(
+    	String query = String.format(
                 "trashed = false " +
                 " and 'me' in owners" +
                 " and title = '%s'" +
@@ -321,10 +369,10 @@ public class GoogleDriveStorage implements DataStore {
     }    
 
     private String initialize_aikuma_folder3() throws DataStore.StorageException {
-        log.log(Level.FINE, "creating a new root");
+    	log.log(Level.FINE, "creating a new root");
         JSONObject meta = new JSONObject();
         meta.put("properties", getProp("/"));
-        meta.put("title", "aikuma");
+        meta.put("title", mRootId);//"aikuma");
         meta.put("mimeType", FOLDER_MIME);
         JSONObject res = gapi.makeFile(meta);
         if (res == null)
@@ -340,9 +388,9 @@ public class GoogleDriveStorage implements DataStore {
         String query = String.format(
                 "trashed = false" +
                 " and sharedWithMe" +
-                " and title contains 'aikuma/%s'" +
+                " and title contains '%s/'" + // 'aikuma/%s'" +
                 " and not ('%s' in parents)",
-                DSVER, mRootFileId);
+                DSVER, mTrashFolderId);// mRootFileId);
 
         JSONObject meta = new JSONObject();
         JSONArray parents = new JSONArray();
@@ -350,6 +398,13 @@ public class GoogleDriveStorage implements DataStore {
         parent.put("id", mRootFileId);
         parents.add(parent);
         meta.put("parents", parents);
+        
+        JSONObject meta2 = new JSONObject();
+        JSONArray trashParents = new JSONArray();
+        JSONObject trashParent = new JSONObject();
+        trashParent.put("id", mTrashFolderId);
+        trashParents.add(trashParent);
+        meta2.put("parents", trashParents);
 
         for (Search e = gapi.search(query); e.hasMoreElements();) {
             JSONObject obj;
@@ -360,8 +415,75 @@ public class GoogleDriveStorage implements DataStore {
                 break;
             }
             String fid = (String) obj.get("id");
-            if (gapi.updateMetadata(fid, meta) == null)
+            String ftitle = (String) obj.get("title");
+            //System.out.println("copy " + fid);
+            //if (gapi.updateMetadata(fid, meta) == null)
+            if (!check_duplicate(ftitle) && 
+            		(gapi.copyFile(fid, meta) == null || gapi.updateMetadata(fid, meta2) == null))
                 log.log(Level.FINE, "failed to move to aikuma folder: " + fid);
         }
+    }
+    
+    /**
+     * Check if the file with the same identifier exists in private-storage
+     * @param identifier	Identifier of a file item
+     * @return True if a duplicate exists, else False
+     */
+    private boolean check_duplicate(String identifier) {
+    	String query = String.format(
+                "trashed = false" +
+                " and title = '%s'" +
+                " and '%s' in parents" + 
+                " and mimeType != '%s'",
+                escape_quote(identifier), mRootFileId, FOLDER_MIME);
+        
+        JSONObject obj = gapi.list(query, null);
+        
+        if (obj == null) return false;
+        
+        JSONArray arr = (JSONArray) obj.get("items");
+        if (arr != null && arr.size() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean copy(String identifier) { // This will be used by Aikuma mobile app
+    	// Check if file exists in private-storage
+    	if(check_duplicate(identifier))
+    		return true;
+    	
+        String query = String.format(
+                "trashed = false" +
+                " and title = '%s'" +
+                " and '%s' in owners" + 
+                " and mimeType != '%s'",
+                escape_quote(identifier), CENTRAL_ACCOUNT, FOLDER_MIME);
+        
+        JSONObject obj = gapi.list(query, null);
+        if (obj == null) return false;
+        
+        String fileid = null;
+        JSONArray arr = (JSONArray) obj.get("items");
+        if (arr != null && arr.size() > 0) {
+            JSONObject o = (JSONObject) arr.get(0);
+            fileid = (String) o.get("id");
+        } else {
+            log.log(Level.FINE, "no file by identifier: " + identifier);
+            return false;
+        }
+        
+        // Copy
+        JSONObject meta = new JSONObject();
+        JSONArray parents = new JSONArray();
+        JSONObject parent = new JSONObject();
+        parent.put("id", mRootFileId);
+        parents.add(parent);
+        meta.put("parents", parents);
+        
+        JSONObject r = gapi.copyFile(fileid, meta);
+        return r != null;
     }
 }
