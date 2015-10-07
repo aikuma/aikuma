@@ -25,7 +25,7 @@ import org.lp20.aikuma.server.*;
  */
 @Path("index")
 public class IndexResource {
-    private final GoogleDriveIndex idx;
+    private GoogleDriveIndex idx = null;
     private static final Logger log = Logger.getLogger(IndexResource.class.getName());
 
     private String gdRootName;
@@ -44,17 +44,18 @@ public class IndexResource {
                     (String) a.getProperty("aikuma_root_id"),
                     "");
             updateNotifier = new UpdateNotifier(tokenManager, gd, a.gcmServer);
+	    
+	idx = new GoogleDriveIndex(gdRootName, new org.lp20.aikuma.storage.google.TokenManager() {
+	    @Override
+	    public String accessToken() {
+		return tokenManager.getAccessToken();
+	    }
+	});
         } catch (DataStore.StorageException e) {
             log.warning("failed to initialize update notifier due to google drive storage error: " + e.getMessage());
             updateNotifier = null;
         }
 
-        idx = new GoogleDriveIndex(gdRootName, new org.lp20.aikuma.storage.google.TokenManager() {
-            @Override
-            public String accessToken() {
-                return tokenManager.getAccessToken();
-            }
-        });
     }
 
     @POST
@@ -125,6 +126,7 @@ public class IndexResource {
         if (msg.length() != 0) {
             return Response.status(new ErrorStatus(400, msg.replace('\n', ';'))).build();
         }
+	log.info(data.toString());
         try {
             if (idx.index(identifier, data)) {
                 return Response.accepted().build();
