@@ -1,3 +1,7 @@
+/*
+	Copyright (C) 2013, The Aikuma Project
+	AUTHORS: Sangyeop Lee
+*/
 package org.lp20.aikuma.model;
 
 import java.io.File;
@@ -18,6 +22,12 @@ import org.lp20.aikuma.util.AikumaSettings;
 
 import au.com.bytecode.opencsv.CSVReader;
 
+/**
+ * The csv file of a list of source-recordings
+ * (used for bulk-import of source-recordings)
+ *
+ * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+ */
 public class RecordingCSVFile {
 	
 	private static final String TAG = RecordingCSVFile.class.getSimpleName();
@@ -30,6 +40,13 @@ public class RecordingCSVFile {
 	private List<String> filenameList;
 	private static Map<String, Speaker> speakerMap = new HashMap<String, Speaker>();
 	
+	/**
+	 * Constructor of the RecordingCSVFile
+	 * 
+	 * @param filepath		The folder-path where the csv-file and source-recordings are stored
+	 * @param filename		The csv-file name
+	 * @throws IOException	IOException
+	 */
 	public RecordingCSVFile(File filepath, String filename) throws IOException {
 		if(AikumaSettings.getCurrentUserId() == null)
 			throw new IOException("Can't be created: UserID is necessary");
@@ -73,7 +90,7 @@ public class RecordingCSVFile {
 				throw new IOException("Open-error: " + lineBuffer[fieldOrder.get(FILENAME_KEY)]  + " doesn't exist");
 			}
 			try {
-				metadataList.add(new MetadataChunk(lineBuffer, fieldOrder, metadataProcList));		
+				metadataList.add(new MetadataChunk(lineBuffer, fieldOrder, METADATA_PROC_LIST));		
 			} catch (IOException e) {
 				csvReader.close();
 				throw new IOException(e.getMessage());
@@ -85,31 +102,42 @@ public class RecordingCSVFile {
 	private boolean checkHeader(String[] header) {
 		for (int i = 0; i < fieldNum; i++) {
 			String fieldname = header[i].toLowerCase();
-			if(keySet.contains(fieldname)) {
+			if(KEY_SET.contains(fieldname)) {
 				fieldOrder.put(fieldname, i);
 			}
 		}
-		if(!fieldOrder.keySet().containsAll(requiredKeySet))
+		if(!fieldOrder.keySet().containsAll(REQUIRED_KEY_SET))
 			return false;
 		return true;
 	}
 	
+	/** @return the number of source-recordings */
 	public int getNumOfSources() {
 		return metadataList.size();
 	}
 	
+	/**@param	i	the order of the source-recording
+	 * @return the metadata of ith source-recording in the list */
 	public MetadataChunk getMetadata(int i) {
 		return metadataList.get(i);
 	}
 	
+	/** @return the list of metadata of all source-recordings in the list */
 	public List<MetadataChunk> getMetadataChunks() {
 		return metadataList;
 	}
 	
+	/** Interface to process each metadata field */
 	private interface metadataProcessor<T> {
+		/** Interface function to process each field of metadata in the csv file */
 		public T processField(String metadataStr) throws IOException;
 	}
 	
+	/**
+	 * The csv file's metadata structure for each source-recording
+	 *
+	 * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
+	 */
 	public class MetadataChunk {
 		private String mFileName;
 		private String mImageName;
@@ -119,6 +147,16 @@ public class RecordingCSVFile {
 		private List<Language> mLanguages;
 		private List<Speaker> mSpeakers;
 		
+		/**
+		 * Constructor of the metadata structure of the csv file
+		 * @param filename	The source-recording's file name
+		 * @param imagename	Optional source-recording's image name
+		 * @param title		Title of the source-recording
+		 * @param comments	Optional Comments of the source-recording
+		 * @param date		Creation date
+		 * @param languages	Comma separated list of 3-letter iso639 language codes
+		 * @param speakers	Comma separated list of speakers(Should exist prior to import)
+		 */
 		public MetadataChunk(String filename, String imagename, String title, String comments, 
 				Date date, List<Language> languages, List<Speaker> speakers) {
 			mFileName = filename;
@@ -130,6 +168,13 @@ public class RecordingCSVFile {
 			mSpeakers = speakers;
 		}
 		
+		/**
+		 * Constructor of the metadata structure of the csv file
+		 * @param metadataFields	The fields of metadata
+		 * @param fieldOrder		The order of each field
+		 * @param fieldProcessor	Interface-function to process each field
+		 * @throws IOException		IOException
+		 */
 		public MetadataChunk(String[] metadataFields, 
 				Map<String, Integer> fieldOrder, Map<String, metadataProcessor> fieldProcessor) throws IOException {
 			mFileName = (String) fieldProcessor.get(FILENAME_KEY).processField(
@@ -179,27 +224,27 @@ public class RecordingCSVFile {
 	private static final String DESCRIPTION_KEY = "description";
 	private static final String COMMENTS_KEY = "comments";
 	
-	private static final Set<String> requiredKeySet = new HashSet<String>();
-	private static final Set<String> keySet = new HashSet<String>();
+	private static final Set<String> REQUIRED_KEY_SET = new HashSet<String>();
+	private static final Set<String> KEY_SET = new HashSet<String>();
 	static {
-		keySet.add(FILENAME_KEY);
-		keySet.add(IMAGE_KEY);
-		keySet.add(TITLE_KEY);
-		keySet.add(DATE_KEY);
-		keySet.add(SPEAKERS_KEY);
-		keySet.add(LANGUAGES_KEY);
-		keySet.add(DESCRIPTION_KEY);
-		keySet.add(COMMENTS_KEY);
+		KEY_SET.add(FILENAME_KEY);
+		KEY_SET.add(IMAGE_KEY);
+		KEY_SET.add(TITLE_KEY);
+		KEY_SET.add(DATE_KEY);
+		KEY_SET.add(SPEAKERS_KEY);
+		KEY_SET.add(LANGUAGES_KEY);
+		KEY_SET.add(DESCRIPTION_KEY);
+		KEY_SET.add(COMMENTS_KEY);
 		
-		requiredKeySet.add(FILENAME_KEY);
-		requiredKeySet.add(TITLE_KEY);
-		requiredKeySet.add(DATE_KEY);
-		requiredKeySet.add(SPEAKERS_KEY);
-		requiredKeySet.add(LANGUAGES_KEY);
-		requiredKeySet.add(COMMENTS_KEY);
+		REQUIRED_KEY_SET.add(FILENAME_KEY);
+		REQUIRED_KEY_SET.add(TITLE_KEY);
+		REQUIRED_KEY_SET.add(DATE_KEY);
+		REQUIRED_KEY_SET.add(SPEAKERS_KEY);
+		REQUIRED_KEY_SET.add(LANGUAGES_KEY);
+		REQUIRED_KEY_SET.add(COMMENTS_KEY);
 	}
 	
-	private static final HashMap<String, metadataProcessor> metadataProcList = 
+	private static final HashMap<String, metadataProcessor> METADATA_PROC_LIST = 
 			new HashMap<String, metadataProcessor>();
 	static {
 		metadataProcessor<String> defaultProcessor = new metadataProcessor<String>() {
@@ -208,10 +253,10 @@ public class RecordingCSVFile {
 				return metadataStr;
 			}
 		};
-		metadataProcList.put(FILENAME_KEY, defaultProcessor);
-		metadataProcList.put(IMAGE_KEY, defaultProcessor);
-		metadataProcList.put(TITLE_KEY, defaultProcessor);
-		metadataProcList.put(DATE_KEY, new metadataProcessor<Date>() {
+		METADATA_PROC_LIST.put(FILENAME_KEY, defaultProcessor);
+		METADATA_PROC_LIST.put(IMAGE_KEY, defaultProcessor);
+		METADATA_PROC_LIST.put(TITLE_KEY, defaultProcessor);
+		METADATA_PROC_LIST.put(DATE_KEY, new metadataProcessor<Date>() {
 			private SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd");
 			@Override
 			public Date processField(String dateStr) throws IOException {
@@ -222,7 +267,7 @@ public class RecordingCSVFile {
 				}
 			}
 		});
-		metadataProcList.put(SPEAKERS_KEY, new metadataProcessor<List<Speaker>>() {
+		METADATA_PROC_LIST.put(SPEAKERS_KEY, new metadataProcessor<List<Speaker>>() {
 			@Override
 			public List<Speaker> processField(String metadataStr) throws IOException {
 				List<Speaker> speakerList = new ArrayList<Speaker>();
@@ -239,7 +284,7 @@ public class RecordingCSVFile {
 				return speakerList;
 			}
 		});
-		metadataProcList.put(LANGUAGES_KEY, new metadataProcessor<List<Language>>() {
+		METADATA_PROC_LIST.put(LANGUAGES_KEY, new metadataProcessor<List<Language>>() {
 			@Override
 			public List<Language> processField(String metadataStr) throws IOException {
 				List<Language> langList = new ArrayList<Language>();
@@ -259,7 +304,7 @@ public class RecordingCSVFile {
 				return langList;
 			}
 		});
-		metadataProcList.put(DESCRIPTION_KEY, defaultProcessor);
-		metadataProcList.put(COMMENTS_KEY, defaultProcessor);
+		METADATA_PROC_LIST.put(DESCRIPTION_KEY, defaultProcessor);
+		METADATA_PROC_LIST.put(COMMENTS_KEY, defaultProcessor);
 	}
 }
