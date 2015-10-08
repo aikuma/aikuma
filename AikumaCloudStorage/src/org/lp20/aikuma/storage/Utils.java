@@ -5,7 +5,6 @@ import java.net.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import org.lp20.aikuma.net.Http;
 /**
  * A collection of utility methods.
  * 
