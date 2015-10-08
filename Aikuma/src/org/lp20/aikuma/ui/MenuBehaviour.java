@@ -79,6 +79,11 @@ public class MenuBehaviour {
 							"You need to be online using your account");
 					return true;
 				}
+				if(!AikumaSettings.isSearchPossible) {
+					Aikuma.showAlertDialog(activity, 
+							"Try restarting the app. if the problem persists, contact Aikuma.org");
+					return true;
+				}
 				intent = new Intent(activity, CloudSearchActivity.class);
 				activity.startActivity(intent);
 				return true;

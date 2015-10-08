@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.ArrayList;
@@ -169,7 +170,7 @@ public class Recording extends FileModel {
 	 * @return	True if the recording is an original.
 	 */
 	public boolean isOriginal() {
-		return respeakingId != null && respeakingId.length() == 0;
+		return respeakingId == null || respeakingId.length() == 0;
 	}
 
 	// Moves a WAV file with a temporary UUID from a no-sync directory to
@@ -311,10 +312,7 @@ public class Recording extends FileModel {
 	 * @return	a relative-path of recording to 'aikuma/'
 	 */
 	public String getCloudIdentifier() {
-		String ownerIdDirName = IdUtils.getOwnerDirName(ownerId);
-		String ownerDirStr = (versionName + "/" + 
-				ownerIdDirName.substring(0, 1) + "/" + 
-				ownerIdDirName.substring(0, 2) + "/" + ownerId + "/");
+		String ownerDirStr = (versionName + "/" + ownerId + "/");
 		return (ownerDirStr + PATH + getGroupId() + "/" + id + "." + extension);
 	}
 
@@ -687,6 +685,7 @@ public class Recording extends FileModel {
 		if(this.isMovie()) {
 			importMov(recordingUUID, getId());
 		} else {
+			Log.i("COPY", recordingUUID.toString());
 			importWav(recordingUUID, getId());	
 		}
 		
@@ -837,7 +836,12 @@ public class Recording extends FileModel {
 		}
 		Date date;
 		try {
-			date = new StandardDateFormat().parse(dateString);
+			if(dateString.matches("^\\d{8}$")) {
+				date = new SimpleDateFormat("yyyyMMdd").parse(dateString);
+			} else {
+				date = new StandardDateFormat().parse(dateString);
+			}
+			
 		} catch (ParseException e) {
 			throw new IOException(e);
 		}
@@ -851,9 +855,9 @@ public class Recording extends FileModel {
 			throw new IOException("Null androidID in the JSON file.");
 		}
 		String respeakingId = (String) jsonObj.get(RESPEAKING_ID_KEY);
-		if (respeakingId == null) {
-			throw new IOException("Null respeakingId in the JSON file.");
-		}
+//		if (respeakingId == null) { // can be null when the metadata is read from cloud-fullText
+//			throw new IOException("Null respeakingId in the JSON file.");
+//		}
 
 		long sampleRate;
 		if (jsonObj.get(SAMPLERATE_KEY) == null) {
@@ -864,8 +868,14 @@ public class Recording extends FileModel {
 
 		int durationMsec;
 		if (jsonObj.get(DURATION_MSEC_KEY) == null) {
-			durationMsec = -1;
-			Log.i(TAG, "reading: null");
+			if(jsonObj.get(DURATION_CLOUD_KEY) == null) {
+				durationMsec = -1;
+				Log.i(TAG, "reading: null");
+			} else {
+				String durationRangeStr = (String) jsonObj.get(DURATION_CLOUD_KEY);
+				durationMsec = DurRange.valueOf(durationRangeStr).getValue();
+			}
+			
 		} else {
 			durationMsec = ((Long) jsonObj.get(DURATION_MSEC_KEY)).intValue();
 			Log.i(TAG, "reading: " + durationMsec);
@@ -978,16 +988,18 @@ public class Recording extends FileModel {
 
 		for(File f1 : versionDirs) {
 			String versionName = f1.getName();
-			File[] firstHashDirs = f1.listFiles();
-			for(File f2 : firstHashDirs) {
-				File[] secondHashDirs = f2.listFiles();
-				for(File f3 : secondHashDirs) {
-					File[] ownerIdDirs = f3.listFiles();
+			//File[] firstHashDirs = f1.listFiles();
+			//for(File f2 : firstHashDirs) {
+				//File[] secondHashDirs = f2.listFiles();
+				//for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f1.listFiles();
 					for(File f : ownerIdDirs) {
+						if(f.getName().equals(AdminFileModel.ADMIN))
+							continue;
 						addTagsInDir(versionName, tags, f);
 					}
-				}
-			}
+				//}
+			//}
 		}
 
 		return tags;		
@@ -1047,21 +1059,24 @@ public class Recording extends FileModel {
 
 		for(File f1 : versionDirs) {
 			String versionName = f1.getName();
-			File[] firstHashDirs = f1.listFiles();
-			for(File f2 : firstHashDirs) {
-				File[] secondHashDirs = f2.listFiles();
-				for(File f3 : secondHashDirs) {
-					File[] ownerIdDirs = f3.listFiles();
+			//File[] firstHashDirs = f1.listFiles();
+			//for(File f2 : firstHashDirs) {
+				//File[] secondHashDirs = f2.listFiles();
+				//for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f1.listFiles();
 					for(File f : ownerIdDirs) {
+						String dirName = f.getName();
+						if(dirName.equals(AdminFileModel.ADMIN))
+							continue;
 						
-						if(userId == null || f.getName().equals(userId)) {
+						if(userId == null || dirName.equals(userId)) {
 							Log.i(TAG, "readAll: " + f.getPath());
 							addRecordingsInDir(versionName, recordings, f);
 						}
 						
 					}
-				}
-			}
+				//}
+			//}
 		}
 
 		return recordings;
@@ -1125,12 +1140,15 @@ public class Recording extends FileModel {
 		});
 
 		for(File f1 : versionDirs) {
-			File[] firstHashDirs = f1.listFiles();
-			for(File f2 : firstHashDirs) {
-				File[] secondHashDirs = f2.listFiles();
-				for(File f3 : secondHashDirs) {
-					File[] ownerIdDirs = f3.listFiles();
+			//File[] firstHashDirs = f1.listFiles();
+			//for(File f2 : firstHashDirs) {
+				//File[] secondHashDirs = f2.listFiles();
+				//for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f1.listFiles();
 					for(File f4 : ownerIdDirs) {						
+						if(f4.getName().equals(AdminFileModel.ADMIN))
+							continue;
+						
 						Log.i(TAG, "indexAll: " + f4.getPath());
 						List<File> itemDirsList = new ArrayList<File>(
 								Arrays.asList(getRecordingsPath(f4).listFiles()));
@@ -1173,8 +1191,8 @@ public class Recording extends FileModel {
 							}
 						}
 					}
-				}
-			}
+				//}
+			//}
 		}
 		
 		for(String srcId : recordingIds) {
@@ -1438,6 +1456,16 @@ public class Recording extends FileModel {
 		String[] splitId = id.split("-");
 		assertTrue(splitId.length >= 3);
 		return splitId[0];
+	}
+	
+	/**
+	 * Returns the recording's relative path, given a cloud-Identifier of Recording
+	 * 
+	 * @param cloudIdentifier	Cloud-Identifier of Recording
+	 * @return					Relative-path
+	 */
+	public static String getRelPath(String cloudIdentifier) {
+		return cloudIdentifier.substring(0, cloudIdentifier.lastIndexOf('/')-Recording.ITEM_ID_LEN);
 	}
 
 
@@ -1875,7 +1903,7 @@ public class Recording extends FileModel {
 	/** Relative path where tag files are stored */
 	public static final String TAG_PATH = "social/";
 	/** the length of item_id */
-	public static final int ITEM_ID_LEN = 12;
+	public static final int ITEM_ID_LEN = 16;
 	
 	/**
 	 * Keys of the recording metadata fields
@@ -1910,6 +1938,42 @@ public class Recording extends FileModel {
 	/** */
 	public static final String NUM_CHANNELS_KEY = "num_channels";
 	
+	/** 
+	 * Keys used/tweaked in cloud fullText metadata fields
+	 */
+	public static final String ITEM_ID_PREFIX_KEY = "item_pre";
+	/** */
+	public static final String DURATION_CLOUD_KEY = "dur";
+	/** 4 range of durations (used for fullText-indesing/search) */
+	public enum DurRange {
+		/** S: < 3min, M: 3-10min, L:10-30min, XL: > 30min */
+		S(-2), M(-3), L(-4), XL(-5);
+		private final int value;
+		private DurRange(int val) {this.value = val; }
+		/** @return the integer represenation value   */
+		public int getValue() { return this.value; }
+		/** @return min integer representation value(S:-2) */
+		public static int getMinValue() { return DurRange.S.value; }
+		/** @return max integer representation value(XL:-5) */
+		public static int getMaxValue() { return DurRange.XL.value; }
+		/** Factory function creating DurRange from miliSeconds 
+		 *  @param	durMsec	MiliSeconds
+		 *  @return	DurRange instance
+		 */
+		public static DurRange fromDurationMsec(int durMsec) {
+			if(durMsec > 1800000) {
+				return DurRange.XL;
+			} else if(durMsec > 600000) {
+				return DurRange.L;
+			} else if(durMsec > 180000) {
+				return DurRange.M;
+			} else if(durMsec >= 0) {
+				return DurRange.S;
+			} else {
+				return null;
+			}
+		}
+	}
 	
 	private static Set<String> fieldKeySet;
 	static {

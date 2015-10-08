@@ -165,10 +165,16 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		recordingTagView.setText(sb);
 		
 		// Set the duration
-		Integer duration = recording.getDurationMsec() / 1000;
-		if (recording.getDurationMsec() == -1) {
+		int durationMsec = recording.getDurationMsec();
+		Integer duration = durationMsec / 1000;
+		if (durationMsec == -1) {
 			recordingDateDurationView.setText(
 					simpleDateFormat.format(recording.getDate()));
+		} else if (durationMsec <= Recording.DurRange.getMinValue() && 
+					durationMsec >= Recording.DurRange.getMaxValue()) {
+			recordingDateDurationView.setText(
+					simpleDateFormat.format(recording.getDate()) + " (" + 
+					Recording.DurRange.values()[-1*durationMsec + Recording.DurRange.getMinValue()] + ")");
 		} else {
 			recordingDateDurationView.setText(
 				simpleDateFormat.format(recording.getDate()) + " (" +

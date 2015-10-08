@@ -9,6 +9,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,8 +30,12 @@ import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.FileModel.FileType;
 import org.lp20.aikuma.storage.Data;
 import org.lp20.aikuma.storage.DataStore;
+import org.lp20.aikuma.storage.DataStore.StorageException;
 import org.lp20.aikuma.storage.FusionIndex2;
-import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.GoogleDriveIndex;
+import org.lp20.aikuma.storage.google.GoogleDriveIndex2;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.TokenManager;
 import org.lp20.aikuma.storage.Index;
 import org.lp20.aikuma.storage.Utils;
 import org.lp20.aikuma.util.AikumaSettings;
@@ -89,8 +95,6 @@ public class GoogleCloudService extends IntentService{
 	private final String downloadOtherKey = AikumaSettings.DOWNLOAD_OTHERS_KEY;
 	private final String uploadOtherKey = AikumaSettings.UPLOAD_OTHERS_KEY;
 	private final String archiveOtherKey = AikumaSettings.ARCHIVED_OTHERS_KEY;
-	
-	private final String cloudIdFormat = "^v\\d{2}\\/\\S\\/\\S{2}\\/.+\\/.+\\/.+\\/.+$";
 	
 	// ApprovedSet: CloudIds of Files which will be uploaded 
 	// DownloadSet: CloudIds of Files which will be downloaded
@@ -190,8 +194,12 @@ public class GoogleCloudService extends IntentService{
 				
 				List<String> itemCloudIdsToDownload = intent.getStringArrayListExtra("downloadItems");
 				if(itemCloudIdsToDownload != null) {
+					// Copy Files to private-storage
+					copyFilesToPrivateStorage(itemCloudIdsToDownload);
+					
 					//downloadOtherSet.addAll(itemCloudIdsToDownload);
 					prepareUploadSet();
+					autoDownloadFiles();	// Logging an update of copied files in private-storage
 					
 					//Log the files in archivedSet
 					for(String itemCloudId : itemCloudIdsToDownload) {
@@ -341,8 +349,19 @@ public class GoogleCloudService extends IntentService{
 	
 	private void prepareArchiveSet() {
 		Index fi;
-		fi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), 
-				googleIdToken, googleAuthToken);
+		//fi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), 
+		//		googleIdToken, googleAuthToken);
+		try {
+			fi = new GoogleDriveIndex2(AikumaSettings.ROOT_FOLDER_ID, new TokenManager() {
+			    @Override
+			    public String accessToken() {
+			        return googleAuthToken;
+			    }
+			}, AikumaSettings.getIndexServerUrl(), googleIdToken);
+		} catch (StorageException e) {
+			Log.e(TAG, "Root folder doesn't exist");
+			return;
+		}
 		Map<String, String> constraints = new HashMap<String, String>();
 		constraints.put(Recording.USER_ID_KEY, googleEmailAccount);
 		
@@ -365,19 +384,36 @@ public class GoogleCloudService extends IntentService{
         prefsEditor.commit();
 	}
 	
+	private void copyFilesToPrivateStorage(List<String> cloudIdsToCopy) {
+		DataStore gd;
+		try {
+			gd = new GoogleDriveStorage(googleAuthToken, 
+					AikumaSettings.ROOT_FOLDER_ID, AikumaSettings.CENTRAL_USER_ID, initializeCache);
+			initializeCache = false;
+		} catch (DataStore.StorageException e) {
+			Log.e(TAG, "Failed to initialize GoogleDriveStorage");
+			return;
+		}
+		
+		for(String cloudId : cloudIdsToCopy) {
+			gd.copy(cloudId);
+		}
+
+	}
+	
 	// Classify all Aikuma files except for metadata-file
 	private void classifyFileCloudId(String identifier, 
 			Set<String> recordingSet, Set<String> speakerSet, Set<String> otherSet) {
 		Log.i(TAG, "classify: " + identifier);
-		if(identifier.matches(cloudIdFormat)) {
+		if(FileModel.checkCloudFormat(identifier)) {
 			String currentVersionName = AikumaSettings.getLatestVersion();
-			String relPath = identifier.substring(0, identifier.lastIndexOf('/')-Recording.ITEM_ID_LEN);
-			if((identifier.endsWith(FileModel.getSuffixExt(currentVersionName, FileType.METADATA)) && !relPath.endsWith(Speaker.PATH)) || 
+			String relPath = Recording.getRelPath(identifier);
+			if((FileModel.checkType(identifier, currentVersionName, FileType.METADATA) && !relPath.endsWith(Speaker.PATH)) || 
 					!identifier.startsWith(currentVersionName))
 				return;
 			
 			if(relPath.endsWith(Recording.PATH)) {
-				if(identifier.endsWith(FileModel.getSuffixExt(currentVersionName, FileType.PREVIEW))) {
+				if(FileModel.checkType(identifier, currentVersionName, FileType.PREVIEW)) {
 					otherSet.add(identifier);
 				} else if(identifier.endsWith(FileModel.AUDIO_EXT) || 
 						identifier.endsWith(FileModel.VIDEO_EXT)) {
@@ -468,7 +504,7 @@ public class GoogleCloudService extends IntentService{
 		Set<String> itemIdentifiers = new HashSet<String>(downloadSet);
 		
 		for(String itemIdentifier : itemIdentifiers) {
-			Log.i(TAG, "download: " + itemIdentifier);
+			Log.i(TAG, "download: " + itemIdentifier + " | " + state);
 			broadcastStatus("start");
 			FileModel item = FileModel.fromCloudId(itemIdentifier);
 			
@@ -544,7 +580,19 @@ public class GoogleCloudService extends IntentService{
 			return;
 		}
 		
-		Index fi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), googleIdToken, googleAuthToken);
+		Index fi;
+		//fi = new FusionIndex2(AikumaSettings.getIndexServerUrl(), googleIdToken, googleAuthToken);
+		try {
+			fi = new GoogleDriveIndex2(AikumaSettings.ROOT_FOLDER_ID, new TokenManager() {
+			    @Override
+			    public String accessToken() {
+			        return googleAuthToken;
+			    }
+			}, AikumaSettings.getIndexServerUrl(), googleIdToken);
+		} catch (StorageException e) {
+			Log.e(TAG, "Root folder doesn't exist");
+			return;
+		}		
 		
 		// Others
 		retryBackup(gd, fi, approvalOtherKey, approvedOtherSet, 
@@ -972,6 +1020,18 @@ public class GoogleCloudService extends IntentService{
 			String joiner = "";
 			if(item.getFileType().equals(FileModel.SPEAKER_TYPE)) {
 				groupId = (String) jsonfile.get(Speaker.SPEAKER_ID_KEY);
+				
+				metadata.put(Speaker.SPEAKER_ID_PREFIX_KEY, groupId.substring(0, 4));
+				metadata.put(Speaker.NAME_KEY, (String) jsonfile.get(Speaker.NAME_KEY));
+				metadata.put(Speaker.VERSION_KEY, (String) jsonfile.get(Speaker.VERSION_KEY));
+				String simpleDate = (String) jsonfile.get(Speaker.DATE_KEY);
+				try {
+					simpleDate = new SimpleDateFormat("yyyyMMdd")
+										.format(new StandardDateFormat().parse(simpleDate));
+					metadata.put(Speaker.DATE_KEY, simpleDate);
+				} catch (ParseException e) {
+					Log.e(TAG, "date parsing error");
+				}
 			} else {
 				groupId = (String) jsonfile.get(Recording.ITEM_ID_KEY);
 				
@@ -980,6 +1040,24 @@ public class GoogleCloudService extends IntentService{
 //					speakers += joiner + (String) obj;
 //					joiner = ",";
 //				}
+				metadata.put(Recording.ITEM_ID_PREFIX_KEY, groupId.substring(0, 4));
+				metadata.put(Recording.NAME_KEY, (String) jsonfile.get(Recording.NAME_KEY)); //For derivatives, this can be an empty string
+				metadata.put(Recording.VERSION_KEY, (String) jsonfile.get(Recording.VERSION_KEY));
+				String simpleDate = (String) jsonfile.get(Recording.DATE_KEY);
+				try {
+					simpleDate = new SimpleDateFormat("yyyyMMdd")
+										.format(new StandardDateFormat().parse(simpleDate));
+					metadata.put(Recording.DATE_KEY, simpleDate);
+				} catch (ParseException e) {
+					Log.e(TAG, "date parsing error");
+				}
+				String durRangeStr = "" + 
+						Recording.DurRange.fromDurationMsec(((Long)jsonfile.get(Recording.DURATION_MSEC_KEY)).intValue());
+				metadata.put(Recording.DURATION_CLOUD_KEY, durRangeStr);
+				metadata.put(Recording.ANDROID_ID_KEY, (String) jsonfile.get(Recording.ANDROID_ID_KEY));
+				metadata.put(Recording.FORMAT_KEY, (String) jsonfile.get(Recording.FORMAT_KEY));
+				
+				metadata.putAll(item.getAllTagMapStrs());
 			}
 			
 //			String languages = "";
@@ -996,16 +1074,16 @@ public class GoogleCloudService extends IntentService{
 //			}
 			
 			metadata.put(FileModel.USER_ID_KEY, emailAddr);
-			metadata.put(FileModel.DATA_STORE_URI_KEY, uri);
+			//metadata.put(FileModel.DATA_STORE_URI_KEY, uri);
 			metadata.put(Recording.ITEM_ID_KEY, groupId); // This key is used for all data types
 			metadata.put(Recording.FILE_TYPE_KEY, item.getFileType()); // This key is used for all data types
 //			metadata.put(Recording.SPEAKERS_KEY, speakers); // Empty for other data types
 //			metadata.put(Recording.LANGUAGES_KEY, languages); // This key is also used for SPEAKER_LANGUAGES
-			metadata.put("metadata", jsonstr);
+			//metadata.put("metadata", jsonstr); // Used for FusionTable before fullText-indexing
 			
 		} else {	// Other-type(transcript, mapping)
 			metadata.put(FileModel.USER_ID_KEY, emailAddr);
-			metadata.put(FileModel.DATA_STORE_URI_KEY, uri);
+			//metadata.put(FileModel.DATA_STORE_URI_KEY, uri);
 			
 			String groupId = splitName[0];
 			metadata.put(Recording.ITEM_ID_KEY, groupId);
@@ -1014,24 +1092,29 @@ public class GoogleCloudService extends IntentService{
 //			metadata.put(Recording.LANGUAGES_KEY, "");
 		}
 		
-		metadata.put("date_approved", requestDate);
-		metadata.put("date_backedup", 
-				new StandardDateFormat().format(uploadDate).toString());
 		
 		// tags are used to group derivative-wave-file and mapping-file
-		String suffix = splitName[splitName.length-1];
-		if(suffix.length() == 3 && NumberUtils.isNumber(suffix)) {
-			metadata.put("tags", suffix);
-		}	
+//		String suffix = splitName[splitName.length-1];
+//		if(suffix.length() == 3 && NumberUtils.isNumber(suffix)) {
+//			metadata.put("tags", suffix);
+//		}	
 		
 		boolean isSharedFile = gd.share(identifier);
 		boolean isSharedMetaFile = 
 				(metadataFile == null) || gd.share(item.getCloudIdentifier(1));
 
 		boolean isIndexed = fi.index(identifier, metadata);
-		Log.i(TAG, "(" + isSharedFile +", " + isSharedMetaFile +", " + isIndexed + "): " + metadata.toString());
+		boolean isIndexedMetaFile = (metadataFile == null);
+		if(metadataFile != null) {
+			metadata.put(Recording.FILE_TYPE_KEY, FileModel.METADATA_TYPE); // Is this necessary for search ???
+			isIndexedMetaFile |= fi.index(item.getCloudIdentifier(1), metadata);
+		}
+				
+		Log.i(TAG, "(" + isSharedFile +", " + isSharedMetaFile +", " + 
+						 isIndexed + ", " + isIndexedMetaFile + "): " + metadata.toString());
 		
-		if (isSharedFile && isSharedMetaFile && isIndexed) {
+		// TODO: These 4 steps need to be saved as a state after each step
+		if (isSharedFile && isSharedMetaFile && isIndexed && isIndexedMetaFile) {
 			Log.i(TAG, "Metadata-upload success");
 			return uploadDate;
 		}
@@ -1053,6 +1136,7 @@ public class GoogleCloudService extends IntentService{
 			googleAuthToken = GoogleAuthUtil.getToken(getApplicationContext(), googleEmailAccount, AikumaSettings.getScope());
 			
 			googleIdToken = GoogleAuthUtil.getToken(getApplicationContext(), googleEmailAccount, AikumaSettings.getIdTokenScope());
+			
 		} catch (Exception e) {
 			Log.e(TAG, "Unrecoverable error " + e.getMessage());
 		}

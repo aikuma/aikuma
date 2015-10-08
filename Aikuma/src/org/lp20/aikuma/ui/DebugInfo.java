@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import org.lp20.aikuma.storage.DataStore;
 import org.lp20.aikuma.storage.FusionIndex2;
-import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
 import org.lp20.aikuma.storage.Index;
 import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma2.R;
@@ -257,7 +257,7 @@ public class DebugInfo extends Activity {
             protected Boolean doInBackground(Void... params) {
                 String email = AikumaSettings.getCurrentUserId();
                 try {
-                    URL base = new URL(AikumaSettings.getIndexServerUrl());
+                    URL base = new URL(AikumaSettings.getFileProxyServerUrl());
                     String path = String.format("/file/%s/share/%s", identifier, email);
                     URL url = new URL(base, path);
                     Log.i(TAG, "share url: " + url.toString());
