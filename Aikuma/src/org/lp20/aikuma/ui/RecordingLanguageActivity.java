@@ -58,6 +58,7 @@ public class RecordingLanguageActivity extends AikumaListActivity {
 			defaultLanguages = FileIO.readDefaultLanguages();
 			selectedLanguages = new ArrayList<Language>();
 			Set<String> langBuffer = new HashSet<String>();
+			List<Language> sourceLangBuffer = getIntent().getParcelableArrayListExtra("languages");
 			if(mode.equals("tag")) {
 				String recordingId = getIntent().getStringExtra("recordingId");
 				if(recordingId.endsWith(FileModel.SOURCE_TYPE)) {
@@ -70,6 +71,8 @@ public class RecordingLanguageActivity extends AikumaListActivity {
 			} else if(mode.equals("source")) {
 				langBuffer = preferences.getStringSet(
 						AikumaSettings.SOURCE_LANG_BUFFER_KEY, new HashSet<String>());
+			} else if(sourceLangBuffer != null) {
+				selectedLanguages.addAll(sourceLangBuffer);
 			} else {
 				langBuffer = preferences.getStringSet(
 						AikumaSettings.INTERPRET_LANG_BUFFER_KEY, new HashSet<String>());

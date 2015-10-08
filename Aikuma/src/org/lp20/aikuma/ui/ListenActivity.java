@@ -365,13 +365,10 @@ public class ListenActivity extends AikumaActivity {
 
 		Intent intent;
 		if(respeakingType.equals("respeak")) {
-			if (respeakingMode.equals("phone")) {
-				intent = new Intent(this, PhoneRespeakActivity.class);
-			} else {				// thumb
-				// Lets just default to thumb respeaking
-				intent = new Intent(this, ThumbRespeakActivity.class);
-			}
+			intent = new Intent(this, RecordingLanguageActivity.class);
+			
 			intent.putParcelableArrayListExtra("languages", (ArrayList<Language>) recording.getLanguages());
+			intent.putExtra("mode", respeakingMode);
 		} else {
 			intent = new Intent(this, RecordingLanguageActivity.class);
 
