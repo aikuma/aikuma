@@ -6,6 +6,7 @@ package org.lp20.aikuma.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.lp20.aikuma2.R;
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
@@ -95,32 +97,42 @@ public class ThumbRespeakActivity extends AikumaActivity {
 	 * @param	view	The save respeaking button.
 	 */
 	public void onSaveRespeakingButton(View view) {
-		respeaker.saveRespeaking();
 		
-		Intent intent = new Intent(this, RecordingMetadataActivity1.class);
-		intent.putExtra("uuidString", respeakingUUID.toString());
-		intent.putExtra("sampleRate", recording.getSampleRate());
-		intent.putExtra("sourceVerId", 
-				recording.getVersionName() + "-" + recording.getId());
-		intent.putExtra("groupId",
-				Recording.getGroupIdFromId(sourceId));
-		intent.putExtra("durationMsec", respeaker.getCurrentMsec());
-		Recorder recorder = respeaker.getRecorder();
-		intent.putExtra("numChannels", recorder.getNumChannels());
-		intent.putExtra("format", recorder.getFormat());
-		intent.putExtra("bitsPerSample", recorder.getBitsPerSample());
-		intent.putParcelableArrayListExtra("languages", selectedLanguages);
-		startActivity(intent);
-		ThumbRespeakActivity.this.finish();
-		try {
-			respeaker.stop();
-		} catch (MicException e) {
-			Toast.makeText(this, "There has been an error stopping the microphone.",
-					Toast.LENGTH_LONG).show();
-		} catch (IOException e) {
-			Toast.makeText(this, "There has been an error writing the mapping between original and respeaking to file",
-					Toast.LENGTH_LONG).show();
-		}
+		DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				respeaker.saveRespeaking();
+				
+				Intent intent = new Intent(ThumbRespeakActivity.this, RecordingMetadataActivity1.class);
+				intent.putExtra("uuidString", respeakingUUID.toString());
+				intent.putExtra("sampleRate", recording.getSampleRate());
+				intent.putExtra("sourceVerId", 
+						recording.getVersionName() + "-" + recording.getId());
+				intent.putExtra("groupId",
+						Recording.getGroupIdFromId(sourceId));
+				intent.putExtra("durationMsec", respeaker.getCurrentMsec());
+				Recorder recorder = respeaker.getRecorder();
+				intent.putExtra("numChannels", recorder.getNumChannels());
+				intent.putExtra("format", recorder.getFormat());
+				intent.putExtra("bitsPerSample", recorder.getBitsPerSample());
+				intent.putParcelableArrayListExtra("languages", selectedLanguages);
+				startActivity(intent);
+				ThumbRespeakActivity.this.finish();
+				try {
+					respeaker.stop();
+				} catch (MicException e) {
+					Toast.makeText(ThumbRespeakActivity.this, "There has been an error stopping the microphone.",
+							Toast.LENGTH_LONG).show();
+				} catch (IOException e) {
+					Toast.makeText(ThumbRespeakActivity.this, "There has been an error writing the mapping between original and respeaking to file",
+							Toast.LENGTH_LONG).show();
+				}
+			}
+		};
+		
+		Aikuma.showConfirmationDialog(this, "Did you finish the recording", listener);
 	}
 
 	private ThumbRespeakFragment fragment;

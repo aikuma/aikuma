@@ -88,6 +88,9 @@ public class ThumbRespeakFragment extends Fragment {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					if(count == 0) {
+						respeakButton.setEnabled(true);
+					}
 					if(count > 0) {
 						respeaker.saveRespeaking();
 					}
@@ -181,6 +184,8 @@ public class ThumbRespeakFragment extends Fragment {
 				return false;
 			}
 		});
+		
+		respeakButton.setEnabled(false);
 	}
 
 	// Wrapper to more safely stop threads.
