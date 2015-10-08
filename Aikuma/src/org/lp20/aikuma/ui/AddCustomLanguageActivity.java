@@ -57,17 +57,28 @@ public class AddCustomLanguageActivity extends AikumaActivity {
 	// disables/enables the add language button on the fly.
 	private TextWatcher emptyTextWatcher = new TextWatcher() {
 		public void afterTextChanged(Editable s) {
+			//Restrict to alphanumeric input
+			int strLen = s.length();
+			if(strLen != 0) {
+				char c = s.charAt(strLen - 1);
+				if(!(Character.isLetterOrDigit(c) || Character.isSpaceChar(c))) {
+					s.delete(strLen - 1, strLen);
+				}
+			}
+			
+			if (s.length() == 0) {
+				addLanguageButton.setEnabled(false);
+			} else {
+				addLanguageButton.setEnabled(true);
+			}
+			
 		}
 		public void beforeTextChanged(CharSequence s,
 				int start, int count, int after) {
 		}
 		public void onTextChanged(CharSequence s,
 				int start, int before, int count) {
-			if (s.length() == 0) {
-				addLanguageButton.setEnabled(false);
-			} else {
-				addLanguageButton.setEnabled(true);
-			}
+			
 		}
 	};
 

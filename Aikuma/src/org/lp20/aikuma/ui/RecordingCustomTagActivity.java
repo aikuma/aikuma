@@ -21,6 +21,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -58,7 +60,27 @@ public class RecordingCustomTagActivity extends AikumaActivity {
 			}
 			
 		});
+		customTagField.addTextChangedListener(new TextWatcher(){
+			@Override
+			public void afterTextChanged(Editable s) {
+				int strLen = s.length();
+				if(strLen != 0) {
+					char c = s.charAt(strLen - 1);
+					if(!(Character.isLetterOrDigit(c) || Character.isSpaceChar(c))) {
+						s.delete(strLen - 1, strLen);
+					}
+				}
+			}
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}	
+		});
 		
+
 		if(savedInstanceState != null) {
 			customTagField.setText(savedInstanceState.getString("customTagStr"));
 		}

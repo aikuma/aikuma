@@ -46,8 +46,17 @@ public class AddSpeakerActivity1 extends AikumaActivity {
 		textField.addTextChangedListener(new TextWatcher(){
 			@Override
 			public void afterTextChanged(Editable s) {
-				// TODO Auto-generated method stub
-				if(s.toString().length() > 0) {
+				//Restrict to alphanumeric input
+				int strLen = s.length();
+				if(strLen != 0) {
+					char c = s.charAt(strLen - 1);
+					if(!(Character.isLetterOrDigit(c) || Character.isSpaceChar(c))) {
+						s.delete(strLen - 1, strLen);
+					}
+				}
+				
+				// Button update
+				if(s.length() > 0) {
 					ImageButton okButton = 
 							(ImageButton) findViewById(R.id.okButton1);
 					okButton.setImageResource(R.drawable.ok_48);
