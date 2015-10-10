@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Sangyeop Lee
 */
 package org.lp20.aikuma.ui;

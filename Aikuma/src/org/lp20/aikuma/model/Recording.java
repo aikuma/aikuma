@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.model;
@@ -1947,7 +1947,7 @@ public class Recording extends FileModel {
 	/** 4 range of durations (used for fullText-indesing/search) */
 	public enum DurRange {
 		/** S: < 3min, M: 3-10min, L:10-30min, XL: > 30min */
-		S(-2), M(-3), L(-4), XL(-5);
+		S(-2), M(-3), L(-4), X(-5);
 		private final int value;
 		private DurRange(int val) {this.value = val; }
 		/** @return the integer represenation value   */
@@ -1955,14 +1955,14 @@ public class Recording extends FileModel {
 		/** @return min integer representation value(S:-2) */
 		public static int getMinValue() { return DurRange.S.value; }
 		/** @return max integer representation value(XL:-5) */
-		public static int getMaxValue() { return DurRange.XL.value; }
+		public static int getMaxValue() { return DurRange.X.value; }
 		/** Factory function creating DurRange from miliSeconds 
 		 *  @param	durMsec	MiliSeconds
 		 *  @return	DurRange instance
 		 */
 		public static DurRange fromDurationMsec(int durMsec) {
 			if(durMsec > 1800000) {
-				return DurRange.XL;
+				return DurRange.X;
 			} else if(durMsec > 600000) {
 				return DurRange.L;
 			} else if(durMsec > 180000) {
