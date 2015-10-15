@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma;
@@ -51,7 +51,6 @@ import org.lp20.aikuma.model.RecordingCSVFile.MetadataChunk;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.SpeakerCSVFile;
 import org.lp20.aikuma.service.GoogleCloudService;
-import org.lp20.aikuma.storage.GoogleAuth;
 import org.lp20.aikuma.ui.ListenActivity;
 import org.lp20.aikuma.ui.MenuBehaviour;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;
@@ -78,6 +77,10 @@ import android.preference.PreferenceManager;
 import android.widget.Toast;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.lp20.aikuma2.R;
@@ -123,10 +126,12 @@ public class MainActivity extends ListActivity {
 		
 		emailAccount = settings.getString(AikumaSettings.SETTING_OWNER_ID_KEY, null);
 		googleAuthToken = settings.getString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, null);
-                googleIdToken = settings.getString(AikumaSettings.SETTING_ID_TOKEN_KEY, null);
+        googleIdToken = settings.getString(AikumaSettings.SETTING_ID_TOKEN_KEY, null);
 		googleAPIScope = AikumaSettings.getScope();
 		AikumaSettings.isPublicShareEnabled = 
     			settings.getBoolean(AikumaSettings.PUBLIC_SHARE_CONSENT_KEY, false);
+		AikumaSettings.isSearchPossible = 
+				settings.getBoolean(AikumaSettings.SEARCH_STATE_KEY, false);
 		Log.i(TAG, "Account: " + emailAccount + ", scope: " + googleAPIScope);
     	
     	AikumaSettings.setUserId(emailAccount);
@@ -626,11 +631,15 @@ public class MainActivity extends ListActivity {
         protected Boolean doInBackground(Void... params) {
 		try {
 			getToken();
+			if(!AikumaSettings.isSearchPossible) {
+				AikumaSettings.isSearchPossible = enableSearch();
+			}
 			
 			// Store the access-token for next use
 			preferences.edit()
 				.putString(AikumaSettings.SETTING_AUTH_TOKEN_KEY, googleAuthToken)
 				.putString(AikumaSettings.SETTING_ID_TOKEN_KEY, googleIdToken)
+				.putBoolean(AikumaSettings.SEARCH_STATE_KEY, AikumaSettings.isSearchPossible)
 				.commit();
 			AikumaSettings.setUserToken(googleAuthToken);
 			AikumaSettings.setUserIdToken(googleIdToken);
@@ -675,6 +684,44 @@ public class MainActivity extends ListActivity {
             } catch (GoogleAuthException fatalException) {
                 Log.e(TAG, "Unrecoverable error " + fatalException.getMessage());
             } 
+        }
+        
+        /**
+         * Request central archive folder to be shared with user account
+         * @return		true if it succeeds, else false
+         */
+        private boolean enableSearch() {
+        	if(googleIdToken == null)
+        		return false;
+        	
+        	try{
+        		URL base = new URL(AikumaSettings.getFileProxyServerUrl());
+            	String path = "/gdindex/share/" + mEmailAccount;
+            	URL url = new URL(base, path);	
+            	HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setInstanceFollowRedirects(true);
+                con.setRequestMethod("PUT");
+                con.setRequestProperty("X-Aikuma-Auth-Token", googleIdToken);
+                con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                
+                switch (con.getResponseCode()) {
+                case HttpURLConnection.HTTP_OK:
+                    return true;
+                case 404:
+                    return false;
+                default:
+                    return false;
+                }
+                
+        	} catch (MalformedURLException e) {
+                Log.e(TAG, "malformed URL: " + e.getMessage());
+            } catch (ProtocolException e) {
+                Log.e(TAG, "protocol error: " + e.getMessage());
+            } catch (IOException e) {
+                Log.e(TAG, "io exception: " + e.getMessage());
+            }
+        	
+        	return false;
         }
     }
     
@@ -932,11 +979,22 @@ public class MainActivity extends ListActivity {
 						FileUtils.copyFile(chosenFile,
 								new File(Recording.getNoSyncRecordingsPath(),
 								uuid.toString() + "." + FileModel.AUDIO_EXT));
+						Log.i("COPY", Recording.getNoSyncRecordingsPath() + "/" + uuid.toString() + "." + FileModel.AUDIO_EXT);
 					} catch (IOException e) {
 						Toast.makeText(this,
 								"Failed to import the recording.",
 								Toast.LENGTH_LONG).show();
 					}
+					
+					// Create preview file for the single-file import
+					wave.getWaveHeader().setChunkSize(chosenFile.length() - 8);
+					double trimmedDurationSec = durationMsec/1000 < Recording.SAMPLE_SEC? 
+							0 : (durationMsec/1000 - Recording.SAMPLE_SEC);
+					Log.i(TAG, trimmedDurationSec * sampleRate * (bitsPerSample / 8) * numChannels + " / " + wave.getWaveHeader().getSubChunk2Size());
+					wave.rightTrim(trimmedDurationSec);
+					WaveFileManager waveFileManager = new WaveFileManager(wave);
+					waveFileManager.saveWaveAsFile(Recording.getNoSyncRecordingsPath() + 
+							"/" + uuid.toString() + FileModel.SAMPLE_SUFFIX + "." + FileModel.AUDIO_EXT);
 
 					// Pass the info along to RecordingMetadataActivity.
 					Intent intent = new Intent(this,

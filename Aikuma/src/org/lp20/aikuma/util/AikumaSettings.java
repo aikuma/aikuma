@@ -1,11 +1,11 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Sangyeop Lee
 */
 package org.lp20.aikuma.util;
 
 import org.lp20.aikuma.storage.FusionIndex;
-import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
 
 
 /**
@@ -16,6 +16,26 @@ import org.lp20.aikuma.storage.GoogleDriveStorage;
  * @author	Sangyeop Lee	<sangl1@student.unimelb.edu.au>
  */
 public class AikumaSettings {
+	/**
+	 * Latest version name.
+	 * 
+	 * v02: 1. Recording-metadata: delete languages/speakers, add comments
+	 * 		2. Speaker-metadata: delete languages, add comments/date
+	 * 		3. Delete speaker-images
+	 * 		4. Add recording-images
+	 * 		5. New files: Tags (speaker, language, discourse-type, custom)
+	 *
+	 *      1. translation -> interpret, resepaking -> respeak
+	 * 		2. mapping, transcript : TXT -> JSON
+	 * 		3. deletion, archive files (?)
+	 * 
+	 * v03: 1. Flat file structure in cloud-storage
+	 * 		2. Use of aikuma-cloud-library-0.10.1
+	 * 		3. Remove two levels of hashes in local storage
+	 * 		4. Admin-file structure in local storage
+	 */
+	private static final String DEFAULT_VERSION = "v03";	
+	
 	/**
 	 * Setting value for backup
 	 */
@@ -32,6 +52,10 @@ public class AikumaSettings {
 	 * Setting value for public-share
 	 */
 	public static boolean isPublicShareEnabled;
+	/**
+	 * State value for cloud search
+	 */
+	public static boolean isSearchPossible;
 	
 	// Current default owner_id(== default Google account)
 	private static String DEFAULT_USER_ID = null;
@@ -39,6 +63,7 @@ public class AikumaSettings {
 	private static String DEFAULT_USER_AUTH_TOKEN = null;
 	private static String DEFAULT_USER_ID_TOKEN = null;
 	private static String DEFAULT_INDEX_SERVER = "https://aikuma.info:443/index";
+	private static String DEFAULT_FILE_PROXY_SERVER = "https://aikuma.info:443";
 	private static String DEFAULT_INDEX_SERVER_CLIENT_ID = "530026557211-46brcqr1p4ltlru6j6duc0am14oh83ei.apps.googleusercontent.com";
 	/**
 	 * Account of central fusion table
@@ -47,7 +72,7 @@ public class AikumaSettings {
 	/**
 	 * Temporary ID for all root-folder (TODO: might be changed depending on project folder structures)
 	 */
-	public static String ROOT_FOLDER_ID = "asdf";
+	public static String ROOT_FOLDER_ID = "aikuma-" + DEFAULT_VERSION;
 	
 	private static int numOfUsers;
 	private static int numOfSpeakers;
@@ -105,6 +130,8 @@ public class AikumaSettings {
 	 *  WIFI_MODE_KEY			: true/false
 	 *  PUBLIC_SHARE_CONSENT_KEY: true/false
 	 *  RESPEAKING_MODE_KEY		: "phone"/"thumb"
+	 *  
+	 *  SEARCH_STATE_KEY		: true/false
 	 */
 	public static final String BACKUP_MODE_KEY = "backup_mode";
 	/** */
@@ -116,6 +143,9 @@ public class AikumaSettings {
 	/** */
 	public static final String RESPEAKING_MODE_KEY = "respeaking_mode";
 
+	/** */
+	public static final String SEARCH_STATE_KEY = "search_possible";
+	
 
 	/**
 	 *  List of keys in each user's setting (SharedPreferences of emailAccount)
@@ -168,21 +198,6 @@ public class AikumaSettings {
 	public static final String SOURCE_LANG_BUFFER_KEY = "sourceLanguages";
 	/** */
 	public static final String INTERPRET_LANG_BUFFER_KEY = "interpretLanguages";
-	
-	/**
-	 * Latest version name.
-	 * 
-	 * v02: 1. Recording-metadata: delete languages/speakers, add comments
-	 * 		2. Speaker-metadata: delete languages, add comments/date
-	 * 		3. Delete speaker-images
-	 * 		4. Add recording-images
-	 * 		5. New files: Tags (speaker, language, discourse-type, custom)
-	 *
-	 *      1. translation -> interpret, resepaking -> respeak
-	 * 		2. mapping, transcript : TXT -> JSON
-	 * 		3. deletion, archive files (?)
-	 */
-	private static final String DEFAULT_VERSION = "v02";	
 	
 	
 	/**
@@ -336,6 +351,14 @@ public class AikumaSettings {
 	 */
 	public static String getIndexServerUrl() {
 	    return DEFAULT_INDEX_SERVER;
+	}
+	
+	/**
+	 * Return the URL of the file-proxy server
+	 * @return	the URL of the file-proxy server
+	 */
+	public static String getFileProxyServerUrl() {
+		return DEFAULT_FILE_PROXY_SERVER;
 	}
 
 	/**

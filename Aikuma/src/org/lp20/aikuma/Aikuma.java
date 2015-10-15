@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma;
@@ -9,6 +9,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -120,6 +121,8 @@ public class Aikuma extends android.app.Application {
      * @return				boolean of the archive status
      */
     public static boolean isArchived(String emailAccount, FileModel fm) {
+    	//TODO: needs to be changed to make a query to fusionindex (because, the file could be archived in the other device)
+    	
     	String itemCloudId = fm.getCloudIdentifier(0);
     	
     	Set<String> approvedSet;
@@ -239,6 +242,21 @@ public class Aikuma extends android.app.Application {
      */
     public static void showAlertDialog(Context activity, String message) {
     	new AlertDialog.Builder(activity).setMessage(message).show();
+    }
+    
+    /**
+     * Show the confirmation dialog with the message
+     * @param activity	The activity where the message will be shown
+     * @param message	the message shown in the dialog
+     * @param okListener	The callback interface when ok-button is pressed
+     */
+    public static void showConfirmationDialog(Context activity, String message, 
+    		DialogInterface.OnClickListener okListener) {
+    	new AlertDialog.Builder(activity)
+    		.setMessage(message)
+    		.setPositiveButton("OK", okListener)
+    		.setNegativeButton("Cancel", null)
+    		.show();
     }
 	
 	/**

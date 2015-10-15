@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
@@ -77,6 +77,11 @@ public class MenuBehaviour {
 				if(AikumaSettings.getCurrentUserToken() == null) {
 					Aikuma.showAlertDialog(activity,
 							"You need to be online using your account");
+					return true;
+				}
+				if(!AikumaSettings.isSearchPossible) {
+					Aikuma.showAlertDialog(activity, 
+							"Try restarting the app. if the problem persists, contact Aikuma.org");
 					return true;
 				}
 				intent = new Intent(activity, CloudSearchActivity.class);

@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
@@ -88,6 +88,9 @@ public class ThumbRespeakFragment extends Fragment {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					if(count == 0) {
+						respeakButton.setEnabled(true);
+					}
 					if(count > 0) {
 						respeaker.saveRespeaking();
 					}
@@ -181,6 +184,8 @@ public class ThumbRespeakFragment extends Fragment {
 				return false;
 			}
 		});
+		
+		respeakButton.setEnabled(false);
 	}
 
 	// Wrapper to more safely stop threads.

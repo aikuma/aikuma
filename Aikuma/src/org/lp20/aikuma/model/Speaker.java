@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.model;
@@ -246,19 +246,23 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 		});
 
 		for(File f1 : versionDirs) {
-			File[] firstHashDirs = f1.listFiles();
-			for(File f2 : firstHashDirs) {
-				File[] secondHashDirs = f2.listFiles();
-				for(File f3 : secondHashDirs) {
-					File[] ownerIdDirs = f3.listFiles();
+			//File[] firstHashDirs = f1.listFiles();
+			//for(File f2 : firstHashDirs) {
+				//File[] secondHashDirs = f2.listFiles();
+				//for(File f3 : secondHashDirs) {
+					File[] ownerIdDirs = f1.listFiles();
 					for(File f : ownerIdDirs) {
+						String dirName = f.getName();
+						if(dirName.equals(AdminFileModel.ADMIN))
+							continue;
+						
 						Log.i(TAG, "readAll: " + f.getPath());
 						
-						if(userId == null || f.getName().equals(userId))
+						if(userId == null || dirName.equals(userId))
 							addSpeakersInDir(speakers, f, f1.getName(), f.getName());
 					}
-				}
-			}
+				//}
+			//}
 		}
 
 		return speakers;
@@ -479,6 +483,11 @@ public class Speaker extends FileModel implements Comparable<Speaker> {
 	public static final String DATE_KEY = "date";
 	/** */
 	public static final String SPEAKER_ID_KEY = "id";
+	
+	/** 
+	 * Keys used/tweaked in cloud fullText metadata fields
+	 */
+	public static final String SPEAKER_ID_PREFIX_KEY = "spk_pre";
 	
 	private static Set<String> fieldKeySet;
 	static {

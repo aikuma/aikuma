@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.util;
@@ -95,10 +95,7 @@ public final class FileIO {
 	 * @return	A File representing the owner's directory of versionName
 	 */
 	public static File getOwnerPath(String versionName, String ownerId) {
-		String ownerIdDirName = IdUtils.getOwnerDirName(ownerId);
-		String ownerDirStr = (APP_ROOT_PATH + versionName + "/" + 
-				ownerIdDirName.substring(0, 1) + "/" + 
-				ownerIdDirName.substring(0, 2) + "/" + ownerId + "/");	
+		String ownerDirStr = (APP_ROOT_PATH + versionName + "/" + ownerId + "/");	
 		File path = new File(Environment.getExternalStorageDirectory(), 
 				ownerDirStr);
 		path.mkdirs();

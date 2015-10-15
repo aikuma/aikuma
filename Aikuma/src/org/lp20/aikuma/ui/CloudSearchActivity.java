@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Sangyeop Lee
 */
 package org.lp20.aikuma.ui;
@@ -15,11 +15,13 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -28,10 +30,14 @@ import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma2.R;
 import org.lp20.aikuma.model.FileModel;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.storage.DataStore;
+import org.lp20.aikuma.storage.DataStore.StorageException;
 import org.lp20.aikuma.storage.FusionIndex;
-import org.lp20.aikuma.storage.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.GoogleDriveIndex;
+import org.lp20.aikuma.storage.google.GoogleDriveStorage;
+import org.lp20.aikuma.storage.google.TokenManager;
 import org.lp20.aikuma.storage.Index;
 import org.lp20.aikuma.storage.Utils;
 import org.lp20.aikuma.util.AikumaSettings;
@@ -69,6 +75,7 @@ public class CloudSearchActivity extends AikumaListActivity {
 	private boolean isMediaPlayerReleased;
 	
 	private EditText searchQueryView;
+	private List<String> olacTagsStr;
 	
 	private QuickActionMenu<Recording> quickMenu;
 	
@@ -88,6 +95,8 @@ public class CloudSearchActivity extends AikumaListActivity {
 		
 		googleEmailAccount = AikumaSettings.getCurrentUserId();
 		googleAuthToken = AikumaSettings.getCurrentUserToken();
+		
+		olacTagsStr = Arrays.asList(getResources().getStringArray(R.array.olac_discourse_tags));
 		
 		mediaPlayer = new MediaPlayer();
 		isMediaPlayerPrepared = false;
@@ -237,7 +246,8 @@ public class CloudSearchActivity extends AikumaListActivity {
 								getCloudIdentifier(0);
 						List<String> cloudId = new ArrayList<String>();
 						cloudId.add(sampleCloudId);
-						new RequestShareFileTask(cloudId, googleEmailAccount, googleAuthToken).execute();
+						//new RequestShareFileTask(cloudId, googleEmailAccount, googleAuthToken).execute();	//When FusionIndex architecture was used
+						new DownloadFileTask (sampleCloudId, googleEmailAccount, googleAuthToken).execute();
 						
 					} else if (pos == 1) {	// Play Sample
 						File sampleFile = recording.getPreviewFile();
@@ -247,7 +257,7 @@ public class CloudSearchActivity extends AikumaListActivity {
 							mediaPlayer.start();
 						}
 		
-					} else if (pos == 1) { //Add the item to the download list (which will be downloaded onPause)
+					} else if (pos == 2) { //Add the item to the download list (which will be downloaded onPause)
 						Log.i(TAG, recording.getGroupId());
 						String itemId = recording.getGroupId();
 						itemIdsToDownload.add(itemId);
@@ -289,7 +299,7 @@ public class CloudSearchActivity extends AikumaListActivity {
     	
     	Map<String, String> constraints;
     	
-    	List<String> cloudIdsToDownload;
+    	ArrayList<String> cloudIdsToDownload;
 		Map<String, String> metadataToWrite;
 		List<String> speakerIdsToDownload;
 
@@ -303,6 +313,7 @@ public class CloudSearchActivity extends AikumaListActivity {
         	cloudIdsToDownload = new ArrayList<String>();
         	metadataToWrite = new HashMap<String, String>();
     		speakerIdsToDownload = new ArrayList<String>();
+    		Log.i(TAG, "SEARCH: " + query);
         }
 
         @Override
@@ -311,25 +322,36 @@ public class CloudSearchActivity extends AikumaListActivity {
         		return false;
         	}
         	
-        	Index fi = new FusionIndex(mAccessToken);
+        	//Index fi = new FusionIndex(mAccessToken);
+        	Index fi;
+			try {
+				fi = new GoogleDriveIndex(AikumaSettings.ROOT_FOLDER_ID, new TokenManager() {
+				    @Override
+				    public String accessToken() {
+				        return mAccessToken;
+				    }
+				});
+			} catch (StorageException e) {
+				Log.e(TAG, "Root folder doesn't exist");
+				return false;
+			}
 
         	if(queryType == 0) {
-        		constraints.put("languages", mQuery.get(0));
-            	constraints.put("file_type", "source");
+        		String queryValue = mQuery.get(0);
+        		String queryType = findQueryType(queryValue);
+        		if(queryType.equals("language"))
+        			queryValue = "iso639_" + queryValue;
+        		constraints.put(queryType, queryValue);
+            	constraints.put("file_type", FileModel.SOURCE_TYPE);
             	//constraints.put("user_id", mEmailAccount);
             	
             	fi.search(constraints, new Index.SearchResultProcessor() {
     				@Override
     				public boolean process(Map<String, String> result) {
-    					String metadataJSONStr = result.get("metadata");
-    					Log.i(TAG, metadataJSONStr);
-    					JSONParser parser = new JSONParser();
     					try {
-    						JSONObject jsonObj = (JSONObject) parser.parse(metadataJSONStr);
+    						JSONObject jsonObj = new JSONObject(result);
     						Recording recording = Recording.read(jsonObj);
     						recordings.add(recording);
-    					} catch (ParseException e) {
-    						Log.e(TAG, e.getMessage());
     					} catch (IOException e) {
     						Log.e(TAG, e.getMessage());
     					}
@@ -337,14 +359,14 @@ public class CloudSearchActivity extends AikumaListActivity {
     					return true;
     				}
     			});
-            	
+            	Log.i(TAG, "SIZE: " + recordings.size());
             	return true;
             	
         	} else if (queryType == 1) {
         		// Search the files belonging to the item_id except for a sample file
         		// The file IDs are stored in 'cloudIdsToDownload','speakerIdsToDownload' respectively
 				for(String itemId : mQuery) {
-					collectRelatedData(fi, itemId);
+					collectRelatedData(fi, itemId); //store related speakers in speakerIdsToDownload
 				}
 				for(String speakerId : speakerIdsToDownload) {
 					collectRelatedData(fi, speakerId);
@@ -372,6 +394,7 @@ public class CloudSearchActivity extends AikumaListActivity {
         
         @Override
         protected void onPostExecute(Boolean result) {
+        	Log.i(TAG, "RESULT: " + result);
         	if(result) {
         		switch(queryType) {
         		case 0:
@@ -379,8 +402,22 @@ public class CloudSearchActivity extends AikumaListActivity {
         			break;
         		case 1:
         			// Download Files
-        			new RequestShareFileTask(cloudIdsToDownload, mEmailAccount, mAccessToken).execute();
+        			//new RequestShareFileTask(cloudIdsToDownload, mEmailAccount, mAccessToken).execute();
         			
+        			// AutoDonwload all item-related files
+            		// This part will be called when user leaves this activity (onPause)
+            		// When the device pauses, downloading all shared files
+            		// Re-indexing will be done by cloud-service
+            		Log.i(TAG, "autodownload start");
+            		Intent syncIntent = new Intent(CloudSearchActivity.this, GoogleCloudService.class);
+            		syncIntent.putExtra(GoogleCloudService.ACTION_KEY, "autoDownload");
+            		syncIntent.putExtra(GoogleCloudService.ACCOUNT_KEY, 
+            				AikumaSettings.getCurrentUserId());
+            		syncIntent.putExtra(GoogleCloudService.TOKEN_KEY, 
+            				AikumaSettings.getCurrentUserToken());
+            		syncIntent.putStringArrayListExtra("downloadItems", cloudIdsToDownload);
+            		startService(syncIntent);
+
         			break;
         		}
         	}
@@ -388,6 +425,9 @@ public class CloudSearchActivity extends AikumaListActivity {
         }
         
         private void collectRelatedData(Index fi, String identifier) {
+        	if(identifier == null || identifier.isEmpty())
+        		return;
+        	
         	constraints.clear();
 			constraints.put("item_id", identifier);
 			
@@ -402,9 +442,9 @@ public class CloudSearchActivity extends AikumaListActivity {
 					String identifier = result.get("identifier");
 					cloudIdsToDownload.add(identifier);
 					
-					// Collect metadata
-					if(fileType.equals("speaker") || fileType.equals("source") || 
-							fileType.equals("respeaking")) {
+					// Collect metadata (Is this needed???? no)
+					if(fileType.equals(Recording.SPEAKER_TYPE) || fileType.equals(Recording.SOURCE_TYPE) || 
+							fileType.equals(Recording.RESPEAKING_TYPE) || fileType.equals(Recording.TRANSLATION_TYPE)) {
 //						String metadataJSONStr = result.get("metadata");
 //						metadataToWrite.put(identifier, metadataJSONStr);
 						FileModel fm = FileModel.fromCloudId(identifier);
@@ -413,14 +453,18 @@ public class CloudSearchActivity extends AikumaListActivity {
 					}
 					
 					// Collect speaker IDs to find speaker-related files
-					if(fileType.equals("source") || fileType.equals("respeaking")) {
-						String speakerIdsStr = result.get("speakers");
-						String[] speakerIds = speakerIdsStr.split("\\|");
-						for(String speakerId : speakerIds) {
-							if(speakerId.length() == 0)
-								continue;
-							speakerIdsToDownload.add(speakerId);
+					if(fileType.equals(Recording.SOURCE_TYPE) || fileType.equals(Recording.RESPEAKING_TYPE) || 
+							fileType.equals(Recording.TRANSLATION_TYPE)) {
+						String speakerIdsStr = result.get("speaker");
+						if(speakerIdsStr != null) {	//Tags might not be indexed
+							String[] speakerIds = speakerIdsStr.split("\\|");
+							for(String speakerId : speakerIds) {
+								if(speakerId.length() == 0)
+									continue;
+								speakerIdsToDownload.add(speakerId);
+							}
 						}
+						
 					}
 					
 					return true;
@@ -446,6 +490,25 @@ public class CloudSearchActivity extends AikumaListActivity {
 				Log.e(TAG, e.getMessage());
 			}
 		}
+        
+        private String findQueryType(String queryValue) {
+        	if(olacTagsStr.contains(queryValue)) {
+        		return Recording.OLAC_TAG_TYPE;
+        	} else if(queryValue.startsWith("#")) {
+        		return Recording.CUSTOM_TAG_TYPE;
+        	} else if(StringUtils.isAllLowerCase(queryValue)) {
+        		if(queryValue.length() == 3)
+        			return Recording.LANGUAGE_TAG_TYPE;
+        		else if(queryValue.length() == 4)
+        			return Recording.ITEM_ID_PREFIX_KEY;
+        		else
+        			return queryValue.split("__")[0];
+        	} else if(StringUtils.isAllUpperCase(queryValue) && queryValue.length() == 4) {
+        		return Speaker.SPEAKER_ID_PREFIX_KEY;
+        	} else {
+        		return queryValue.split("__")[0];
+        	}
+        }
     }
     
     /**
@@ -480,7 +543,7 @@ public class CloudSearchActivity extends AikumaListActivity {
         	}
         	
             try {
-            	URL base = new URL(AikumaSettings.getIndexServerUrl());
+            	URL base = new URL(AikumaSettings.getFileProxyServerUrl());
             	for(String identifier : mFileCloudIds) {
             		String path = String.format("/file/%s/share/%s", identifier, mEmailAccount);
             		URL url = new URL(base, path);
@@ -492,6 +555,7 @@ public class CloudSearchActivity extends AikumaListActivity {
                     con.addRequestProperty("X-Aikuma-Auth-Token", AikumaSettings.getCurrentUserIdToken());
                     switch (con.getResponseCode()) {
                         case 200:
+                        	Log.i(TAG, "200");
                         	mSharedFileCloudIds.add(identifier);
                             break;
                         case 404:
@@ -586,6 +650,12 @@ public class CloudSearchActivity extends AikumaListActivity {
 			String relPath = mFileCloudId.substring(0, mFileCloudId.lastIndexOf('/'));
 			File dir = new File(FileIO.getAppRootPath(), relPath);
 			dir.mkdirs();
+			
+			boolean isCopied = gd.copy(mFileCloudId);
+			if(!isCopied) {	// If copy to private-storage fails 
+				Log.e(TAG, "Failed to copy a file to private-storage");
+				return false;
+			}
 			InputStream is = gd.load(mFileCloudId);
 			if (is == null) {
 				Log.e(TAG, "Failed to get a file from GoogleDriveStorage");

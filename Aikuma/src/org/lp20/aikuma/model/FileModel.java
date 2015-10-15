@@ -1,19 +1,27 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Sangyeop Lee
 */
 package org.lp20.aikuma.model;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.IdUtils;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 /**
  * The file modeled from the viewpoint of GoogleCloud
@@ -25,6 +33,9 @@ import android.os.Parcelable;
  */
 public class FileModel implements Parcelable {
 
+	private static final String TAG = FileModel.class.getSimpleName();
+	
+	private static final String CLOUD_ID_FORMAT = "^v\\d{2}\\/.+\\/.+\\/.+\\/.+$";
 	/**
 	 *  Suffix of metadata, maaping and transcript
 	 */
@@ -108,7 +119,7 @@ public class FileModel implements Parcelable {
 	 * 
 	 * @param versionName	versionName of the file-format
 	 * @param ownerId		OwnerID(UserID) of the file
-	 * @param id			Id of the file
+	 * @param id			Id of the file (File's name)
 	 * @param type			Type of the file(speaker, mapping, ...)
 	 * @param format		Extension of the file(jpg, mp4, vnd.wave, json, txt)
 	 */
@@ -131,20 +142,21 @@ public class FileModel implements Parcelable {
 	 * @return	an instance of FileModel
 	 */
 	public static FileModel fromCloudId(String cloudIdentifier) {
+		// (version)/(hash1)/(hash2)/(ownerID)/(items)/(itemID)/(FileName)
 		String[] splitCloudId = cloudIdentifier.split("\\/");
 		
-		int index = splitCloudId[6].lastIndexOf('.');
+		int index = splitCloudId[4].lastIndexOf('.');
 		String fileName;
 		String ext;
 		
-		if(splitCloudId[4].equals(TAG_TYPE)) {	//tags
-			fileName = splitCloudId[6];
+		if(splitCloudId[2].equals(TAG_TYPE)) {	//tags
+			fileName = splitCloudId[4];
 			ext = "";
-			return new FileModel(splitCloudId[0], splitCloudId[3], fileName, TAG_TYPE, ext);
+			return new FileModel(splitCloudId[0], splitCloudId[1], fileName, TAG_TYPE, ext);
 		}
 		
-		fileName = splitCloudId[6].substring(0, index);
-		ext = splitCloudId[6].substring(index+1);
+		fileName = splitCloudId[4].substring(0, index);
+		ext = splitCloudId[4].substring(index+1);
 		
 		String[] splitName = fileName.split("-");
 		String fileType = splitName[splitName.length-1];
@@ -154,15 +166,25 @@ public class FileModel implements Parcelable {
 		
 		if(fileType.equals(METADATA_TYPE) && 
 				fileName.length() == Speaker.SPEAKER_ID_LEN + METADATA_SUFFIX.length()) {	//speaker small image
-			return new FileModel(splitCloudId[0], splitCloudId[3], splitCloudId[5], SPEAKER_TYPE, ext);
+			return new FileModel(splitCloudId[0], splitCloudId[1], splitCloudId[3], SPEAKER_TYPE, ext);
 		} else if(fileType.equals(METADATA_TYPE)) {
 			return null;
 		} else if(fileTypeSet.contains(fileType)) {
-			return new FileModel(splitCloudId[0], splitCloudId[3], fileName, fileType, ext);
+			return new FileModel(splitCloudId[0], splitCloudId[1], fileName, fileType, ext);
 		} else {
 			return null;
 		}
 		
+	}
+	
+	/**
+	 * Checks if the string is in the format of cloud-identifier
+	 * 
+	 * @param cloudIdentifier	Cloud-Identifier of a file
+	 * @return					true if it's in correct format
+	 */
+	public static boolean checkCloudFormat(String cloudIdentifier) {
+		return cloudIdentifier.matches(CLOUD_ID_FORMAT);
 	}
 	
 	/**
@@ -213,6 +235,18 @@ public class FileModel implements Parcelable {
 		return suffixExt;
 	}
 	
+	/**
+	 * Check the file type embedded in the cloudIdentifier
+	 * 
+	 * @param cloudIdentifier		Cloud-Identifier of the file
+	 * @param versionName			The file's version
+	 * @param type					Type to check
+	 * @return						true if the file is the type, else false
+	 */
+	public static boolean checkType(String cloudIdentifier, String versionName, FileType type) {
+		return cloudIdentifier.endsWith(FileModel.getSuffixExt(versionName, type));
+	}
+	
 	
 	/**
 	 * Constructor for parcel (only used by Speaker)
@@ -235,7 +269,6 @@ public class FileModel implements Parcelable {
 		return id;
 	}
 	
-
 	protected void setId(String id) {
 		this.id = id;
 	}
@@ -275,10 +308,7 @@ public class FileModel implements Parcelable {
 		if(option != 0 && option != 1)
 			return null;
 		
-		String ownerIdDirName = IdUtils.getOwnerDirName(ownerId);
-		String ownerDirStr = (versionName + "/" + 
-				ownerIdDirName.substring(0, 1) + "/" + 
-				ownerIdDirName.substring(0, 2) + "/" + ownerId + "/");
+		String ownerDirStr = (versionName + "/" + ownerId + "/");
 		
 		String suffix;
 		if(fileType.equals(TAG_TYPE)) {
@@ -354,6 +384,103 @@ public class FileModel implements Parcelable {
 		
 	}
 
+	/**
+	 * Get all of the recording's tags as a map(tagType, tagContent)
+	 * (Used for fullText-indexing in GoogleCloudService)
+	 * 
+	 * @return	Map of the recording's tags
+	 */
+	public Map<String, String> getAllTagMapStrs() {
+		//List<String> tagStrs = new ArrayList<String>();
+		Map<String, String> tagStrs = new HashMap<String, String>();
+		String respeakingId = "";
+		
+		if(!(fileType.equals(SOURCE_TYPE) || fileType.equals(RESPEAKING_TYPE) || fileType.equals(TRANSLATION_TYPE)))
+			return tagStrs;
+		if(!fileType.equals(SOURCE_TYPE))
+			respeakingId = getId().split("-")[3];
+		
+		List<String> selectedVerGroupOwners = new ArrayList<String>();
+		List<File> groupDirList = new ArrayList<File>();
+		
+		File indexFile = new File(FileIO.getAppRootPath(), "index.json");
+		JSONObject indices = null;
+		try {
+			indices = FileIO.readJSONObject(indexFile);
+		} catch (IOException e1) {
+			// TODO: How to deal with no index-file?
+			Log.e(TAG, "getRespeakings(): error in reading index file");
+			indices = new JSONObject();
+		}
+		
+		// Collect directories where related respeakings exist form index file
+		JSONArray verGroupOwnerList = (JSONArray) indices.get(getId());
+		if(verGroupOwnerList == null) {
+			// TODO: How to deal with no index-file?
+			verGroupOwnerList = new JSONArray();
+		}
+		
+		for (int i = 0; i < verGroupOwnerList.size(); i++) {
+			String verGroupOwnerStr = (String) verGroupOwnerList.get(i);
+			String[] splitVerGroupOwnerStr = verGroupOwnerStr.split("-");
+			if(!splitVerGroupOwnerStr[0].matches(versionName))	// tag version needs to match recording version
+				continue;
+			
+			File ownerDir = 
+					FileIO.getOwnerPath(splitVerGroupOwnerStr[0], splitVerGroupOwnerStr[2]);
+			File groupDir = 
+					new File(Recording.getTagsPath(ownerDir), splitVerGroupOwnerStr[1]);
+					
+			if(groupDir.exists()) {
+				selectedVerGroupOwners.add(verGroupOwnerStr);
+				groupDirList.add(groupDir);
+			}
+				
+		}
+		
+		// Process all the tag files 
+		for(int i = 0; i < groupDirList.size(); i++) {
+			File groupDir = groupDirList.get(i);
+			
+			File[] tagFiles = groupDir.listFiles();
+			for(File tagFile : tagFiles) {
+				String tagTypeSuffix = "";
+				String tagStr = "";
+				String[] splitName = tagFile.getName().split("-");
+				
+				if(fileType.equals(SOURCE_TYPE) && 
+						splitName[2].equals(SOURCE_TYPE)) {
+					tagTypeSuffix = splitName[3];
+					tagStr = splitName[4];
+				} else if(fileType.equals(splitName[2]) && 
+						respeakingId.equals(splitName[3])) { // Respeaking/Interpret
+					tagTypeSuffix = splitName[4];
+					tagStr = splitName[5];
+				} else
+					continue;
+				
+				String val = tagStrs.get(tagTypeSuffix);
+				if(val != null) {
+					tagStrs.put(tagTypeSuffix, val + "|" + tagStr);
+				} else {
+					tagStrs.put(tagTypeSuffix, tagStr);
+				}
+				//tagStrs.add(tagTypeSuffix + "__" + tagStr);
+				/*
+				if(tagTypeSuffix.equals(Recording.SPEAKER_TAG_TYPE)) {
+					
+				} else if(tagTypeSuffix.equals(Recording.LANGUAGE_TAG_TYPE)) {
+					
+				} else if(tagTypeSuffix.equals(Recording.OLAC_TAG_TYPE)) {
+					
+				} else if(tagTypeSuffix.equals(Recording.CUSTOM_TAG_TYPE)) {
+					
+				}*/
+			}
+		}
+		return tagStrs;
+	}
+	
 	/**
 	 * Get the file's type
 	 * TODO: 'respeaking' needs to be changed later to 'respeak'. 'comment','interpret' can be added later
