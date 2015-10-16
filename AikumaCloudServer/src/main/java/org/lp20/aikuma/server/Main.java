@@ -45,6 +45,7 @@ public class Main {
         String[] fields = {
             "table_id",
             "aikuma_root_id",
+            "aikuma_root_name",
             "base_uri",
             "use_ssl",
             "keystore_file",
@@ -71,6 +72,7 @@ public class Main {
         Map<String,Object> localProps = new HashMap<String, Object>(5);
         localProps.put("table_id", props.getProperty("table_id"));
         localProps.put("aikuma_root_id", props.getProperty("aikuma_root_id"));
+        localProps.put("aikuma_root_name", props.getProperty("aikuma_root_name"));
         localProps.put("base_uri", props.getProperty("base_uri"));
         localProps.put("use_ssl", props.getProperty("use_ssl"));
         localProps.put("keystore_file", props.getProperty("keystore_file"));
@@ -80,7 +82,7 @@ public class Main {
                         props.getProperty("client_id"),
                         props.getProperty("client_secret"),
                         props.getProperty("refresh_token"));
-
+/*
         File mapdbFile = new File(props.getProperty("mapdb"));
         app.db = DBMaker.newFileDB(mapdbFile).closeOnJvmShutdown().make();
         ConcurrentNavigableMap<String,String> regIds = app.getGcmRegIdsMap();
@@ -104,7 +106,7 @@ public class Main {
                 app.db.commit();
             }
         };
-
+*/
         if ("yes".equals(props.getProperty("require_auth"))) {
             localProps.put("require_auth", "yes");
             String audience = props.getProperty("audience");
