@@ -27,6 +27,7 @@ public class CloudSettingsActivity extends AikumaActivity {
 	private Editor prefsEditor;
 	
 	private CheckBox wifiCheckBox;
+	private CheckBox cellularCheckBox;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class CloudSettingsActivity extends AikumaActivity {
 		}
 		//setupSyncCheckBox();
 		setupWifiCheckBox();
+		setupCellularCheckBox();
 	}
 
 	@Override
@@ -75,7 +77,20 @@ public class CloudSettingsActivity extends AikumaActivity {
 		AikumaSettings.isOnlyWifi =
 				preferences.getBoolean(AikumaSettings.WIFI_MODE_KEY, true);
 		
-		wifiCheckBox.setChecked(!AikumaSettings.isOnlyWifi);
+		wifiCheckBox.setChecked(AikumaSettings.isOnlyWifi);
+	}
+	
+	private void setupCellularCheckBox() {
+		cellularCheckBox = (CheckBox)
+				findViewById(R.id.cellular_checkBox);
+		if(AikumaSettings.getCurrentUserId() == null || 
+				!AikumaSettings.isBackupEnabled || !AikumaSettings.isAutoDownloadEnabled) {
+			cellularCheckBox.setEnabled(false);
+		}
+		AikumaSettings.isNetwork =
+				preferences.getBoolean(AikumaSettings.CELLULAR_MODE_KEY, false);
+		
+		cellularCheckBox.setChecked(AikumaSettings.isNetwork);
 	}
 	
 	/**
@@ -119,23 +134,42 @@ public class CloudSettingsActivity extends AikumaActivity {
 	}*/
 	
 	/**
-	 * Callback function for the checkbox allowing sync over cellular network
+	 * Callback function for the checkbox allowing sync over wifi network
 	 * 
-	 * @param checkBox	Unchecked(default): allow sync only over wifi-network
+	 * @param checkBox	checked(default): allow sync only over wifi-network
 	 */
 	public void onWifiCheckBoxClicked(View checkBox) {
 		boolean checked = ((CheckBox) checkBox).isChecked();
 		Log.i(TAG, "wifi-checkbox: " + checked);
 		if(checked) {
-			AikumaSettings.isOnlyWifi = false;
-			prefsEditor.putBoolean(AikumaSettings.WIFI_MODE_KEY, false);
-			prefsEditor.commit();
-		} else {
 			AikumaSettings.isOnlyWifi = true;
 			prefsEditor.putBoolean(AikumaSettings.WIFI_MODE_KEY, true);
 			prefsEditor.commit();
+		} else {
+			AikumaSettings.isOnlyWifi = false;
+			prefsEditor.putBoolean(AikumaSettings.WIFI_MODE_KEY, false);
+			prefsEditor.commit();
 		}
 
+	}
+	
+	/**
+	 * Callback function for the checkbox allowing sync over cellular network
+	 * 
+	 * @param checkBox	Unchecked(default): allow sync over cellular network
+	 */
+	public void onCellularCheckBoxClicked(View checkBox) {
+		boolean checked = ((CheckBox) checkBox).isChecked();
+		Log.i(TAG, "cellular-checkbox: " + checked);
+		if(checked) {
+			AikumaSettings.isNetwork = true;
+			prefsEditor.putBoolean(AikumaSettings.CELLULAR_MODE_KEY, true);
+			prefsEditor.commit();
+		} else {
+			AikumaSettings.isNetwork = false;
+			prefsEditor.putBoolean(AikumaSettings.CELLULAR_MODE_KEY, false);
+			prefsEditor.commit();
+		}
 	}
 	
 	/**

@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
@@ -101,16 +102,27 @@ public class Aikuma extends android.app.Application {
     	ConnectivityManager connMgr = (ConnectivityManager)
                 getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     	NetworkInfo networkInfo;
-    	if(AikumaSettings.isOnlyWifi) {
+    	if(AikumaSettings.isNetwork){
+    		networkInfo = connMgr.getActiveNetworkInfo();   
+    	} else if(AikumaSettings.isOnlyWifi) {
     		networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
     	} else {
-    		networkInfo = connMgr.getActiveNetworkInfo();   
+    		networkInfo = null;
     	}
     	
     	if (networkInfo != null && networkInfo.isConnected()) {
             return true;
         }
     	return false;
+    }
+    
+    /**
+     * Checks if Wifi is enabled
+     * @return	true if Wifi is enabled
+     */
+    public static boolean isWifiEnabled() {
+    	WifiManager wifiMgr = (WifiManager) getContext().getSystemService(Context.WIFI_SERVICE);
+    	return wifiMgr.isWifiEnabled();
     }
     
     /**

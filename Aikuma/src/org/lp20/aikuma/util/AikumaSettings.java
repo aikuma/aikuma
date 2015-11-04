@@ -45,9 +45,13 @@ public class AikumaSettings {
 	 */
 	public static boolean isAutoDownloadEnabled = true;
 	/**
-	 * Setting value for sync-only-over-wifi
+	 * Setting value for sync-only-over-cellulars
 	 */
 	public static boolean isOnlyWifi;
+	/**
+	 * Setting value for sync-over-wifi
+	 */
+	public static boolean isNetwork;
 	/**
 	 * Setting value for public-share
 	 */
@@ -128,6 +132,7 @@ public class AikumaSettings {
 	 *  BACKUP_MODE_KEY			: true/false
 	 *  AUTO_DOWNLOAD_MODE_KEY  : true/false
 	 *  WIFI_MODE_KEY			: true/false
+	 *  CELLULAR_MODE_KEY		: true/false
 	 *  PUBLIC_SHARE_CONSENT_KEY: true/false
 	 *  RESPEAKING_MODE_KEY		: "phone"/"thumb"
 	 *  
@@ -138,6 +143,8 @@ public class AikumaSettings {
 	public static final String AUTO_DOWNLOAD_MODE_KEY = "autoDownload_mode";
 	/** */
 	public static final String WIFI_MODE_KEY = "only_wifi";
+	/** */
+	public static final String CELLULAR_MODE_KEY = "allow_cellular";
 	/** */
 	public static final String PUBLIC_SHARE_CONSENT_KEY = "public_share";
 	/** */

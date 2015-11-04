@@ -167,6 +167,11 @@ public class MenuBehaviour {
 				activity.startActivity(intent);
 				return true;
 			case R.id.wifi_sync_menu:
+				if(!Aikuma.isWifiEnabled()) {
+					Aikuma.showAlertDialog(activity,
+							"Please enable wifi");
+					return true;
+				}
 				intent = new Intent(activity, WifiSyncActivity.class);
 				activity.startActivity(intent);
 				return true;
