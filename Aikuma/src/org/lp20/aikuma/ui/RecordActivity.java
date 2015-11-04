@@ -1,13 +1,15 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -23,7 +25,7 @@ import org.lp20.aikuma.audio.record.Microphone.MicException;
 import org.lp20.aikuma.audio.record.Recorder;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Recording;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 
 /**
@@ -38,11 +40,12 @@ public class RecordActivity extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		this.soundUUID = UUID.randomUUID();
 		// Disable the stopButton(saveButton) before the recording starts
 		ImageButton stopButton = 
 				(ImageButton) findViewById(R.id.stopButton);
-		stopButton.setImageResource(R.drawable.save48);
+		stopButton.setImageResource(R.drawable.ok_disabled_48);
 		stopButton.setEnabled(false);
 		
 		// Set up the Beeper that will make beeps when recording starts and
@@ -69,7 +72,7 @@ public class RecordActivity extends AikumaActivity {
 		try {
 			File f = new File(Recording.getNoSyncRecordingsPath(),
 					soundUUID.toString() + ".wav");
-			recorder = new Recorder(f, sampleRate);
+			recorder = new Recorder(0, f, sampleRate);
 		} catch (MicException e) {
 			this.finish();
 			Toast.makeText(getApplicationContext(),
@@ -169,8 +172,9 @@ public class RecordActivity extends AikumaActivity {
 			ImageButton stopButton =
 					(ImageButton) findViewById(R.id.stopButton);
 			recordButton.setEnabled(true);
-			stopButton.setImageResource(R.drawable.save_activate48);
+			stopButton.setImageResource(R.drawable.ok_48);
 			stopButton.setEnabled(true);
+			
 			recordButton.setVisibility(View.VISIBLE);
 			pauseButton.setVisibility(View.GONE);
 			try {
@@ -244,12 +248,17 @@ public class RecordActivity extends AikumaActivity {
 			intent.putExtra("longitude", longitude);
 		}
 		
+		intent.putExtra("mode", getIntent().getStringExtra("mode"));
+		
+		intent.putParcelableArrayListExtra("languages", getIntent().getParcelableArrayListExtra("languages"));
+		
 		startActivity(intent);
 		RecordActivity.this.finish();
 	}
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {
+		Log.i(TAG, "isNear: " + proximityDetector.isNear());
 		if (proximityDetector.isNear()) {
 			return false;
 		} else {
@@ -257,6 +266,7 @@ public class RecordActivity extends AikumaActivity {
 		}
 	}
 	
+	private static final String TAG = RecordActivity.class.getSimpleName();
 	static final int VIDEO_REQUEST_CODE = 0;
 
 	private boolean recording;

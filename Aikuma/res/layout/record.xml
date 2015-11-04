@@ -3,6 +3,7 @@
 		android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
+		android:keepScreenOn="true"
 	>
 	<TextView
 		android:id="@+id/timeDisplay"
@@ -46,6 +47,7 @@
 			android:scaleType="centerInside"
 			android:src="@drawable/movie_48"
 			android:onClick="onVideoRecord"
+			android:visibility="gone"
 		/>
 	
 	<ImageButton

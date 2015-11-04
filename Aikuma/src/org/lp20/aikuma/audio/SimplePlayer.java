@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.audio;
@@ -201,7 +201,10 @@ public class SimplePlayer extends Player implements Sampler {
 	 * directory.
 	 */
 	private void incrementViewCount() throws IOException {
-		File viewDir = new File(FileIO.getAppRootPath(), "views/" +
+		String versionName = recording.getVersionName();
+		String ownerId = recording.getOwnerId();
+		File viewDir = new File(FileIO.getOwnerPath(versionName, ownerId), 
+				"views/" +
 				recording.getGroupId() + "/" + recording.getId());
 		viewDir.mkdirs();
 

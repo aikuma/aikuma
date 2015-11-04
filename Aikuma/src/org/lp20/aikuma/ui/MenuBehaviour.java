@@ -1,24 +1,26 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.SearchView;
 
+import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.MainActivity;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
+import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.util.AikumaSettings;
 
 /**
  * Class that unifies some inter-activity navigation code.
@@ -50,6 +52,8 @@ public class MenuBehaviour {
 		if (activity instanceof MainActivity) {
 			inflater.inflate(R.menu.main, menu);
 			//((MainActivity)activity).setUpSearchInterface(menu);
+			if(AikumaSettings.getCurrentUserId() != null)
+				setSignInState(true);
 		} else {
 			inflater.inflate(R.menu.other, menu);
 		}
@@ -70,19 +74,46 @@ public class MenuBehaviour {
 				goToMainActivity();
 				return true;
 			case R.id.search:
+				if(AikumaSettings.getCurrentUserToken() == null) {
+					Aikuma.showAlertDialog(activity,
+							"You need to be online using your account");
+					return true;
+				}
+				if(!AikumaSettings.isSearchPossible) {
+					Aikuma.showAlertDialog(activity, 
+							"Try restarting the app. if the problem persists, contact Aikuma.org");
+					return true;
+				}
 				intent = new Intent(activity, CloudSearchActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.record:
-				intent = new Intent(activity, RecordActivity.class);
+				if(AikumaSettings.getCurrentUserId() == null) {
+					Aikuma.showAlertDialog(activity,
+							"Please sign in to your Google account using the settings menu");
+					return true;
+				}
+				//intent = new Intent(activity, RecordActivity.class);
+				intent = new Intent(activity, RecordingLanguageActivity.class);
+				intent.putExtra("mode", "source");
 				activity.startActivity(intent);
+				
 				return true;
 			case R.id.speakers:
+				if(AikumaSettings.getCurrentUserId() == null) {
+					Aikuma.showAlertDialog(activity,
+							"Please sign in to your Google account using the settings menu");
+					return true;
+				}
 				intent = new Intent(activity, MainSpeakersActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.help:
 				intent = new Intent(activity, HowtoActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.language_setting_menu:
+				intent = new Intent(activity, DefaultLanguagesActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.settings:
@@ -93,9 +124,21 @@ public class MenuBehaviour {
 				intent = new Intent(activity, AboutActivity.class);
 				activity.startActivity(intent);
 				return true;
+			case R.id.public_share_consent_menu:
+				intent = new Intent(activity, ConsentActivity.class);
+				activity.startActivity(intent);
+				return true;
 			case R.id.start_http_server:
 				intent = new Intent(activity, HttpServerActivity.class);
 				activity.startActivity(intent);
+				return true;
+			case R.id.audio_import_menu:
+				if(AikumaSettings.getCurrentUserId() == null) {
+					Aikuma.showAlertDialog(activity,
+							"Please sign in to your Google account using the settings menu");
+					return true;
+				}
+				((MainActivity)activity).fileImport(null);
 				return true;
 			case R.id.gplus_signin_menu:
 				if(signInState) {
@@ -104,6 +147,37 @@ public class MenuBehaviour {
 					((MainActivity)activity).getAccountToken();
 				}
 				
+				return true;
+			case R.id.cloud_sync_menu:
+				Aikuma.syncRefresh(activity, true);
+				return true;
+			case R.id.cloud_sync_setting_menu:
+				intent = new Intent(activity, CloudSettingsActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.indexing_menu:
+				try {
+					Recording.indexAll();
+				} catch (IOException e) {
+					Aikuma.showAlertDialog(activity, e.getMessage());
+				}
+				return true;
+			case R.id.testUI:
+				intent = new Intent(activity, TestActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.wifi_sync_menu:
+				if(!Aikuma.isWifiEnabled()) {
+					Aikuma.showAlertDialog(activity,
+							"Please enable wifi");
+					return true;
+				}
+				intent = new Intent(activity, WifiSyncActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.debugInfo:
+				intent = new Intent(activity, DebugInfo.class);
+				activity.startActivity(intent);
 				return true;
 			default:
 				return true;
@@ -127,6 +201,11 @@ public class MenuBehaviour {
 				safeGoToMainActivity(safeActivityTransitionMessage);
 				return true;
 			case R.id.record:
+				if(AikumaSettings.getCurrentUserId() == null) {
+					Aikuma.showAlertDialog(activity,
+							"You need to select an account to make a recording");
+					return true;
+				}
 				intent = new Intent(activity, RecordActivity.class);
 				activity.startActivity(intent);
 				return true;
@@ -157,14 +236,31 @@ public class MenuBehaviour {
 	}
 	
 	/**
+	 * Add a MenuItem with the icon-image and description string
+	 * 
+	 * @param drawableId	The icon image ID
+	 * @param description	The string description of the menu item
+	 */
+	public void addItem(int drawableId, String description) {
+		if(menu != null) {
+			menu.add(0, Menu.FIRST, Menu.NONE, description).setIcon(drawableId)
+				.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		}
+	}
+	
+	/**
 	 * Set if the user signed-in an account
 	 * @param state		true(signed-in), false(no sign-in)
 	 */
 	public void setSignInState(boolean state) {
+		if(menu == null) {
+			Log.e("MenuBehaviour", "called before menu is created"); // by MainActivity?
+			return;
+		}
 		this.signInState = state;
 		if(state) {
 			//TODO: get emailAccount from AikumaSettings
-			String signOutString = "Sign-out: "; // + activity.emailAccount;
+			String signOutString = "Sign-out"; // + activity.emailAccount;
 			findItem(R.id.gplus_signin_menu).setTitle(signOutString);
 		} else {
 			String signInString = 
@@ -226,9 +322,10 @@ public class MenuBehaviour {
 	 * data.
 	 *
 	 * @param	safeActivityTransitionMessage	The string to display in a warning message.
+	 * @param	okMessage		The string to display in Yes Button
 	 * @param	safeBehaviour	Interface having a function required for safe back-button.
 	 */
-	public void safeGoBack(String safeActivityTransitionMessage, 
+	public void safeGoBack(String safeActivityTransitionMessage, String okMessage,
 			final BackButtonBehaviour safeBehaviour) {
 		String message = DEFAULT_MESSAGE;
 		if (safeActivityTransitionMessage != null) {
@@ -236,7 +333,7 @@ public class MenuBehaviour {
 		}
 		new AlertDialog.Builder(activity)
 				.setMessage(message)
-				.setPositiveButton("Discard",
+				.setPositiveButton(okMessage,
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog,

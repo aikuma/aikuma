@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.audio.record;
@@ -117,14 +117,24 @@ public class PCMWriter implements Sampler {
 	}
 
 	/**
-	 * Write the given short buffer to the file.
+	 * Write the given buffer to the file.
 	 *
 	 * @param	buffer	The buffer containing audio data to be written.
 	 */
 	public void write(short[] buffer) {
-		byte[] byteBuffer = new byte[buffer.length * 2];
+		write(buffer, buffer.length);
+	}
+	
+	/**
+	 * Write the given short buffer of the range: 0 - len-1
+	 * 
+	 * @param buffer	The buffer containing audio data to be written
+	 * @param len		non-empty audio data length
+	 */
+	public void write(short[] buffer, int len) {
+		byte[] byteBuffer = new byte[len * 2];
 
-		for (int i = 0; i < buffer.length; i++) {
+		for (int i = 0; i < len; i++) {
 			short sample = buffer[i];
 
 			// TODO Use Java helpers?

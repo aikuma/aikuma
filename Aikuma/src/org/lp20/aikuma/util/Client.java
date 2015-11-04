@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.util;
@@ -21,6 +21,8 @@ import android.util.Log;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  * FTP client that allows the application to sync it's data with a server.
@@ -81,7 +83,7 @@ public class Client {
 		boolean result = false;
 		if (!apacheClient.isConnected()) {
 			try {
-				apacheClient.connect(serverURI);
+				apacheClient.connect(serverURI, 8888);
 				Log.i("sync", "Connected to: " + serverURI);
 			} catch (SocketException e) {
 				Log.e("sync", "apacheClient.connect() threw a SocketException", e);
@@ -266,11 +268,13 @@ public class Client {
 			
 		
 			for (String filename : clientFilenames) {
+				Log.i("sync", "name: " + filename);
 				file = new File(clientDir.getPath() + "/" + filename);
-				if (!file.getName().endsWith(".inprogress")) {
+				if (!filename.endsWith(".inprogress") && !filename.startsWith("default_languages") && !filename.startsWith("index")) {
 					// If file doesn't end with '.inprogress', 
-					// it is not the one Aikuma previously made. Then check the file.
+					// If it is not the one Aikuma previously made(index, language-setting file). Then check the file.
 					if (!file.isDirectory()) { // If it is not a directory
+
 						if (!serverFilenames.contains(filename)) { 
 							// and if Server doesn't have the file, upload/count.
 							if(mode == 0) {
@@ -282,6 +286,7 @@ public class Client {
 							} else {	//Count-mode
 								result++;
 							}
+							
 						}
 					} else { // If it is a directory, search the folder(DFS by pushDirecctory)
 						apacheClient.makeDirectory(filename);
@@ -299,7 +304,7 @@ public class Client {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e("sync", e.getMessage());
 			return -1;
 		}
 
@@ -343,9 +348,10 @@ public class Client {
 	 * @param	file	The file to be pulled.
 	 * @param	directoryPath	The directory the file resides in, relative to
 	 * the base directory.
+	 * @param	outputFile		File to be output in the client device (should be in the same directory with file)
 	 * @return	true if successful; false otherwise.
 	 */
-	public boolean pullFile(String directoryPath, File file) {
+	public boolean pullFile(String directoryPath, File file, File outputFile) {
 		boolean result = false;
 		try {
 			File inProgressFile = new File(file.getPath() + ".inprogress");
@@ -357,11 +363,15 @@ public class Client {
 							file.getName(),
 					stream);
 			stream.close();
-			inProgressFile.renameTo(file);
+			inProgressFile.renameTo(outputFile);
 		} catch (IOException e) {
 			return false;
 		}
 		return result;
+	}
+	
+	private boolean pullFile(String directoryPath, File file) {
+		return pullFile(directoryPath, file, file);
 	}
 	
 	/**

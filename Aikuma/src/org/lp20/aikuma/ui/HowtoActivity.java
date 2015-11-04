@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import org.lp20.aikuma.Aikuma;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import android.net.Uri;
 import android.content.Intent;
 

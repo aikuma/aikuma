@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.audio.record;
@@ -244,6 +244,7 @@ public class PhoneRespeaker implements
 	private Microphone microphone;
 	/** The file to write to */
 	private PCMWriter file;
+	private PCMWriter sampleFile;
 	/** Player to play the original with. */
 	private SimplePlayer player;
 	/** Indicates whether the recording has finished playing. */

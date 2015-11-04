@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Language;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma.util.AikumaSettings;
+import org.lp20.aikuma2.R;
 
 /**
  * The array adapter for dealing with lists of Speakers.
@@ -47,25 +48,12 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 		Speaker speaker = getItem(position);
 		TextView speakerNameView =
 				(TextView) speakerView.findViewById(R.id.speakerName);
+		TextView speakerOwnerView = 
+				(TextView) speakerView.findViewById(R.id.speakerOwner);
 		speakerNameView.setText(speaker.getName());
-		TextView speakerLanguagesView =
-				(TextView) speakerView.findViewById(R.id.speakerLanguages);
-		List<Language> languages = new
-				ArrayList<Language>(speaker.getLanguages());
-		if (languages.size() > 0) {
-			String languageNames = languages.remove(0).getName();
-			for (Language language : languages) {
-				languageNames = languageNames + ", " + language.getName();
-			}
-			speakerLanguagesView.setText(languageNames);
-		}
-		ImageView speakerImage =
-				(ImageView) speakerView.findViewById(R.id.speakerImage);
-		try {
-			speakerImage.setImageBitmap(speaker.getSmallImage());
-		} catch (IOException e) {
-			// If the image can't be loaded, we just leave it at that.
-		}
+		if(!AikumaSettings.getCurrentUserId().equals(speaker.getOwnerId()))
+			speakerOwnerView.setText("(" + speaker.getOwnerId() + ")");
+
 		return speakerView;
 	}
 

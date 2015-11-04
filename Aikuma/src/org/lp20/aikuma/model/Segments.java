@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.model;
@@ -12,6 +12,9 @@ import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.lp20.aikuma.model.FileModel.FileType;
 import org.lp20.aikuma.util.FileIO;
 
 /**
@@ -33,12 +36,20 @@ public class Segments {
 		this();
 		this.respeaking = respeaking;
 		try {
-			readSegments(new File(Recording.getRecordingsPath(),
+			readJSONSegments(new File(respeaking.getRecordingsPath(), 
 					respeaking.getGroupId() + "/" +
-					respeaking.getId() + ".map"));
+					respeaking.getId() + 
+					FileModel.getSuffixExt(respeaking.getVersionName(), FileType.MAPPING)));
 		} catch (IOException e) {
-			//Issue with reading mapping.
-			throw new RuntimeException(e);
+			// Temporary solution (If file is not in JSON format, try older format)
+			try {
+				readSegments(new File(respeaking.getRecordingsPath(), 
+						respeaking.getGroupId() + "/" +
+						respeaking.getId() + "-mapping.txt"));
+			} catch (IOException e1) {
+				//Issue with reading mapping.
+				throw new RuntimeException(e1);
+			}
 		}
 	}
 
@@ -71,6 +82,15 @@ public class Segments {
 	public void put(Segment originalSegment,
 					Segment respeakingSegment) {
 		segmentMap.put(originalSegment, respeakingSegment);
+	}
+	
+	/**
+	 * Removes a pair of segments; analogous to Map.remove()
+	 * 
+	 * @param originalSegment	A segment of an original recording.
+	 */
+	public void remove(Segment originalSegment) {
+		segmentMap.remove(originalSegment);
 	}
 
 	/**
@@ -108,6 +128,32 @@ public class Segments {
 						, Long.parseLong(respeakingSegment[1])));
 		}
 	}
+	
+	private void readJSONSegments(File path) throws IOException {
+		JSONObject jsonObj = FileIO.readJSONObject(path);
+		JSONArray jsonSegmentArray = (JSONArray) jsonObj.get(JSON_MAPPING_KEY);
+		segmentMap = new LinkedHashMap<Segment, Segment>();
+		
+		for (Object jsonElem : jsonSegmentArray) {
+			JSONObject jsonSegmentPair = (JSONObject) jsonElem;
+			
+			JSONArray jsonSourceSegment = 
+					(JSONArray) jsonSegmentPair.get(JSON_ORIGINAL_KEY);
+			JSONArray jsonTargetSegment = 
+					(JSONArray) jsonSegmentPair.get(JSON_RESPEAKING_KEY);
+			
+			if (jsonSourceSegment.size() + jsonTargetSegment.size() != 4) {
+				throw new RuntimeException("Segment format is corrupted");
+			}
+			
+			segmentMap.put(
+					new Segment((Long) jsonSourceSegment.get(0), 
+							(Long) jsonSourceSegment.get(1)),
+					new Segment((Long) jsonTargetSegment.get(0), 
+							(Long) jsonTargetSegment.get(1)));
+			
+		}
+	}
 
 	/**
 	 * Writes the segment mapping to file.
@@ -116,7 +162,8 @@ public class Segments {
 	 * @throws	IOException	If the segments cannot be written to file.
 	 */
 	public void write(File path) throws IOException {
-		FileIO.write(path, toString());
+		//FileIO.write(path, toString());
+		FileIO.writeJSONObject(path, toJSONObject());
 	}
 
 	/**
@@ -198,6 +245,38 @@ public class Segments {
 		}
 		return mapString;
 	}
+	
+	/**
+	 * Get JSON representation of the segments structure
+	 * 
+	 * @return	JSON object of the segments
+	 */
+	private JSONObject toJSONObject() {
+		JSONObject jsonObj = new JSONObject();
+		JSONArray jsonSegmentArray = new JSONArray();
+		Segment respeakingSegment;
+		for (Segment originalSegment : segmentMap.keySet()) {
+			respeakingSegment = getRespeakingSegment(originalSegment);
+			
+			JSONObject jsonSegmentPair = new JSONObject();
+			JSONArray jsonSourceSegment = new JSONArray();
+			JSONArray jsonTargetSegment = new JSONArray();
+			
+			jsonSourceSegment.add(originalSegment.getStartSample());
+			jsonSourceSegment.add(originalSegment.getEndSample());
+			jsonTargetSegment.add(respeakingSegment.getStartSample());
+			jsonTargetSegment.add(respeakingSegment.getEndSample());
+			
+			jsonSegmentPair.put(JSON_ORIGINAL_KEY, jsonSourceSegment);
+			jsonSegmentPair.put(JSON_RESPEAKING_KEY, jsonTargetSegment);
+			
+			jsonSegmentArray.add(jsonSegmentPair);
+		}
+		
+		jsonObj.put(JSON_MAPPING_KEY, jsonSegmentArray);
+		
+		return jsonObj;
+	}
 
 	/**
 	 * An exception thrown if the segment mapping file is incorrectly
@@ -217,4 +296,8 @@ public class Segments {
 	private LinkedHashMap<Segment, Segment> segmentMap;
 	private Segment finalOriginalSegment;
 	private Recording respeaking;
+	
+	private static final String JSON_MAPPING_KEY = "mapping";
+	private static final String JSON_ORIGINAL_KEY = "source";
+	private static final String JSON_RESPEAKING_KEY = "target";
 }

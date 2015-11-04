@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.model;
@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
+import org.lp20.aikuma.Aikuma;
 
 /**
  * Representation of an ISO 639-3 language
@@ -18,7 +19,7 @@ import org.json.simple.JSONArray;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class Language implements Parcelable {
+public class Language implements Parcelable, Comparable<Language> {
 
 	/**
 	 * The name of the language
@@ -42,10 +43,20 @@ public class Language implements Parcelable {
 		return this.name;
 	}
 
+	/**
+	 * Return the string of language code 
+	 * (ISO639: three characters, Custom: first three chars)
+	 * 
+	 * @return	the language code
+	 */
 	public String getCode() {
+		if(this.code.isEmpty() && !this.name.isEmpty()) {	// Custom language
+			int end = this.name.length() > 3 ? 3 : this.name.length();
+			return this.name.substring(0, end);
+		}
 		return this.code;
 	}
-
+	
 	/**
 	 * The minimal constructor.
 	 *
@@ -64,6 +75,18 @@ public class Language implements Parcelable {
 	 */
 	public String toString() {
 		return getName() + " : " + getCode();
+	}
+	
+	/**
+	 * Returns a string used in the tag filename
+	 * @return	A string of the tag contents
+	 */
+	public String toTagString() {
+		if(this.code.isEmpty() && !this.name.isEmpty()) {	// Custom language
+			return this.name;
+		} else {	
+			return "iso639_" + this.code;
+		}
 	}
 
 	/**
@@ -85,7 +108,7 @@ public class Language implements Parcelable {
 	 */
 	public void writeToParcel(Parcel out, int _flags) {
 		out.writeString(getName());
-		out.writeString(getCode());
+		out.writeString(this.code);
 	}
 
 	/**
@@ -135,7 +158,8 @@ public class Language implements Parcelable {
 	public static JSONArray encodeList(List<Language> languages) {
 		JSONArray languageArray = new JSONArray();
 		for (Language language : languages) {
-			languageArray.add(language.encode());
+			//languageArray.add(language.encode());
+			languageArray.add(language.getCode());
 		}
 		return languageArray;
 	}
@@ -150,11 +174,20 @@ public class Language implements Parcelable {
 		List<Language> languages = new ArrayList<Language>();
 		if (languageArray != null) {
 			for (Object langObj : languageArray) {
-				JSONObject jsonLangObj = (JSONObject) langObj;
-				Language lang = new Language(
-						jsonLangObj.get("name").toString(),
-						jsonLangObj.get("code").toString());
-				languages.add(lang);
+				if (langObj instanceof JSONObject) {
+					JSONObject jsonLangObj = (JSONObject) langObj;
+					Language lang = new Language(
+							jsonLangObj.get("name").toString(),
+							jsonLangObj.get("code").toString());
+					languages.add(lang);
+				} else {
+					String langCode = (String) langObj;
+					Language lang = new Language(
+							Aikuma.getLanguageCodeMap().get(langCode),
+							langCode);
+					languages.add(lang);
+				}
+				
 			}
 		}
 		return languages;
@@ -179,4 +212,15 @@ public class Language implements Parcelable {
 				.append(name, rhs.name).append(code, rhs.code).isEquals();
 	}
 
+
+	/**
+	 * Compares the given language with this language
+	 *
+	 * @param	that	Language object compared with this object
+	 * @return			compare result of language
+	 */
+	public int compareTo(Language that) {
+		return name.compareTo(that.getName());
+	}
+	
 }

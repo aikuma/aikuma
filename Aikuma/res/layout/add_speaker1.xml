@@ -15,6 +15,15 @@
 		android:inputType="text"	
 		/>
 
+	<EditText
+	    android:id="@+id/speakerComments"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/speakerName"
+	    android:hint="@string/speaker_comments"
+	    android:inputType="textMultiLine" >
+	</EditText>
+	
 	<ImageButton
 		android:id="@+id/okButton1"
 		android:layout_width="match_parent"
@@ -24,4 +33,7 @@
 		android:src="@drawable/ok_48"
 		android:onClick="onOkButtonPressed"
 		/>
+
+	
+
 </RelativeLayout>

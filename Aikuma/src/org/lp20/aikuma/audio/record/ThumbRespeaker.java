@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.audio.record;
@@ -41,7 +41,7 @@ public class ThumbRespeaker {
 	 */
 	public ThumbRespeaker(Recording original, UUID respeakingUUID, 
 			int rewindAmount) throws MicException, IOException {
-		recorder = new Recorder(new File(Recording.getNoSyncRecordingsPath(),
+		recorder = new Recorder(1, new File(Recording.getNoSyncRecordingsPath(),
 				respeakingUUID + ".wav"), original.getSampleRate());
 		player = new SimplePlayer(original, true);
 		mapper = new Mapper(respeakingUUID);
@@ -95,13 +95,21 @@ public class ThumbRespeaker {
 	 */
 	public void pauseRespeaking() throws MicException {
 		recorder.pause();
+	}
+
+	/**
+	 * Saves the respeaking audio and mapping-information
+	 */
+	public void saveRespeaking() {
+		recorder.save();
+		
 		// Because of rewind after each respeaking-segment,
 		// Force user to record respeaking after listening next original-segment
 		if(player.getCurrentSample() > mapper.getOriginalStartSample()) {
 			mapper.store(player, recorder);
 		}
 	}
-
+	
 	/**
 	 * Stops/finishes the respeaking process
 	 *

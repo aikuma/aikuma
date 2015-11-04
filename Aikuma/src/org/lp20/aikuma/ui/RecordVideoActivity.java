@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.lp20.aikuma.MainActivity;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.util.DebugUtils;
 import org.lp20.aikuma.util.VideoUtils;
 

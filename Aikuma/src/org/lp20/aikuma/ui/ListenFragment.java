@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
@@ -27,7 +27,7 @@ import org.lp20.aikuma.audio.MarkedPlayer;
 import org.lp20.aikuma.audio.TranscriptPlayer;
 import org.lp20.aikuma.model.Segments;
 import org.lp20.aikuma.model.Segments.Segment;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * A fragment used to perform audio playback; offers a seekbar, a play and
@@ -55,21 +55,37 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		View v = inflater.inflate(R.layout.listen_fragment, container, false);
 		playPauseButton = (ImageButton) v.findViewById(R.id.PlayPauseButton);
 		playPauseButton.setOnClickListener(this);
+		
 		seekBar = (InterleavedSeekBar) v.findViewById(R.id.InterleavedSeekBar);
 		seekBar.setOnSeekBarChangeListener(
 				new SeekBar.OnSeekBarChangeListener() {
+					int prog;
+					boolean isPlayed = false;
 					public void onProgressChanged(SeekBar seekBar,
 							int progress, boolean fromUser) {
 						if (fromUser) {
-							player.seekToMsec((int)Math.round(
-									(((float)progress)/100)*
-									player.getDurationMsec()));
+							if (player.isPlaying()) {
+								pause ();
+								isPlayed = true;
+							}
+							prog = progress;		
 						}
 					}
-					public void onStopTrackingTouch(SeekBar _seekBar) {};
+					public void onStopTrackingTouch(SeekBar _seekBar) {
+						player.seekToMsec((int)Math.round(
+								(((float)prog)/100)*
+								player.getDurationMsec()));
+						
+						if (isPlayed) {
+							isPlayed = false;
+							play ();
+						}
+					};
 					public void onStartTrackingTouch(SeekBar _seekBar) {};
 				});
 		seekBar.invalidate();
+		wasPlayed = false;
+		
 		return v;
 	}
 
@@ -79,21 +95,27 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	 */
 	@Override
 	public void onPause() {
-		super.onPause();
 		pause();
+		super.onPause();
 	}
-
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		wasPlayed = false;
+	}
+	
 	/**
 	 * Called when the Fragment is destroyed; ensures proper cleanup.
 	 */
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
 		if (player != null) {
 			//If you hit the stop button really quickly, the player may not
 			//have been initialized fully.
 			player.release();
 		}
+		super.onDestroy();
 	}
 
 	/**
@@ -107,8 +129,15 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		if (v == playPauseButton) {
 			if (player.isPlaying()) {
 				pause();
+				if(otherPlayer != null) {
+					otherPlayer.setEnabled(true);	
+				}
+				wasPlayed = false;
 			} else {
+				if(otherPlayer != null)
+					otherPlayer.setEnabled(false);
 				play();
+				wasPlayed = true;
 			}
 		}
 	}
@@ -150,13 +179,54 @@ public class ListenFragment extends Fragment implements OnClickListener {
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
+							currentPosition = player.getCurrentMsec();
+							seekBar.setProgress(
+									(int)(((float)currentPosition/(float)
+									player.getDurationMsec())*100));
+							if(otherPlayer != null) {
+								otherPlayer.setProgress(currentPosition);
+							}
 							return;
 						}
 					}
 				}
 		});
 		seekBarThread.start();
-		playPauseButton.setImageResource(R.drawable.pause);
+		playPauseButton.setImageResource(R.drawable.pause_g);
+	}
+	
+	/**
+	 * Set the play-cursor to msec position
+	 * 
+	 * @param msec	Play-cursor position
+	 */
+	public void setProgress(int msec) {
+		player.seekToMsec(msec);
+		seekBar.setProgress(
+				(int)(((float)msec / (float)player.getDurationMsec())*100));
+	}
+	
+	/**
+	 * Get the current msec position of the player
+	 * @return msec	Player-cursor position
+	 */
+	public int getPlayerPos() {
+		return player.getCurrentMsec();
+	}
+	
+	/**
+	 * Mimic the event of play-button being pressed
+	 */
+	public void triggerPlayButton() {
+		onClick(this.playPauseButton);
+	}
+	
+	/**
+	 * Check if the player was played (to restart player after rotation)
+	 * @return	True if the player was played
+	 */
+	public boolean wasPlayed() {
+		return wasPlayed;
 	}
 
 	/**
@@ -209,6 +279,29 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		}
 		player.setOnCompletionListener(onCompletionListener);
 	}
+	
+	/**
+	 * Connet this player with the other player
+	 * 
+	 * @param player	The other player
+	 */
+	public void setOtherPlayer(ListenFragment player) {
+		this.otherPlayer = player;
+	}
+	
+	/**
+	 * Enable/Disable the play-pause button of the player
+	 * 
+	 * @param isEnabled		true: enable, false: disable
+	 */
+	private void setEnabled(boolean isEnabled) {
+		playPauseButton.setEnabled(isEnabled);
+		if(isEnabled) {
+			playPauseButton.setImageResource(R.drawable.play_g);
+		} else {
+			playPauseButton.setImageResource(R.drawable.play_grey);
+		}
+	}
 
 	/** Defines behaviour for the fragment when a recording finishes playing.*/
 	private Player.OnCompletionListener onCompletionListener =
@@ -224,4 +317,7 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	private ImageButton playPauseButton;
 	private InterleavedSeekBar seekBar;
 	private Thread seekBarThread;
+	
+	private boolean wasPlayed;
+	private ListenFragment otherPlayer;
 }

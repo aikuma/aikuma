@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <ImageButton
+		android:id="@+id/okButton"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:scaleType="centerInside"
+		android:src="@drawable/ok_48"
+		android:layout_alignParentBottom="true"
+		android:onClick="onOkButtonPressed"
+	/>
+    
+    <LinearLayout 
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:focusable="true"
+		android:focusableInTouchMode="true"
+		android:layout_above="@id/okButton">
+		
+		<Button
+			android:id="@+id/addISOLanguageButton"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/add_iso_language"
+			android:onClick="onAddISOLanguageButton"
+		/>
+		<Button
+			android:id="@+id/addCustomLanguageButton"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/add_custom_language"
+			android:onClick="onAddCustomLanguageButton"
+		/>
+		<ListView android:id="@android:id/list"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+		/>
+	</LinearLayout>
+
+    
+</RelativeLayout>
+

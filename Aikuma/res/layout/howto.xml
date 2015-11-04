@@ -3,7 +3,7 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical">
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<LinearLayout 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal">
@@ -21,7 +21,7 @@
 			android:id="@+id/recordingName"
 			android:padding="1dp"/>
 	</LinearLayout>
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<LinearLayout
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal">
@@ -36,10 +36,9 @@
 			android:layout_height="wrap_content"
 			android:text="View/add speakers"
 			android:layout_width="wrap_content"
-			android:id="@+id/recordingName"
 			android:padding="1dp"/>
 	</LinearLayout>
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<LinearLayout
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal">
@@ -54,10 +53,9 @@
 			android:layout_height="wrap_content"
 			android:text="Make a commentary"
 			android:layout_width="wrap_content"
-			android:id="@+id/recordingName"
 			android:padding="1dp"/>
 	</LinearLayout>
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<LinearLayout 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal">
@@ -72,7 +70,6 @@
 			android:layout_height="wrap_content"
 			android:text="Import audio"
 			android:layout_width="wrap_content"
-			android:id="@+id/recordingName"
 			android:padding="1dp"/>
 	</LinearLayout>
 	<Button
@@ -83,4 +80,6 @@
 		android:onClick="openHelpInBrowser"
 		android:textSize="15sp"
 	/>
+
+
 </LinearLayout>

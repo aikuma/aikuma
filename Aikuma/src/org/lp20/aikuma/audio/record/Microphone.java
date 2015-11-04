@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.audio.record;
@@ -107,6 +107,7 @@ public class Microphone {
 	public void listen(final MicrophoneListener callback) {
 		// If there is already a thread listening then kill it and ensure it's
 		// dead before creating a new thread.
+		Log.i("thread", "listen");
 		if (t != null) {
 			t.interrupt();
 			while (t.isAlive()) {}
@@ -190,11 +191,13 @@ public class Microphone {
 
 		// Wait until something is heard.
 		while (true) {
+			Log.i("thread", "read");
 			if (physicalMicrophone.read(buffer, 0, buffer.length) <= 0) {
 				break;
 			}
 
 			if (Thread.interrupted()) {
+				Log.i("thread", "interrupted");
 				return;
 			}
 
@@ -213,6 +216,7 @@ public class Microphone {
 		this.buffer = new short[getBufferSize()];
 	}
 	private int getBufferSize() {
+		// 10/441 ~ 22.6msec
 		return Math.round(1000f*physicalMicrophone.getSampleRate()/44100);
 	}
 

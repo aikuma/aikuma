@@ -1,7 +1,7 @@
 package org.lp20.aikuma.ui;
 
 import java.util.Map;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.http.Server;
 import android.app.AlertDialog;
 import android.content.DialogInterface;

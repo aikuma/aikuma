@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui.sensors;
@@ -12,6 +12,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.content.Context;
 import android.util.FloatMath;
+import android.util.Log;
 
 /**
  * A simple proximity detector.
@@ -23,6 +24,8 @@ import android.util.FloatMath;
  */
 public class ProximityDetector {
 
+	private static final String TAG = ProximityDetector.class.getSimpleName();
+	
 	/**
 	 * The sensor manager that provides the readings.
 	 */
@@ -46,7 +49,7 @@ public class ProximityDetector {
 
 		public void onSensorChanged(SensorEvent sensorEvent) {
 			float distance = sensorEvent.values[0];
-
+			Log.i(TAG, "close: " + close + ", threshold: " + distance);
 			if (!close && distance <= threshold) {
 				near(distance);
 				close = true; // report only once
@@ -116,11 +119,12 @@ public class ProximityDetector {
 	 */
 	public void start() {
 		this.close = false;
-		sensorManager.registerListener(
+		boolean success = sensorManager.registerListener(
 				sensorListener,
 				sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
 				SensorManager.SENSOR_DELAY_NORMAL
 		);
+		Log.i(TAG, "registered: " + success);
 	}
 
 	/**

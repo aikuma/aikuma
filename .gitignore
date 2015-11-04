@@ -1,5 +1,6 @@
 *.class
 *.json
+aikuma-cloud-storage-*.jar
 .metadata
 *.swp
 *~

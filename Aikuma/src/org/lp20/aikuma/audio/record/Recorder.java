@@ -1,23 +1,27 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.audio.record;
 
-import android.content.Context;
 import android.media.AudioFormat;
 import android.media.MediaRecorder;
 import android.media.MediaPlayer;
 import android.util.Log;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Set;
+
+
 import org.lp20.aikuma.audio.record.analyzers.Analyzer;
 import org.lp20.aikuma.audio.record.analyzers.SimpleAnalyzer;
 import org.lp20.aikuma.audio.Beeper;
 import org.lp20.aikuma.audio.Sampler;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
+import org.lp20.aikuma.model.FileModel;
+import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.model.FileModel.FileType;
 import org.lp20.aikuma.ui.RecordActivity;
+import org.lp20.aikuma.util.AikumaSettings;
+
 import static org.lp20.aikuma.audio.record.Microphone.MicException;
 
 /**
@@ -40,14 +44,16 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	/**
 	 * Creates a Recorder that uses an analyzer which tells the recorder to
 	 * always record regardless of input.
+	 * only used in ThumbRespeaker so Recorder-class only uses SimpleAnalyzer.
 	 *
+	 * @param	type	The recording type (0: original, 1: respeaking)
 	 * @param	path	The path to the file where the recording will be stored
 	 * @param	sampleRate	The sample rate that the recording should be taken
 	 * at.
 	 * @throws	MicException	If there is an issue setting up the microphone.
 	 */
-	public Recorder(File path, long sampleRate) throws MicException {
-		this(path, sampleRate, new SimpleAnalyzer());
+	public Recorder(int type, File path, long sampleRate) throws MicException {
+		this(type, path, sampleRate, new SimpleAnalyzer());
 	}
 
 	/**
@@ -64,17 +70,23 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	/**
 	 * Constructor
 	 *
+	 * @param	type	The recording type (0: original, 1: respeaking)
 	 * @param	path	The path to where the recording should be stored.
 	 * @param	sampleRate	The sample rate the recording should be taken at.
 	 * @param	analyzer	The analyzer that determines whether the recorder
 	 * should record or ignore the input
 	 * @throws	MicException	If there is an issue setting up the microphone.
 	 */
-	public Recorder(File path, long sampleRate, Analyzer analyzer) throws MicException {
+	public Recorder(int type, File path, long sampleRate, Analyzer analyzer) throws MicException {
+		this.type = type;
 		this.analyzer = analyzer;
 		setUpMicrophone(sampleRate);
 		setUpFile();
 		this.prepare(path.getPath());
+		
+		audioBuffer = new short[10 * Math.round(1000f*sampleRate/44100)];
+		audioBufLength = 0;
+		totalAudioLength = 0;
 	}
 
 	/** Start listening. */
@@ -89,6 +101,7 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 			});
 		} else {
 		*/
+		audioBufLength = 0;
 		microphone.listen(this);
 	}
 
@@ -121,10 +134,18 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	 */
 	private void prepare(String targetFilename) {
 		file.prepare(targetFilename);
+		
+		if(this.type == 0) {
+			String sampleFileName = 
+					targetFilename.substring(0, targetFilename.lastIndexOf('.')) + 
+					FileModel.getSuffixExt(AikumaSettings.getLatestVersion(), FileType.PREVIEW);
+			sampleFile.prepare(sampleFileName);
+		}
 	}
 
 	/** Sets up the micrphone for recording */
 	private void setUpMicrophone(long sampleRate) throws MicException {
+		this.sampleRate = sampleRate;
 		this.microphone = new Microphone(sampleRate);
 	}
 
@@ -135,6 +156,14 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 				microphone.getChannelConfiguration(),
 				microphone.getAudioFormat()
 		);
+		
+		if(this.type == 0) {
+			sampleFile = PCMWriter.getInstance(
+					microphone.getSampleRate(),
+					microphone.getChannelConfiguration(),
+					microphone.getAudioFormat()
+			);
+		}
 	}
 
 	/**
@@ -184,6 +213,8 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	public void stop() throws MicException {
 		microphone.stop();
 		file.close();
+		if(this.type == 0)
+			sampleFile.close();
 	}
 
 	/**
@@ -206,6 +237,22 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 		beeper.beep();
 		*/
 	}
+	
+	/** 
+	 * By default simply writes the audioBuffer to the file.
+	 */
+	public void save() {
+		file.write(audioBuffer, audioBufLength);
+		
+		totalAudioLength += audioBufLength;
+		if (this.type == 0 && 
+				Math.round((double) totalAudioLength / sampleRate) < Recording.SAMPLE_SEC) // 15sec sample
+		{
+			sampleFile.write(audioBuffer, audioBufLength);
+		}
+			
+		audioBufLength = 0;
+	}
 
 	/**
 	 * Callback for the microphone.
@@ -217,10 +264,31 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 		//  * silenceTriggered
 		//  * audioTriggered
 		//
-		analyzer.analyze(this, buffer);
+		
+		// SimplieAnalyzer.analyze calls audioTriggered, which is just a writing function
+		if(type == 0) {
+			analyzer.analyze(this, buffer); 
+		} else {
+			storeBuffer(buffer);
+		}
+		
 	}
+	
+	// Append all audio-values in srcBuffer to audioBuffer
+	private void storeBuffer(short[] srcBuffer) {
+		if(audioBuffer.length < audioBufLength + srcBuffer.length) {
+			int newBufLength = 2 * audioBuffer.length;
+			short[] newBuffer = new short[newBufLength];
+			System.arraycopy(audioBuffer, 0, newBuffer, 0, audioBufLength);
+			audioBuffer = newBuffer;
+		}
+		
+		System.arraycopy(srcBuffer, 0, audioBuffer, audioBufLength, srcBuffer.length);
+		audioBufLength += srcBuffer.length;
+	}
+	
 
-	//The following two methods handle silences/speech
+	//The following two methods handle silences/speech (called by Analyzer class)
 	// discovered in the input data.
 	//
 	// If you need a different behaviour, override.
@@ -234,6 +302,14 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	 */
 	public void audioTriggered(short[] buffer, boolean justChanged) {
 		file.write(buffer);
+		
+		totalAudioLength += buffer.length;
+		if (this.type == 0 &&
+				Math.round((double) totalAudioLength / sampleRate) < Recording.SAMPLE_SEC) // 15sec sample
+		{
+			sampleFile.write(buffer);
+		}
+			
 	}
 
 	/**
@@ -246,10 +322,23 @@ public class Recorder implements AudioHandler, MicrophoneListener, Sampler {
 	public void silenceTriggered(short[] buffer, boolean justChanged) {
 		// Intentionally empty.
 	}
-
+	
+	/** type of recorder (0: original, 1: respeaking) */
+	private int type;
+	
 	/** File to write to. */
 	private PCMWriter file;
+	
+	private PCMWriter sampleFile;
 
+	/** Buffer to keep audio data temporarily **/
+	private short[] audioBuffer;
+	
+	private int audioBufLength;
+	
+	private long totalAudioLength;
+	private long sampleRate;
+	
 	/** Microphone input */
 	private Microphone microphone;
 
