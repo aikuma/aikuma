@@ -60,6 +60,11 @@ public class ListenActivity extends AikumaActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(savedInstanceState != null) {
+			playerMsecPos = savedInstanceState.getInt("msec");
+			wasPlayed = savedInstanceState.getBoolean("wasPlayed");
+		}
+			
 		setContentView(R.layout.listen);
 		menuBehaviour = new MenuBehaviour(this);
 		videoView = (VideoView) findViewById(R.id.videoView);
@@ -68,12 +73,26 @@ public class ListenActivity extends AikumaActivity {
 
 		setUpRecording();
 		setUpRespeakings();
-
 	}
 	
 	@Override
 	public void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+
+		String respeakingId = intent.getStringExtra("id");
+		if(respeakingId != null) {	//When respeak/interpret is created on source
+			Intent nextIntent = new Intent(ListenActivity.this, 
+					ListenRespeakingActivity.class);
+			nextIntent.putExtra("originalId", recording.getId());
+			nextIntent.putExtra("originalOwnerId", ownerId);
+			nextIntent.putExtra("originalVerName", versionName);
+			
+			nextIntent.putExtra("respeakingId", respeakingId);
+
+			startActivity(nextIntent);
+		} else {	// When tag is created on source
+			setUpRecording();
+		}
 	}
 	
 	@Override
@@ -102,6 +121,11 @@ public class ListenActivity extends AikumaActivity {
 		updatePublicShareButton();
 		updateArchiveButton();
 		//TODO: updatePrivateShareButton(), updateRefreshButton()
+		fragment.setProgress(playerMsecPos);
+		if(wasPlayed) {
+			fragment.triggerPlayButton(); 	
+			wasPlayed = false;
+		}
 		
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
@@ -126,9 +150,17 @@ public class ListenActivity extends AikumaActivity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		this.proximityDetector.stop();
+		//this.proximityDetector.stop();
+		playerMsecPos = fragment.getPlayerPos();
 	}
 	
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		Log.i(TAG, "onSave: " + fragment.wasPlayed());
+		savedInstanceState.putInt("msec", fragment.getPlayerPos());
+		savedInstanceState.putBoolean("wasPlayed", fragment.wasPlayed());
+	}
 	
 
 	// Prepares the original recording 
@@ -139,7 +171,6 @@ public class ListenActivity extends AikumaActivity {
 		ownerId = (String) intent.getExtras().get("ownerId");
 		try {
 			recording = Recording.read(versionName, ownerId, id);
-			
 			setUpQuickMenu();
 			List<Recording> original = new ArrayList<Recording>();
 			original.add(recording);
@@ -358,7 +389,7 @@ public class ListenActivity extends AikumaActivity {
 		SharedPreferences preferences =
 				PreferenceManager.getDefaultSharedPreferences(this);
 		String respeakingMode = preferences.getString(
-				AikumaSettings.RESPEAKING_MODE_KEY, "nothing");
+				AikumaSettings.RESPEAKING_MODE_KEY, "thumb");
 		int rewindAmount = preferences.getInt("respeaking_rewind", 500);
 		Log.i(TAG, 
 				"respeakingMode: " + respeakingMode +", rewindAmount: " + rewindAmount);
@@ -582,6 +613,7 @@ public class ListenActivity extends AikumaActivity {
 		}
 	}
 
+	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {
 		if (proximityDetector.isNear()) {
@@ -603,6 +635,8 @@ public class ListenActivity extends AikumaActivity {
 
 	private boolean phoneRespeaking = false;
 	private Player player;
+	private int playerMsecPos = 0;
+	private boolean wasPlayed = false;
 	private ListenFragment fragment;
 	private VideoView videoView;
 	private Recording recording;

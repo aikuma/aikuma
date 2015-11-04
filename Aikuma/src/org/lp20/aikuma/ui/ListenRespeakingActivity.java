@@ -49,6 +49,10 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(savedInstanceState != null) {
+			playerMsecPos = savedInstanceState.getInt("msec");
+			wasPlayed = savedInstanceState.getInt("wasPlayed");
+		}
 		setContentView(R.layout.listen_respeaking);
 		menuBehaviour = new MenuBehaviour(this);
 
@@ -70,6 +74,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	@Override
 	public void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+		setUpRecordings(); // invalidate the view of recordings
 	}
 	
 	@Override
@@ -86,6 +91,14 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		updatePublicShareButtons();
 		updateArchiveButtons();
 		//TODO: updatePrivateShareButton(), updateRefreshButton()
+		originalListenFragment.setProgress(playerMsecPos);
+		respeakingListenFragment.setProgress(playerMsecPos);
+		if(wasPlayed == 1) {
+			originalListenFragment.triggerPlayButton(); 	
+		} else if(wasPlayed == 2) {
+			respeakingListenFragment.triggerPlayButton();
+		}
+		wasPlayed = 0;
 		
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
@@ -111,6 +124,24 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	public void onPause() {
 		super.onPause();
 		this.proximityDetector.stop();
+		playerMsecPos = originalListenFragment.getPlayerPos();
+		if(respeakingListenFragment.getPlayerPos() > playerMsecPos)
+			playerMsecPos = respeakingListenFragment.getPlayerPos();
+		
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		
+		int pos = originalListenFragment.getPlayerPos();
+		if(respeakingListenFragment.getPlayerPos() > pos)
+			pos = respeakingListenFragment.getPlayerPos();
+		savedInstanceState.putInt("msec", pos);
+		if(originalListenFragment.wasPlayed())
+			savedInstanceState.putInt("wasPlayed", 1);
+		else if(respeakingListenFragment.wasPlayed())
+			savedInstanceState.putInt("wasPlayed", 2);
 	}
 	
 	private void addNewFragment(FragmentManager fm, 
@@ -561,6 +592,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 
 	private boolean phoneRespeaking = false;
 	private Player player;
+	private int playerMsecPos = 0;
+	private int wasPlayed = 0;
 	private Recording original;
 	private Recording respeaking;
 	private ListenFragment originalListenFragment;

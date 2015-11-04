@@ -55,6 +55,7 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 
 		// Get metadata
 		Intent intent = getIntent();
+		mode = intent.getStringExtra("mode");
 		String imageUUIDStr = intent.getExtras().getString("imageUUID");
 		if(imageUUIDStr != null)
 			imageUUID = UUID.fromString(imageUUIDStr);
@@ -184,10 +185,16 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 	 * @param	view	the OK button.
 	 */
 	public void onOkButtonPressed(View view) {
-		Intent intent =
-				new Intent(RecordingMetadataActivity4.this,
-						MainActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		Intent intent;
+		if(mode.equals("source")) {
+			intent = new Intent(RecordingMetadataActivity4.this, 
+					MainActivity.class);
+		} else {
+			intent = new Intent(RecordingMetadataActivity4.this, 
+					ListenActivity.class);
+		}
+		intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | 
+				Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		Date date = new Date();
 		String deviceName = Aikuma.getDeviceName();
@@ -240,6 +247,9 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 			startService(serviceIntent);
 		}
 		
+		intent.putExtra("id", recording.getId());
+		intent.putExtra("ownerId", recording.getOwnerId());
+		intent.putExtra("versionName", recording.getVersionName());
 		startActivity(intent);
 	}
 
@@ -263,6 +273,7 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 	private Double latitude;
 	private Double longitude;
 	
+	private String mode;
 	private ListenFragment listenFragment;
 	private VideoView videoView;
 }

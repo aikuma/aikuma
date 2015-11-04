@@ -133,6 +133,7 @@ public class RecordingMetadataActivity3 extends AikumaActivity {
 			intent.putExtra("description", description);
 			intent.putExtra("comments", comments);
 
+			intent.putExtra("mode", getIntent().getStringExtra("mode"));
 			intent.putParcelableArrayListExtra("languages", selectedLanguages);
 			
 			intent.putExtra("imageUUID", imageUUID.toString());

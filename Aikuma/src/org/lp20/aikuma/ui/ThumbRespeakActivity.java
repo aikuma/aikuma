@@ -117,6 +117,7 @@ public class ThumbRespeakActivity extends AikumaActivity {
 				intent.putExtra("numChannels", recorder.getNumChannels());
 				intent.putExtra("format", recorder.getFormat());
 				intent.putExtra("bitsPerSample", recorder.getBitsPerSample());
+				intent.putExtra("mode", getIntent().getStringExtra("mode"));
 				intent.putParcelableArrayListExtra("languages", selectedLanguages);
 				startActivity(intent);
 				ThumbRespeakActivity.this.finish();

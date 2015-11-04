@@ -248,6 +248,8 @@ public class RecordActivity extends AikumaActivity {
 			intent.putExtra("longitude", longitude);
 		}
 		
+		intent.putExtra("mode", getIntent().getStringExtra("mode"));
+		
 		intent.putParcelableArrayListExtra("languages", getIntent().getParcelableArrayListExtra("languages"));
 		
 		startActivity(intent);

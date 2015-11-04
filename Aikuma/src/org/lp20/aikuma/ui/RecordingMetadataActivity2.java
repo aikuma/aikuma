@@ -112,6 +112,7 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 		intent.putExtra("description", description);
 		intent.putExtra("comments", comments);
 		
+		intent.putExtra("mode", getIntent().getStringExtra("mode"));
 		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		
 		startActivity(intent);

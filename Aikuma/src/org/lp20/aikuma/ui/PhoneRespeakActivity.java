@@ -148,6 +148,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		intent.putExtra("format", respeaker.getFormat());
 		intent.putExtra("bitsPerSample", respeaker.getBitsPerSample());
 		
+		intent.putExtra("mode", getIntent().getStringExtra("mode"));
 		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		startActivity(intent);
 		PhoneRespeakActivity.this.finish();

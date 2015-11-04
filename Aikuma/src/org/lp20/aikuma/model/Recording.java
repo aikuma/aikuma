@@ -352,10 +352,9 @@ public class Recording extends FileModel {
 	 * @return	a list of languages
 	 */
 	public List<Language> getLanguages() {
-		if(languagesBuffer != null)
+		if(languagesBuffer.size() != 0)
 			return languagesBuffer;
 		
-		languagesBuffer = new ArrayList<Language>();
 		final Map<String, String> languageCodeMap = Aikuma.getLanguageCodeMap();
 		
 		filterTags(LANGUAGE_TAG_TYPE, new TagProcessor() {
@@ -409,11 +408,8 @@ public class Recording extends FileModel {
 	 * @return	A list of IDs representing the speakers of the recording.
 	 */
 	public List<String> getSpeakersIds() {
-		if(speakersIdsBuffer != null)
+		if(speakersIdsBuffer.size() != 0)
 			return speakersIdsBuffer;
-		
-		speakersCreatorsBuffer = new ArrayList<String>();
-		speakersIdsBuffer = new ArrayList<String>();
 		
 		filterTags(SPEAKER_TAG_TYPE, new TagProcessor() {
 			@Override
@@ -433,7 +429,7 @@ public class Recording extends FileModel {
 	 *          (Speakers will always have the same version with the recording)
 	 */
 	public List<Speaker> getSpeakers() {
-		if(speakersIdsBuffer == null) {
+		if(speakersIdsBuffer.size() == 0) {
 			getSpeakersIds();
 		}
 		Log.i(TAG, speakersIdsBuffer.toString());
@@ -459,7 +455,7 @@ public class Recording extends FileModel {
 	 * @return	a list of OLAC tag strings
 	 */
 	public List<String> getOLACTagStrings() {
-		if(olacTagStringsBuffer != null)
+		if(olacTagStringsBuffer.size() != 0)
 			return olacTagStringsBuffer;
 		
 		olacTagStringsBuffer = new ArrayList<String>();
@@ -480,7 +476,7 @@ public class Recording extends FileModel {
 	 * @return	a list of custom tag strings
 	 */
 	public List<String> getCustomTagStrings() {
-		if(customTagStringsBuffer != null)
+		if(customTagStringsBuffer.size() != 0)
 			return customTagStringsBuffer;
 		
 		customTagStringsBuffer = new ArrayList<String>();
@@ -1540,15 +1536,20 @@ public class Recording extends FileModel {
 		switch(tagType) {
 		case LANGUAGE:
 			tagTypeSuffix = LANGUAGE_TAG_TYPE;
+			languagesBuffer.clear();
 			break;
 		case SPEAKER:
 			tagTypeSuffix = SPEAKER_TAG_TYPE;
+			speakersCreatorsBuffer.clear();
+			speakersIdsBuffer.clear();
 			break;
 		case OLAC:
 			tagTypeSuffix = OLAC_TAG_TYPE;
+			olacTagStringsBuffer.clear();
 			break;
 		case CUSTOM:
 			tagTypeSuffix = CUSTOM_TAG_TYPE;
+			customTagStringsBuffer.clear();
 			break;
 		}
 
@@ -1837,13 +1838,13 @@ public class Recording extends FileModel {
 	 */
 	private Date date;
 
-	private List<Language> languagesBuffer;
+	private List<Language> languagesBuffer = new ArrayList<Language>();
 
-	private List<String> speakersIdsBuffer;
-	private List<String> speakersCreatorsBuffer;
+	private List<String> speakersIdsBuffer = new ArrayList<String>();
+	private List<String> speakersCreatorsBuffer = new ArrayList<String>();
 	
-	private List<String> olacTagStringsBuffer;
-	private List<String> customTagStringsBuffer;
+	private List<String> olacTagStringsBuffer = new ArrayList<String>();
+	private List<String> customTagStringsBuffer = new ArrayList<String>();
 	
 	/**
 	 * The device model name
@@ -2018,6 +2019,7 @@ public class Recording extends FileModel {
 		tagTypeSet.add(OLAC_TAG_TYPE);
 		tagTypeSet.add(CUSTOM_TAG_TYPE);	// The filename has the format(speakerID-image-small)
 	}
+	
 	
 	/**
 	 * A function pointer passed to filterTags()

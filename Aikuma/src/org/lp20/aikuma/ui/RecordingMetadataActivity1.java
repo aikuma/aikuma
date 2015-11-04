@@ -142,6 +142,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 		if(groupId != null)
 			intent.putExtra("groupId", groupId);
 		
+		intent.putExtra("mode", getIntent().getStringExtra("mode"));
 		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		
 		startActivity(intent);

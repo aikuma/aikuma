@@ -84,6 +84,8 @@ public class ListenFragment extends Fragment implements OnClickListener {
 					public void onStartTrackingTouch(SeekBar _seekBar) {};
 				});
 		seekBar.invalidate();
+		wasPlayed = false;
+		
 		return v;
 	}
 
@@ -96,7 +98,13 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		pause();
 		super.onPause();
 	}
-
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		wasPlayed = false;
+	}
+	
 	/**
 	 * Called when the Fragment is destroyed; ensures proper cleanup.
 	 */
@@ -124,11 +132,12 @@ public class ListenFragment extends Fragment implements OnClickListener {
 				if(otherPlayer != null) {
 					otherPlayer.setEnabled(true);	
 				}
-					
+				wasPlayed = false;
 			} else {
 				if(otherPlayer != null)
 					otherPlayer.setEnabled(false);
 				play();
+				wasPlayed = true;
 			}
 		}
 	}
@@ -195,6 +204,29 @@ public class ListenFragment extends Fragment implements OnClickListener {
 		player.seekToMsec(msec);
 		seekBar.setProgress(
 				(int)(((float)msec / (float)player.getDurationMsec())*100));
+	}
+	
+	/**
+	 * Get the current msec position of the player
+	 * @return msec	Player-cursor position
+	 */
+	public int getPlayerPos() {
+		return player.getCurrentMsec();
+	}
+	
+	/**
+	 * Mimic the event of play-button being pressed
+	 */
+	public void triggerPlayButton() {
+		onClick(this.playPauseButton);
+	}
+	
+	/**
+	 * Check if the player was played (to restart player after rotation)
+	 * @return	True if the player was played
+	 */
+	public boolean wasPlayed() {
+		return wasPlayed;
 	}
 
 	/**
@@ -286,5 +318,6 @@ public class ListenFragment extends Fragment implements OnClickListener {
 	private InterleavedSeekBar seekBar;
 	private Thread seekBarThread;
 	
+	private boolean wasPlayed;
 	private ListenFragment otherPlayer;
 }

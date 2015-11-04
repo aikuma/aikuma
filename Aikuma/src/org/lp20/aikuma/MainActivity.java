@@ -105,7 +105,6 @@ public class MainActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		
 		menuBehaviour = new MenuBehaviour(this);
 		originals = new ArrayList<Recording>();
 		adapter = new RecordingArrayAdapter(this, originals);
@@ -228,7 +227,19 @@ public class MainActivity extends ListActivity {
 	@Override
 	public void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		speakerId = intent.getStringExtra("speakerId");
+		String recordingId = intent.getStringExtra("id");
+		if (recordingId != null) { //After source-recording is finished
+			Intent nextIntent = new Intent(this, ListenActivity.class);
+			nextIntent.putExtra("id", recordingId);
+			nextIntent.putExtra("ownerId", intent.getStringExtra("ownerId"));
+			nextIntent.putExtra("versionName", intent.getStringExtra("versionName"));
+
+			startActivity(nextIntent);
+		} else {				   //When speaker is selcted to filter recordings 
+			speakerId = intent.getStringExtra("speakerId");	
+		}
+		
+		
 	}
 	
 	@Override

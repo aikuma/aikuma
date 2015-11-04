@@ -81,8 +81,9 @@ public class RecordingLanguageActivity extends AikumaListActivity {
 			Map<String, String> langCodeMap = Aikuma.getLanguageCodeMap();
 			for(String langCode : langBuffer) {
 				String langName = langCodeMap.get(langCode);
-				if(langName != null) {
-					selectedLanguages.add(new Language(langName, langCode));
+				Language bufLang = new Language(langName, langCode);
+				if(langName != null && defaultLanguages.contains(bufLang)) {
+					selectedLanguages.add(bufLang);
 				}
 			}
 				
@@ -245,6 +246,7 @@ public class RecordingLanguageActivity extends AikumaListActivity {
 				intent.putExtra("sampleRate", infoIntent.getLongExtra("sampleRate", 0));
 				intent.putExtra("rewindAmount", infoIntent.getIntExtra("rewindAmount", 0));
 			}
+			intent.putExtra("mode", mode);
 			
 			intent.putParcelableArrayListExtra("languages", selectedLanguages);
 			
