@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.util;
@@ -19,6 +19,7 @@ public class StandardDateFormat extends SimpleDateFormat {
 	 * Constructor that specifies the date format.
 	 */
 	public StandardDateFormat() {
-		super("yyyy-MM-dd HH:mm:ss.SSSZ");
+		super("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		super.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
 	}
 }

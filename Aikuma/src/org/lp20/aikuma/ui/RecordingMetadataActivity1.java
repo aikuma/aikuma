@@ -1,21 +1,24 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.audio.SimplePlayer;
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.util.FileIO;
 
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -36,6 +39,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recording_metadata1);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		// Get metadata
 		Intent intent = getIntent();
@@ -45,8 +49,8 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 		durationMsec = (Integer) intent.getExtras().get("durationMsec");
 		groupId = (String)
 				intent.getExtras().get("groupId");
-		sourceId = (String)
-				intent.getExtras().get("sourceId");
+		sourceVerId = (String)
+				intent.getExtras().get("sourceVerId");
 		numChannels = (Integer) intent.getExtras().get("numChannels");
 		bitsPerSample = (Integer) intent.getExtras().getInt("bitsPerSample");
 		latitude = (Double) intent.getExtras().get("latitude");
@@ -54,6 +58,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 		format = (String)
 				intent.getExtras().get("format");
 
+		selectedLanguages = intent.getParcelableArrayListExtra("languages");
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
 		//if duration of the file > 250msec
@@ -77,7 +82,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 			
 			FragmentTransaction ft = getFragmentManager().beginTransaction();
 			listenFragment = new ListenFragment();
-			ft.add(R.id.ListenFragment, listenFragment);
+			ft.replace(R.id.ListenFragment, listenFragment);
 			ft.commit();
 			
 			setUpPlayer(uuid, sampleRate);
@@ -115,7 +120,14 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 	 * @param	view	the OK button.
 	 */
 	public void onOkButtonPressed(View view) {
-		Intent intent = new Intent(this, RecordingMetadataActivity2.class);
+		Intent intent;
+		if(sourceVerId != null) {
+			intent = new Intent(this, RecordingMetadataActivity4.class);
+			intent.putExtra("sourceVerId", sourceVerId);
+			intent.putExtra("description", "");
+		} else {
+			intent = new Intent(this, RecordingMetadataActivity2.class);
+		} 
 		intent.putExtra("uuidString", uuid.toString());
 		intent.putExtra("sampleRate", sampleRate);
 		intent.putExtra("durationMsec", durationMsec);
@@ -127,11 +139,11 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 			intent.putExtra("latitude", latitude);
 			intent.putExtra("longitude", longitude);
 		}
-		
-		if(sourceId != null)
-			intent.putExtra("sourceId", sourceId);
 		if(groupId != null)
 			intent.putExtra("groupId", groupId);
+		
+		intent.putExtra("mode", getIntent().getStringExtra("mode"));
+		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		
 		startActivity(intent);
 	}
@@ -139,7 +151,7 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 	@Override
 	public void onBackPressed() {
 		if (safeActivityTransition) {
-			menuBehaviour.safeGoBack(safeActivityTransitionMessage, safeBehaviour);
+			menuBehaviour.safeGoBack(safeActivityTransitionMessage, "Discard", safeBehaviour);
 		} else {
 			safeBehaviour.onSafeBackButton();
 			this.finish();
@@ -169,10 +181,11 @@ public class RecordingMetadataActivity1 extends AikumaActivity {
 	private long sampleRate;
 	private int durationMsec;
 	private String groupId;
-	private String sourceId;
+	private String sourceVerId;
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;
+	private ArrayList<Language> selectedLanguages;
 	
 	private Double latitude;
 	private Double longitude;

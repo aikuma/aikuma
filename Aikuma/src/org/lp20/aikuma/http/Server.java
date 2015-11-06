@@ -7,6 +7,7 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
 import org.lp20.aikuma.model.Transcript;
+import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.ImageUtils;
 
 import android.content.res.AssetManager;
@@ -96,18 +97,6 @@ public class Server extends NanoHTTPD {
 			@Override
 			public Response run(IHTTPSession session) {
 				return serveShapeFile(session.getUri());
-			}
-		}).add(new Proc() {
-			// serve recordings by uuid
-			@Override
-			public Response run(IHTTPSession session) {
-				return serveSpeakerImage(session.getUri());
-			}
-		}).add(new Proc() {
-			// serve recordings by uuid
-			@Override
-			public Response run(IHTTPSession session) {
-				return serveSpeakerSmallImage(session.getUri());
 			}
 		}).add(new Proc() {
 			// create, save and load transcripts
@@ -289,12 +278,14 @@ public class Server extends NanoHTTPD {
 	}
 	
 	private Response serveRecording(String path, int offset, int len) {
+		// GET /recording/versionName/owner_id/filename
+		
 		String[] a = path.split("/");
-		if (a.length != 3 || !a[1].equals("recording"))
+		if (a.length != 5 || !a[1].equals("recording"))
 			return null;
 
 		try {
-			File f = Recording.read(a[2]).getFile();
+			File f = Recording.read(a[2], a[3], a[4]).getFile();
 			if (f == null) {
 				return mkNotFoundResponse(path);
 			}
@@ -325,14 +316,16 @@ public class Server extends NanoHTTPD {
 	}
 	
 	private Response serveMapFile(String path) {
+		// GET /recording/versionName/owner_id/filename/mapfile
 		String[] a = path.split("/");
-		if (a.length != 4 || !a[1].equals("recording") || !a[3].equals("mapfile"))
+		if (a.length != 6 || !a[1].equals("recording") || !a[5].equals("mapfile"))
 			return null;
 		
-		String group_id = Recording.getGroupIdFromId(a[2]);
+		String group_id = Recording.getGroupIdFromId(a[4]);
 
 		try {
-			File mapfile = new File(Recording.getRecordingsPath(), group_id + "/" + a[2] + ".map");
+			File mapfile = new File(Recording.getRecordingsPath(
+					FileIO.getOwnerPath(a[2], a[3])), group_id + "/" + a[4] + ".map");
 			InputStream is = new FileInputStream(mapfile);
 			return new Response(Status.OK, "text/plain", is);
 		}
@@ -342,66 +335,34 @@ public class Server extends NanoHTTPD {
 	}
 	
 	private Response serveShapeFile(String path) {
+		// GET /recording/versionName/owner_id/filename/shapefile
 		String[] a = path.split("/");
-		if (a.length != 4 || !a[1].equals("recording") || !a[3].equals("shapefile"))
+		if (a.length != 6 || !a[1].equals("recording") || !a[5].equals("shapefile"))
 			return null;
 		
 		try {
-			File mapfile = new File(Recording.getRecordingsPath(), a[2] + ".shape");
-			InputStream is = new FileInputStream(mapfile);
+			File shapefile = new File(Recording.getRecordingsPath(
+					FileIO.getOwnerPath(a[2], a[3])), a[4] + ".shape");
+			InputStream is = new FileInputStream(shapefile);
 			return new Response(Status.OK, "application/octet-stream", is);
 		}
 		catch (FileNotFoundException e) {
 			return mkNotFoundResponse(path);
 		}
 	}
-	
-	private Response serveSpeakerImage(String path) {
-		String[] a = path.split("/");
-		if (a.length != 4 || !a[1].equals("speaker") || !a[3].equals("image"))
-			return null;
-		
-		try {
-			InputStream is = new FileInputStream(Speaker.read(a[2]).getImageFile());
-			return new Response(Status.OK, "image/jpeg", is);
-		}
-		catch (IOException e) {
-			return mkNotFoundResponse(path);
-		}
-		catch (IllegalArgumentException e) {
-			return mkNotFoundResponse(path);
-		}
-	}
-	
-	private Response serveSpeakerSmallImage(String path) {
-		String[] a = path.split("/");
-		if (a.length != 4 || !a[1].equals("speaker") || !a[3].equals("smallimage"))
-			return null;
-		
-		try {
-			InputStream is = new FileInputStream(Speaker.read(a[2]).getSmallImageFile());
-			return new Response(Status.OK, "image/jpeg", is);
-		}
-		catch (IOException e) {
-			return mkNotFoundResponse(path);
-		}
-		catch (IllegalArgumentException e) {
-			return mkNotFoundResponse(path);
-		}
-	}
 
 	private Response serveTranscript(IHTTPSession session) {
 		// GET /transcript/ignored/new_id
-		// GET /transcript/filename
-		// PUT /transcript/filename
+		// GET /transcript/versionNum/owner_id/filename
+		// PUT /transcript/versionNum/owner_id/filename
 		String path = session.getUri();
 		String[] a = path.split("/");
 		if (a.length < 2 || !a[1].equals("transcript"))
 			return null;
 		Method method = session.getMethod();
-		if (a.length == 3 && method == Method.GET) {
-			// GET /transcript/FILENAME
-			Transcript trs = new Transcript(a[2]);
+		if (a.length == 5 && method == Method.GET) {
+			// GET /transcript/versionNum/owner_id/FILENAME
+			Transcript trs = new Transcript(a[2], a[3], a[4]);
 			try {
 				InputStream is = new FileInputStream(trs.getFile());
 				return new Response(Status.OK, MIME_PLAINTEXT, is);
@@ -410,7 +371,7 @@ public class Server extends NanoHTTPD {
 				return mkNotFoundResponse(path);
 			}
 		}
-		else if (a.length == 3 && method == Method.PUT) {
+		else if (a.length == 5 && method == Method.PUT) {
 			InputStream is = session.getInputStream();
 			String text;
 			try {
@@ -426,7 +387,7 @@ public class Server extends NanoHTTPD {
 			}
 
 			try {
-				Transcript trs = new Transcript(a[2]);
+				Transcript trs = new Transcript(a[2], a[3], a[4]);
 				trs.save(text);
 				return new Response(Status.OK, MIME_PLAINTEXT, trs.getId());
 			}
@@ -437,9 +398,9 @@ public class Server extends NanoHTTPD {
 				return new Response(Status.INTERNAL_ERROR, MIME_PLAINTEXT, "Failed to save transcript.");
 			}
 		}
-		else if (a.length == 4 && a[3].equals("new_id") && method == Method.GET) {
-			// GET /transcript/FILENAME/new_id
-			String filename = newTranscript(a[2]);
+		else if (a.length == 6 && a[5].equals("new_id") && method == Method.GET) {
+			// GET /transcript/versionNum/ownre_id/FILENAME/new_id
+			String filename = newTranscript(a[2], a[3], a[4]);
 			if (filename == null)
 				return mkNotFoundResponse(path);
 			else
@@ -472,10 +433,11 @@ public class Server extends NanoHTTPD {
 	 * @param filename 
 	 * @return a new filename of the transcript.
 	 */
-	private String newTranscript(String filename) {
+	private String newTranscript(String versionName, String ownerId, 
+			String filename) {
 		String a[] = filename.split("-");
 		try {
-			Transcript trs = new Transcript(a[0], a[1]);
+			Transcript trs = new Transcript(versionName, ownerId, a[0], a[1]);
 			return trs.getId();
 		}
 		catch (RuntimeException e) {

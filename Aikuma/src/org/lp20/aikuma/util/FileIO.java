@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.util;
@@ -9,7 +9,7 @@ import android.os.Environment;
 import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import com.google.common.base.Charsets;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,7 +72,7 @@ public final class FileIO {
 		assert path != null;
 		return path;
 	}
-
+	
 	/**
 	 * Returns the path to the directory containing files that are not to be
 	 * synced.
@@ -83,6 +83,21 @@ public final class FileIO {
 	public static File getNoSyncPath(){
 		File path = new File(Environment.getExternalStorageDirectory(),
 				NO_SYNC_PATH);
+		path.mkdirs();
+		return path;
+	}
+	
+	/**
+	 * Returns the path to the directory containing files of the owner
+	 * 
+	 * @param versionName	versionName of the files
+	 * @param ownerId		Owner's ID for the path
+	 * @return	A File representing the owner's directory of versionName
+	 */
+	public static File getOwnerPath(String versionName, String ownerId) {
+		String ownerDirStr = (APP_ROOT_PATH + versionName + "/" + ownerId + "/");	
+		File path = new File(Environment.getExternalStorageDirectory(), 
+				ownerDirStr);
 		path.mkdirs();
 		return path;
 	}
@@ -140,7 +155,7 @@ public final class FileIO {
 		String jsonStr = stringWriter.toString();
 		write(path, jsonStr);
 	}
-
+	
 	/**
 	 * Takes a file path (relative to the aikuma directory) and
 	 * returns a string containing the file's contents.
@@ -198,22 +213,27 @@ public final class FileIO {
 	 *
 	 * @param	resources	resources so that the iso 639-3 text file can be
 	 * retrieved.
+	 * @param languages			[Output] a list of languages having names and corresponding codes
+	 * @param languageCodeMap	[Output] a map of a language code to its name
 	 * @throws	IOException	If there is an issue reading from the langcodes
 	 * file.
-	 * @return	a map from language names to their corresponding codes.
 	 */
-	public static List<Language> readLangCodes(Resources resources) throws IOException {
+	public static void readLangCodes(Resources resources, 
+			List<Language> languages, Map<String, String> languageCodeMap) throws IOException {
+		languages.clear();
+		languageCodeMap.clear();
+		
 		InputStream is = resources.openRawResource(R.raw.iso_639_3);
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(is, writer, Charsets.UTF_8);
 		String inputString = writer.toString();
-		List<Language> languages = new ArrayList<Language>();
-		String[] lines = inputString.split("\n");
+ 		String[] lines = inputString.split("\n");
 		for (int i = 1; i < lines.length; i++) {
 			String[] elements = lines[i].split("(?=\t)");
 			languages.add(new Language(elements[6].trim(), elements[0].trim()));
+			languageCodeMap.put(elements[0].trim(), elements[6].trim());
 		}
-		return languages;
+		return;
 	}
 
 	/**
@@ -242,8 +262,8 @@ public final class FileIO {
 	 *
 	 * @return	An ArrayList of Language objects.
 	 */
-	public static List readDefaultLanguages() {
-		List<Language> defaultLanguages = new ArrayList<Language>();
+	public static ArrayList<Language> readDefaultLanguages() {
+		ArrayList<Language> defaultLanguages = new ArrayList<Language>();
 		try {
 			CSVReader reader = new CSVReader(new FileReader(
 					new File(getAppRootPath(), "default_languages.csv")), '\t');

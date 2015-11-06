@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.audio;
@@ -136,8 +136,10 @@ public class MarkedPlayer extends SimplePlayer {
 		super.setOnCompletionListener(
 				new Player.OnCompletionListener() {
 					public void onCompletion(Player _p) {
-						MarkedPlayer.this.onMarkerReachedListener.
-								onMarkerReached(MarkedPlayer.this);
+						if(MarkedPlayer.this.onMarkerReachedListener != null) {
+							MarkedPlayer.this.onMarkerReachedListener.
+							onMarkerReached(MarkedPlayer.this);
+						}
 						listener.onCompletion(MarkedPlayer.this);
 					}
 				});

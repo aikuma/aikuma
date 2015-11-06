@@ -1,23 +1,22 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.Collections;
 import java.util.List;
+
+import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Speaker;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma.util.AikumaSettings;
+import org.lp20.aikuma2.R;
 
 /**
  * @author	Oliver Adams	<oliver.adams@gmail.com>
@@ -38,9 +37,10 @@ public class MainSpeakersActivity extends AikumaListActivity {
 	public void onResume() {
 		super.onResume();
 
-		speakers = Speaker.readAll();
-		Collections.reverse(speakers);
-		
+		speakers = Speaker.readAll(AikumaSettings.getCurrentUserId());
+		//Collections.reverse(speakers);
+		Collections.sort(speakers);
+
 		ArrayAdapter<Speaker> adapter =
 				new SpeakerArrayAdapter(this, speakers);
 		setListAdapter(adapter);
@@ -53,17 +53,19 @@ public class MainSpeakersActivity extends AikumaListActivity {
 	 */
 	public void addSpeakerButtonPressed(View _view) {
 		Intent intent = new Intent(this, AddSpeakerActivity1.class);
+		intent.putExtra("origin", 0);
 		startActivity(intent);
 	}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		/*
-		Intent intent = new Intent();
-		intent.putExtra("speaker", (Speaker)l.getItemAtPosition(position));
-		setResult(RESULT_OK, intent);
-		this.finish();
-		*/
+		Speaker speaker = (Speaker) l.getItemAtPosition(position);
+		
+		Intent intent = new Intent(this, MainActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | 
+				Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.putExtra("speakerId", speaker.getId());
+		startActivity(intent);
 	}
 	
 	/**

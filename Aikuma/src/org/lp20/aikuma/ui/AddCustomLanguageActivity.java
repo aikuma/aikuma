@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import org.lp20.aikuma.model.Language;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * Allows the user to add a custom language as a default language that isn't in
@@ -57,17 +57,28 @@ public class AddCustomLanguageActivity extends AikumaActivity {
 	// disables/enables the add language button on the fly.
 	private TextWatcher emptyTextWatcher = new TextWatcher() {
 		public void afterTextChanged(Editable s) {
+			//Restrict to alphanumeric input
+			int strLen = s.length();
+			if(strLen != 0) {
+				char c = s.charAt(strLen - 1);
+				if(!(Character.isLetterOrDigit(c) || Character.isSpaceChar(c))) {
+					s.delete(strLen - 1, strLen);
+				}
+			}
+			
+			if (s.length() == 0) {
+				addLanguageButton.setEnabled(false);
+			} else {
+				addLanguageButton.setEnabled(true);
+			}
+			
 		}
 		public void beforeTextChanged(CharSequence s,
 				int start, int count, int after) {
 		}
 		public void onTextChanged(CharSequence s,
 				int start, int before, int count) {
-			if (s.length() == 0) {
-				addLanguageButton.setEnabled(false);
-			} else {
-				addLanguageButton.setEnabled(true);
-			}
+			
 		}
 	};
 

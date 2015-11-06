@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
@@ -22,10 +22,11 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * @author	Oliver Adams	<oliver.adams@gmail.com>
@@ -73,6 +74,11 @@ public class ThumbRespeakFragment extends Fragment {
 
 	// Implements the behaviour for the play and respeak buttons.
 	private void installButtonBehaviour(View v) {
+		final ImageButton okButton = (ImageButton) 
+				v.findViewById(R.id.saveButton);
+		okButton.setImageResource(R.drawable.ok_disabled_48);
+		okButton.setEnabled(false);
+		
 		final ImageButton playButton = (ImageButton)
 				v.findViewById(R.id.PlayButton);
 		final ImageButton respeakButton = (ImageButton)
@@ -82,6 +88,13 @@ public class ThumbRespeakFragment extends Fragment {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					if(count == 0) {
+						respeakButton.setEnabled(true);
+					}
+					if(count > 0) {
+						respeaker.saveRespeaking();
+					}
+					
 					// Color change
 					//playButton.setBackgroundColor(0xff00d500);
 					long previousGestureTime = gestureTime;
@@ -140,25 +153,39 @@ public class ThumbRespeakFragment extends Fragment {
 		respeakButton.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				if(!isCommented) {
-					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						//respeakButton.setBackgroundColor(0xffff2020);
-						respeaker.pauseOriginal();
-						respeaker.recordRespeaking();
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					//respeakButton.setBackgroundColor(0xffff2020);
+					respeaker.pauseOriginal();
+					respeaker.recordRespeaking();
+					count++;
+				}
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					Log.i("ThumbRespeak", "sleep: " + System.currentTimeMillis());
+					try {
+						Thread.sleep(AikumaSettings.EXTRA_AUDIO_DURATION);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						Log.e("ThumbRespeak", "sleep");
 					}
-					if (event.getAction() == MotionEvent.ACTION_UP) {
-						//respeakButton.setBackgroundColor(greyColor);
-						try {
-							respeaker.pauseRespeaking();
-							isCommented = true;
-						} catch (MicException e) {
-							ThumbRespeakFragment.this.getActivity().finish();
-						}
+					Log.i("ThumbRespeak", "sleep: " + System.currentTimeMillis());
+					
+					if(!okButton.isEnabled()) {
+						okButton.setImageResource(R.drawable.ok_48);
+						okButton.setEnabled(true);
+					}
+					//respeakButton.setBackgroundColor(greyColor);
+					try {
+						respeaker.pauseRespeaking();
+						isCommented = true;
+					} catch (MicException e) {
+						ThumbRespeakFragment.this.getActivity().finish();
 					}
 				}
 				return false;
 			}
 		});
+		
+		respeakButton.setEnabled(false);
 	}
 
 	// Wrapper to more safely stop threads.
@@ -221,8 +248,9 @@ public class ThumbRespeakFragment extends Fragment {
 	private UUID uuid;
 	private int sampleRate;
 	
-	private final int VALID_GESTURE_TIME = 100; //0.1sec
+	private final int VALID_GESTURE_TIME = 250; //0.25sec
 	private long gestureTime = VALID_GESTURE_TIME;
 	private long gestureTimeUpToDown = VALID_GESTURE_TIME;
 	private boolean isCommented = true;
+	private int count = 0;
 }

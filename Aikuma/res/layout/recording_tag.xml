@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/addLanguageTagButton"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/add_language_tag_label"
+		android:onClick="onAddLanguageTagButton" />
+
+    <Button
+        android:id="@+id/addSpeakerTagButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_speaker_tag_label" 
+        android:onClick="onAddSpeakerTagButton"/>
+
+    <Button
+        android:id="@+id/addOLACTagButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_olac_tag_label" 
+        android:onClick="onAddOLACTagButton"/>
+
+    <Button
+        android:id="@+id/addCustomTagButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_custom_tag_label" 
+        android:onClick="onAddCustomTagButton"/>
+
+</LinearLayout>

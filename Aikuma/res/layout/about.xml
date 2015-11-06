@@ -10,13 +10,16 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:text="Aikuma N.N, Crowdsourcing oral language documentation."
+		android:visibility="gone"
 		android:textSize="15sp"
 	/>
+	<!-- 
 	<View
 		android:layout_width="fill_parent"
 		android:layout_height="2dip"
 		android:background="#999999"
 	/>
+	 -->
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -24,13 +27,15 @@
 		android:text=""
 		android:textSize="15sp"
 	/>
+	
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:id="@+id/androidIdField"
-		android:text=""
+		android:text="@string/copyright"
 		android:textSize="15sp"
 	/>
+	
+	
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -43,10 +48,27 @@
 		android:layout_height="2dip"
 		android:background="#999999"
 	/>
+	
+	<View
+		android:layout_width="fill_parent"
+		android:layout_height="2dip"
+		android:background="#999999"
+	/>
+	
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="Copyright (C) 2013, The Aikuma Project"
+		android:id="@+id/androidIdField"
+		android:text=""
 		android:textSize="15sp"
 	/>
+	
+	<TextView
+	    android:id="@+id/cloudStatus"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="15sp"
+	/>
+
+	
 </LinearLayout>

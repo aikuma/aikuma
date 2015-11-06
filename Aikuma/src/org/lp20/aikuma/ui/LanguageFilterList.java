@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import org.lp20.aikuma.Aikuma;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.model.Language;
 
@@ -37,7 +37,8 @@ public class LanguageFilterList extends AikumaListActivity {
 		setContentView(R.layout.filter_list);
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
-		safeActivityTransition = true;
+		//safeActivityTransition = true;
+		
 		filterText = (EditText) findViewById(R.id.search_box);
 		filterText.addTextChangedListener(filterTextWatcher);
 		List<Language> languages;

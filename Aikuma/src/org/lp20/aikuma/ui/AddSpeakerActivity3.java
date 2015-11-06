@@ -1,11 +1,12 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Sangyeop Lee
 */
 package org.lp20.aikuma.ui;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,7 +29,7 @@ import java.util.UUID;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 import org.lp20.aikuma.util.FileIO;
 import org.lp20.aikuma.util.ImageUtils;
 
@@ -43,13 +44,18 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.add_speaker3);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		
 		Intent intent = getIntent();
 		name = (String) intent.getExtras().getString("name");
+		comments = (String) intent.getExtras().getString("comments");
 		selectedLanguages = intent.getParcelableArrayListExtra("languages");
 		
 		TextView nameView = (TextView) findViewById(R.id.nameView2);
+		TextView commentsView = (TextView) findViewById(R.id.commentsView);
 		nameView.setText("Name: " + name);
+		commentsView.setText("Comments: " + comments);
+		
 		TextView languageView = (TextView) findViewById(R.id.languageView1);
 		StringBuilder sb = new StringBuilder("Languages:\n");
 		for(Language lang : selectedLanguages) {
@@ -63,29 +69,32 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 		safeActivityTransition = false;
 		safeActivityTransitionMessage = 
 				"This will discard the new speaker's photo.";
-
-		imageUUID = UUID.randomUUID();
+		
+		if(savedInstanceState != null) {
+			imageUUID = UUID.fromString(savedInstanceState.getString("imageUUID"));
+		} else {
+			imageUUID = UUID.randomUUID();
+		}
+		
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	    // Save the current activity state
+		savedInstanceState.putString("imageUUID", imageUUID.toString());
+	    
+	    //Call the superclass to save the view hierarchy state
+	    super.onSaveInstanceState(savedInstanceState);
+	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent
 			result) {
-		if (resultCode == RESULT_OK) {
-			// Move image-file to no-sync-path
-			Uri imageUri = result.getData();
-			try {
-				ImageUtils.moveImageFileFromUri(this, 
-						imageUri, this.imageUUID);
-			} catch (IOException e) {
-				Toast.makeText(this, 
-						"Failed to write the image to file",
-						Toast.LENGTH_LONG).show();
-			}
-			getContentResolver().delete(result.getData(), null, null);
-			
+		if (resultCode == RESULT_OK) {	
 			Intent lastIntent = new Intent(this, AddSpeakerActivity4.class);
+			lastIntent.putExtra("origin", getIntent().getExtras().getInt("origin"));
 			lastIntent.putExtra("name", name);
+			lastIntent.putExtra("comments", comments);
 			lastIntent.putParcelableArrayListExtra("languages", selectedLanguages);
 			lastIntent.putExtra("imageUUID", imageUUID.toString());
 			startActivity(lastIntent);
@@ -102,14 +111,25 @@ public class AddSpeakerActivity3 extends AikumaActivity {
 	}
 
 	private void dispatchTakePictureIntent(int actionCode) {
+		// Create an no-sync-path for an image-file
+		File imageOutputFile = ImageUtils.getNoSyncImageFile(this.imageUUID);
+		Uri imageUri = Uri.fromFile(imageOutputFile);
+		
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-		startActivityForResult(takePictureIntent, actionCode);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        // TODO: This is a temporary solution, custom camera activity is needed for facing-camera
+		takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+		
+		if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+			startActivityForResult(takePictureIntent, actionCode);
+	    }
+		
 	}
 
 	static final int PHOTO_REQUEST_CODE = 1;
 	
 	private String name;
+	private String comments;
 	private ArrayList<Language> selectedLanguages;
 
 	private UUID imageUUID;

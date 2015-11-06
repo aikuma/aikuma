@@ -1,15 +1,18 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.ui;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 
-import org.lp20.aikuma.R;
+import org.lp20.aikuma.model.Language;
+import org.lp20.aikuma2.R;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,6 +33,7 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recording_metadata2);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		// Get metadata
 		Intent intent = getIntent();
@@ -39,8 +43,8 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 		durationMsec = (Integer) intent.getExtras().get("durationMsec");
 		groupId = (String)
 				intent.getExtras().get("groupId");
-		sourceId = (String)
-				intent.getExtras().get("sourceId");
+		sourceVerId = (String)
+				intent.getExtras().get("sourceVerId");
 		numChannels = (Integer) intent.getExtras().get("numChannels");
 		bitsPerSample = (Integer) intent.getExtras().get("bitsPerSample");
 		latitude = (Double) intent.getExtras().get("latitude");
@@ -48,6 +52,8 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 		format = (String)
 				intent.getExtras().get("format");
 		
+		selectedLanguages = intent.getParcelableArrayListExtra("languages");
+
 		okButton = (ImageButton) findViewById(R.id.okButton2);
 		updateOkButton();
 
@@ -95,13 +101,19 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 			intent.putExtra("longitude", longitude);
 		}
 		
-		if(sourceId != null)
-			intent.putExtra("sourceId", sourceId);
+		if(sourceVerId != null)
+			intent.putExtra("sourceVerId", sourceVerId);
 		if(groupId != null)
 			intent.putExtra("groupId", groupId);
 		
+		EditText commentsField = (EditText) findViewById(R.id.recordingComments);
 		String description = nameField.getText().toString();
+		String comments = commentsField.getText().toString();	// can be empty instead of null
 		intent.putExtra("description", description);
+		intent.putExtra("comments", comments);
+		
+		intent.putExtra("mode", getIntent().getStringExtra("mode"));
+		intent.putParcelableArrayListExtra("languages", selectedLanguages);
 		
 		startActivity(intent);
 	}
@@ -150,10 +162,11 @@ public class RecordingMetadataActivity2 extends AikumaActivity {
 	private EditText nameField;
 	private ImageButton okButton;
 	private boolean recordingHasName;
-	private String sourceId;
+	private String sourceVerId;
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;
+	private ArrayList<Language> selectedLanguages;
 	
 	private Double latitude;
 	private Double longitude;

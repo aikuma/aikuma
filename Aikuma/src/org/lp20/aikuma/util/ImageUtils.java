@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.util;
@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.widget.ImageView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -95,7 +96,14 @@ public final class ImageUtils {
 		if (!path.startsWith("/")) {
 			path = new File(getImagesPath(), path).getPath();
 		}
-		Bitmap bmp = BitmapFactory.decodeFile(path);
+		// scale the image's height to be lower than 100
+		final BitmapFactory.Options options = new BitmapFactory.Options();
+	    options.inJustDecodeBounds = true;
+	    BitmapFactory.decodeFile(path, options);
+	    options.inSampleSize = (int) options.outHeight / 160;
+	    options.inJustDecodeBounds = false;
+		
+		Bitmap bmp = BitmapFactory.decodeFile(path, options);
 		if (bmp != null) {
 			return bmp;
 		} else {
@@ -185,6 +193,21 @@ public final class ImageUtils {
 		File file = getSmallImageFile(uuid);
 		return retrieveFromFile(file);
 	}
+	
+	/**
+	 * Returns a Bitmap associated with a given recording UUID, looking on
+	 * the no-sync directory.
+	 * 
+	 * @param	uuid	The UUID of the recording image.
+	 * @throws	IOException	if an I/O related exception is thrown when
+	 * accessing the file.
+	 * @return	A Bitmap representing the image of a recording stored in
+	 * the no-sync directory.
+	 */
+	public static Bitmap getNoSyncImage(UUID uuid) throws IOException {
+		File file = getNoSyncImageFile(uuid);
+		return retrieveFromFile(file);
+	}
 
 	/**
 	 * Returns a small Bitmap associated with a given speaker UUID, looking on
@@ -233,7 +256,7 @@ public final class ImageUtils {
 			break;
 		}
 
-		Bitmap small = ImageUtils.resizeBitmap(image, 0.05f);
+		Bitmap small = ImageUtils.resizeBitmap(image, 0.1f);
 		if (rotate != 0) {
 			Matrix matrix = new Matrix();
 			matrix.postRotate(rotate);
@@ -285,5 +308,17 @@ public final class ImageUtils {
 		
 		fis.close();
 		fos.close();
+	}
+	
+	/**
+	 * Return the number of pixels in the device corresponding to dp
+	 * @param context	Application device context
+	 * @param dp		The device independent pixels
+	 * @return			The number of pixels calculated with device's scale and dp
+	 */
+	public static int getPixelsFromDp(Context context, int dp) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		int pixels = (int) (dp * scale + 0.5f);
+		return pixels;
 	}
 }

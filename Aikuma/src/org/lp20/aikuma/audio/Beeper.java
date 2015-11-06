@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013, The Aikuma Project
+	Copyright (C) 2013-2015, The Aikuma Project
 	AUTHORS: Oliver Adams and Florian Hanke
 */
 package org.lp20.aikuma.audio;
@@ -11,7 +11,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import java.io.IOException;
-import org.lp20.aikuma.R;
+import org.lp20.aikuma2.R;
 
 /**
  * Provides methods to make beeping noises for when recording is started and
