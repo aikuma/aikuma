@@ -18,21 +18,21 @@
 	    android:onClick="onSyncCheckBoxClicked" />
      -->
 	
+	<CheckBox
+	    android:id="@+id/wifi_checkBox"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="Sync over wifi networks" 
+	    android:onClick="onWifiCheckBoxClicked" />
 	
 	<CheckBox
 	    android:id="@+id/cellular_checkBox"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:text="Allow sync over cellular-networks" 
+	    android:text="Sync over cellular networks" 
 	    android:onClick="onCellularCheckBoxClicked" />
 	
-	<CheckBox
-	    android:id="@+id/wifi_checkBox"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:text="Allow sync over wifi-networks" 
-	    android:onClick="onWifiCheckBoxClicked" />
-
+	
 	<Button
 	    android:id="@+id/syncNowButton"
 	    android:layout_width="match_parent"
