@@ -8,6 +8,7 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -112,6 +113,13 @@ public class RecordingMetadataActivity3 extends AikumaActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent
 			result) {
 		if (resultCode == RESULT_OK) {	
+			try {
+				Bitmap image = BitmapFactory.decodeFile(imageOutputFile.getCanonicalPath());
+			} catch (IOException e) {
+				Log.e(TAG, e.getMessage());
+			}
+			
+			
 			Intent intent = new Intent(this, RecordingMetadataActivity4.class);
 			intent.putExtra("uuidString", uuid.toString());
 			intent.putExtra("sampleRate", sampleRate);
@@ -153,11 +161,12 @@ public class RecordingMetadataActivity3 extends AikumaActivity {
 
 	private void dispatchTakePictureIntent(int actionCode) {
 		// Create an no-sync-path for an image-file
-		File imageOutputFile = ImageUtils.getNoSyncImageFile(this.imageUUID);
+		imageOutputFile = ImageUtils.getNoSyncImageFile(this.imageUUID);
 		Uri imageUri = Uri.fromFile(imageOutputFile);
 		
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        takePictureIntent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         // TODO: This is a temporary solution, custom camera activity is needed for facing-camera
 		//takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
 		
@@ -167,6 +176,9 @@ public class RecordingMetadataActivity3 extends AikumaActivity {
 		
 	}
 
+	private final static String TAG = "RecordingMetadataActivity3";
+	
+	private File imageOutputFile;
 	static final int PHOTO_REQUEST_CODE = 1;
 
 	//Metadata
