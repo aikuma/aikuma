@@ -2,6 +2,11 @@ package org.lp20.aikuma.util;
 
 import android.util.Log;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -70,6 +75,48 @@ public class IdUtils {
 		
 		if (md != null) {
 			byte[] digest = md.digest(inputText.getBytes());
+			return new BigInteger(1, digest).toString(16);
+		}
+		return null;
+	}
+	
+	/**
+	 * Return the MD5 hash value for the given file (as a checksum)
+	 * 
+	 * @param file	the given file
+	 * @return		String of MD5 hash value value of the file(checksum)
+	 */
+	public static String getMD5Hash(File file) {
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		InputStream fin = null;
+		try {
+			fin = new FileInputStream(file);
+			byte[] buffer = new byte[1024];
+			int numRead = 0;
+			while (numRead != -1) {
+				numRead = fin.read(buffer);
+				if (numRead > 0)
+					md.update(buffer, 0, numRead);
+			}
+			fin.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		
+		if (md != null) {
+			byte[] digest = md.digest();
 			return new BigInteger(1, digest).toString(16);
 		}
 		return null;
