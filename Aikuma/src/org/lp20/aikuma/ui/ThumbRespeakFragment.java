@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,6 +24,8 @@ import java.util.Iterator;
 import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.util.AikumaSettings;
+import org.lp20.aikuma.audio.Beeper;
+import org.lp20.aikuma.audio.MarkedPlayer;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.record.ThumbRespeaker;
 import org.lp20.aikuma.audio.record.Microphone.MicException;
@@ -55,6 +58,7 @@ public class ThumbRespeakFragment extends Fragment {
 					};
 				});
 		seekBar.invalidate();
+		beeper = new Beeper(getActivity(), null);
 		return v;
 	}
 
@@ -81,14 +85,17 @@ public class ThumbRespeakFragment extends Fragment {
 		
 		final ImageButton playButton = (ImageButton)
 				v.findViewById(R.id.PlayButton);
-		final ImageButton respeakButton = (ImageButton)
+		respeakButton = (ImageButton)
 				v.findViewById(R.id.RespeakButton);
 		final int greyColor = 0xffd6d6d6;
 		playButton.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					if(count == 0) {
+					if(outputType == 0) {
+						respeakButton.setEnabled(false);
+						isMarkerReached = false;
+					} else if(count == 0) {
 						respeakButton.setEnabled(true);
 					}
 					if(count > 0) {
@@ -145,6 +152,11 @@ public class ThumbRespeakFragment extends Fragment {
 					if(gestureTime >= VALID_GESTURE_TIME) {
 						isCommented = false;
 					}
+					
+					if(isMarkerReached && outputType == 0)
+						respeakButton.setEnabled(true);
+					if(isEndReached)
+						playButton.setEnabled(false);
 				}
 				return false;
 			}
@@ -158,7 +170,20 @@ public class ThumbRespeakFragment extends Fragment {
 					respeaker.pauseOriginal();
 					respeaker.recordRespeaking();
 					count++;
+					
+					if (actionType.equals("segment")) {
+						beeper.beep();
+						// Trick to blink the segment button
+						Handler handler = new Handler();
+						handler.postDelayed(new Runnable() {
+							public void run() {
+								respeakButton.setPressed(false);
+							}
+						}, 200);
+					}
+				
 				}
+				
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					Log.i("ThumbRespeak", "sleep: " + System.currentTimeMillis());
 					try {
@@ -180,10 +205,15 @@ public class ThumbRespeakFragment extends Fragment {
 					} catch (MicException e) {
 						ThumbRespeakFragment.this.getActivity().finish();
 					}
+					
+					if(outputType == 0) {
+						respeakButton.setEnabled(false);
+					}
 				}
 				return false;
 			}
 		});
+		
 		
 		respeakButton.setEnabled(false);
 	}
@@ -226,10 +256,16 @@ public class ThumbRespeakFragment extends Fragment {
 	 * ThumbRespeaker mutator.
 	 *
 	 * @param	respeaker	The ThumbRespeaker to use.
+	 * @param	actionType	'segment': segmentation action
 	 */
-	public void setThumbRespeaker(ThumbRespeaker respeaker) {
+	public void setThumbRespeaker(ThumbRespeaker respeaker, String actionType) {
 		this.respeaker = respeaker;
+		this.actionType = actionType;
 		respeaker.getSimplePlayer().setOnCompletionListener(onCompletionListener);
+		if(!respeaker.isRecordingOrignal()) {
+			this.outputType = respeaker.getOutputType();	//(0: Respeak/Interpret, 1:Segment)
+			respeaker.setOnMarkerReachedListener(onMarkerReachedListener);
+		}
 	}
 
 	private Player.OnCompletionListener onCompletionListener =
@@ -237,8 +273,22 @@ public class ThumbRespeakFragment extends Fragment {
 				public void onCompletion(Player _player) {
 					stopThread(seekBarThread);
 					seekBar.setProgress(seekBar.getMax());
+					isEndReached = true;
 				}
 			};
+			
+	private MarkedPlayer.OnMarkerReachedListener onMarkerReachedListener =
+			new MarkedPlayer.OnMarkerReachedListener() {
+				@Override
+				public void onMarkerReached(MarkedPlayer _player) {
+					respeaker.pauseOriginal();
+					stopThread(seekBarThread);
+					isMarkerReached = true;	
+				}
+			};
+			
+
+	private Beeper beeper;
 	private ThumbRespeaker respeaker;
 	private ImageButton playButton;
 	private ImageButton respeakButton;
@@ -253,4 +303,9 @@ public class ThumbRespeakFragment extends Fragment {
 	private long gestureTimeUpToDown = VALID_GESTURE_TIME;
 	private boolean isCommented = true;
 	private int count = 0;
+	
+	private String actionType;
+	private int outputType = -1;
+	private boolean isMarkerReached;
+	private boolean isEndReached;
 }

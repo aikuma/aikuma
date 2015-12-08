@@ -104,7 +104,7 @@ public class Recording extends FileModel {
 			setGroupId(createGroupId());
 			setRespeakingId("");
 		} else {
-			// Then we must generate the 4 digit respeaking ID.
+			// Then we must generate the 6 digit respeaking ID.
 			setRespeakingId(IdUtils.randomDigitString(6));
 		}
 		setFileType(sourceVerId, languages);
@@ -146,6 +146,38 @@ public class Recording extends FileModel {
 		this.fileType = fileType;
 		setId(determineId(fileType));
 	}
+	
+	/**
+	 * The constructor used when creating a segment file
+	 *
+	 * @param segmentUUID	the temporary UUID of the segment.
+	 * @param name			The segment's name.
+	 * @param date			The date of creation.
+	 * @param versionName	The segment's version(v0x)
+	 * @param ownerId		The segment owner's ID(Google account)
+	 * @param sourceVerId	The source's version and Id 
+	 * @param androidID		The android ID of the device that created the segment
+	 * @param groupId		The ID of the group of recordings this segment belongs to
+	 * @param format		The file format (JSON)
+	 */
+	public Recording(UUID segmentUUID, String name, Date date,
+			String versionName, String ownerId, String sourceVerId, 
+			String androidID, String groupId, 
+			String format) {
+		super(versionName, ownerId, null, null, format);
+		this.recordingUUID = segmentUUID;
+		setName(name);
+		setDate(date);
+		setAndroidID(androidID);
+		setGroupId(groupId);
+		// Then we must generate the 6 digit respeaking ID.
+		setRespeakingId(IdUtils.randomDigitString(6));
+		this.sourceVerId = sourceVerId;
+		setFileType(sourceVerId, null);
+		setId(determineId(fileType));
+	}
+
+	
 
 	private String determineId(String fileType) {
 		// Build up the filename prefix
@@ -209,6 +241,13 @@ public class Recording extends FileModel {
 		File mapFile = new File(getNoSyncRecordingsPath(), wavUUID + ".map");
 		FileUtils.moveFile(mapFile, getMapFile());
 	}
+	
+	// Similar to importWav
+	private void importSegment(UUID segUUID, String id)
+			throws IOException {
+		File mapFile = new File(getNoSyncRecordingsPath(), segUUID + ".map");
+		FileUtils.moveFile(mapFile, this.getFile(id + "." + JSON_EXT));
+	}	
 
 	// Create a group ID (the prefix for recordings)
 	private String createGroupId() {
@@ -276,7 +315,6 @@ public class Recording extends FileModel {
 	public Bitmap getImage() throws IOException {
 		return ImageUtils.retrieveFromFile(getImageFile());
 	}
-
 	
 	/**
 	 * Returns a File that refers to the respeaking's mapping file.
@@ -524,7 +562,7 @@ public class Recording extends FileModel {
 	 * @return	true if this is a movie
 	 */
 	public boolean isMovie() {
-		return this.format.equals("mp4");
+		return this.extension.equals(VIDEO_EXT);
 	}
 
 	/**
@@ -575,32 +613,37 @@ public class Recording extends FileModel {
 	 */
 	public JSONObject encode() {
 		JSONObject encodedRecording = new JSONObject();
+		
 		encodedRecording.put(NAME_KEY, this.name);
-		encodedRecording.put(COMMENTS_KEY, this.comments);
 		encodedRecording.put(DATE_KEY, new StandardDateFormat().format(this.date));
 		encodedRecording.put(VERSION_KEY, this.versionName);
 		encodedRecording.put(USER_ID_KEY, this.ownerId);
-		encodedRecording.put(DEVICE_NAME_KEY, deviceName);
 		encodedRecording.put(ANDROID_ID_KEY, this.androidID);
-		encodedRecording.put(SAMPLERATE_KEY, getSampleRate());
-		encodedRecording.put(DURATION_MSEC_KEY, getDurationMsec());
 		encodedRecording.put(ITEM_ID_KEY, this.groupId);
 		encodedRecording.put(RESPEAKING_ID_KEY, this.respeakingId);
 		encodedRecording.put(SOURCE_VER_ID_KEY, this.sourceVerId);
-		if(latitude != null && longitude != null) {
-			JSONArray locationData = new JSONArray();
-			locationData.add(latitude);
-			locationData.add(longitude);
-			encodedRecording.put(LOCATION_KEY, locationData);
-		} else {
-			encodedRecording.put(LOCATION_KEY, null);
-		}
 		
 		encodedRecording.put(FILE_TYPE_KEY, getFileType());
-
 		encodedRecording.put(FORMAT_KEY, this.format);
-		encodedRecording.put(BITS_PER_SAMPLE_KEY, this.bitsPerSample);
-		encodedRecording.put(NUM_CHANNELS_KEY, this.numChannels);
+		
+		if(!fileType.equals(SEGMENT_TYPE)) {
+			encodedRecording.put(COMMENTS_KEY, this.comments);
+			encodedRecording.put(DEVICE_NAME_KEY, deviceName);
+			encodedRecording.put(SAMPLERATE_KEY, getSampleRate());
+			encodedRecording.put(DURATION_MSEC_KEY, getDurationMsec());
+			encodedRecording.put(BITS_PER_SAMPLE_KEY, this.bitsPerSample);
+			encodedRecording.put(NUM_CHANNELS_KEY, this.numChannels);
+			
+			if(latitude != null && longitude != null) {
+				JSONArray locationData = new JSONArray();
+				locationData.add(latitude);
+				locationData.add(longitude);
+				encodedRecording.put(LOCATION_KEY, locationData);
+			} else {
+				encodedRecording.put(LOCATION_KEY, null);
+			}
+		}
+		
 		return encodedRecording;
 	}
 
@@ -680,7 +723,7 @@ public class Recording extends FileModel {
 		// Import the wave file into the new recording directory.
 		if(this.isMovie()) {
 			importMov(recordingUUID, getId());
-		} else {
+		} else if (extension.equals(AUDIO_EXT)){
 			Log.i("COPY", recordingUUID.toString());
 			importWav(recordingUUID, getId());	
 		}
@@ -695,13 +738,17 @@ public class Recording extends FileModel {
 				importImage(imageUUID);
 		} else {
 			// Try and import the mapping file
-			importMapping(recordingUUID, getId());
+			if(fileType.equals(SEGMENT_TYPE))
+				importSegment(recordingUUID, getId());
+			else
+				importMapping(recordingUUID, getId());
 			
 			// Write the index file
 			index(sourceVerId, getVersionName() + "-" + getId());
 		}
 
 		JSONObject encodedRecording = this.encode();
+		encodedRecording.put(CHECKSUM_KEY, IdUtils.getMD5Hash(getFile()));
 
 
 		// Write the json metadata.
@@ -1332,7 +1379,10 @@ public class Recording extends FileModel {
 		} else {
 			// Then this is either a respeaking or a translation.
 			try {
-				if (languages.equals(getOriginal().getLanguages())) {
+				if (languages == null) {
+					this.fileType = SEGMENT_TYPE;
+				}
+				else if (languages.equals(getOriginal().getLanguages())) {
 					this.fileType = RESPEAKING_TYPE;
 				} else {
 					this.fileType = TRANSLATION_TYPE;
@@ -1454,17 +1504,6 @@ public class Recording extends FileModel {
 		return splitId[0];
 	}
 	
-	/**
-	 * Returns the recording's relative path, given a cloud-Identifier of Recording
-	 * 
-	 * @param cloudIdentifier	Cloud-Identifier of Recording
-	 * @return					Relative-path
-	 */
-	public static String getRelPath(String cloudIdentifier) {
-		return cloudIdentifier.substring(0, cloudIdentifier.lastIndexOf('/')-Recording.ITEM_ID_LEN);
-	}
-
-
 	/**
 	 * Star the recording with this phone's androidID
 	 * 
@@ -1938,6 +1977,8 @@ public class Recording extends FileModel {
 	public static final String BITS_PER_SAMPLE_KEY = "bits_per_sample";
 	/** */
 	public static final String NUM_CHANNELS_KEY = "num_channels";
+	/** */
+	public static final String CHECKSUM_KEY = "checksum";
 	
 	/** 
 	 * Keys used/tweaked in cloud fullText metadata fields

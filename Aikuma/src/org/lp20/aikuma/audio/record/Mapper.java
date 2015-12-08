@@ -40,11 +40,14 @@ public class Mapper {
 	/**
 	 * Constructor
 	 *
-	 * @param	uuid	The UUID of the respeaking.
+	 * @param	uuid	The UUID of the respeaking. or null if source's segment
 	 */
 	public Mapper(UUID uuid) {
 		this.segments = new Segments();
-		this.mappingFile = new File(Recording.getNoSyncRecordingsPath(), uuid + ".map");
+		if(uuid != null) {
+			this.mappingFile = new File(Recording.getNoSyncRecordingsPath(), uuid + ".map");
+		}
+		
 	}
 
 
@@ -88,11 +91,12 @@ public class Mapper {
 	 * Marks the end of an original segment and the start of a respeaking segment.
 	 *
 	 * @param	original	The source of the original segments.
-	 * @param	respoken	The source of the respoken segments.
+	 * @param	respoken	The source of the respoken segments or null in case of segmentation.
 	 */
 	public void markRespeaking(Sampler original, Sampler respoken) {
 		originalEndOfSegment = original.getCurrentSample();
-		respeakingStartOfSegment = respoken.getCurrentSample();
+		if(respoken != null)
+			respeakingStartOfSegment = respoken.getCurrentSample();
 	}
 	
 	/**
@@ -102,7 +106,7 @@ public class Mapper {
 	 * original segment.
 	 *
 	 * @param	original	The source of the original segments.
-	 * @param	respoken	The source of the respoken segments.
+	 * @param	respoken	The source of the respoken segments or null in case of segmentation.
 	 * @return	Returns true if a segment gets stored; false otherwise.
 	 */
 	public boolean store(Sampler original, Sampler respoken) {
@@ -112,7 +116,8 @@ public class Mapper {
 			return false;
 		}
 		//Otherwise lets end this respeaking segment
-		respeakingEndOfSegment = respoken.getCurrentSample();
+		if(respoken != null)
+			respeakingEndOfSegment = respoken.getCurrentSample();
 		//And store these two segments
 		Segment originalSegment;
 		try {
@@ -122,13 +127,16 @@ public class Mapper {
 			// This could only have happened if no original had been recorded at all.
 			originalSegment = new Segment(0l, 0l);
 		}
-		Segment respeakingSegment = new Segment(respeakingStartOfSegment,
-				respeakingEndOfSegment);
+		Segment respeakingSegment = null;
+		if(respoken != null)
+			respeakingSegment = new Segment(respeakingStartOfSegment, 
+					respeakingEndOfSegment);
 		segments.put(originalSegment, respeakingSegment);
 		//Now we say we're marking the start of the new original and respekaing
 		//segments
 		originalStartOfSegment = original.getCurrentSample();
-		respeakingStartOfSegment = respoken.getCurrentSample();
+		if(respoken != null)
+			respeakingStartOfSegment = respoken.getCurrentSample();
 		//We currently have no end for these segments.
 		originalEndOfSegment = null;
 		respeakingEndOfSegment = null;

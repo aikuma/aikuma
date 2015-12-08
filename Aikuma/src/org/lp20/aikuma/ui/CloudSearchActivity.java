@@ -338,10 +338,9 @@ public class CloudSearchActivity extends AikumaListActivity {
 
         	if(queryType == 0) {
         		String queryValue = mQuery.get(0);
-        		String queryType = findQueryType(queryValue);
-        		if(queryType.equals("language"))
-        			queryValue = "iso639_" + queryValue;
-        		constraints.put(queryType, queryValue);
+        		List<String> queryTypeValue = processQuery(queryValue);
+        		if(queryTypeValue.size() == 2)
+        			constraints.put(queryTypeValue.get(0), queryTypeValue.get(1));
             	constraints.put("file_type", FileModel.SOURCE_TYPE);
             	//constraints.put("user_id", mEmailAccount);
             	
@@ -491,23 +490,45 @@ public class CloudSearchActivity extends AikumaListActivity {
 			}
 		}
         
-        private String findQueryType(String queryValue) {
-        	if(olacTagsStr.contains(queryValue)) {
-        		return Recording.OLAC_TAG_TYPE;
+        private List<String> processQuery(String queryValue) {
+        	List<String> queryTypeValue = new ArrayList<String>(2);
+        	String lowerQueryValue = queryValue.toLowerCase();
+        	
+        	if(olacTagsStr.contains(lowerQueryValue)) {
+        		queryTypeValue.add(Recording.OLAC_TAG_TYPE);
+        		queryTypeValue.add(lowerQueryValue);
         	} else if(queryValue.startsWith("#")) {
-        		return Recording.CUSTOM_TAG_TYPE;
+        		queryTypeValue.add(Recording.CUSTOM_TAG_TYPE);
+        		queryTypeValue.add(queryValue.substring(1));
+        	} else if(queryValue.startsWith("*")) { 
+        		queryTypeValue.add(Recording.LANGUAGE_TAG_TYPE);
+        		queryTypeValue.add(queryValue.substring(1));
         	} else if(StringUtils.isAllLowerCase(queryValue)) {
-        		if(queryValue.length() == 3)
-        			return Recording.LANGUAGE_TAG_TYPE;
-        		else if(queryValue.length() == 4)
-        			return Recording.ITEM_ID_PREFIX_KEY;
-        		else
-        			return queryValue.split("__")[0];
+        		if(queryValue.length() == 3) {
+        			queryTypeValue.add(Recording.LANGUAGE_TAG_TYPE);
+        			queryTypeValue.add("iso639_" + queryValue);
+        		} else if(queryValue.length() == 4) {
+        			queryTypeValue.add(Recording.ITEM_ID_PREFIX_KEY);
+        			queryTypeValue.add(queryValue);
+        		} else {
+        			String[] typeValue = queryValue.split("__");
+        			if(typeValue.length >= 2) {
+        				queryTypeValue.add(typeValue[0]);
+        				queryTypeValue.add(typeValue[1]);
+        			}
+        		}
         	} else if(StringUtils.isAllUpperCase(queryValue) && queryValue.length() == 4) {
-        		return Speaker.SPEAKER_ID_PREFIX_KEY;
+        		queryTypeValue.add(Speaker.SPEAKER_ID_PREFIX_KEY);
+        		queryTypeValue.add(queryValue);
         	} else {
-        		return queryValue.split("__")[0];
+        		String[] typeValue = queryValue.split("__");
+    			if(typeValue.length >= 2) {
+    				queryTypeValue.add(typeValue[0]);
+    				queryTypeValue.add(typeValue[1]);
+    			}
         	}
+        	
+        	return queryTypeValue;
         }
     }
     

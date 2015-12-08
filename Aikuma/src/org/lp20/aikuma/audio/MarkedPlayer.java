@@ -171,7 +171,7 @@ public class MarkedPlayer extends SimplePlayer {
 
 	/**
 	 * Implements a run that polls the current position to check
-	 * if a previously set marker has been reache
+	 * if a previously set marker has been reached
 	 */
 	private class NotificationMarkerLoop implements Runnable {
 		public void run() {

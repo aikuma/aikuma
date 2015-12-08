@@ -36,10 +36,15 @@ public class Segments {
 		this();
 		this.respeaking = respeaking;
 		try {
-			readJSONSegments(new File(respeaking.getRecordingsPath(), 
-					respeaking.getGroupId() + "/" +
-					respeaking.getId() + 
-					FileModel.getSuffixExt(respeaking.getVersionName(), FileType.MAPPING)));
+			if(respeaking.getFileType().equals(Recording.SEGMENT_TYPE)) {
+				readJSONSegments(respeaking.getFile());	// read itself
+			} else {									// read its mapping file
+				readJSONSegments(new File(respeaking.getRecordingsPath(), 
+						respeaking.getGroupId() + "/" +
+						respeaking.getId() + 
+						FileModel.getSuffixExt(respeaking.getVersionName(), FileType.MAPPING)));
+			}
+			
 		} catch (IOException e) {
 			// Temporary solution (If file is not in JSON format, try older format)
 			try {
@@ -101,6 +106,7 @@ public class Segments {
 	public Iterator<Segment> getOriginalSegmentIterator() {
 		return segmentMap.keySet().iterator();
 	}
+	
 
 	/**
 	 * Reads the segments from a file.
@@ -141,17 +147,20 @@ public class Segments {
 					(JSONArray) jsonSegmentPair.get(JSON_ORIGINAL_KEY);
 			JSONArray jsonTargetSegment = 
 					(JSONArray) jsonSegmentPair.get(JSON_RESPEAKING_KEY);
+			Segment srcSegment = new Segment((Long) jsonSourceSegment.get(0), 
+					(Long) jsonSourceSegment.get(1));
+			Segment tgtSegment = null;
 			
-			if (jsonSourceSegment.size() + jsonTargetSegment.size() != 4) {
-				throw new RuntimeException("Segment format is corrupted");
-			}
+			if (jsonTargetSegment != null) {
+				if(jsonSourceSegment.size() + jsonTargetSegment.size() != 4) {
+					throw new RuntimeException("Mapping file-format is corrupted");
+				} else {
+					tgtSegment = new Segment((Long) jsonTargetSegment.get(0), 
+							(Long) jsonTargetSegment.get(1));
+				}
+			}		
 			
-			segmentMap.put(
-					new Segment((Long) jsonSourceSegment.get(0), 
-							(Long) jsonSourceSegment.get(1)),
-					new Segment((Long) jsonTargetSegment.get(0), 
-							(Long) jsonTargetSegment.get(1)));
-			
+			segmentMap.put(srcSegment, tgtSegment);
 		}
 	}
 
@@ -239,9 +248,11 @@ public class Segments {
 			respeakingSegment = getRespeakingSegment(originalSegment);
 			mapString +=
 					originalSegment.getStartSample() + "," +
-					originalSegment.getEndSample() + ":" 
-					+ respeakingSegment.getStartSample() + "," +
-					respeakingSegment.getEndSample() + "\n";
+					originalSegment.getEndSample() + ":" ;
+			if(respeakingSegment != null) {
+				mapString += respeakingSegment.getStartSample() + "," 
+						+ respeakingSegment.getEndSample() + "\n";
+			}
 		}
 		return mapString;
 	}
@@ -264,11 +275,13 @@ public class Segments {
 			
 			jsonSourceSegment.add(originalSegment.getStartSample());
 			jsonSourceSegment.add(originalSegment.getEndSample());
-			jsonTargetSegment.add(respeakingSegment.getStartSample());
-			jsonTargetSegment.add(respeakingSegment.getEndSample());
-			
 			jsonSegmentPair.put(JSON_ORIGINAL_KEY, jsonSourceSegment);
-			jsonSegmentPair.put(JSON_RESPEAKING_KEY, jsonTargetSegment);
+			
+			if(respeakingSegment != null) {
+				jsonTargetSegment.add(respeakingSegment.getStartSample());
+				jsonTargetSegment.add(respeakingSegment.getEndSample());
+				jsonSegmentPair.put(JSON_RESPEAKING_KEY, jsonTargetSegment);
+			}
 			
 			jsonSegmentArray.add(jsonSegmentPair);
 		}
