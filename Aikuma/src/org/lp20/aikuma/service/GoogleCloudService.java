@@ -407,24 +407,30 @@ public class GoogleCloudService extends IntentService{
 		Log.i(TAG, "classify: " + identifier);
 		if(FileModel.checkCloudFormat(identifier)) {
 			String currentVersionName = AikumaSettings.getLatestVersion();
-			String relPath = Recording.getRelPath(identifier);
+			String relPath = FileModel.getRelPath(identifier);
+			Log.i(TAG, "rel: " + relPath);
 			if((FileModel.checkType(identifier, currentVersionName, FileType.METADATA) && !relPath.endsWith(Speaker.PATH)) || 
 					!identifier.startsWith(currentVersionName))
 				return;
 			
 			if(relPath.endsWith(Recording.PATH)) {
 				if(FileModel.checkType(identifier, currentVersionName, FileType.PREVIEW)) {
+					Log.i(TAG, "preview added");
 					otherSet.add(identifier);
 				} else if(identifier.endsWith(FileModel.AUDIO_EXT) || 
-						identifier.endsWith(FileModel.VIDEO_EXT)) {
+						identifier.endsWith(FileModel.VIDEO_EXT) || 
+						FileModel.checkType(identifier, currentVersionName, FileType.SEGMENT)) {
+					Log.i(TAG, "rec added");
 					recordingSet.add(identifier);
 				} else {
+					Log.i(TAG, "rec-other added");
 					otherSet.add(identifier);
 				}
 			} else if(relPath.endsWith(Speaker.PATH)) {
 				Log.i(TAG, "speaker added");
 				speakerSet.add(identifier);
 			} else if(relPath.endsWith(Recording.TAG_PATH)) {
+				Log.i(TAG, "tag added");
 				otherSet.add(identifier);
 			}
 		}
@@ -454,7 +460,7 @@ public class GoogleCloudService extends IntentService{
 					others.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 							recording.getImageId(), FileModel.IMAGE_TYPE, FileModel.IMAGE_EXT));
 				}
-			} else {
+			} else if(!recording.getFileType().equals(Recording.SEGMENT_TYPE)){
 				others.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 						recording.getMapId(), FileModel.MAPPING_TYPE, FileModel.JSON_EXT));
 			}
@@ -685,7 +691,7 @@ public class GoogleCloudService extends IntentService{
 						other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 								recording.getImageId(), FileModel.IMAGE_TYPE, FileModel.IMAGE_EXT));
 					}
-				} else {
+				} else if(!recording.getFileType().equals(Recording.SEGMENT_TYPE)){
 					other.add(new FileModel(recording.getVersionName(), recording.getOwnerId(), 
 							recording.getMapId(), FileModel.MAPPING_TYPE, FileModel.JSON_EXT));
 				}
@@ -1041,7 +1047,7 @@ public class GoogleCloudService extends IntentService{
 //					joiner = ",";
 //				}
 				metadata.put(Recording.ITEM_ID_PREFIX_KEY, groupId.substring(0, 4));
-				metadata.put(Recording.NAME_KEY, (String) jsonfile.get(Recording.NAME_KEY)); //For derivatives, this can be an empty string
+				metadata.put(Recording.NAME_KEY, (String) jsonfile.get(Recording.NAME_KEY)); //For derivatives/segments, this can be an empty string
 				metadata.put(Recording.VERSION_KEY, (String) jsonfile.get(Recording.VERSION_KEY));
 				String simpleDate = (String) jsonfile.get(Recording.DATE_KEY);
 				try {
@@ -1051,9 +1057,13 @@ public class GoogleCloudService extends IntentService{
 				} catch (ParseException e) {
 					Log.e(TAG, "date parsing error");
 				}
-				String durRangeStr = "" + 
-						Recording.DurRange.fromDurationMsec(((Long)jsonfile.get(Recording.DURATION_MSEC_KEY)).intValue());
-				metadata.put(Recording.DURATION_CLOUD_KEY, durRangeStr);
+				
+				if(!item.getFileType().equals(FileModel.SEGMENT_TYPE)) {
+					String durRangeStr = "" + 
+							Recording.DurRange.fromDurationMsec(((Long)jsonfile.get(Recording.DURATION_MSEC_KEY)).intValue());
+					metadata.put(Recording.DURATION_CLOUD_KEY, durRangeStr);
+				}
+				
 				metadata.put(Recording.ANDROID_ID_KEY, (String) jsonfile.get(Recording.ANDROID_ID_KEY));
 				metadata.put(Recording.FORMAT_KEY, (String) jsonfile.get(Recording.FORMAT_KEY));
 				

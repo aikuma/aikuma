@@ -33,6 +33,7 @@ public class AikumaSettings {
 	 * 		2. Use of aikuma-cloud-library-0.10.1
 	 * 		3. Remove two levels of hashes in local storage
 	 * 		4. Admin-file structure in local storage
+	 * 		5. Checksum field for recording
 	 */
 	private static final String DEFAULT_VERSION = "v03";	
 	
@@ -124,6 +125,11 @@ public class AikumaSettings {
 	 * Extra audio recording duration after a thumb is lifted or head becomes far away
 	 */
 	public static final int EXTRA_AUDIO_DURATION = 250;
+	
+	/**
+	 * Recording sampleRate
+	 */
+	public static final long DEFAULT_SAMPLERATE = 16000l;
 	
 	
 	/**

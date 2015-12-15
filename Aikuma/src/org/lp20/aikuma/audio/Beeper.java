@@ -43,13 +43,19 @@ public class Beeper {
 	 */
 	public Beeper(Context context, OnCompletionListener listener) {
 		this.context = context;
+		beep = getBeep(listener);
 		beepBeep = getBeepBeep(listener);
 	}
 
 	/**
 	 * Plays one beep.
 	 */
-	public void beep() { beep(null); }
+	public void beep() {
+		if(beep == null)
+			beep(null); 
+		else
+			beep.start();
+	}
 
 	/**
 	 * Plays one beep.

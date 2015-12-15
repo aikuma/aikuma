@@ -16,6 +16,7 @@ import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma2.R;
 import org.lp20.aikuma.audio.SimplePlayer;
+import org.lp20.aikuma.model.FileModel;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Speaker;
@@ -99,6 +100,11 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 				image = ImageUtils.getNoSyncImage(this.imageUUID);
 				ImageView recordingImageView = (ImageView) findViewById(R.id.recordingImage);
 				recordingImageView.setImageBitmap(image);
+				
+				if(image.getHeight() > image.getWidth()) {
+					Toast.makeText(this, "Please take a photo in landscape mode", 
+							Toast.LENGTH_LONG).show();
+				}
 			} catch (IOException e) {
 				image = null;
 			}
@@ -162,7 +168,7 @@ public class RecordingMetadataActivity4 extends AikumaActivity {
 	public void onStart() {
 		super.onStart();
 		
-		if(format.equals("mp4")) {
+		if(format.equals(FileModel.VIDEO_EXT)) {
 			findViewById(R.id.ListenFragment).setVisibility(View.GONE);
 			
 			setUpVideoView(uuid);

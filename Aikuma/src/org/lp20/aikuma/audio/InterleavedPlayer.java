@@ -4,13 +4,18 @@
 */
 package org.lp20.aikuma.audio;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+
 import java.io.IOException;
 import java.util.Iterator;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma.model.Segments;
 import org.lp20.aikuma.model.Segments.Segment;
+import org.lp20.aikuma2.R;
 
 /**
  * A player that plays both the original recording and its respeaking in an
@@ -22,26 +27,43 @@ import org.lp20.aikuma.model.Segments.Segment;
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
 public class InterleavedPlayer extends Player {
-
+	
 	/**
 	 * Creates an InterleavedPlayer to play the supplied recording and it's
 	 * original
 	 *
+	 * @param	context		The android-context creating this player for beep-audio
 	 * @param	recording	The metadata of the recording to play.
 	 * @throws	IOException	If there is an issue reading the recordings.
 	 */
-	public InterleavedPlayer(Recording recording) throws IOException {
+	public InterleavedPlayer(Context context, Recording recording) throws IOException {
 		setRecording(recording);
 		if (recording.isOriginal()) {
 			throw new IllegalArgumentException("The supplied Recording is " +
 					"not a respeaking. Use SimplePlayer instead.");
 		}
-		setSampleRate(recording.getSampleRate());
+		// Initialize original recording player
+		Recording originalRecording = recording.getOriginal();
+		setSampleRate(originalRecording.getSampleRate());
 		original = new MarkedPlayer(
-				recording.getOriginal(),
+				originalRecording,
 				new OriginalMarkerReachedListener(), true);
-		respeaking = new MarkedPlayer(recording,
-				new RespeakingMarkerReachedListener(), true);
+		
+		// Initialize segment/derivative player
+		if(context != null && recording.getFileType().equals(Recording.SEGMENT_TYPE)) {	//segment
+			beeper = new Beeper(context, new MediaPlayer.OnCompletionListener() {
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					advanceOriginalSegment();
+					playOriginal();
+					if(currentOriginalSegment.getEndSample() == Long.MAX_VALUE)
+						completedOnce = true;
+				}
+			});
+		} else {	//derivative(respeak/interpret)
+			respeaking = new MarkedPlayer(recording,
+					new RespeakingMarkerReachedListener(), true);
+		}
 		segments = new Segments(recording);
 		initializeCompletionListeners();
 		completedOnce = false;
@@ -50,13 +72,15 @@ public class InterleavedPlayer extends Player {
 	// Initializes the completion listeners for the original and respeaking,
 	// such that when one of them completes the InterleavedPlayer's
 	// onCompletionListener is run, only once.
+	// ex. Segment: Segment -> onCompletion
+	// 	   Derivative: Original(completedOnce) -> Derivative -> onCompletion
 	private void initializeCompletionListeners() {
 		Player.OnCompletionListener bothCompletedListener = new 
 				Player.OnCompletionListener() {
 			//boolean completedOnce = false;
 			@Override
 			public void onCompletion(Player p) {
-				if (completedOnce) {
+				if (respeaking == null || completedOnce) {
 					if (onCompletionListener != null) {
 						onCompletionListener.onCompletion(p);
 					}
@@ -68,7 +92,8 @@ public class InterleavedPlayer extends Player {
 			}
 		};
 		original.setOnCompletionListener(bothCompletedListener);
-		respeaking.setOnCompletionListener(bothCompletedListener);
+		if(respeaking != null)
+			respeaking.setOnCompletionListener(bothCompletedListener);
 	}
 
 	/**
@@ -86,7 +111,8 @@ public class InterleavedPlayer extends Player {
 		originalSegmentIterator = null;
 		currentOriginalSegment = null;
 		original.seekToSample(0l);
-		respeaking.seekToSample(0l);
+		if(respeaking != null)
+			respeaking.seekToSample(0l);
 	}
 
 	/**
@@ -95,7 +121,7 @@ public class InterleavedPlayer extends Player {
 	 * @return	true if the recording is currently playing; false otherwise.
 	 */
 	public boolean isPlaying() {
-		return original.isPlaying() || respeaking.isPlaying();
+		return original.isPlaying() || (respeaking != null && respeaking.isPlaying());
 	}
 
 	/** Pauses the playback. */
@@ -103,7 +129,7 @@ public class InterleavedPlayer extends Player {
 		if (original.isPlaying()) {
 			original.pause();
 		}
-		if (respeaking.isPlaying()) {
+		if (respeaking != null && respeaking.isPlaying()) {
 			respeaking.pause();
 		}
 	}
@@ -129,7 +155,8 @@ public class InterleavedPlayer extends Player {
 	/** Releases resources associated with the InterleavedPlayer. */
 	public void release() {
 		original.release();
-		respeaking.release();
+		if(respeaking != null)
+			respeaking.release();
 	}
 
 	// Plays the current original segment.
@@ -146,7 +173,8 @@ public class InterleavedPlayer extends Player {
 
 	// Plays the current respeaking segment.
 	private void playRespeaking() {
-		playSegment(getCurrentRespeakingSegment(), respeaking);
+		if(respeaking != null)
+			playSegment(getCurrentRespeakingSegment(), respeaking);
 	}
 
 	private Segment getCurrentRespeakingSegment() {
@@ -175,7 +203,7 @@ public class InterleavedPlayer extends Player {
 			}
 			currentOriginalSegment = new Segment(startSample, Long.MAX_VALUE);
 		}
-	}
+	 }
 
 	// Gets an iterator over the segments of the original recording.
 	private Iterator<Segment> getOriginalSegmentIterator() {
@@ -192,6 +220,7 @@ public class InterleavedPlayer extends Player {
 	private Iterator<Segment> originalSegmentIterator;
 	private Player.OnCompletionListener onCompletionListener;
 	private Recording recording;
+	private Beeper beeper;
 
 	private void setRecording(Recording recording) {
 		this.recording = recording;
@@ -211,7 +240,20 @@ public class InterleavedPlayer extends Player {
 			Log.i("release", "original onMarker reached, completedOnce = " +
 					completedOnce);
 			original.pause();
-			playRespeaking();
+			if(respeaking != null)
+				playRespeaking();
+			else {
+				if (!completedOnce) {
+					if(beeper != null)
+						beeper.beep();
+					else {
+						advanceOriginalSegment();
+						playOriginal();
+						if(currentOriginalSegment.getEndSample() == Long.MAX_VALUE)
+							completedOnce = true;
+					}
+				}
+			}
 		}
 	}
 

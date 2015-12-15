@@ -169,7 +169,7 @@ public class RecordingArrayAdapter extends ArrayAdapter<Recording> {
 		Integer duration = durationMsec / 1000;
 		if (durationMsec == -1) {
 			recordingDateDurationView.setText(
-					simpleDateFormat.format(recording.getDate()));
+					simpleDateFormat.format(recording.getDate()) + " (0s)");
 		} else if (durationMsec <= Recording.DurRange.getMinValue() && 
 					durationMsec >= Recording.DurRange.getMaxValue()) {
 			recordingDateDurationView.setText(

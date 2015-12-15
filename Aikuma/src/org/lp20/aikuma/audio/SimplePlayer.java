@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 import org.lp20.aikuma.model.Recording;
+import org.lp20.aikuma.util.AikumaSettings;
 import org.lp20.aikuma.util.FileIO;
 
 /**
@@ -228,7 +229,10 @@ public class SimplePlayer extends Player implements Sampler {
 	}
 
 	private void setSampleRate(long sampleRate) {
-		this.sampleRate = sampleRate;
+		if (sampleRate == -1)
+			this.sampleRate = AikumaSettings.DEFAULT_SAMPLERATE;
+		else
+			this.sampleRate = sampleRate;
 	}
 
 	/**

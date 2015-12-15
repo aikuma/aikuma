@@ -9,6 +9,7 @@ import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.audio.InterleavedPlayer;
 import org.lp20.aikuma.audio.Player;
 import org.lp20.aikuma.audio.SimplePlayer;
+import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
 
 import org.lp20.aikuma.service.GoogleCloudService;
@@ -22,7 +23,9 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -230,7 +233,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		QuickActionItem shareAct = new QuickActionItem("share", R.drawable.share);
 		QuickActionItem respeakAct = new QuickActionItem("respeak", R.drawable.respeak_32);
 		QuickActionItem translateAct = new QuickActionItem("translate", R.drawable.translate_32);
-		QuickActionItem refresthAct = new QuickActionItem("refresh", R.drawable.refresh_32);
+		QuickActionItem refreshAct = new QuickActionItem("refresh", R.drawable.refresh_32);
 		
 		quickMenu.addActionItem(starAct);
 		quickMenu.addActionItem(flagAct);
@@ -254,21 +257,27 @@ public class ListenRespeakingActivity extends AikumaActivity{
 			quickMenu.setItemEnabledAt(3, false);
 			quickMenu.setItemEnabledAt(4, false);
 		}
-		/*
-		quickMenu.addActionItem(respeakAct);
-		quickMenu.addActionItem(translateAct);
-		quickMenu.addActionItem(refresthAct);
-		*/
+		if(!recording.isOriginal()) {
+			quickMenu.addActionItem(respeakAct);
+			quickMenu.addActionItem(translateAct);
+		}
+		
+		//quickMenu.addActionItem(refreshAct);
+		
 		// Tagging buttons
 		QuickActionItem tagAct =
 				new QuickActionItem("tag", R.drawable.tag_32);
 		quickMenu.addActionItem(tagAct);		
 		
+		// Segmenting button
+		QuickActionItem segAct =
+				new QuickActionItem("seg", R.drawable.seg_32);
+		quickMenu.addActionItem(segAct);		
+	
 		//setup the action item click listener
 		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener<Recording>() {			
 			@Override
 			public void onItemClick(int pos, Recording recording) {
-				
 				if (pos == 0) { //Add item selected
 					onStarButtonPressed(recording);
 				} else if (pos == 1) { //Accept item selected
@@ -280,14 +289,22 @@ public class ListenRespeakingActivity extends AikumaActivity{
 				} else if (pos == 4) {
 					onPrivateShareButtonPressed(recording);
 				} else if (pos == 5) {
-					//respeak
-					//onRespeakButton(recording);
-					onTagButtonPressed(recording);
+					if(recording.isOriginal())
+						onTagButtonPressed(recording);
+					else	//respeak
+						onRespeakButton(recording, "respeak");
 				} else if (pos == 6) {
-					//translate
-					//onInterpretButtonPressed(recording);
+					if(recording.isOriginal())
+						onSegButtonPressed(recording, "segment");
+					else	//translate
+						onInterpretButtonPressed(recording);
 				} else if (pos == 7) {
 					//refresh
+					if(!recording.isOriginal())
+						onTagButtonPressed(recording);
+				} else if (pos == 8) {
+					if(!recording.isOriginal())
+						onSegButtonPressed(recording, "segment");
 				}
 			}
 		});
@@ -306,7 +323,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 			if (recording.isOriginal()) {
 				setPlayer(playerInterface, new SimplePlayer(recording, true));
 			} else {
-				setPlayer(playerInterface, new InterleavedPlayer(recording));
+				setPlayer(playerInterface, new InterleavedPlayer(this, recording));
 			}
 		} catch (IOException e) {
 			//The player couldn't be created from the recoridng, so lets wrap
@@ -345,6 +362,43 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		this.finish();
 	}
 
+	/**
+	 * Change to the thumb respeak/interpret activity
+	 *
+	 * @param 	recording			Recording object on which respeak is created
+	 * @param	respeakingType		Derivative recording type(respeak/interpret)
+	 */
+	public void onRespeakButton(Recording recording, String respeakingType) {
+		SharedPreferences preferences =
+				PreferenceManager.getDefaultSharedPreferences(this);
+		String respeakingMode = preferences.getString(
+				AikumaSettings.RESPEAKING_MODE_KEY, "thumb");
+		int rewindAmount = preferences.getInt("respeaking_rewind", 500);
+		Log.i(TAG, 
+				"respeakingMode: " + respeakingMode +", rewindAmount: " + rewindAmount);
+
+		Intent intent;
+		if(respeakingType.equals("respeak")) {
+			intent = new Intent(this, RecordingLanguageActivity.class);
+			
+			intent.putParcelableArrayListExtra("languages", (ArrayList<Language>) recording.getLanguages());
+			intent.putExtra("mode", respeakingMode);
+		} else {
+			intent = new Intent(this, RecordingLanguageActivity.class);
+
+			intent.putExtra("mode", respeakingMode);
+		}
+		intent.putExtra("respeakingType", respeakingType);
+
+		intent.putExtra("sourceId", recording.getId());
+		intent.putExtra("ownerId", recording.getOwnerId());
+		intent.putExtra("versionName", recording.getVersionName());
+		intent.putExtra("sampleRate", recording.getSampleRate());
+		intent.putExtra("rewindAmount", rewindAmount);
+		
+		startActivity(intent);
+	}
+	
 
 	/**
 	 * When the star button is pressed
@@ -491,6 +545,14 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	}
 	
 	/**
+	 * Callback for an interpret quickaction button
+	 * @param recording		Recording object on which interpret is created
+	 */
+	public void onInterpretButtonPressed(Recording recording) {
+		onRespeakButton(recording, "interpret");
+	}
+	
+	/**
 	 * Callback for the tagging button
 	 *
 	 * @param recording	Recording object which will be tagged
@@ -502,6 +564,30 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		startActivity(intent);
 	}
 
+	/**
+	 * Callback for an segmenting quickaction button
+	 * @param recording		The recording on which a segment is created
+	 * @param actionType	Differentiable label in ThumRespeakActivity
+	 */
+	public void onSegButtonPressed(Recording recording, String actionType) {
+		Log.i(TAG, "SEG: " + actionType);
+		SharedPreferences preferences =
+				PreferenceManager.getDefaultSharedPreferences(this);
+		int rewindAmount = preferences.getInt("respeaking_rewind", 500);
+		
+		Intent intent = new Intent(this, ThumbRespeakActivity.class);
+		
+		intent.putExtra("respeakingType", actionType);
+		intent.putExtra("start", 1);
+
+		intent.putExtra("sourceId", recording.getId());
+		intent.putExtra("ownerId", recording.getOwnerId());
+		intent.putExtra("versionName", recording.getVersionName());
+		intent.putExtra("rewindAmount", rewindAmount);
+		
+		startActivity(intent);
+	}
+	
 	private void updateStarButtons() {
 		updateStarButton(originalQuickMenu, original);
 		updateStarButton(respeakingQuickMenu, respeaking);
@@ -606,4 +692,6 @@ public class ListenRespeakingActivity extends AikumaActivity{
 	private QuickActionMenu<Recording> respeakingQuickMenu;
 	
 	private String googleAuthToken;
+	
+	private static final String TAG = ListenRespeakingActivity.class.getCanonicalName();
 }

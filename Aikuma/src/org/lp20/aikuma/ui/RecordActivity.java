@@ -27,6 +27,7 @@ import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.model.Recording;
 import org.lp20.aikuma2.R;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
+import org.lp20.aikuma.util.AikumaSettings;
 
 /**
  * The activity that allows audio to be recorded
@@ -272,7 +273,7 @@ public class RecordActivity extends AikumaActivity {
 	private boolean recording;
 	private Recorder recorder;
 	private UUID soundUUID;
-	private long sampleRate = 16000l;
+	private long sampleRate = AikumaSettings.DEFAULT_SAMPLERATE;
 	private TextView timeDisplay;
 	private ProximityDetector proximityDetector;
 	private Beeper beeper;

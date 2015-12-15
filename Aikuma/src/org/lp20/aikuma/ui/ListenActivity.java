@@ -80,16 +80,22 @@ public class ListenActivity extends AikumaActivity {
 		super.onNewIntent(intent);
 
 		String respeakingId = intent.getStringExtra("id");
-		if(respeakingId != null) {	//When respeak/interpret is created on source
-			Intent nextIntent = new Intent(ListenActivity.this, 
-					ListenRespeakingActivity.class);
-			nextIntent.putExtra("originalId", recording.getId());
-			nextIntent.putExtra("originalOwnerId", ownerId);
-			nextIntent.putExtra("originalVerName", versionName);
-			
-			nextIntent.putExtra("respeakingId", respeakingId);
+		if(respeakingId != null) {	
+			if(respeakingId.equals("seg")) {	//When segment is created on source
+				//respeakings = recording.getRespeakings();
+				//respeakingAdapter.notifyDataSetChanged();	
+			} else {	//When respeak/interpret is created on source
+				Intent nextIntent = new Intent(ListenActivity.this, 
+						ListenRespeakingActivity.class);
+				nextIntent.putExtra("originalId", recording.getId());
+				nextIntent.putExtra("originalOwnerId", ownerId);
+				nextIntent.putExtra("originalVerName", versionName);
+				
+				nextIntent.putExtra("respeakingId", respeakingId);
 
-			startActivity(nextIntent);
+				startActivity(nextIntent);
+			}
+			setUpRespeakings();
 		} else {	// When tag is created on source
 			setUpRecording();
 		}
@@ -193,10 +199,10 @@ public class ListenActivity extends AikumaActivity {
 		if(recording.isOriginal()) {
 			ListView respeakingsListView = 
 					(ListView) findViewById(R.id.relatedCommentaries);
-			List<Recording> respeakings = recording.getRespeakings();
-			ArrayAdapter<Recording> adapter = 
+			respeakings = recording.getRespeakings();
+			respeakingAdapter = 
 					new RecordingArrayAdapter(this, respeakings);
-			respeakingsListView.setAdapter(adapter);
+			respeakingsListView.setAdapter(respeakingAdapter);
 			
 			respeakingsListView.setOnItemClickListener(
 					new OnItemClickListener() {
@@ -232,7 +238,7 @@ public class ListenActivity extends AikumaActivity {
 				new QuickActionItem("share", R.drawable.share);
 		QuickActionItem respeakAct = new QuickActionItem("respeak", R.drawable.respeak_32);
 		QuickActionItem translateAct = new QuickActionItem("interpret", R.drawable.translate_32);
-		QuickActionItem refresthAct = new QuickActionItem("refresh", R.drawable.refresh_32);
+		QuickActionItem refreshAct = new QuickActionItem("refresh", R.drawable.refresh_32);
 		
 		quickMenu.addActionItem(starAct);
 		quickMenu.addActionItem(flagAct);
@@ -260,12 +266,17 @@ public class ListenActivity extends AikumaActivity {
 		
 		quickMenu.addActionItem(respeakAct);
 		quickMenu.addActionItem(translateAct);
-		quickMenu.addActionItem(refresthAct);
+		quickMenu.addActionItem(refreshAct);
 		
 		// Tagging buttons
 		QuickActionItem tagAct =
 				new QuickActionItem("tag", R.drawable.tag_32);
 		quickMenu.addActionItem(tagAct);
+		
+		// Segmenting button
+		QuickActionItem segAct =
+				new QuickActionItem("seg", R.drawable.seg_32);
+		quickMenu.addActionItem(segAct);
 		
 		//setup the action item click listener
 		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener<Recording>() {			
@@ -293,6 +304,8 @@ public class ListenActivity extends AikumaActivity {
 				} else if (pos == 8) {
 					// tag
 					onTagButtonPressed(null);
+				} else if (pos == 9) {
+					onSegButtonPressed(null, "segment");
 				}
 			}
 		});
@@ -327,7 +340,7 @@ public class ListenActivity extends AikumaActivity {
 				}
 				
 			} else {
-				setPlayer(new InterleavedPlayer(recording));
+				setPlayer(new InterleavedPlayer(this, recording));
 				/*
 				ImageButton respeakingButton =
 						(ImageButton) findViewById(R.id.respeaking);
@@ -569,6 +582,29 @@ public class ListenActivity extends AikumaActivity {
 		startActivity(intent);
 	}
 	
+	/**
+	 * Callback for an segmenting quickaction button
+	 * @param view			The segmenting quickAction button
+	 * @param actionType	Differentiable label in ThumRespeakActivity
+	 */
+	public void onSegButtonPressed(View view, String actionType) {
+		SharedPreferences preferences =
+				PreferenceManager.getDefaultSharedPreferences(this);
+		int rewindAmount = preferences.getInt("respeaking_rewind", 500);
+		
+		Intent intent = new Intent(this, ThumbRespeakActivity.class);
+		
+		intent.putExtra("respeakingType", actionType);
+		intent.putExtra("start", 0);
+
+		intent.putExtra("sourceId", recording.getId());
+		intent.putExtra("ownerId", ownerId);
+		intent.putExtra("versionName", versionName);
+		intent.putExtra("rewindAmount", rewindAmount);
+		
+		startActivity(intent);
+	}
+	
 	private void updateStarButton() {
 		if(recording.isStarredByThisPhone(AikumaSettings.getLatestVersion(), 
 				AikumaSettings.getCurrentUserId())) {
@@ -640,6 +676,8 @@ public class ListenActivity extends AikumaActivity {
 	private ListenFragment fragment;
 	private VideoView videoView;
 	private Recording recording;
+	private List<Recording> respeakings;
+	private ArrayAdapter<Recording> respeakingAdapter;
 	private String ownerId;
 	private String versionName;
 	private MenuBehaviour menuBehaviour;
@@ -649,5 +687,5 @@ public class ListenActivity extends AikumaActivity {
 	
 	private String googleAuthToken;
 	
-	private static final String TAG = "ListenActivity";
+	private static final String TAG = ListenActivity.class.getCanonicalName();
 }

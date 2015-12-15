@@ -53,7 +53,7 @@ public class FileModel implements Parcelable {
 	 * A list of file-types 
 	 */
 	//public enum FileType { RECORDING, SPEAKER, OTHER };
-	public enum FileType { SOURCE, RESPEAKING, TRANSLATION, SPEAKER, METADATA, PREVIEW, TRANSCRIPT, MAPPING, TAG };
+	public enum FileType { SOURCE, RESPEAKING, TRANSLATION, SPEAKER, METADATA, PREVIEW, TRANSCRIPT, MAPPING, TAG, SEGMENT };
 	/** */
 	public static final String SOURCE_TYPE = "source";
 	/** */
@@ -73,6 +73,8 @@ public class FileModel implements Parcelable {
 	/** */
 	public static final String TAG_TYPE = "social";
 	/** */
+	public static final String SEGMENT_TYPE = "segment";
+	/** */
 	public static final String IMAGE_TYPE = "image";
 	
 	private static Set<String> fileTypeSet;
@@ -87,6 +89,7 @@ public class FileModel implements Parcelable {
 		fileTypeSet.add(TRANSCRIPT_TYPE);
 		fileTypeSet.add(MAPPING_TYPE);
 		fileTypeSet.add(TAG_TYPE);
+		fileTypeSet.add(SEGMENT_TYPE);
 		fileTypeSet.add(IMAGE_TYPE);
 	}
 	
@@ -208,6 +211,8 @@ public class FileModel implements Parcelable {
 			break;
 		case TRANSLATION:
 			break;
+		case SEGMENT:
+			break;
 		case SPEAKER:
 			break;
 		case METADATA:
@@ -244,9 +249,24 @@ public class FileModel implements Parcelable {
 	 * @return						true if the file is the type, else false
 	 */
 	public static boolean checkType(String cloudIdentifier, String versionName, FileType type) {
-		return cloudIdentifier.endsWith(FileModel.getSuffixExt(versionName, type));
+		switch(type) {
+		case SEGMENT:
+			return cloudIdentifier.substring(0, cloudIdentifier.length()-12).endsWith(SEGMENT_TYPE);
+		default:
+			return cloudIdentifier.endsWith(FileModel.getSuffixExt(versionName, type));
+		}
 	}
 	
+	/**
+	 * Returns the recording's relative path, given a cloud-Identifier of Recording
+	 * 
+	 * @param cloudIdentifier	Cloud-Identifier of Recording
+	 * @return					Relative-path
+	 */
+	public static String getRelPath(String cloudIdentifier) {
+		int groupPathPos = cloudIdentifier.lastIndexOf('/');
+		return cloudIdentifier.substring(0, cloudIdentifier.lastIndexOf('/', groupPathPos-1) + 1);
+	}
 	
 	/**
 	 * Constructor for parcel (only used by Speaker)
@@ -292,7 +312,7 @@ public class FileModel implements Parcelable {
 	 * @return	The metadata ID + extension of the file-model
 	 */
 	public String getMetadataIdExt() {
-		if(fileType.equals(SPEAKER_TYPE) || fileType.equals(SOURCE_TYPE) || 
+		if(fileType.equals(SPEAKER_TYPE) || fileType.equals(SOURCE_TYPE) || fileType.equals(SEGMENT_TYPE) ||
 				fileType.equals(RESPEAKING_TYPE) || fileType.equals(TRANSLATION_TYPE))
 			return (id + getSuffixExt(versionName, FileType.METADATA));
 		return null;
@@ -325,7 +345,7 @@ public class FileModel implements Parcelable {
 			if(option == 0)
 				suffix = "." + getExtension();
 			else if(!(fileType.equals(SOURCE_TYPE) || fileType.equals(RESPEAKING_TYPE)
-					|| fileType.equals(TRANSLATION_TYPE)))	// No metadata for transcript/mapping/preview
+					|| fileType.equals(TRANSLATION_TYPE) || fileType.equals(SEGMENT_TYPE)))	// No metadata for transcript/mapping/preview
 				return null;
 			else
 				suffix = getSuffixExt(versionName, FileType.METADATA);
@@ -373,7 +393,7 @@ public class FileModel implements Parcelable {
 			if(option == 0)
 				suffix = "." + getExtension();
 			else if(!(fileType.equals(SOURCE_TYPE) || fileType.equals(RESPEAKING_TYPE)
-					|| fileType.equals(TRANSLATION_TYPE)))	// No metadata for transcript/mapping/preview
+					|| fileType.equals(TRANSLATION_TYPE) || fileType.equals(SEGMENT_TYPE)))	// No metadata for transcript/mapping/preview
 				return null;
 			else
 				suffix = getSuffixExt(versionName, FileType.METADATA);
@@ -395,7 +415,8 @@ public class FileModel implements Parcelable {
 		Map<String, String> tagStrs = new HashMap<String, String>();
 		String respeakingId = "";
 		
-		if(!(fileType.equals(SOURCE_TYPE) || fileType.equals(RESPEAKING_TYPE) || fileType.equals(TRANSLATION_TYPE)))
+		if(!(fileType.equals(SOURCE_TYPE) || fileType.equals(SEGMENT_TYPE) ||
+				fileType.equals(RESPEAKING_TYPE) || fileType.equals(TRANSLATION_TYPE)))
 			return tagStrs;
 		if(!fileType.equals(SOURCE_TYPE))
 			respeakingId = getId().split("-")[3];
