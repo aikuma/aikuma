@@ -145,7 +145,7 @@ public class AikumaSettings {
 	 *  WIFI_MODE_KEY			: true/false
 	 *  CELLULAR_MODE_KEY		: true/false
 	 *  PUBLIC_SHARE_CONSENT_KEY: true/false
-	 *  RESPEAKING_MODE_KEY		: "phone"/"thumb"
+	 *  RESPEAKING_MODE_KEY		: "thumb"
 	 *  
 	 *  SEARCH_STATE_KEY		: true/false
 	 */

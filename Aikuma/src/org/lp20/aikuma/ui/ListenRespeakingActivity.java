@@ -102,7 +102,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 			respeakingListenFragment.triggerPlayButton();
 		}
 		wasPlayed = 0;
-		
+		/*
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
 				WindowManager.LayoutParams params = getWindow().getAttributes();
@@ -120,13 +120,14 @@ public class ListenRespeakingActivity extends AikumaActivity{
 			}
 		};
 		this.proximityDetector.start();
+		*/
 	}
 
 	
 	@Override
 	public void onPause() {
 		super.onPause();
-		this.proximityDetector.stop();
+		//this.proximityDetector.stop();
 		playerMsecPos = originalListenFragment.getPlayerPos();
 		if(respeakingListenFragment.getPlayerPos() > playerMsecPos)
 			playerMsecPos = respeakingListenFragment.getPlayerPos();
@@ -373,7 +374,8 @@ public class ListenRespeakingActivity extends AikumaActivity{
 				PreferenceManager.getDefaultSharedPreferences(this);
 		String respeakingMode = preferences.getString(
 				AikumaSettings.RESPEAKING_MODE_KEY, "thumb");
-		int rewindAmount = preferences.getInt("respeaking_rewind", 500);
+		int rewindAmount = preferences.getInt("respeaking_rewind", 
+				AikumaSettings.DEFAULT_RESPEAK_REWIND);
 		Log.i(TAG, 
 				"respeakingMode: " + respeakingMode +", rewindAmount: " + rewindAmount);
 
@@ -656,7 +658,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		}
 	}
 	
-
+	/*
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {
 		if (proximityDetector.isNear()) {
@@ -664,7 +666,7 @@ public class ListenRespeakingActivity extends AikumaActivity{
 		} else {
 			return super.dispatchTouchEvent(event);
 		}
-	}
+	}*/
 
 	/**
 	 * Updates the view that tracks the number of times the recording has been

@@ -301,30 +301,6 @@ public final class FileIO {
 	}
 
 	/**
-	 * Writes the default sensitivity to file.
-	 *
-	 * @param	defaultSensitivity	The default sensitivity for phone respeaking.
-	 * @throws	IOException	If the default sensitivity setting cannot be
-	 * written to file.
-	 */
-	public static void writeDefaultSensitivity(int defaultSensitivity) throws IOException {
-		write(new File(getNoSyncPath(), "sensitivity-settings.txt"),
-				Integer.valueOf(defaultSensitivity).toString());
-	}
-
-	/**
-	 * Reads the default sensitivity from file.
-	 *
-	 * @return	The default sensitivity for phone respeaking.
-	 * @throws	IOException	if the default sensitivity settings
-	 * file cannot be read.
-	 */
-	public static int readDefaultSensitivity() throws IOException {
-		return Integer.parseInt(read(new File(getNoSyncPath(),
-				"sensitivity-settings.txt")));
-	}
-
-	/**
 	 * Deletes the file having path
 	 * 
 	 * @param path		The path to the file

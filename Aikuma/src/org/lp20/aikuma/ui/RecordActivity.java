@@ -124,12 +124,13 @@ public class RecordActivity extends AikumaActivity {
 	public void onPause() {
 		super.onPause();
 		pause();
-		this.proximityDetector.stop();
+		//this.proximityDetector.stop();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		/*
 		this.proximityDetector = new ProximityDetector(this) {
 			public void near(float distance) {
 				WindowManager.LayoutParams params = getWindow().getAttributes();
@@ -147,7 +148,7 @@ public class RecordActivity extends AikumaActivity {
 			}
 		};
 		this.proximityDetector.start();
-		
+		*/
 	}
 
 	// Activates recording
@@ -257,6 +258,7 @@ public class RecordActivity extends AikumaActivity {
 		RecordActivity.this.finish();
 	}
 
+	/*
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {
 		Log.i(TAG, "isNear: " + proximityDetector.isNear());
@@ -265,7 +267,7 @@ public class RecordActivity extends AikumaActivity {
 		} else {
 			return super.dispatchTouchEvent(event);
 		}
-	}
+	}*/
 	
 	private static final String TAG = RecordActivity.class.getSimpleName();
 	static final int VIDEO_REQUEST_CODE = 0;

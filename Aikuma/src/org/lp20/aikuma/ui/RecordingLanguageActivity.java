@@ -231,12 +231,8 @@ public class RecordingLanguageActivity extends AikumaListActivity {
 				intent = new Intent(this, RecordActivity.class);
 				saveLanguages(AikumaSettings.SOURCE_LANG_BUFFER_KEY, selectedLanguages);
 			} else {						// derivative recordings
-				if (mode.equals("phone")) {	// derivative interface
-					intent = new Intent(this, PhoneRespeakActivity.class);
-				} else {
-					// Lets just default to thumb respeaking
-					intent = new Intent(this, ThumbRespeakActivity.class);
-				}
+				intent = new Intent(this, ThumbRespeakActivity.class);
+				
 				saveLanguages(AikumaSettings.INTERPRET_LANG_BUFFER_KEY, selectedLanguages);
 				
 				intent.putExtra("respeakingType", infoIntent.getStringExtra("respeakingType"));
