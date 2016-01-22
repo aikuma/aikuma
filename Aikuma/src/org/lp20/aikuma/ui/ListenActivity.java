@@ -15,6 +15,8 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -33,11 +35,13 @@ import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.lp20.aikuma.Aikuma;
 import org.lp20.aikuma.model.Language;
 import org.lp20.aikuma.model.Recording;
@@ -50,6 +54,8 @@ import org.lp20.aikuma2.R;
 import org.lp20.aikuma.service.GoogleCloudService;
 import org.lp20.aikuma.ui.sensors.ProximityDetector;
 import org.lp20.aikuma.util.AikumaSettings;
+import org.lp20.aikuma.util.FileIO;
+import org.lp20.aikuma.util.StandardDateFormat;
 
 /**
  * @author	Oliver Adams	<oliver.adams@gmail.com>
@@ -278,6 +284,11 @@ public class ListenActivity extends AikumaActivity {
 				new QuickActionItem("seg", R.drawable.seg_32);
 		quickMenu.addActionItem(segAct);
 		
+		// Export button
+		QuickActionItem exportAct = 
+				new QuickActionItem("export", R.drawable.export_32);
+		quickMenu.addActionItem(exportAct);
+		
 		//setup the action item click listener
 		quickMenu.setOnActionItemClickListener(new QuickActionMenu.OnActionItemClickListener<Recording>() {			
 			@Override
@@ -306,6 +317,8 @@ public class ListenActivity extends AikumaActivity {
 					onTagButtonPressed(null);
 				} else if (pos == 9) {
 					onSegButtonPressed(null, "segment");
+				} else if (pos == 10) {
+					onExportButtonPressed(null);
 				}
 			}
 		});
@@ -603,6 +616,38 @@ public class ListenActivity extends AikumaActivity {
 		intent.putExtra("rewindAmount", rewindAmount);
 		
 		startActivity(intent);
+	}
+	
+	/**
+	 * Callback for an export quickaction button
+	 * @param view		The export quickAction button
+	 */
+	public void onExportButtonPressed(View view) {
+		String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(recording.getDate());
+		
+		String exportFileName = recording.getName() + "-" + date + ".wav";
+        
+		File exportFile = new File(FileIO.getExportPath(), exportFileName);
+        try {
+            FileUtils.copyFile(recording.getFile(), exportFile);
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+        
+        MediaScannerConnection.scanFile(
+        		ListenActivity.this, 
+        		new String[] {exportFile.getAbsolutePath()}, null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+					@Override
+					public void onScanCompleted(String path, Uri uri) {
+						ListenActivity.this.runOnUiThread(new Runnable() {
+		                    @Override
+		                    public void run() {
+		                        Aikuma.showAlertDialog(ListenActivity.this, "Exported");
+		                    }
+		                });
+					}
+        });
 	}
 	
 	private void updateStarButton() {

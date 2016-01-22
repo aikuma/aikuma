@@ -85,7 +85,7 @@ public class SettingsActivity extends AikumaActivity {
 	
 	// Set up the respeaking rewind amount (rewind after each respeaking-segment)
 	private void readRespeakingRewind() {
-		int rewindAmount = preferences.getInt("respeaking_rewind", 500);
+		int rewindAmount = preferences.getInt("respeaking_rewind", AikumaSettings.DEFAULT_RESPEAK_REWIND);
 		EditText rewindAmountView = (EditText) findViewById(R.id.rewindAmount);
 		rewindAmountView.setText(Integer.toString(rewindAmount));
 	}

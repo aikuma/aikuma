@@ -127,6 +127,11 @@ public class AikumaSettings {
 	public static final int EXTRA_AUDIO_DURATION = 250;
 	
 	/**
+	 * Default rewind time when creating a derivative recording (in msec)
+	 */
+	public static final int DEFAULT_RESPEAK_REWIND = 300;
+	
+	/**
 	 * Recording sampleRate
 	 */
 	public static final long DEFAULT_SAMPLERATE = 16000l;

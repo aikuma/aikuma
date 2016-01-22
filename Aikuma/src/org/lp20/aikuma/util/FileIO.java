@@ -60,6 +60,11 @@ public final class FileIO {
 	static final String NO_SYNC_PATH = "aikuma-no-sync/";
 
 	/**
+	 * 
+	 */
+	static final String EXPORT_PATH = "Download";
+	
+	/**
 	 * Returns the path to the application's data.
 	 *
 	 * @return	A File representing the applications base directory (the "aikuma"
@@ -83,6 +88,18 @@ public final class FileIO {
 	public static File getNoSyncPath(){
 		File path = new File(Environment.getExternalStorageDirectory(),
 				NO_SYNC_PATH);
+		path.mkdirs();
+		return path;
+	}
+	
+	/**
+	 * Returns the path to the directory containing files that are exported.
+	 *
+	 * @return	A File representing the application's directory for files exported
+	 */
+	public static File getExportPath() {
+		File path = new File(Environment.getExternalStorageDirectory(),
+				EXPORT_PATH);
 		path.mkdirs();
 		return path;
 	}
