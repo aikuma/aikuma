@@ -8,7 +8,7 @@ uploaded to google play.
 2. Included in this directory is sign.sh, which will take care of building,
 aligning, and signing the release APK. Run the script and it will eventually
 prompt you to enter a passphrase for the keystore. Enter the password. When the
-script completes, note the new file bin/Aikuma.apk
+script completes, note the new release APK, created in Aikuma/app/build/outputs/apk/
 
 3. Uploading the APK to Google Play:
 	- Log into https://play.google.com/apps/publish with the Aikuma account
