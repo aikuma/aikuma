@@ -9,44 +9,6 @@
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="Default Sensitivity:"
-		android:textSize="15sp"
-	/>
-	<SeekBar
-		style="@android:style/Widget.ProgressBar.Horizontal"
-		android:id="@+id/SensitivitySlider"
-		android:layout_width="match_parent"
-		android:layout_height="32dp"
-		android:maxHeight="10dp"
-	/>
-
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:text="Respeaking mode:"
-		android:textSize="15sp"
-	/>
-	<RadioGroup
-		android:id="@+id/respeaking_radio_group"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical">
-		<RadioButton
-			android:id="@+id/radio_thumb_respeaking"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/thumb_respeaking"
-			android:onClick="onRespeakingRadioButtonClicked"/>
-		<RadioButton
-			android:id="@+id/radio_phone_respeaking"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/phone_respeaking"
-			android:onClick="onRespeakingRadioButtonClicked"/>
-	</RadioGroup>
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
 		android:text="Respeaking segment rewind amount" 
 		android:textSize="15sp"
 	/>

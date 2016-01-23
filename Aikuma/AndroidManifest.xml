@@ -182,14 +182,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.lp20.aikuma.MainActivity" />
 		</activity>
-		<activity android:name="org.lp20.aikuma.ui.PhoneRespeakActivity"
-				android:configChanges="orientation"
-				android:label="@string/app_name"
-				android:parentActivityName="org.lp20.aikuma.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.lp20.aikuma.MainActivity" />
-		</activity>
 		<activity android:name="org.lp20.aikuma.ui.AddCustomLanguageActivity"
 				android:configChanges="orientation"
 				android:label="@string/app_name"
@@ -218,13 +210,6 @@
 				android:configChanges="orientation"
 				android:label="@string/app_name"
 				android:parentActivityName="org.lp20.aikuma.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.lp20.aikuma.MainActivity" />
-		</activity>
-		<activity android:name="org.lp20.aikuma.ui.HttpServerActivity"
-				android:label="@string/http_server_activity_title"
-				android:parentActivityName="org.lp20.aikuma.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.lp20.aikuma.MainActivity" />

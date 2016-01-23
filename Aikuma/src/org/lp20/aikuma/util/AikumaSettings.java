@@ -127,6 +127,11 @@ public class AikumaSettings {
 	public static final int EXTRA_AUDIO_DURATION = 250;
 	
 	/**
+	 * Default rewind time when creating a derivative recording (in msec)
+	 */
+	public static final int DEFAULT_RESPEAK_REWIND = 300;
+	
+	/**
 	 * Recording sampleRate
 	 */
 	public static final long DEFAULT_SAMPLERATE = 16000l;
@@ -140,7 +145,7 @@ public class AikumaSettings {
 	 *  WIFI_MODE_KEY			: true/false
 	 *  CELLULAR_MODE_KEY		: true/false
 	 *  PUBLIC_SHARE_CONSENT_KEY: true/false
-	 *  RESPEAKING_MODE_KEY		: "phone"/"thumb"
+	 *  RESPEAKING_MODE_KEY		: "thumb"
 	 *  
 	 *  SEARCH_STATE_KEY		: true/false
 	 */

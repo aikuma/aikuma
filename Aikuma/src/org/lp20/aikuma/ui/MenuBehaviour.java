@@ -128,10 +128,6 @@ public class MenuBehaviour {
 				intent = new Intent(activity, ConsentActivity.class);
 				activity.startActivity(intent);
 				return true;
-			case R.id.start_http_server:
-				intent = new Intent(activity, HttpServerActivity.class);
-				activity.startActivity(intent);
-				return true;
 			case R.id.audio_import_menu:
 				if(AikumaSettings.getCurrentUserId() == null) {
 					Aikuma.showAlertDialog(activity,

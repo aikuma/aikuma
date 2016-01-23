@@ -16,8 +16,6 @@
 		android:icon="@drawable/speakers_32g"
 		android:title="@string/speakers"
 		android:showAsAction="always"/>
-	<item android:id="@+id/start_http_server"
-	    android:title="@string/connect"/>
 	<item android:id="@+id/gplus_signin_menu"
 	    android:title="@string/gplus_signin_menu_label"/>
 	<item android:id="@+id/cloud_sync_menu"
