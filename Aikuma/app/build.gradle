@@ -1,0 +1,85 @@
+apply plugin: 'com.android.application'
+apply plugin: 'checkstyle'
+
+android {
+    compileSdkVersion 16
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "org.lp20.aikuma2"
+        minSdkVersion 14
+        targetSdkVersion 16
+        versionCode 10005
+        versionName "0.8.4"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("${project.rootDir}/../aikuma.keystore")
+            keyAlias "aikuma_key"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
+            zipAlignEnabled true
+        }
+    }
+
+    packagingOptions {
+        pickFirst "META-INF/LICENSE.txt"
+        pickFirst "META-INF/LICENSE"
+        pickFirst "META-INF/NOTICE.txt"
+        pickFirst "META-INF/NOTICE"
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:18.0.0'
+    compile 'com.google.guava:guava:13.0.1'
+    compile 'com.google.android.gms:play-services:5.0.89'
+    compile files('libs/aikuma-cloud-storage-0.10.1.jar')
+    compile files('libs/commons-io-2.4.jar')
+    compile files('libs/commons-lang3-3.1.jar')
+    compile files('libs/commons-net-3.1.jar')
+    compile files('libs/ftpserver-core-1.0.6.jar')
+    compile files('libs/json-simple-1.1.1.jar')
+    compile files('libs/log4j-1.2.14.jar')
+    compile files('libs/mina-core-2.0.4.jar')
+    compile files('libs/musicg-1.4.2.0.jar')
+    compile files('libs/opencsv-2.3.jar')
+    compile files('libs/slf4j-api-1.5.2.jar')
+    compile files('libs/slf4j-log4j12-1.5.2.jar')
+}
+
+assembleDebug.dependsOn "checkStyle"
+task checkStyle(type: Checkstyle) {
+    configFile file("${project.rootDir}/../checks.xml")
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+
+    classpath = files()
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    if(taskGraph.hasTask(':app:assembleRelease')) {
+        def pass = ''
+        if(System.console() != null) {
+            pass = new String(System.console().readPassword("\n\$ Enter keystore passphrase: "))
+        }
+
+        if(pass.size() <= 0) {
+            throw new InvalidUserDataException("Invalid password")
+        }
+        android.signingConfigs.release.storePassword = pass
+        android.signingConfigs.release.keyPassword = pass
+    }
+}
