@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -42,7 +43,10 @@ import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.Drive;
 import com.musicg.wave.Wave;
 import com.musicg.wave.WaveFileManager;
 
@@ -148,6 +152,8 @@ public class MainActivity extends ListActivity {
                 		Toast.LENGTH_SHORT).show();
             }
 
+            initGoogleApiClient();
+
 		} else if(AikumaSettings.isBackupEnabled 
 				|| AikumaSettings.isAutoDownloadEnabled) {
 			// When backup was enabled but the user hasn't ever signed-in google account
@@ -250,8 +256,7 @@ public class MainActivity extends ListActivity {
 	@Override
 	public void onResume() {
 		super.onResume();	
-
-		updateRecordingList();
+        updateRecordingList();
 		
 		if (listViewState != null) {
 			getListView().onRestoreInstanceState(listViewState);
@@ -346,7 +351,50 @@ public class MainActivity extends ListActivity {
 		}
 		
 	}
-	
+
+    private void initGoogleApiClient() {
+        if(googleApiClient == null) {
+            Log.i(TAG, "init GoogleApiClient");
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Drive.API)
+                    .addScope(Drive.SCOPE_FILE)
+                    .addScope(Drive.SCOPE_APPFOLDER) // required for App Folder sample
+                    .setAccountName(AikumaSettings.getCurrentUserId())
+                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                        @Override
+                        public void onConnected(Bundle bundle) {
+                            Log.i(TAG, "GoogleApiClient connected");
+                            googleApiClient.disconnect();
+                        }
+
+                        @Override
+                        public void onConnectionSuspended(int i) {
+                            Log.i(TAG, "GoogleApiClient suspended");
+                        }
+                    })
+                    .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                        @Override
+                        public void onConnectionFailed(ConnectionResult connectionResult) {
+                            Log.i(TAG, "googleapiclient failed");
+                            if (!connectionResult.hasResolution()) {
+                                // show the localized error dialog.
+                                GoogleApiAvailability.getInstance()
+                                        .getErrorDialog(MainActivity.this, connectionResult.getErrorCode(), 0).show();
+                                return;
+                            }
+                            try {
+                                connectionResult.startResolutionForResult(
+                                        MainActivity.this, CONNECT_GMS_REQUEST_CODE);
+                            } catch (IntentSender.SendIntentException e) {
+                                Log.e(TAG, "Exception while starting resolution activity", e);
+                            }
+                        }
+                    })
+                    .build();
+            googleApiClient.connect();
+        }
+    }
+
 	/**
      * Display the progress dialog to the user
      * 
@@ -402,7 +450,7 @@ public class MainActivity extends ListActivity {
     		adapter.notifyDataSetChanged();
     	}
     }
-    
+
 	/**
 	 * Setup the search-menu-item interface (called by MenuBehavior)
 	 * @param menu	menu object
@@ -456,7 +504,8 @@ public class MainActivity extends ListActivity {
 	private ProgressDialog progressDialog;
 	
 	private static final int PICK_DATE_REQUEST_CODE = 0;
-	
+	private static final int CONNECT_GMS_REQUEST_CODE = 1;
+
 	/////////////////////////////////////////////////////
 	////                                   			/////
 	//// Things pertaining to getting Google token. /////
@@ -515,6 +564,7 @@ public class MainActivity extends ListActivity {
     @Override
     protected void onActivityResult(int requestCode, 
     		int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_ACCOUNT_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
             	SharedPreferences settings = 
@@ -547,8 +597,9 @@ public class MainActivity extends ListActivity {
             return;
         } else if(requestCode == PICK_DATE_REQUEST_CODE) {
         	checkDate();
+        } else if(requestCode == CONNECT_GMS_REQUEST_CODE && resultCode == RESULT_OK) {
+            googleApiClient.connect();
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
     
     private void handleReRequestResult(int resultCode, Intent data) {
@@ -739,6 +790,7 @@ public class MainActivity extends ListActivity {
     private String googleAuthToken;
     private String googleIdToken;
     private String googleAPIScope;
+    private GoogleApiClient googleApiClient;
     
     
 	////////////////////////////////////////////
