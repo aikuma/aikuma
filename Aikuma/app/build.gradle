@@ -42,9 +42,8 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:18.0.0'
+    compile 'com.google.android.gms:play-services-drive:8.4.0'
     compile 'com.google.guava:guava:13.0.1'
-    compile 'com.google.android.gms:play-services:5.0.89'
     compile files('libs/aikuma-cloud-storage-0.10.1.jar')
     compile files('libs/commons-io-2.4.jar')
     compile files('libs/commons-lang3-3.1.jar')

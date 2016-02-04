@@ -4,6 +4,15 @@
 */
 package org.lp20.aikuma.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.lp20.aikuma.util.FileIO;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,16 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.lp20.aikuma.util.FileIO;
-import org.lp20.aikuma.util.IdUtils;
-
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.Log;
 
 /**
  * The file modeled from the viewpoint of GoogleCloud
@@ -116,7 +115,11 @@ public class FileModel implements Parcelable {
 	public static final String VERSION_KEY = "version";
 	/** */
 	public static final String DATA_STORE_URI_KEY = "data_store_uri";
-	
+	/** */
+    public static final String DATE_CLOUD_KEY = "dat";
+    /** */
+    public static final String MULTI_META_CLOUD_DEFAULT_VAL = "mutli";
+
 	/**
 	 * Constructor of FileModel
 	 * 
@@ -332,11 +335,18 @@ public class FileModel implements Parcelable {
 		
 		String suffix;
 		if(fileType.equals(TAG_TYPE)) {
-			if(option != 0)
-				return null;
-			
-			String groupId = getId().split("-")[0];
-			return (ownerDirStr + Recording.TAG_PATH + groupId + "/" + getId());
+            String groupId = getId().split("-")[0];
+
+            if(option == 0) {
+                return (ownerDirStr + Recording.TAG_PATH + groupId + "/" + getId());
+            } else {
+                suffix = "." + Recording.AUDIO_EXT;
+                int tagValStart = id.lastIndexOf('-');
+                int tagKeyStart = id.substring(0, tagValStart).lastIndexOf('-');
+                String sourceCloudId = id.substring(0, tagKeyStart);
+
+                return (ownerDirStr + Recording.PATH + groupId + "/" + sourceCloudId + suffix);
+            }
 		} else if(fileType.equals(SPEAKER_TYPE)) {
 			suffix = getSuffixExt(versionName, FileType.METADATA);
 			
